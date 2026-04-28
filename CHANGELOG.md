@@ -8,6 +8,8 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-04-28
+
 ### Distribution: Path A.1 split-repo migration (2026-04-28)
 
 - **0.8.1 republishes 0.8.0's wheel functionality from a public source repo.** The 0.8.0 lift on 2026-04-27 shipped from a upstream development tree (`lluvr/frame-check`); the resulting PyPI sidebar carried seven dead Project-URLs (five `lluvr/frame-check` 404s for non-collaborator visitors, two paused `frame.clarethium.com` endpoints) plus roughly ten more dead blob-path links in the rendered README. `REPO_STRATEGY_DECISION_v1.md` v1.1 records the operator's 2026-04-28 choice of Path A.1 (split repo, conservative): create a public `lluvr/frame-check-mcp` containing only the wheel-bundled subset, ship 0.8.1 from there, leave the upstream private. The new repo is live; all six 0.8.1 Project-URLs (Repository, Issues, Changelog, Security, Methodology, Frame Library) return HTTP 200; the Homepage URL is intentionally omitted from 0.8.1's pyproject because `frame.clarethium.com` is paused (production resume / retire decision is downstream of Path A.1). No functional code changes from 0.8.0; the only deployment-affecting deltas are pyproject Project-URLs + README link surface + bumped `SERVER_VERSION = "0.8.1"`.
