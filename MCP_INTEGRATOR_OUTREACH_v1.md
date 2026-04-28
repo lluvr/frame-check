@@ -65,7 +65,7 @@ Lovro Lucic
 
 **Target audience:** any MCP-host integrator that maintains a public catalog or featured-server list (Cursor, Continue.dev, Zed, etc.). Adapt §1 selling-point order to the integrator's stated values.
 
-**Subject line:** `frame-check-mcp: structural framing analysis as an MCP tool — catalog candidate?`
+**Subject line:** `frame-check-mcp: structural framing analysis as an MCP tool, catalog candidate?`
 
 **Body:**
 

@@ -2,9 +2,9 @@
 
 All notable changes to the Frame Check MCP server are documented here, in reverse chronological order. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [semantic versioning](https://semver.org/).
 
-Release arc per `STRATEGY.md §14`: `0.8.0` is the planned first public PyPI release (V4.2-capable by default); `1.0.0` is the API-freeze line adopting the v2 construct-carrying shape per `MCP_CONTRACT_V2_PROPOSAL.md`. Versions prior to `0.8.0` are internal (not on PyPI); `SERVER_VERSION` in `mcp_server.py` tracks the internal release, and the MCP `initialize` handshake reports it to clients on connect.
+Release arc: `0.8.0` (2026-04-27) was the first public PyPI release; `0.8.1` (2026-04-28) republished the same wheel functionality from this public source repo to fix the dead Project-URL surface that shipped in 0.8.0 (see [0.8.1] notes below). `1.0.0` is the planned API-freeze line adopting the construct-carrying response shape proposed in `MCP_CONTRACT_V2_PROPOSAL.md`. Versions prior to `0.8.0` were internal and never reached PyPI; `SERVER_VERSION` in `mcp_server.py` matches the released wheel and is reported to clients on the MCP `initialize` handshake.
 
-The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was retired 2026-04-23 in favor of V4.2-first launch discipline; see `MCP_SERVER.md` "Release arc" for the canonical commitment.
+Some entries in this CHANGELOG reference internal documents (`STRATEGY.md`, `DATA_MOAT.md`, `OBSERVATORY_STATE.md`, `THE_BETS.md`, `REPO_STRATEGY_DECISION_v1.md`, `LEAKAGE_AUDIT_v1.md`, `REMEDIATION_LOG_v1.md`, files under `fvs_eval/`, and similar) that live in the upstream development tree repository, not in this public source repo. They are kept in this CHANGELOG as audit-trail context; the wheel-bundled subset is what users install, and the public-tree contents (governance, methodology, contracts, conformance, frame library) stand on their own.
 
 ## [Unreleased]
 
