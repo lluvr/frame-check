@@ -1,0 +1,567 @@
+{
+  "A_bitcoin": {
+    "claude": {
+      "model_id": "claude-haiku-4-5-20251001",
+      "word_count": 187,
+      "sentence_count": 14,
+      "voice": "prescriptive",
+      "voice_signals": {
+        "first_person_plural_pct": 0,
+        "second_person_pct": 36,
+        "imperative_count": 0,
+        "speculative_pct": 0
+      },
+      "coverage_addressed": [
+        "causes"
+      ],
+      "coverage_missing": [
+        "risks",
+        "stakeholders",
+        "trends",
+        "uncertainty"
+      ],
+      "coverage_density": {
+        "causes": 10.5,
+        "risks": 5.2,
+        "stakeholders": 0.0,
+        "trends": 5.2,
+        "uncertainty": 0.0
+      },
+      "temporal": "present",
+      "temporal_dist": {
+        "past": 0,
+        "present": 100,
+        "future": 0
+      },
+      "epistemic_sourced_pct": 0,
+      "claims_total": 4,
+      "claims_hedged": 0,
+      "claims_unhedged": 4,
+      "frame_matches": [
+        {
+          "fvs_id": "FVS-008",
+          "name": "Growth Frame",
+          "teaching_question": "What would a risk analyst say about this same data?",
+          "status": "draft"
+        },
+        {
+          "fvs_id": "FVS-001",
+          "name": "Frame Amplification",
+          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
+          "status": "draft"
+        },
+        {
+          "fvs_id": "FVS-007",
+          "name": "Failure Framing (absent)",
+          "teaching_question": "What would have to be true for this analysis to be wrong?",
+          "status": "draft"
+        }
+      ]
+    },
+    "openai_gpt": {
+      "model_id": "gpt-5-2025-08-07",
+      "word_count": 345,
+      "sentence_count": 22,
+      "voice": "prescriptive",
+      "voice_signals": {
+        "first_person_plural_pct": 0,
+        "second_person_pct": 45,
+        "imperative_count": 0,
+        "speculative_pct": 5
+      },
+      "coverage_addressed": [
+        "risks",
+        "trends"
+      ],
+      "coverage_missing": [
+        "causes",
+        "stakeholders",
+        "uncertainty"
+      ],
+      "coverage_density": {
+        "causes": 0.0,
+        "risks": 13.7,
+        "stakeholders": 0.0,
+        "trends": 5.5,
+        "uncertainty": 0.0
+      },
+      "temporal": "present",
+      "temporal_dist": {
+        "past": 0,
+        "present": 100,
+        "future": 0
+      },
+      "epistemic_sourced_pct": 0,
+      "claims_total": 11,
+      "claims_hedged": 0,
+      "claims_unhedged": 11,
+      "frame_matches": [
+        {
+          "fvs_id": "FVS-001",
+          "name": "Frame Amplification",
+          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
+          "status": "draft"
+        },
+        {
+          "fvs_id": "FVS-015",
+          "name": "Efficiency Frame",
+          "teaching_question": "Is efficiency the right lens here, or has it been applied by default?",
+          "status": "draft"
+        }
+      ]
+    },
+    "xai_grok": {
+      "model_id": "grok-4-1-fast-reasoning",
+      "word_count": 304,
+      "sentence_count": 14,
+      "voice": "advisory",
+      "voice_signals": {
+        "first_person_plural_pct": 0,
+        "second_person_pct": 14,
+        "imperative_count": 1,
+        "speculative_pct": 0
+      },
+      "coverage_addressed": [
+        "risks",
+        "trends"
+      ],
+      "coverage_missing": [
+        "causes",
+        "stakeholders",
+        "uncertainty"
+      ],
+      "coverage_density": {
+        "causes": 3.2,
+        "risks": 9.6,
+        "stakeholders": 0.0,
+        "trends": 6.4,
+        "uncertainty": 0.0
+      },
+      "temporal": "present",
+      "temporal_dist": {
+        "past": 21,
+        "present": 79,
+        "future": 0
+      },
+      "epistemic_sourced_pct": 7,
+      "claims_total": 15,
+      "claims_hedged": 0,
+      "claims_unhedged": 15,
+      "frame_matches": [
+        {
+          "fvs_id": "FVS-001",
+          "name": "Frame Amplification",
+          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
+          "status": "draft"
+        },
+        {
+          "fvs_id": "FVS-015",
+          "name": "Efficiency Frame",
+          "teaching_question": "Is efficiency the right lens here, or has it been applied by default?",
+          "status": "draft"
+        }
+      ]
+    },
+    "gemini": {
+      "model_id": "gemini-2.5-flash",
+      "word_count": 485,
+      "sentence_count": 27,
+      "voice": "prescriptive",
+      "voice_signals": {
+        "first_person_plural_pct": 0,
+        "second_person_pct": 19,
+        "imperative_count": 0,
+        "speculative_pct": 0
+      },
+      "coverage_addressed": [
+        "risks",
+        "stakeholders",
+        "trends",
+        "uncertainty"
+      ],
+      "coverage_missing": [
+        "causes"
+      ],
+      "coverage_density": {
+        "causes": 2.0,
+        "risks": 11.7,
+        "stakeholders": 3.9,
+        "trends": 5.9,
+        "uncertainty": 3.9
+      },
+      "temporal": "present",
+      "temporal_dist": {
+        "past": 0,
+        "present": 100,
+        "future": 0
+      },
+      "epistemic_sourced_pct": 0,
+      "claims_total": 8,
+      "claims_hedged": 0,
+      "claims_unhedged": 8,
+      "frame_matches": [
+        {
+          "fvs_id": "FVS-012",
+          "name": "Uncertainty Frame (active)",
+          "teaching_question": "Is the uncertainty named substantively (ranges, assumptions, expert disagreement) or merely hedged (language softened without specifics)?",
+          "status": "draft"
+        }
+      ]
+    }
+  },
+  "B_startup": {
+    "claude": {
+      "model_id": "claude-haiku-4-5-20251001",
+      "word_count": 210,
+      "sentence_count": 20,
+      "voice": "prescriptive",
+      "voice_signals": {
+        "first_person_plural_pct": 0,
+        "second_person_pct": 65,
+        "imperative_count": 0,
+        "speculative_pct": 0
+      },
+      "coverage_addressed": [],
+      "coverage_missing": [
+        "causes",
+        "risks",
+        "stakeholders",
+        "trends",
+        "uncertainty"
+      ],
+      "coverage_density": {
+        "causes": 0.0,
+        "risks": 4.7,
+        "stakeholders": 4.7,
+        "trends": 0.0,
+        "uncertainty": 0.0
+      },
+      "temporal": "present",
+      "temporal_dist": {
+        "past": 5,
+        "present": 95,
+        "future": 0
+      },
+      "epistemic_sourced_pct": 0,
+      "claims_total": 3,
+      "claims_hedged": 0,
+      "claims_unhedged": 3,
+      "frame_matches": [
+        {
+          "fvs_id": "FVS-007",
+          "name": "Failure Framing (absent)",
+          "teaching_question": "What would have to be true for this analysis to be wrong?",
+          "status": "draft"
+        }
+      ]
+    },
+    "openai_gpt": {
+      "model_id": "gpt-5-2025-08-07",
+      "word_count": 814,
+      "sentence_count": 57,
+      "voice": "prescriptive",
+      "voice_signals": {
+        "first_person_plural_pct": 0,
+        "second_person_pct": 42,
+        "imperative_count": 3,
+        "speculative_pct": 0
+      },
+      "coverage_addressed": [
+        "risks",
+        "stakeholders"
+      ],
+      "coverage_missing": [
+        "causes",
+        "trends",
+        "uncertainty"
+      ],
+      "coverage_density": {
+        "causes": 0.0,
+        "risks": 8.2,
+        "stakeholders": 16.4,
+        "trends": 0.0,
+        "uncertainty": 1.2
+      },
+      "temporal": "present",
+      "temporal_dist": {
+        "past": 0,
+        "present": 98,
+        "future": 2
+      },
+      "epistemic_sourced_pct": 0,
+      "claims_total": 10,
+      "claims_hedged": 0,
+      "claims_unhedged": 10,
+      "frame_matches": [
+        {
+          "fvs_id": "FVS-001",
+          "name": "Frame Amplification",
+          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
+          "status": "draft"
+        }
+      ]
+    },
+    "xai_grok": {
+      "model_id": "grok-4-1-fast-reasoning",
+      "word_count": 424,
+      "sentence_count": 27,
+      "voice": "prescriptive",
+      "voice_signals": {
+        "first_person_plural_pct": 0,
+        "second_person_pct": 37,
+        "imperative_count": 1,
+        "speculative_pct": 0
+      },
+      "coverage_addressed": [
+        "risks",
+        "stakeholders"
+      ],
+      "coverage_missing": [
+        "causes",
+        "trends",
+        "uncertainty"
+      ],
+      "coverage_density": {
+        "causes": 0.0,
+        "risks": 13.9,
+        "stakeholders": 6.9,
+        "trends": 2.3,
+        "uncertainty": 0.0
+      },
+      "temporal": "present",
+      "temporal_dist": {
+        "past": 15,
+        "present": 81,
+        "future": 4
+      },
+      "epistemic_sourced_pct": 0,
+      "claims_total": 13,
+      "claims_hedged": 0,
+      "claims_unhedged": 13,
+      "frame_matches": [
+        {
+          "fvs_id": "FVS-001",
+          "name": "Frame Amplification",
+          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
+          "status": "draft"
+        }
+      ]
+    },
+    "gemini": {
+      "model_id": "gemini-2.5-flash",
+      "word_count": 407,
+      "sentence_count": 28,
+      "voice": "prescriptive",
+      "voice_signals": {
+        "first_person_plural_pct": 0,
+        "second_person_pct": 50,
+        "imperative_count": 0,
+        "speculative_pct": 0
+      },
+      "coverage_addressed": [
+        "risks",
+        "stakeholders",
+        "trends"
+      ],
+      "coverage_missing": [
+        "causes",
+        "uncertainty"
+      ],
+      "coverage_density": {
+        "causes": 0.0,
+        "risks": 9.5,
+        "stakeholders": 7.1,
+        "trends": 4.8,
+        "uncertainty": 2.4
+      },
+      "temporal": "present",
+      "temporal_dist": {
+        "past": 7,
+        "present": 93,
+        "future": 0
+      },
+      "epistemic_sourced_pct": 0,
+      "claims_total": 3,
+      "claims_hedged": 0,
+      "claims_unhedged": 3,
+      "frame_matches": []
+    }
+  },
+  "_pairwise_A": {
+    "claude_vs_openai_gpt": {
+      "coverage_shared_blind": [
+        "stakeholders",
+        "uncertainty"
+      ],
+      "coverage_only_a_misses": [
+        "risks",
+        "trends"
+      ],
+      "coverage_only_b_misses": [
+        "causes"
+      ],
+      "coverage_count_delta": 1,
+      "voice_match": true,
+      "a_voice": "prescriptive",
+      "b_voice": "prescriptive",
+      "temporal_match": true,
+      "sourced_pct_delta": 0,
+      "framing_diff_headline": null,
+      "framing_diff_cards": [
+        {
+          "dimension": "coverage",
+          "a_value": "1 of 5 perspectives",
+          "b_value": "2 of 5 perspectives",
+          "note": "The narrower document produces conclusions from less context."
+        }
+      ]
+    },
+    "claude_vs_xai_grok": {
+      "coverage_shared_blind": [
+        "stakeholders",
+        "uncertainty"
+      ],
+      "coverage_only_a_misses": [
+        "risks",
+        "trends"
+      ],
+      "coverage_only_b_misses": [
+        "causes"
+      ],
+      "coverage_count_delta": 1,
+      "voice_match": false,
+      "a_voice": "prescriptive",
+      "b_voice": "advisory",
+      "temporal_match": true,
+      "sourced_pct_delta": 7,
+      "framing_diff_headline": null,
+      "framing_diff_cards": [
+        {
+          "dimension": "coverage",
+          "a_value": "1 of 5 perspectives",
+          "b_value": "2 of 5 perspectives",
+          "note": "The narrower document produces conclusions from less context."
+        },
+        {
+          "dimension": "voice",
+          "a_value": "prescriptive",
+          "b_value": "advisory",
+          "note": "claude tells the reader what to do; xai_grok offers guidance with some direction. The same data serves different purposes depending on which document a reader encounters first."
+        }
+      ]
+    },
+    "claude_vs_gemini": {
+      "coverage_shared_blind": [],
+      "coverage_only_a_misses": [
+        "risks",
+        "stakeholders",
+        "trends",
+        "uncertainty"
+      ],
+      "coverage_only_b_misses": [
+        "causes"
+      ],
+      "coverage_count_delta": 3,
+      "voice_match": true,
+      "a_voice": "prescriptive",
+      "b_voice": "prescriptive",
+      "temporal_match": true,
+      "sourced_pct_delta": 0,
+      "framing_diff_headline": null,
+      "framing_diff_cards": [
+        {
+          "dimension": "coverage",
+          "a_value": "1 of 5 perspectives",
+          "b_value": "4 of 5 perspectives",
+          "note": "The narrower document produces conclusions from less context."
+        }
+      ]
+    },
+    "openai_gpt_vs_xai_grok": {
+      "coverage_shared_blind": [
+        "causes",
+        "stakeholders",
+        "uncertainty"
+      ],
+      "coverage_only_a_misses": [],
+      "coverage_only_b_misses": [],
+      "coverage_count_delta": 0,
+      "voice_match": false,
+      "a_voice": "prescriptive",
+      "b_voice": "advisory",
+      "temporal_match": true,
+      "sourced_pct_delta": 7,
+      "framing_diff_headline": null,
+      "framing_diff_cards": [
+        {
+          "dimension": "coverage",
+          "a_value": "2 of 5 perspectives",
+          "b_value": "2 of 5 perspectives",
+          "note": "Shared coverage footprint across both documents."
+        },
+        {
+          "dimension": "voice",
+          "a_value": "prescriptive",
+          "b_value": "advisory",
+          "note": "openai_gpt tells the reader what to do; xai_grok offers guidance with some direction. The same data serves different purposes depending on which document a reader encounters first."
+        }
+      ]
+    },
+    "openai_gpt_vs_gemini": {
+      "coverage_shared_blind": [
+        "causes"
+      ],
+      "coverage_only_a_misses": [
+        "stakeholders",
+        "uncertainty"
+      ],
+      "coverage_only_b_misses": [],
+      "coverage_count_delta": 2,
+      "voice_match": true,
+      "a_voice": "prescriptive",
+      "b_voice": "prescriptive",
+      "temporal_match": true,
+      "sourced_pct_delta": 0,
+      "framing_diff_headline": null,
+      "framing_diff_cards": [
+        {
+          "dimension": "coverage",
+          "a_value": "2 of 5 perspectives",
+          "b_value": "4 of 5 perspectives",
+          "note": "The narrower document produces conclusions from less context."
+        }
+      ]
+    },
+    "xai_grok_vs_gemini": {
+      "coverage_shared_blind": [
+        "causes"
+      ],
+      "coverage_only_a_misses": [
+        "stakeholders",
+        "uncertainty"
+      ],
+      "coverage_only_b_misses": [],
+      "coverage_count_delta": 2,
+      "voice_match": false,
+      "a_voice": "advisory",
+      "b_voice": "prescriptive",
+      "temporal_match": true,
+      "sourced_pct_delta": -7,
+      "framing_diff_headline": null,
+      "framing_diff_cards": [
+        {
+          "dimension": "coverage",
+          "a_value": "2 of 5 perspectives",
+          "b_value": "4 of 5 perspectives",
+          "note": "The narrower document produces conclusions from less context."
+        },
+        {
+          "dimension": "voice",
+          "a_value": "advisory",
+          "b_value": "prescriptive",
+          "note": "xai_grok offers guidance with some direction; gemini tells the reader what to do. The same data serves different purposes depending on which document a reader encounters first."
+        }
+      ]
+    }
+  }
+}

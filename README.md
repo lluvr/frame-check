@@ -1,0 +1,119 @@
+# Frame Check
+
+See what any document does not show you.
+
+Frame Check is a structural framing analysis tool. It names which
+perspectives a document takes, which it omits, and how it positions
+the reader. Numerical claims are cross-checked against authoritative
+sources where coverage exists.
+
+## Quickstart (MCP server)
+
+The PyPI package `frame-check-mcp` is the Model Context Protocol
+server. It runs locally and gives any MCP-compatible AI client
+(Claude Desktop, Cursor, Cline, Continue.dev, etc.) deterministic
+structural framing analysis as a tool.
+
+    pip install frame-check-mcp
+
+Then point your MCP client at the installed entry point. For
+Claude Desktop, add to `claude_desktop_config.json`:
+
+    {
+      "mcpServers": {
+        "frame-check": {
+          "command": "frame-check-mcp"
+        }
+      }
+    }
+
+Restart the client. Then in any conversation: "Can you frame-check
+this document?" Full install + verification details in `MCP_SERVER.md`.
+
+## What it does
+
+Pass a document and Frame Check returns:
+
+- A structural framing profile: which of five analytical perspectives
+  (causes, risks, stakeholders, trends, uncertainty) the document
+  covers, which it omits, and the density of each.
+- Voice and epistemic posture: how the document positions the reader,
+  and what share of claims are attributed to sources.
+- Temporal orientation: whether the document grounds its conclusions
+  in historical data, present state, or projections.
+- Frame Vocabulary Standard candidate matches: named frame patterns
+  whose rule-based signals fire on the text, each with identification
+  cues and worked examples. Matches are candidate-level; precision
+  against multi-source labeling is an active research question.
+- Source-network verification: numeric claims checked against SEC
+  EDGAR, FRED, World Bank, REST Countries, Alpha Vantage, and Wolfram
+  Alpha where those providers have coverage.
+- An optional AI narrative interpreting framing at prose level.
+  Labelled distinctly so readers do not conflate language-model
+  interpretation with deterministic measurement.
+
+## Approach
+
+Structural measurement is the floor. Every framing claim the tool
+makes is computed from deterministic pattern matchers and always
+returns the same result for the same input. AI-assisted interpretation
+is available as enrichment where an API key is configured, but is
+labelled as such and never hidden behind the structural layer.
+
+Verification is bounded. The tool only verifies numeric claims against
+providers with genuine coverage for the claim type, and it surfaces
+its own calibration results (precision, recall, F1 per provider)
+rather than asserting verdicts without evidence.
+
+Named-pattern detection is a separate reliability layer from the
+structural profile. Detector F1 = 0.36 against expert labelers in a
+pre-registered validation, below the useful threshold of 0.4. The
+pivot to construct-honesty surfacing (under-detection markers,
+density caveats, confidence states) rather than confident labels is
+the load-bearing claim at v0; a reader-aid study (Track B,
+pre-registered) tests whether this surfacing actually helps a reader
+see framing they would otherwise miss.
+
+Honest limits and anticipated adversarial readings are catalogued in
+`ANTICIPATED_CRITIQUES.md`.
+
+## Documentation
+
+- `METHODOLOGY.md` — full methodology paper (v0.2 draft)
+- `MCP_SERVER.md` — MCP server reference (tools, resources, prompts)
+- `MCP_CLIENT_CONFORMANCE_v1.md` — 32/32 conformance round-trips against the installed wheel
+- `FRAME_DIVERGENCE_v1.md` and `FRAME_DIVERGENCE_v2.md` — divergence architecture
+- `data/frame_library/` — 20-entry FVS catalog with worked examples
+- `ANTICIPATED_CRITIQUES.md` — self-enumerated adversarial readings
+- `VALIDATION_PROGRAM.md` — observational + formal validation plans
+
+## Running tests
+
+    pip install -r requirements.txt
+    python3 run_tests.py
+
+49 test suites, ~3 minutes. Includes 63 adversarial dispatcher tests
+in `test_mcp_adversarial.py` plus the V4.2 engine + classifier coverage.
+
+## License
+
+Apache-2.0 for code; CC-BY-4.0 for the FVS library and worked examples
+(see `NOTICE` for the per-directory enumeration).
+
+## Citation
+
+If Frame Check is useful in your work, see `CITATION.cff` for the
+citable form. Frame Check is authored by Lovro Lucic; named authorship
+is the project's primary credibility asset per the construct-honesty
+discipline.
+
+## Contributing
+
+Sign-off-by-DCO required per `CONTRIBUTING.md`. Governance per
+`GOVERNANCE.md` (BDFL model with named forcing functions for
+canon-promotion decisions). External reviewer engagement per
+`REVIEWERS.md`.
+
+## Issues
+
+https://github.com/lluvr/frame-check-mcp/issues

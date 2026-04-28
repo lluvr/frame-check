@@ -1,0 +1,1262 @@
+[
+  {
+    "id": "sec-001",
+    "provider_key": "sec_edgar",
+    "claim": "NVIDIA reported total revenue of $60.922 billion in fiscal year 2024.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Nvidia"
+      },
+      {
+        "name": "Alpha Vantage",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      },
+      {
+        "name": "SEC Filing",
+        "verdict": "exact",
+        "value": 60922000000,
+        "diff_pct": 0.0,
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001045810&type=10-K"
+      }
+    ],
+    "confidence": 0.95,
+    "best_source": "SEC Filing",
+    "best_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001045810&type=10-K",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.5,
+        "label": "SEC Filing (aggregator)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.95,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 2633,
+    "error": ""
+  },
+  {
+    "id": "sec-002",
+    "provider_key": "sec_edgar",
+    "claim": "Apple reported total revenue of $383.285 billion in fiscal year 2023.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Apple"
+      },
+      {
+        "name": "SEC Filing",
+        "verdict": "exact",
+        "value": 383285000000,
+        "diff_pct": 0.0,
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193&type=10-K"
+      },
+      {
+        "name": "Alpha Vantage",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.95,
+    "best_source": "SEC Filing",
+    "best_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193&type=10-K",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.5,
+        "label": "SEC Filing (aggregator)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.95,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 1219,
+    "error": ""
+  },
+  {
+    "id": "sec-003",
+    "provider_key": "sec_edgar",
+    "claim": "Microsoft reported total revenue of $500 billion in fiscal year 2023.",
+    "category": "KNOWN_FALSE",
+    "expected": "contradicted",
+    "observed": "contradicted",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Microsoft"
+      },
+      {
+        "name": "Alpha Vantage",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      },
+      {
+        "name": "SEC Filing",
+        "verdict": "contradicted",
+        "value": 211915000000,
+        "diff_pct": 57.6,
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000789019&type=10-K"
+      }
+    ],
+    "confidence": 0.85,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.5,
+        "label": "SEC Filing (aggregator)"
+      },
+      "precision": {
+        "score": 0,
+        "label": "contradicted"
+      },
+      "context": {
+        "score": 0.85,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.2,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 2617,
+    "error": ""
+  },
+  {
+    "id": "sec-004",
+    "provider_key": "sec_edgar",
+    "claim": "OpenAI reported total revenue of $3 billion in 2023.",
+    "category": "OUT_OF_COVERAGE",
+    "expected": "unverifiable",
+    "observed": "unverifiable",
+    "sources": [],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {},
+    "elapsed_ms": 0,
+    "error": ""
+  },
+  {
+    "id": "sec-005",
+    "provider_key": "sec_edgar",
+    "claim": "Tesla reported Q4 2023 revenue of $25.167 billion.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Nikola_Tesla"
+      },
+      {
+        "name": "Alpha Vantage",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      },
+      {
+        "name": "SEC Filing",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      },
+      {
+        "name": "insideevs.com",
+        "verdict": "exact",
+        "value": 25167000000.0,
+        "diff_pct": 0.0,
+        "url": "https://insideevs.com/news/705608/tesla-q4-2023-earnings-report/"
+      }
+    ],
+    "confidence": 0.75,
+    "best_source": "insideevs.com",
+    "best_url": "https://insideevs.com/news/705608/tesla-q4-2023-earnings-report/",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.5,
+        "label": "insideevs.com (aggregator)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.75,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 3500,
+    "error": ""
+  },
+  {
+    "id": "fred-001",
+    "provider_key": "fred",
+    "claim": "US unemployment was 3.7% in December 2023.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "disputed",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/United_States"
+      },
+      {
+        "name": "FRED",
+        "verdict": "contradicted",
+        "value": 4.3,
+        "diff_pct": 16.2,
+        "url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "name": "World Bank",
+        "verdict": "close",
+        "value": 3.638,
+        "diff_pct": 1.7,
+        "url": "https://data.worldbank.org/indicator/SL.UEM.TOTL.ZS?locations=US"
+      }
+    ],
+    "confidence": 0.5,
+    "best_source": "World Bank",
+    "best_url": "https://data.worldbank.org/indicator/SL.UEM.TOTL.ZS?locations=US",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.95,
+        "label": "FRED (institutional)"
+      },
+      "precision": {
+        "score": 0.7,
+        "label": "1.7% diff"
+      },
+      "context": {
+        "score": 0.8,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 2541,
+    "error": ""
+  },
+  {
+    "id": "fred-002",
+    "provider_key": "fred",
+    "claim": "US national debt exceeded $34 trillion in January 2024.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "close",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "close",
+        "value": 34400000000000.0,
+        "diff_pct": 1.2,
+        "url": "https://en.wikipedia.org/wiki/United_States"
+      },
+      {
+        "name": "FRED",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.5645798319327734,
+    "best_source": "Wikipedia",
+    "best_url": "https://en.wikipedia.org/wiki/United_States",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.7,
+        "label": "Wikipedia (reference)"
+      },
+      "precision": {
+        "score": 0.7,
+        "label": "1.2% diff"
+      },
+      "context": {
+        "score": 0.56,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 1516,
+    "error": ""
+  },
+  {
+    "id": "fred-003",
+    "provider_key": "fred",
+    "claim": "US inflation (CPI) was 8.5% in 2023.",
+    "category": "KNOWN_FALSE",
+    "expected": "contradicted",
+    "observed": "contradicted",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/United_States"
+      },
+      {
+        "name": "FRED",
+        "verdict": "contradicted",
+        "value": 2.94952520485207,
+        "diff_pct": 65.3,
+        "url": "https://fred.stlouisfed.org/series/FPCPITOTLZGUSA"
+      },
+      {
+        "name": "World Bank",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.8,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.95,
+        "label": "FRED (institutional)"
+      },
+      "precision": {
+        "score": 0,
+        "label": "contradicted"
+      },
+      "context": {
+        "score": 0.8,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.2,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 6590,
+    "error": ""
+  },
+  {
+    "id": "fred-004",
+    "provider_key": "fred",
+    "claim": "Brazil unemployment was 7.8% in 2023.",
+    "category": "OUT_OF_COVERAGE",
+    "expected": "unverifiable",
+    "observed": "disputed",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Brazil"
+      },
+      {
+        "name": "FRED",
+        "verdict": "contradicted",
+        "value": 4.3,
+        "diff_pct": 44.9,
+        "url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "name": "World Bank",
+        "verdict": "close",
+        "value": 7.947,
+        "diff_pct": 1.9,
+        "url": "https://data.worldbank.org/indicator/SL.UEM.TOTL.ZS?locations=BR"
+      }
+    ],
+    "confidence": 0.5,
+    "best_source": "World Bank",
+    "best_url": "https://data.worldbank.org/indicator/SL.UEM.TOTL.ZS?locations=BR",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.95,
+        "label": "FRED (institutional)"
+      },
+      "precision": {
+        "score": 0.7,
+        "label": "1.9% diff"
+      },
+      "context": {
+        "score": 0.8,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 3193,
+    "error": ""
+  },
+  {
+    "id": "fred-005",
+    "provider_key": "fred",
+    "claim": "The federal funds rate was 5.33% at the end of 2023.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "unverifiable",
+    "sources": [],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {},
+    "elapsed_ms": 0,
+    "error": ""
+  },
+  {
+    "id": "rc-001",
+    "provider_key": "rest_countries",
+    "claim": "Germany has a population of approximately 84 million.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "exact",
+        "value": 84700000.0,
+        "diff_pct": 0.8,
+        "url": "https://en.wikipedia.org/wiki/Germany"
+      }
+    ],
+    "confidence": 0.7162500000000003,
+    "best_source": "Wikipedia",
+    "best_url": "https://en.wikipedia.org/wiki/Germany",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.7,
+        "label": "Wikipedia (reference)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.72,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 854,
+    "error": ""
+  },
+  {
+    "id": "rc-002",
+    "provider_key": "rest_countries",
+    "claim": "France has an area of 551,695 square kilometers.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "exact",
+        "value": 551500.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/France"
+      },
+      {
+        "name": "REST Countries",
+        "verdict": "close",
+        "value": 543908.0,
+        "diff_pct": 1.4,
+        "url": "https://restcountries.com/v3.1/name/France"
+      },
+      {
+        "name": "Wolfram Alpha",
+        "verdict": "exact",
+        "value": 551500.0,
+        "diff_pct": 0.0,
+        "url": "https://www.wolframalpha.com/input?i=France%20area"
+      }
+    ],
+    "confidence": 0.9500000000000001,
+    "best_source": "Wolfram Alpha",
+    "best_url": "https://www.wolframalpha.com/input?i=France%20area",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.85,
+        "label": "Wolfram Alpha (reference)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.9,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 1.0,
+        "label": "3 sources"
+      }
+    },
+    "elapsed_ms": 2388,
+    "error": ""
+  },
+  {
+    "id": "rc-003",
+    "provider_key": "rest_countries",
+    "claim": "Japan has a population of 500 million.",
+    "category": "KNOWN_FALSE",
+    "expected": "contradicted",
+    "observed": "contradicted",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Japan"
+      },
+      {
+        "name": "REST Countries",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://restcountries.com/v3.1/name/Japan"
+      },
+      {
+        "name": "World Bank",
+        "verdict": "contradicted",
+        "value": 123975371,
+        "diff_pct": 75.2,
+        "url": "https://data.worldbank.org/indicator/SP.POP.TOTL?locations=JP"
+      }
+    ],
+    "confidence": 0.6,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.9,
+        "label": "World Bank (institutional)"
+      },
+      "precision": {
+        "score": 0,
+        "label": "contradicted"
+      },
+      "context": {
+        "score": 0.6,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.2,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 973,
+    "error": ""
+  },
+  {
+    "id": "rc-004",
+    "provider_key": "rest_countries",
+    "claim": "India had a population of 1.2 billion in 2010.",
+    "category": "TEMPORAL_EDGE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "exact",
+        "value": 1210193422.0,
+        "diff_pct": 0.8,
+        "url": "https://en.wikipedia.org/wiki/India"
+      },
+      {
+        "name": "REST Countries",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      },
+      {
+        "name": "World Bank",
+        "verdict": "close",
+        "value": 1243481564,
+        "diff_pct": 3.6,
+        "url": "https://data.worldbank.org/indicator/SP.POP.TOTL?locations=IN"
+      }
+    ],
+    "confidence": 0.41883946799999977,
+    "best_source": "World Bank",
+    "best_url": "https://data.worldbank.org/indicator/SP.POP.TOTL?locations=IN",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.9,
+        "label": "World Bank (institutional)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "3.6% diff"
+      },
+      "context": {
+        "score": 0.75,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.8,
+        "label": "2 sources"
+      }
+    },
+    "elapsed_ms": 3093,
+    "error": ""
+  },
+  {
+    "id": "rc-005",
+    "provider_key": "rest_countries",
+    "claim": "Wakanda has a population of 6 million.",
+    "category": "OUT_OF_COVERAGE",
+    "expected": "unverifiable",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Wakanda"
+      },
+      {
+        "name": "www.reddit.com",
+        "verdict": "exact",
+        "value": 6000000.0,
+        "diff_pct": 0.0,
+        "url": "https://www.reddit.com/r/AskScienceFiction/comments/ythcb1/black_panther_whats_the_population_of_wakanda/"
+      }
+    ],
+    "confidence": 0.75,
+    "best_source": "www.reddit.com",
+    "best_url": "https://www.reddit.com/r/AskScienceFiction/comments/ythcb1/black_panther_whats_the_population_of_wakanda/",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.5,
+        "label": "www.reddit.com (aggregator)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.75,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 1825,
+    "error": ""
+  },
+  {
+    "id": "wb-001",
+    "provider_key": "world_bank",
+    "claim": "France's GDP was $2.78 trillion in 2022.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/France"
+      },
+      {
+        "name": "FRED",
+        "verdict": "no_data",
+        "value": 31422526000000.0,
+        "diff_pct": 1030.3,
+        "url": "https://fred.stlouisfed.org/series/GDP"
+      },
+      {
+        "name": "World Bank",
+        "verdict": "exact",
+        "value": 2794788137066.94,
+        "diff_pct": 0.5,
+        "url": "https://data.worldbank.org/indicator/NY.GDP.MKTP.CD?locations=FR"
+      }
+    ],
+    "confidence": 0.9,
+    "best_source": "World Bank",
+    "best_url": "https://data.worldbank.org/indicator/NY.GDP.MKTP.CD?locations=FR",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.9,
+        "label": "World Bank (institutional)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.9,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 2758,
+    "error": ""
+  },
+  {
+    "id": "wb-002",
+    "provider_key": "world_bank",
+    "claim": "Germany's GDP per capita was $50,000 in 2022.",
+    "category": "KNOWN_TRUE",
+    "expected": "close",
+    "observed": "unverifiable",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Germany"
+      },
+      {
+        "name": "FRED",
+        "verdict": "no_data",
+        "value": 31422526000000.0,
+        "diff_pct": 62845051900.0,
+        "url": "https://fred.stlouisfed.org/series/GDP"
+      },
+      {
+        "name": "World Bank",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0,
+        "label": "no source"
+      },
+      "precision": {
+        "score": 0,
+        "label": "no match"
+      },
+      "context": {
+        "score": 0,
+        "label": "no context"
+      },
+      "corroboration": {
+        "score": 0,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 7622,
+    "error": ""
+  },
+  {
+    "id": "wb-003",
+    "provider_key": "world_bank",
+    "claim": "Nigeria's unemployment rate was 45% in 2023.",
+    "category": "KNOWN_FALSE",
+    "expected": "contradicted",
+    "observed": "contradicted",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Nigeria"
+      },
+      {
+        "name": "FRED",
+        "verdict": "contradicted",
+        "value": 4.3,
+        "diff_pct": 90.4,
+        "url": "https://fred.stlouisfed.org/series/UNRATE"
+      },
+      {
+        "name": "World Bank",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.8,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.95,
+        "label": "FRED (institutional)"
+      },
+      "precision": {
+        "score": 0,
+        "label": "contradicted"
+      },
+      "context": {
+        "score": 0.8,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.2,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 6318,
+    "error": ""
+  },
+  {
+    "id": "wb-004",
+    "provider_key": "world_bank",
+    "claim": "Vatican City's GDP was $10 billion in 2022.",
+    "category": "OUT_OF_COVERAGE",
+    "expected": "unverifiable",
+    "observed": "unverifiable",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Vatican_City"
+      },
+      {
+        "name": "FRED",
+        "verdict": "no_data",
+        "value": 31422526000000.0,
+        "diff_pct": 314125.3,
+        "url": "https://fred.stlouisfed.org/series/GDP"
+      },
+      {
+        "name": "World Bank",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0,
+        "label": "no source"
+      },
+      "precision": {
+        "score": 0,
+        "label": "no match"
+      },
+      "context": {
+        "score": 0,
+        "label": "no context"
+      },
+      "corroboration": {
+        "score": 0,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 7480,
+    "error": ""
+  },
+  {
+    "id": "av-001",
+    "provider_key": "alpha_vantage",
+    "claim": "Microsoft has a market capitalization of approximately $3 trillion.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "unverifiable",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Microsoft"
+      },
+      {
+        "name": "Alpha Vantage",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      },
+      {
+        "name": "SEC Filing",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0,
+        "label": "no source"
+      },
+      "precision": {
+        "score": 0,
+        "label": "no match"
+      },
+      "context": {
+        "score": 0,
+        "label": "no context"
+      },
+      "corroboration": {
+        "score": 0,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 2736,
+    "error": ""
+  },
+  {
+    "id": "av-002",
+    "provider_key": "alpha_vantage",
+    "claim": "Apple's market cap is $5 trillion.",
+    "category": "KNOWN_FALSE",
+    "expected": "contradicted",
+    "observed": "unverifiable",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Apple"
+      },
+      {
+        "name": "Alpha Vantage",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      },
+      {
+        "name": "SEC Filing",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0,
+        "label": "no source"
+      },
+      "precision": {
+        "score": 0,
+        "label": "no match"
+      },
+      "context": {
+        "score": 0,
+        "label": "no context"
+      },
+      "corroboration": {
+        "score": 0,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 3451,
+    "error": ""
+  },
+  {
+    "id": "av-003",
+    "provider_key": "alpha_vantage",
+    "claim": "ByteDance has a market capitalization of $300 billion.",
+    "category": "OUT_OF_COVERAGE",
+    "expected": "unverifiable",
+    "observed": "unverifiable",
+    "sources": [],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {},
+    "elapsed_ms": 0,
+    "error": ""
+  },
+  {
+    "id": "av-004",
+    "provider_key": "alpha_vantage",
+    "claim": "Tesla has revenue trailing twelve months of approximately $95 billion.",
+    "category": "KNOWN_TRUE",
+    "expected": "close",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Nikola_Tesla"
+      },
+      {
+        "name": "SEC Filing",
+        "verdict": "exact",
+        "value": 94827000000,
+        "diff_pct": 0.2,
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001318605&type=10-K"
+      },
+      {
+        "name": "Alpha Vantage",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.95,
+    "best_source": "SEC Filing",
+    "best_url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001318605&type=10-K",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.5,
+        "label": "SEC Filing (aggregator)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.95,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 1219,
+    "error": ""
+  },
+  {
+    "id": "wa-001",
+    "provider_key": "wolfram_alpha",
+    "claim": "Mount Everest has a height of 8,849 meters.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "exact",
+        "value": 8848.86,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Mount_Everest"
+      },
+      {
+        "name": "Wolfram Alpha",
+        "verdict": "exact",
+        "value": 8849.0,
+        "diff_pct": 0.0,
+        "url": "https://www.wolframalpha.com/input?i=Mount%20Everest%20height"
+      }
+    ],
+    "confidence": 0.9500000000000001,
+    "best_source": "Wolfram Alpha",
+    "best_url": "https://www.wolframalpha.com/input?i=Mount%20Everest%20height",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.85,
+        "label": "Wolfram Alpha (reference)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.9,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.8,
+        "label": "2 sources"
+      }
+    },
+    "elapsed_ms": 1936,
+    "error": ""
+  },
+  {
+    "id": "wa-002",
+    "provider_key": "wolfram_alpha",
+    "claim": "The speed of light in a vacuum is 299,792,458 meters per second.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "unverifiable",
+    "sources": [],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {},
+    "elapsed_ms": 1,
+    "error": ""
+  },
+  {
+    "id": "wa-003",
+    "provider_key": "wolfram_alpha",
+    "claim": "The diameter of Jupiter is 200,000 kilometers.",
+    "category": "KNOWN_FALSE",
+    "expected": "contradicted",
+    "observed": "unverifiable",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Jupiter"
+      },
+      {
+        "name": "Wolfram Alpha",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0,
+        "label": "no source"
+      },
+      "precision": {
+        "score": 0,
+        "label": "no match"
+      },
+      "context": {
+        "score": 0,
+        "label": "no context"
+      },
+      "corroboration": {
+        "score": 0,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 2669,
+    "error": ""
+  },
+  {
+    "id": "wa-004",
+    "provider_key": "wolfram_alpha",
+    "claim": "The population of Wakanda is 6 million.",
+    "category": "OUT_OF_COVERAGE",
+    "expected": "unverifiable",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Wakanda"
+      },
+      {
+        "name": "www.reddit.com",
+        "verdict": "exact",
+        "value": 6000000.0,
+        "diff_pct": 0.0,
+        "url": "https://www.reddit.com/r/AskScienceFiction/comments/ythcb1/black_panther_whats_the_population_of_wakanda/"
+      }
+    ],
+    "confidence": 0.75,
+    "best_source": "www.reddit.com",
+    "best_url": "https://www.reddit.com/r/AskScienceFiction/comments/ythcb1/black_panther_whats_the_population_of_wakanda/",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.5,
+        "label": "www.reddit.com (aggregator)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.75,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 1501,
+    "error": ""
+  }
+]

@@ -1,0 +1,105 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "frame-check-mcp"
+version = "0.8.1"
+description = "Frame Check MCP server: deterministic structural framing analysis for AI-generated documents, with opt-in frame-divergence block per FRAME_DIVERGENCE_CONTRACT_v1 c1.0. MCP surface delegates V4.2 judgment to the caller's agent model; zero Frame Check LLM cost per query."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Lovro Lucic", email = "lovro.lucic@gmail.com"},
+]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "framing",
+    "text-analysis",
+    "agents",
+    "claude-desktop",
+    "cursor",
+    "frame-divergence",
+    "decision-readiness",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Text Processing :: Linguistic",
+]
+dependencies = [
+    "PyYAML>=6.0,<7.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+    "pytest-timeout>=2.0",
+]
+
+[project.urls]
+Repository = "https://github.com/lluvr/frame-check-mcp"
+Issues = "https://github.com/lluvr/frame-check-mcp/issues"
+Changelog = "https://github.com/lluvr/frame-check-mcp/blob/master/CHANGELOG.md"
+Security = "https://github.com/lluvr/frame-check-mcp/blob/master/SECURITY.md"
+Methodology = "https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md"
+"Frame Library" = "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/"
+
+[project.scripts]
+frame-check-mcp = "mcp_server:cli"
+
+[tool.setuptools]
+# Modules reachable from mcp_server.py via local-import graph;
+# bundling them is required for `import mcp_server` to resolve
+# in a clean environment.
+py-modules = [
+    "mcp_server",
+    "framing",
+    "clarethium_measure",
+    "claim_analysis",
+    "frame_library",
+    "frame_library_index",
+    "decision_readiness",
+    "comparison",
+    "source_network",
+    "llm_cost",
+    "version",
+    "entity_classifier",
+    "time_context",
+    "corpus_intelligence",
+    "frame_deepening",
+    "frame_opportunities",
+    "frame_patterns",
+    "genre_classifier",
+    "user_goals",
+]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["framecheck_mcp*"]
+
+[tool.setuptools.package-data]
+framecheck_mcp = [
+    "data/frame_library/**/*",
+    "data/frame_library_v3/**/*",
+    "data/worked_examples/**/*",
+    "data/transmissions/**/*",
+    "METHODOLOGY.md",
+    "MCP_SERVER.md",
+    "FRAME_DIVERGENCE_v1.md",
+    "FRAME_DIVERGENCE_CONTRACT_v1.md",
+    "V4_2_GAP_INVENTORY_v1.md",
+    "calibration/results/**/*",
+    "validation/decision_readiness/results/**/*",
+    "validation/decision_readiness/corpus/**/*",
+    "pipeline_version.txt",
+]

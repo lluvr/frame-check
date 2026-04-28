@@ -1,0 +1,10 @@
+{
+  "wikipedia": {
+    "tier": "strong",
+    "f1": 0.89,
+    "precision": 0.8,
+    "recall": 1.0,
+    "claims_tested": 6,
+    "run_date": "2026-04-17"
+  }
+}

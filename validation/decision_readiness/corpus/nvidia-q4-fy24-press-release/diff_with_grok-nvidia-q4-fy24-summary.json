@@ -1,0 +1,68 @@
+{
+  "methodology_url": "/corpus/decision-readiness/",
+  "methodology_version": "v0.1",
+  "status": "experimental",
+  "source_label": "nvidia-q4-fy24-press-release",
+  "transformed_label": "grok-nvidia-q4-fy24-summary",
+  "transformation_kind": "llm_summary",
+  "dimensions": {
+    "coverage": {
+      "name": "Coverage of perspectives",
+      "source_value": 2,
+      "transformed_value": 2,
+      "value_delta": 0.0,
+      "change_text": "Coverage: 2/5 -> 2/5. same dimensions present. transformation removed detected pattern: FVS-011 Stakeholder Frame.",
+      "moved": true,
+      "fired_patterns_gained": [],
+      "fired_patterns_lost": [
+        {
+          "fvs_id": "FVS-011",
+          "title": "Stakeholder Frame",
+          "library_resource_uri": "frame-check://library/FVS-011",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-011.html"
+        }
+      ]
+    },
+    "calibration": {
+      "name": "Claim calibration",
+      "source_value": 0.0,
+      "transformed_value": 0.0,
+      "value_delta": 0.0,
+      "change_text": "Hedge ratio: 0.00 -> 0.00 (+0 pp). claim count changed 12 -> 9. Confidence Imbalance pattern emerged in transformation.",
+      "moved": true,
+      "fired_patterns_gained": [],
+      "fired_patterns_lost": []
+    },
+    "evidence": {
+      "name": "Evidence backing",
+      "source_value": null,
+      "transformed_value": null,
+      "value_delta": null,
+      "change_text": "Sentence-attribution 0% -> 10% (+10 pp).",
+      "moved": true,
+      "fired_patterns_gained": [],
+      "fired_patterns_lost": []
+    },
+    "robustness": {
+      "name": "Robustness",
+      "source_value": 0,
+      "transformed_value": 0,
+      "value_delta": 0.0,
+      "change_text": "Neither side had claims checked against external sources.",
+      "moved": false,
+      "fired_patterns_gained": [],
+      "fired_patterns_lost": []
+    },
+    "counterfactual": {
+      "name": "Counterfactual thinking",
+      "source_value": false,
+      "transformed_value": false,
+      "value_delta": 0.0,
+      "change_text": "Neither side engages with counterfactual thinking.",
+      "moved": false,
+      "fired_patterns_gained": [],
+      "fired_patterns_lost": []
+    }
+  },
+  "narrative": "What changed across the transformation:\n  - Coverage of perspectives: Coverage: 2/5 -> 2/5. same dimensions present. transformation removed detected pattern: FVS-011 Stakeholder Frame.\n  - Claim calibration: Hedge ratio: 0.00 -> 0.00 (+0 pp). claim count changed 12 -> 9. Confidence Imbalance pattern emerged in transformation.\n  - Evidence backing: Sentence-attribution 0% -> 10% (+10 pp)."
+}

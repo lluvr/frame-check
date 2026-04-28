@@ -1,0 +1,683 @@
+{
+  "captured_at_utc": "2026-04-18T09:18:18Z",
+  "source": {
+    "text": "NVIDIA Announces Financial Results for Fourth Quarter and Fiscal 2024\n\nFebruary 21, 2024\n\nNVIDIA (NASDAQ: NVDA) today reported revenue for the fourth quarter ended January 28, 2024, of $22.1 billion, up 22% from the previous quarter and up 265% from a year ago.\n\nFor the quarter, GAAP earnings per diluted share was $4.93, up 33% from the previous quarter and up 765% from a year ago. Non-GAAP earnings per diluted share was $5.16, up 28% from the previous quarter and up 486% from a year ago.\n\nFor fiscal 2024, revenue was up 126% to $60.9 billion. GAAP earnings per diluted share was $11.93, up 586% from a year ago. Non-GAAP earnings per diluted share was $12.96, up 288% from a year ago.\n\nJensen Huang, founder and CEO of NVIDIA, stated: \"Accelerated computing and generative AI have hit the tipping point. Demand is surging worldwide across companies, industries and nations.\"\n\nHe continued: \"Our Data Center platform is powered by increasingly diverse drivers: demand for data processing, training and inference from large cloud-service providers and GPU-specialized ones, as well as from enterprise software and consumer internet companies.\"\n\nHuang added that \"vertical industries, led by auto, financial services and healthcare, are now at a multibillion-dollar level\" and noted that \"NVIDIA RTX, introduced less than six years ago, is now a massive PC platform for generative AI, enjoyed by 100 million gamers and creators.\"\n\nKey financial highlights for Q4 fiscal 2024:\n\n- Record quarterly revenue of $22.1 billion, up 22% from Q3, up 265% from year ago\n- Record quarterly Data Center revenue of $18.4 billion, up 27% from Q3, up 409% from year ago\n- Record full-year revenue of $60.9 billion, up 126%\n\nNVIDIA will pay its next quarterly cash dividend of $0.04 per share on March 27, 2024, to all shareholders of record on March 6, 2024.",
+    "source_url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-fourth-quarter-and-fiscal-2024",
+    "source_title": "NVIDIA Announces Financial Results for Fourth Quarter and Fiscal 2024",
+    "sha256": "7acb7a7ba067e89acde5ca5d302236cbd30561a8c93ac033bdd337c5c591b649"
+  },
+  "summarization_prompt": "Write a 200-word news-style summary of this press release for a general business audience. Stick to the numbers in the source. Use a neutral business-news register.\n\nPress release:\n\nNVIDIA Announces Financial Results for Fourth Quarter and Fiscal 2024\n\nFebruary 21, 2024\n\nNVIDIA (NASDAQ: NVDA) today reported revenue for the fourth quarter ended January 28, 2024, of $22.1 billion, up 22% from the previous quarter and up 265% from a year ago.\n\nFor the quarter, GAAP earnings per diluted share was $4.93, up 33% from the previous quarter and up 765% from a year ago. Non-GAAP earnings per diluted share was $5.16, up 28% from the previous quarter and up 486% from a year ago.\n\nFor fiscal 2024, revenue was up 126% to $60.9 billion. GAAP earnings per diluted share was $11.93, up 586% from a year ago. Non-GAAP earnings per diluted share was $12.96, up 288% from a year ago.\n\nJensen Huang, founder and CEO of NVIDIA, stated: \"Accelerated computing and generative AI have hit the tipping point. Demand is surging worldwide across companies, industries and nations.\"\n\nHe continued: \"Our Data Center platform is powered by increasingly diverse drivers: demand for data processing, training and inference from large cloud-service providers and GPU-specialized ones, as well as from enterprise software and consumer internet companies.\"\n\nHuang added that \"vertical industries, led by auto, financial services and healthcare, are now at a multibillion-dollar level\" and noted that \"NVIDIA RTX, introduced less than six years ago, is now a massive PC platform for generative AI, enjoyed by 100 million gamers and creators.\"\n\nKey financial highlights for Q4 fiscal 2024:\n\n- Record quarterly revenue of $22.1 billion, up 22% from Q3, up 265% from year ago\n- Record quarterly Data Center revenue of $18.4 billion, up 27% from Q3, up 409% from year ago\n- Record full-year revenue of $60.9 billion, up 126%\n\nNVIDIA will pay its next quarterly cash dividend of $0.04 per share on March 27, 2024, to all shareholders of record on March 6, 2024.",
+  "llm_summary": {
+    "text": "### NVIDIA Reports Record Q4 Revenue of $22.1 Billion, Up 265% Year-Over-Year\n\nNVIDIA (NASDAQ: NVDA) announced financial results for its fourth quarter and fiscal year 2024, ended January 28, 2024.\n\nQ4 revenue reached a record $22.1 billion, up 22% from the prior quarter and 265% from the year-ago period. GAAP earnings per diluted share were $4.93, up 33% quarter-over-quarter and 765% year-over-year. Non-GAAP earnings per diluted share stood at $5.16, up 28% from Q3 and 486% from Q4 of fiscal 2023.\n\nFor fiscal 2024, revenue totaled $60.9 billion, a 126% increase year-over-year. GAAP EPS was $11.93, up 586%, while non-GAAP EPS was $12.96, up 288%.\n\nData Center revenue hit a record $18.4 billion in Q4, up 27% from Q3 and 409% year-over-year.\n\nCEO Jensen Huang stated, \"Accelerated computing and generative AI have hit the tipping point,\" citing surging demand from cloud providers, enterprises, and verticals like auto, financial services, and healthcare. He noted NVIDIA RTX now serves 100 million gamers and creators.\n\nNVIDIA declared a quarterly dividend of $0.04 per share, payable March 27, 2024, to shareholders of record on March 6.\n\n(198 words)",
+    "model": "grok-4-1-fast-reasoning",
+    "latency_s": 5.97,
+    "sha256": "d3ef2bbd914beed62742e4798cbf5daf41935fcdb3248f0e66dd72d6c1b2bbdb"
+  },
+  "frame_check_payload": {
+    "analysis": {
+      "document": {
+        "word_count_estimate": 184,
+        "char_count": 1160,
+        "sentence_count": 10
+      },
+      "coverage": {
+        "addressed": [
+          "stakeholders",
+          "trends"
+        ],
+        "missing": [
+          "causes",
+          "risks",
+          "uncertainty"
+        ],
+        "addressed_count": 2,
+        "total_categories": 5,
+        "per_category_density_per_1kw": {
+          "causes": 0.0,
+          "risks": 0.0,
+          "stakeholders": 9.8,
+          "trends": 9.8,
+          "uncertainty": 0.0
+        },
+        "caveat": "Coverage is keyword-and-pattern based. The 'addressed' list names categories where the detector found its vocabulary; the 'missing' list names categories where it did not. Both directions carry measurement error: a category flagged as addressed may be covered substantively or only nominally, and a category flagged as missing may be discussed using vocabulary the detector does not recognize. Reader judgement is required to distinguish. Density per 1,000 words is a rough proxy: higher density correlates with substantive coverage but does not prove it. DEPRECATION NOTICE (Phase 2, 2026-04-21): coverage (v1) is deprecated. coverage_v2 is the forward contract; new integrations MUST read coverage_v2. The v1 block is retained during the compatibility window and will be removed in a future Phase 3 release. See MCP_CONTRACT_V2_PROPOSAL.md."
+      },
+      "coverage_v2": {
+        "contract_version": 2,
+        "dimensions": {
+          "causes": {
+            "status": "not_detected",
+            "markers_matched": [],
+            "markers_matched_truncated_at_20": false,
+            "marker_count": 0,
+            "density_per_1kw": 0.0,
+            "signal_strength": "none",
+            "vocabulary_searched_sample": [
+              "because",
+              "due to",
+              "driven by",
+              "caused by",
+              "as a result",
+              "led to",
+              "stems from",
+              "attributed to",
+              "resulting from",
+              "explains why",
+              "accounts for",
+              "responsible for"
+            ],
+            "vocabulary_source": "framing.py::ANALYTICAL_CATEGORIES[\"causes\"]",
+            "sentence_matches": [],
+            "distinct_sentences_detected": 0,
+            "candidate_sentences": []
+          },
+          "risks": {
+            "status": "not_detected",
+            "markers_matched": [],
+            "markers_matched_truncated_at_20": false,
+            "marker_count": 0,
+            "density_per_1kw": 0.0,
+            "signal_strength": "none",
+            "vocabulary_searched_sample": [
+              "risks",
+              "threats",
+              "challenges",
+              "concerns",
+              "vulnerabilities",
+              "downsides",
+              "obstacles",
+              "barriers",
+              "dangers",
+              "warnings",
+              "caveats",
+              "drawbacks",
+              "headwinds"
+            ],
+            "vocabulary_source": "framing.py::ANALYTICAL_CATEGORIES[\"risks\"]",
+            "sentence_matches": [],
+            "distinct_sentences_detected": 0,
+            "candidate_sentences": []
+          },
+          "stakeholders": {
+            "status": "detected",
+            "markers_matched": [
+              "providers",
+              "shareholders"
+            ],
+            "markers_matched_truncated_at_20": false,
+            "marker_count": 2,
+            "density_per_1kw": 9.8,
+            "signal_strength": "moderate",
+            "vocabulary_searched_sample": [
+              "affects",
+              "impacts",
+              "benefits",
+              "harms",
+              "stakeholders",
+              "populations",
+              "consumers",
+              "workers",
+              "investors",
+              "patients",
+              "communities",
+              "employees",
+              "customers"
+            ],
+            "vocabulary_source": "framing.py::ANALYTICAL_CATEGORIES[\"stakeholders\"]",
+            "sentence_matches": [
+              {
+                "sentence_index": 7,
+                "sentence_preview": "...oint,\" citing surging demand from cloud providers, enterprises, and verticals like auto, ...",
+                "markers_in_sentence": [
+                  "providers"
+                ]
+              },
+              {
+                "sentence_index": 9,
+                "sentence_preview": "...4 per share, payable March 27, 2024, to shareholders of record on March 6.",
+                "markers_in_sentence": [
+                  "shareholders"
+                ]
+              }
+            ],
+            "distinct_sentences_detected": 2,
+            "candidate_sentences": []
+          },
+          "trends": {
+            "status": "detected",
+            "markers_matched": [
+              "increase",
+              "surging"
+            ],
+            "markers_matched_truncated_at_20": false,
+            "marker_count": 2,
+            "density_per_1kw": 9.8,
+            "signal_strength": "moderate",
+            "vocabulary_searched_sample": [
+              "growing",
+              "decline",
+              "increasing",
+              "rising",
+              "surging",
+              "expanding",
+              "shrinking",
+              "shifting",
+              "emerging",
+              "transitioning",
+              "trajectory",
+              "momentum",
+              "acceleration",
+              "evolution"
+            ],
+            "vocabulary_source": "framing.py::ANALYTICAL_CATEGORIES[\"trends\"]",
+            "sentence_matches": [
+              {
+                "sentence_index": 4,
+                "sentence_preview": "..., revenue totaled $60.9 billion, a 126% increase year-over-year.",
+                "markers_in_sentence": [
+                  "increase"
+                ]
+              },
+              {
+                "sentence_index": 7,
+                "sentence_preview": "... AI have hit the tipping point,\" citing surging demand from cloud providers, enterprise...",
+                "markers_in_sentence": [
+                  "surging"
+                ]
+              }
+            ],
+            "distinct_sentences_detected": 2,
+            "candidate_sentences": []
+          },
+          "uncertainty": {
+            "status": "not_detected",
+            "markers_matched": [],
+            "markers_matched_truncated_at_20": false,
+            "marker_count": 0,
+            "density_per_1kw": 0.0,
+            "signal_strength": "none",
+            "vocabulary_searched_sample": [
+              "unclear",
+              "uncertain",
+              "debated",
+              "contested",
+              "depends",
+              "unpredictable",
+              "unknown",
+              "estimated",
+              "approximately",
+              "roughly",
+              "open question",
+              "remains to be seen",
+              "preliminary",
+              "inconclusive"
+            ],
+            "vocabulary_source": "framing.py::ANALYTICAL_CATEGORIES[\"uncertainty\"]",
+            "sentence_matches": [],
+            "distinct_sentences_detected": 0,
+            "candidate_sentences": []
+          }
+        },
+        "summary": {
+          "dimensions_with_detected_markers": 2,
+          "dimensions_without_detected_markers": 3,
+          "total_dimensions": 5,
+          "coverage_balance": 1.0
+        },
+        "construct": {
+          "signal_type": "vocabulary_and_pattern_detector",
+          "statement": "The coverage signal is vocabulary-and-pattern based. Each dimension has a regex expressing the lexical markers the detector counts as evidence. 'detected' means the detector matched at least one marker; 'not_detected' means it matched none. Both directions carry measurement error: 'detected' may be substantive or nominal (see signal_strength and density_per_1kw), and 'not_detected' may reflect vocabulary the detector does not recognize rather than absence of coverage in the document. The measurement is a lower-bound claim about vocabulary, not an upper-bound claim about the document.",
+          "reference": "https://frame.clarethium.com/corpus/methodology/",
+          "how_to_serialize": "When restating this analysis to a user, say 'the detector found markers for X, Y, Z' rather than 'the document covers X, Y, Z.' Say 'no markers detected for X' rather than 'the document does not address X.' Under-detection is a known failure mode and this construct statement is the authoritative phrasing."
+        }
+      },
+      "voice": {
+        "classification": "promotional",
+        "signals": {
+          "first_person_plural_pct": 0,
+          "second_person_pct": 0,
+          "imperative_count": 0,
+          "speculative_pct": 0
+        },
+        "available_classes": [
+          "promotional",
+          "prescriptive",
+          "analytical",
+          "descriptive",
+          "advisory"
+        ],
+        "confidence": "high",
+        "margin_to_threshold": 4.0,
+        "runner_up": "descriptive",
+        "runner_up_margin": -20.0,
+        "construct": {
+          "signal_type": "cascade_classification",
+          "statement": "Voice classification is a 7-rule deterministic cascade. The winning class is the first rule whose threshold conditions are satisfied. margin_to_threshold is the best margin across the winning class's firing rules (positive = decisively crossed; near zero = barely crossed). runner_up is the next cascade class (different from winner) that would be evaluated if the winner's rule had not fired; runner_up_margin is that class's best rule margin (positive = it would fire too, preempted by cascade; negative = missed activation by that much). confidence is 'borderline' when margin_to_threshold < 2 or runner_up_margin > -2 (small feature change could flip the classification); 'high' otherwise. This is the classification-confidence construct: the analogue for categorical signals of the under-detection construct used for presence/absence signals (coverage, epistemic, claims).",
+          "reference": "https://frame.clarethium.com/corpus/methodology/",
+          "how_to_serialize": "When restating this classification to a user, say 'classified as X' rather than 'the document is X.' When confidence is 'borderline', name the runner-up class explicitly: 'classified as X, borderline; Y nearly fired.' Do not restate a borderline classification as decisive. When confidence is 'high' AND voice is NOT 'analytical', the classification is safe to restate without the margin caveat. When voice is 'analytical', note that analytical is the cascade RESIDUAL: no prescriptive/promotional/descriptive/advisory rule fired, so the label reflects absence of positive voice evidence rather than decisive analytical detection. Restate as 'classified as analytical (no other voice markers detected)' rather than 'the document is analytical.' This mirrors the under-detection discipline applied to the coverage signal (see METHODOLOGY §1.3 and §1.3.1)."
+        }
+      },
+      "temporal": {
+        "dominant": "present",
+        "distribution_pct": {
+          "past": 50,
+          "present": 50,
+          "future": 0
+        },
+        "dominant_margin": 0,
+        "balanced": false,
+        "construct": {
+          "signal_type": "distribution_with_dominant",
+          "statement": "Temporal orientation is the distribution of past, present, and future tense markers across sentences (summing to approximately 100%). The dominant tense is the highest percentage; dominant_margin is the lead over the second-place tense. balanced is True when no tense reaches 50% and dominant_margin is under 10 points; in that state the document is temporally spread and the dominant label does not signal time-anchoring. A high-margin dominant (e.g., past at 75%) is a genuine time-anchor; a low-margin dominant (e.g., past at 38%, present at 35%) is not. Reader judgment integrates the dominant label with the margin.",
+          "reference": "https://frame.clarethium.com/corpus/methodology/",
+          "how_to_serialize": "When restating, say 'X-oriented with a Y-point margin over the runner-up tense' rather than 'the document is X-oriented.' When balanced is True, say 'temporally balanced; no tense dominates' rather than restating the dominant label. The dominant field is still populated when balanced=True but should be treated as a weak signal."
+        }
+      },
+      "epistemic": {
+        "sourced_pct": 10,
+        "sourced_sentences": 1,
+        "numeric_sentences": 7,
+        "unsupported_numeric": 7,
+        "total_sentences": 10,
+        "candidate_attribution_sentences": [],
+        "candidate_attribution_count": 0,
+        "note": "sourced_pct is the share of sentences where the detector matched an attribution or external-reference pattern (e.g., 'according to X', 'X reported', named entity with reporting verb). Low values are common in essayistic writing; high values are typical of academic or regulatory text. This is a signal, not a quality judgement. Under-detection is a known failure mode: scholarly-style attribution ('observers raise', 'analysts argue') and passive constructions may not fire the regex, so a low sourced_pct is a lower-bound claim about attribution-marker density, not an upper-bound claim about whether the document is attributed."
+      },
+      "claims_extracted": {
+        "total": 9,
+        "hedged_count": 0,
+        "unhedged_count": 9,
+        "prediction_count": 0,
+        "by_type": {
+          "percentage": 11,
+          "dollar": 8,
+          "multiplier": 0,
+          "decimal": 0,
+          "integer": 2
+        },
+        "candidate_hedge_count": 0,
+        "candidate_hedge_samples": []
+      },
+      "portrait": "Promotional document presenting the topic through consistently positive framing and superlative language. 1 of 10 sentences match source-attribution patterns, but 7 numerical claims do not. Asserts value without detected discussion of why things happen, downside scenarios, what is unknown. The reader is positioned as a buyer, not an evaluator of evidence.",
+      "headline": "Promotional framing with 7 numerical claims showing no source-attribution markers.",
+      "frame_library_matches": [
+        {
+          "fvs_id": "FVS-008",
+          "name": "Growth Frame",
+          "library_url": "https://frame.clarethium.com/corpus/library/FVS-008.html",
+          "library_resource_uri": "frame-check://library/FVS-008",
+          "library_entry_version": "1",
+          "teaching_question": "What would a risk analyst say about this same data?",
+          "definition": "The default analytical frame for most AI-generated business content. Organizes information around growth metrics, market expansion, and upward trajectory while omitting risks, stakeholders, and uncertainty.",
+          "signal": "High trends/causes coverage with risks absent",
+          "status": "draft",
+          "adjacent_frames": [
+            {
+              "fvs_id": "FVS-009",
+              "title": "Risk Frame",
+              "library_resource_uri": "frame-check://library/FVS-009",
+              "public_url": "https://frame.clarethium.com/corpus/library/FVS-009.html"
+            },
+            {
+              "fvs_id": "FVS-007",
+              "title": "Failure Framing",
+              "library_resource_uri": "frame-check://library/FVS-007",
+              "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html"
+            },
+            {
+              "fvs_id": "FVS-001",
+              "title": "Frame Amplification",
+              "library_resource_uri": "frame-check://library/FVS-001",
+              "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+            },
+            {
+              "fvs_id": "FVS-004",
+              "title": "Default Geometry",
+              "library_resource_uri": "frame-check://library/FVS-004",
+              "public_url": "https://frame.clarethium.com/corpus/library/FVS-004.html"
+            }
+          ],
+          "affects_dimensions": [
+            "coverage"
+          ]
+        },
+        {
+          "fvs_id": "FVS-002",
+          "name": "Fluency-Quality Illusion",
+          "library_url": "https://frame.clarethium.com/corpus/library/FVS-002.html",
+          "library_resource_uri": "frame-check://library/FVS-002",
+          "library_entry_version": "1",
+          "teaching_question": "If this were written in rough notes instead of polished prose, would you still accept the claims?",
+          "definition": "Both humans and LLMs treat fluency as a proxy for quality. Smooth delivery, confident tone, and polished language make content feel correct whether or not it is. Errors hide in plain sight because the output feels good.",
+          "signal": "Promotional voice with few sourced claims",
+          "status": "draft",
+          "adjacent_frames": [
+            {
+              "fvs_id": "FVS-001",
+              "title": "Frame Amplification",
+              "library_resource_uri": "frame-check://library/FVS-001",
+              "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+            },
+            {
+              "fvs_id": "FVS-003",
+              "title": "Prompt Attribution Error",
+              "library_resource_uri": "frame-check://library/FVS-003",
+              "public_url": "https://frame.clarethium.com/corpus/library/FVS-003.html"
+            }
+          ],
+          "affects_dimensions": []
+        },
+        {
+          "fvs_id": "FVS-007",
+          "name": "Failure Framing (absent)",
+          "library_url": "https://frame.clarethium.com/corpus/library/FVS-007.html",
+          "library_resource_uri": "frame-check://library/FVS-007",
+          "library_entry_version": "1",
+          "teaching_question": "What would have to be true for this analysis to be wrong?",
+          "definition": "Specifying what counts as failure constrains output more sharply than specifying what success looks like. This document makes claims without naming what would make them wrong.",
+          "signal": "No risk or uncertainty coverage, high unsupported assertion rate",
+          "status": "draft",
+          "adjacent_frames": [
+            {
+              "fvs_id": "FVS-002",
+              "title": "Fluency-Quality Illusion",
+              "library_resource_uri": "frame-check://library/FVS-002",
+              "public_url": "https://frame.clarethium.com/corpus/library/FVS-002.html"
+            },
+            {
+              "fvs_id": "FVS-004",
+              "title": "Default Geometry",
+              "library_resource_uri": "frame-check://library/FVS-004",
+              "public_url": "https://frame.clarethium.com/corpus/library/FVS-004.html"
+            },
+            {
+              "fvs_id": "FVS-001",
+              "title": "Frame Amplification",
+              "library_resource_uri": "frame-check://library/FVS-001",
+              "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+            }
+          ],
+          "affects_dimensions": [
+            "counterfactual"
+          ]
+        }
+      ],
+      "verification": {
+        "source_fidelity": {
+          "total_numbers": 25,
+          "in_source": 23,
+          "not_in_source": 2,
+          "unsourced_rate": 0.08,
+          "note": "Digit-level match. A number 'in_source' appears as an exact digit substring in the source text. 'not_in_source' does not; those claims may be derived, rounded, or fabricated."
+        },
+        "grounding_decomposition": {
+          "proportions": {
+            "G": 0.8,
+            "F": 0.1,
+            "P": 0.1
+          },
+          "has_projection": true,
+          "recommendation": "Do not use any numbers that are not in the provided source.",
+          "status": "EXPERIMENTAL",
+          "scope_assessment": {
+            "source_num_count": 21,
+            "derivation_regime": "saturated",
+            "cross_reference_layer_4_for_numbers": true,
+            "note_user_facing": "Sentence-level grounding is supplemental on number-dense sources. For numerical claims, the source-fidelity match is authoritative."
+          }
+        }
+      },
+      "decision_readiness": {
+        "methodology_url": "/corpus/decision-readiness/",
+        "methodology_version": "v0.1",
+        "status": "experimental",
+        "dimensions": {
+          "coverage": {
+            "name": "Coverage of perspectives",
+            "signal_value": 2,
+            "signal_secondary": 1.0,
+            "signal_text": "2 of 5 perspectives addressed. Coverage balance: 100%.",
+            "covered": [
+              "stakeholders",
+              "trends"
+            ],
+            "missing": [
+              "causes",
+              "risks",
+              "uncertainty"
+            ],
+            "explanation": "Of five analytical dimensions (causes, risks, stakeholders, trends, uncertainty), how many the document addresses and how balanced their coverage densities are. An analysis that addresses many dimensions superficially is the Completeness Illusion (FVS-010).",
+            "library_entries": [
+              {
+                "fvs_id": "FVS-001",
+                "title": "Frame Amplification",
+                "library_resource_uri": "frame-check://library/FVS-001",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+              },
+              {
+                "fvs_id": "FVS-008",
+                "title": "Growth Frame",
+                "library_resource_uri": "frame-check://library/FVS-008",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-008.html"
+              },
+              {
+                "fvs_id": "FVS-009",
+                "title": "Risk Frame",
+                "library_resource_uri": "frame-check://library/FVS-009",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-009.html"
+              },
+              {
+                "fvs_id": "FVS-010",
+                "title": "Completeness Illusion",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-010.html"
+              },
+              {
+                "fvs_id": "FVS-011",
+                "title": "Stakeholder Frame",
+                "library_resource_uri": "frame-check://library/FVS-011",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-011.html"
+              },
+              {
+                "fvs_id": "FVS-014",
+                "title": "Temporal Anchoring",
+                "library_resource_uri": "frame-check://library/FVS-014",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-014.html"
+              },
+              {
+                "fvs_id": "FVS-015",
+                "title": "Efficiency Frame",
+                "library_resource_uri": "frame-check://library/FVS-015",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-015.html"
+              },
+              {
+                "fvs_id": "FVS-017",
+                "title": "False Balance",
+                "library_resource_uri": "frame-check://library/FVS-017",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-017.html"
+              }
+            ],
+            "fired_library_entries": [
+              {
+                "fvs_id": "FVS-008",
+                "title": "Growth Frame",
+                "library_resource_uri": "frame-check://library/FVS-008",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-008.html"
+              }
+            ]
+          },
+          "calibration": {
+            "name": "Claim calibration",
+            "signal_value": 0.0,
+            "signal_secondary": 0,
+            "signal_text": "0 of 9 claims hedged. Confidence Imbalance pattern detected.",
+            "claim_total": 9,
+            "claim_hedged": 0,
+            "claim_unhedged": 9,
+            "claim_predictions": 0,
+            "confidence_imbalance_fired": true,
+            "explanation": "Are claims appropriately hedged given their epistemic status? Overconfidence is the canonical decision pathology in the calibration literature; the hedge ratio is a textual proxy for it.",
+            "library_entries": [
+              {
+                "fvs_id": "FVS-012",
+                "title": "Uncertainty Frame",
+                "library_resource_uri": "frame-check://library/FVS-012",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+              },
+              {
+                "fvs_id": "FVS-017",
+                "title": "False Balance",
+                "library_resource_uri": "frame-check://library/FVS-017",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-017.html"
+              }
+            ],
+            "fired_library_entries": []
+          },
+          "evidence": {
+            "name": "Evidence backing",
+            "signal_value": 0.92,
+            "signal_secondary": 10,
+            "signal_text": "23 of 25 numerical claims source-verified. 10% of sentences attributed to sources.",
+            "verified": 23,
+            "checked": 25,
+            "providers_count": 0,
+            "sourced_pct": 10,
+            "explanation": "Are claims supported by sources, or floating assertions? Numerical claims are checked against authoritative providers (calibrated by F1 in the calibration corpus). Source-attribution share is a second proxy for evidence backing at the sentence level.",
+            "library_entries": [
+              {
+                "fvs_id": "FVS-016",
+                "title": "Authority by Citation",
+                "library_resource_uri": "frame-check://library/FVS-016",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-016.html"
+              }
+            ],
+            "fired_library_entries": []
+          },
+          "robustness": {
+            "name": "Robustness",
+            "signal_value": 0,
+            "signal_secondary": 25,
+            "signal_text": "No contradictions across 25 checked claims.",
+            "contradicted": 0,
+            "disputed": 0,
+            "checked": 25,
+            "explanation": "Does the analysis hold up under scrutiny from available evidence? Contradicted numerical claims are the load-bearing test: a single contradiction can invalidate a chain of reasoning.",
+            "library_entries": [
+              {
+                "fvs_id": "FVS-016",
+                "title": "Authority by Citation",
+                "library_resource_uri": "frame-check://library/FVS-016",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-016.html"
+              }
+            ],
+            "fired_library_entries": []
+          },
+          "counterfactual": {
+            "name": "Counterfactual thinking",
+            "signal_value": false,
+            "signal_secondary": null,
+            "signal_text": "Failure Framing absent (FVS-007 detected). No markers detected for the uncertainty and risks dimensions.",
+            "failure_framing_absent": true,
+            "uncertainty_addressed": false,
+            "risks_addressed": false,
+            "explanation": "Does the analysis name what would falsify it, or what alternatives it has considered? Confirmation bias is the most-documented decision pathology; the absence of limitations / risks / uncertainty markers is the structural proxy for it.",
+            "library_entries": [
+              {
+                "fvs_id": "FVS-001",
+                "title": "Frame Amplification",
+                "library_resource_uri": "frame-check://library/FVS-001",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+              },
+              {
+                "fvs_id": "FVS-007",
+                "title": "Failure Framing",
+                "library_resource_uri": "frame-check://library/FVS-007",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html"
+              },
+              {
+                "fvs_id": "FVS-009",
+                "title": "Risk Frame",
+                "library_resource_uri": "frame-check://library/FVS-009",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-009.html"
+              },
+              {
+                "fvs_id": "FVS-012",
+                "title": "Uncertainty Frame",
+                "library_resource_uri": "frame-check://library/FVS-012",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+              },
+              {
+                "fvs_id": "FVS-014",
+                "title": "Temporal Anchoring",
+                "library_resource_uri": "frame-check://library/FVS-014",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-014.html"
+              }
+            ],
+            "fired_library_entries": [
+              {
+                "fvs_id": "FVS-007",
+                "title": "Failure Framing",
+                "library_resource_uri": "frame-check://library/FVS-007",
+                "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "agent_guidance": {
+      "what_this_tool_tells_you": [
+        "Structural framing patterns detected in the document",
+        "Which of five analytical perspectives are keyword-present and which are absent",
+        "Voice classification (promotional, prescriptive, analytical, descriptive, advisory)",
+        "Temporal orientation (past, present, future distribution)",
+        "Epistemic basis (share of sentences with external attribution)",
+        "Named matches from the Frame Vocabulary Standard with teaching questions",
+        "Adjacency hints for each matched frame (MCP URIs of related library entries, for in-session chaining)",
+        "Extracted numeric claims with hedging status",
+        "A synthesized portrait and headline describing what the document does to reader perception",
+        "A decision-readiness profile across five dimensions (coverage, calibration, evidence, robustness, counterfactual) with explicit experimental status pending Phase 2 expert validation"
+      ],
+      "what_this_tool_does_not_tell_you": [
+        "Whether perspectives flagged as addressed are covered substantively or only nominally",
+        "Whether perspectives flagged as missing are truly absent, or discussed using vocabulary the detector does not recognize (under-detection is a known failure mode)",
+        "Reasoning quality, logical validity, or causal inference errors",
+        "Human-perceived quality; structural measurements are roughly orthogonal (r approx 0.1) to reader-perceived quality",
+        "Whether the document is persuasive, useful, or correct for the reader's purpose"
+      ],
+      "how_to_cite_faithfully": "When passing this analysis to the user, name Frame Check explicitly as the source of the measurements. For example: \"Frame Check's structural analysis found markers for 3 of 5 analytical perspectives and classified the voice as promotional.\" Do not paraphrase these measurements as your own reading of the document, and do not restate 'missing' as 'the document fails to address' (the detector may have missed vocabulary it does not recognize). The measurements are deterministic and reproducible; paraphrasing breaks that reproducibility and strips the provenance the reader needs to evaluate the claim.",
+      "how_to_cite_frame_matches": "Each frame_library_matches entry carries a status field. 'canon' entries have stable ID, name, and identification. 'draft' entries have a stable ID but name or identification may revise. When surfacing a draft match to the user, say 'per the draft Frame Vocabulary Standard entry FVS-XXX' so the stability guarantee is carried forward.",
+      "how_to_cite_claims": "The claims block reports per-type COUNTS extracted from the document (total, hedged, unhedged, prediction, by numerical type). It does NOT report individual claim text. When restating, say 'Frame Check's claim extractor identified N numerical claims, M of which carried hedging language.' Do not synthesize or paraphrase individual claim sentences as if Frame Check surfaced them; the block is a distribution summary, not a quote list. candidate_hedge_samples carries up to 10 preview sentences for construct-honesty surfacing (hedges the primary detector did not recognize); these are clearly labeled as candidates and should be cited as such, not as verified hedges. Verification verdicts (if present) should be cited with the specific verifier and f1 tier as per how_to_cite_faithfully.",
+      "when_to_invoke_again": "frame_check is deterministic for the same inputs. Calling it twice on identical (document_text, source_text) returns identical measurements. Re-invoke only if the text changed.",
+      "scope_regime_guidance": "Source is number-dense (scope_assessment.derivation_regime = 'saturated'). The Layer 11 sentence-level P-signal is effectively disabled here: fabricated numbers can pass via coincidental arithmetic match. For numerical claims, cite verification.source_fidelity.unsourced_rate (Layer 4), NOT verification.grounding_decomposition.has_projection.",
+      "suggested_response_shape": "Surface the portrait first (what kind of document this is), then name any frame_library_matches with their teaching_question so the reader has a question to ask of the document themselves. If verification is present, state the source_fidelity ratio verbatim and apply scope_regime_guidance. Close with the method's own limits from what_this_tool_does_not_tell_you so the reader knows where your response stops being grounded.",
+      "when_invoked_on_own_output": "If document_text is your own last response to the user (the self-audit pattern surfaced by the frame_check_my_response prompt), the response shape changes. Do not evaluate whether you were correct. Do not claim balance, rigor, or caveats the measurements did not detect. Surface the structural frame you chose (coverage, voice, temporal, sourced_pct), name any FVS matches with their teaching_question, and stop. The user sees the frame you chose and decides what to do with the seeing; that is the sovereignty case this tool exists to serve. One bound: if your response is under about 100 words, the density-based detectors are noisy and category coverage flags should be treated as weak signal. Name that limit to the user rather than overstating what the measurements can tell them.",
+      "dual_use_note": "Frame Check is designed to expand the reader's view of a document, not to rank documents against each other. Agent integrators who consume this payload should NOT use coverage gaps, voice classifications, or FVS matches as a quality score, a truthfulness verdict, or an editing rule that suppresses minority framings. The construct-honest posture (METHODOLOGY §1.3 and §1.3.1) surfaces what the detector measures and what it does not, precisely so that a downstream agent cannot reduce the measurements to a pass/fail judgment. If you find yourself producing prose like 'this document is biased' or 'this document lacks rigor' from Frame Check's output, you are using the tool outside its design scope. Surface the structural observation and the teaching question; the reader's judgment is the interpretive layer, not yours."
+    },
+    "provenance": {
+      "tool_name": "Frame Check",
+      "tool_url": "https://frame.clarethium.com",
+      "tool_author": "Lovro Lucic",
+      "methodology_paper": "https://frame.clarethium.com/corpus/methodology/",
+      "frame_library": "https://frame.clarethium.com/corpus/library/",
+      "calibration_corpus": "https://frame.clarethium.com/corpus/calibration/",
+      "license": {
+        "code": "Apache-2.0",
+        "corpus": "CC-BY-4.0",
+        "analysis_output": "CC-BY-4.0 - this response may be reproduced with attribution to Frame Check."
+      },
+      "frame_check_version": "0.1.0",
+      "clarethium_measure_version": "1.5.0",
+      "frame_library_version": "0.2.0",
+      "engine_version": "1.0.0",
+      "framing_engine": "layer_a",
+      "analysis_cost_usd": 0.0,
+      "analysis_latency_ms": 17,
+      "analysis_timestamp_utc": "2026-04-24T10:58:52Z",
+      "analysis_layer": "deterministic_structural_plus_verification",
+      "analysis_determinism": "Identical input produces identical output. No LLM is invoked in this response.",
+      "citation": "Lucic, L. (2026). Frame Check: a research instrument for framing and verification in documents. https://frame.clarethium.com"
+    }
+  },
+  "frame_check_payload_refreshed_at_utc": "2026-04-24T10:58:52Z",
+  "frame_check_payload_refresh_reason": "FVS-001 V1 detection rule retired 2026-04-18 (frame_library.py:212-219) per METHODOLOGY.md §2.4.1; original capture (2026-04-18T09:18:18Z) preceded the retirement and listed FVS-001 in frame_library_matches. Refresh propagates the rule retirement and the library_v3 -> library_v4 engine pin migration (LIBRARY_V3_TO_V4_RATIFICATION_v1.md). Source bytes, summary bytes, and SHA-256 hashes are unchanged; the document-capture moment captured_at_utc is preserved."
+}

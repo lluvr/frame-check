@@ -1,0 +1,90 @@
+{
+  "methodology_url": "/corpus/decision-readiness/",
+  "methodology_version": "v0.1",
+  "status": "experimental",
+  "label_a": "four-llms-bitcoin-gemini",
+  "label_b": "four-llms-bitcoin-grok",
+  "peer_group": "bitcoin_retirement_question",
+  "dimensions": {
+    "coverage": {
+      "name": "Coverage of perspectives",
+      "value_a": 4,
+      "value_b": 2,
+      "comparison_text": "Coverage: four-llms-bitcoin-gemini 4/5 vs four-llms-bitcoin-grok 2/5. only four-llms-bitcoin-gemini addresses stakeholders, uncertainty. only four-llms-bitcoin-grok fires FVS-001 Frame Amplification, FVS-015 Efficiency Frame.",
+      "differs": true,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        },
+        {
+          "fvs_id": "FVS-015",
+          "title": "Efficiency Frame",
+          "library_resource_uri": "frame-check://library/FVS-015",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-015.html"
+        }
+      ]
+    },
+    "calibration": {
+      "name": "Claim calibration",
+      "value_a": 0.125,
+      "value_b": 0.2,
+      "comparison_text": "Hedge ratio: four-llms-bitcoin-gemini 0.12 (8 claims) vs four-llms-bitcoin-grok 0.20 (15 claims). only four-llms-bitcoin-gemini fires FVS-012 Uncertainty Frame.",
+      "differs": true,
+      "fired_patterns_only_a": [
+        {
+          "fvs_id": "FVS-012",
+          "title": "Uncertainty Frame",
+          "library_resource_uri": "frame-check://library/FVS-012",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+        }
+      ],
+      "fired_patterns_only_b": []
+    },
+    "evidence": {
+      "name": "Evidence backing",
+      "value_a": null,
+      "value_b": null,
+      "comparison_text": "Sentence-attribution: four-llms-bitcoin-gemini 0% vs four-llms-bitcoin-grok 7%.",
+      "differs": true,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "robustness": {
+      "name": "Robustness",
+      "value_a": 0,
+      "value_b": 0,
+      "comparison_text": "Neither peer had claims checked against external sources.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "counterfactual": {
+      "name": "Counterfactual thinking",
+      "value_a": true,
+      "value_b": true,
+      "comparison_text": "Both peers engage with counterfactual thinking. only four-llms-bitcoin-gemini fires FVS-012 Uncertainty Frame; only four-llms-bitcoin-grok fires FVS-001 Frame Amplification.",
+      "differs": true,
+      "fired_patterns_only_a": [
+        {
+          "fvs_id": "FVS-012",
+          "title": "Uncertainty Frame",
+          "library_resource_uri": "frame-check://library/FVS-012",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+        }
+      ],
+      "fired_patterns_only_b": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        }
+      ]
+    }
+  },
+  "narrative": "Where four-llms-bitcoin-gemini and four-llms-bitcoin-grok differ structurally:\n  - Coverage of perspectives: Coverage: four-llms-bitcoin-gemini 4/5 vs four-llms-bitcoin-grok 2/5. only four-llms-bitcoin-gemini addresses stakeholders, uncertainty. only four-llms-bitcoin-grok fires FVS-001 Frame Amplification, FVS-015 Efficiency Frame.\n  - Claim calibration: Hedge ratio: four-llms-bitcoin-gemini 0.12 (8 claims) vs four-llms-bitcoin-grok 0.20 (15 claims). only four-llms-bitcoin-gemini fires FVS-012 Uncertainty Frame.\n  - Evidence backing: Sentence-attribution: four-llms-bitcoin-gemini 0% vs four-llms-bitcoin-grok 7%.\n  - Counterfactual thinking: Both peers engage with counterfactual thinking. only four-llms-bitcoin-gemini fires FVS-012 Uncertainty Frame; only four-llms-bitcoin-grok fires FVS-001 Frame Amplification."
+}

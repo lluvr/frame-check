@@ -1,0 +1,51 @@
+fastapi==0.129.0
+uvicorn[standard]==0.41.0
+jinja2==3.1.2
+python-multipart==0.0.18
+# Pillow renders the 1200x630 OG preview cards used by every
+# shareable URL. og_image.py is the only consumer.
+pillow==11.0.0
+# LLM client libraries used by the verification, compare, and
+# consensus flows. The imports are wrapped in try/except inside
+# the request handlers so a missing dependency degrades
+# gracefully (the user sees "AI unavailable") rather than
+# crashing the app, but the production image MUST install them
+# or every paid LLM feature is silently broken:
+#   google.genai:  Gemini grounding for /api/verify-stream
+#                  web verification (app.py:1206) and the
+#                  Observatory generator for compare topic
+#                  mode (comparison.py:120, consensus.py:50)
+#   openai:        OpenAI-compatible client for Grok
+#                  (compare-stream, framing AI interpret,
+#                  consensus check, stability check):
+#                  app.py:2316, comparison.py:171,
+#                  framing_ai.py:196, consensus.py:69
+# Pinned to the versions verified locally; bump alongside the
+# corresponding model_registry.py PROVIDER_API_NAME entry.
+google-genai==1.65.0
+openai==2.24.0
+# Frame Check Corpus (DATA_MOAT.md Section 7.3 daily NDJSON +
+# Parquet export). DuckDB reads the SQLite hot store and writes
+# Parquet snapshots in one tool; boto3 uploads the dumps and
+# the static index/CITATION/LICENSE assets to the public R2
+# bucket. Both pinned exactly because the export job is on the
+# critical path for the moat's publication cadence and a
+# surprise upgrade should not break it. The pinned versions
+# are the ones the agent verified locally on 2026-04-08.
+duckdb==1.5.1
+boto3==1.42.85
+# PyYAML loads two operator-managed config files at startup:
+#   model_registry.yaml:     provider/model to lineage_id mapping
+#                             used by every Tier A and Tier B event
+#                             (model_registry.py:62)
+#   observatory_topics.yaml: the Observatory's curated topic
+#                             list; without it the daemon
+#                             starts but loads zero topics and
+#                             the corpus accumulates nothing
+#                             (observatory.py:446)
+# Both imports are inside try blocks, so a missing PyYAML
+# degrades silently. The Observatory daemon runs but produces
+# no events. This is the worst possible failure mode for the
+# moat: production looks healthy and the corpus quietly stays
+# empty. Pinned to the verified version.
+PyYAML==6.0.1

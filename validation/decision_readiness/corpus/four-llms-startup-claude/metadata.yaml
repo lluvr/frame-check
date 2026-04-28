@@ -1,0 +1,10 @@
+title: Claude on whether to take a startup offer (life-decision question)
+genre: ai_response
+source: data/worked_examples/four-llms-on-bitcoin-retirement-2026/llm_responses.json
+captured_at_utc: ''
+char_count: 1379
+word_count_estimate: 210
+curated_at_utc: '2026-04-20T11:52:10.518146+00:00'
+curation_note: Profile computed without Source Network (structural-only). Evidence
+  and robustness dimensions are partial; see methodology page.
+peer_group: startup_offer_question

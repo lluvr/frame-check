@@ -1,0 +1,494 @@
+{
+  "computed_at_utc": "2026-04-21T12:47:36.854616+00:00",
+  "corpus": {
+    "state_hash": "7a6e2f294c9e",
+    "n_entries": 10,
+    "n_with_profile": 10,
+    "n_with_pair_metadata": 2,
+    "n_with_peer_group": 8
+  },
+  "peer_findings": {
+    "n_pairs": 12,
+    "n_groups": 2,
+    "per_dimension_differs": {
+      "coverage": 10,
+      "calibration": 12,
+      "evidence": 3,
+      "robustness": 0,
+      "counterfactual": 10
+    },
+    "per_dimension_non_comparable": {
+      "coverage": 0,
+      "calibration": 0,
+      "evidence": 0,
+      "robustness": 12,
+      "counterfactual": 0
+    },
+    "per_group_pair_count": {
+      "bitcoin_retirement_question": 6,
+      "startup_offer_question": 6
+    },
+    "per_group_dim_differs": {
+      "bitcoin_retirement_question": {
+        "coverage": 5,
+        "calibration": 6,
+        "evidence": 3,
+        "robustness": 0,
+        "counterfactual": 5
+      },
+      "startup_offer_question": {
+        "coverage": 5,
+        "calibration": 6,
+        "evidence": 0,
+        "robustness": 0,
+        "counterfactual": 5
+      }
+    },
+    "per_group_dim_non_comparable": {
+      "bitcoin_retirement_question": {
+        "coverage": 0,
+        "calibration": 0,
+        "evidence": 0,
+        "robustness": 6,
+        "counterfactual": 0
+      },
+      "startup_offer_question": {
+        "coverage": 0,
+        "calibration": 0,
+        "evidence": 0,
+        "robustness": 6,
+        "counterfactual": 0
+      }
+    },
+    "per_llm_appearances": {
+      "claude": 6,
+      "gemini": 6,
+      "grok": 6,
+      "openai": 6
+    },
+    "per_llm_dim_participation": {
+      "claude": {
+        "coverage": 6,
+        "calibration": 6,
+        "evidence": 1,
+        "robustness": 0,
+        "counterfactual": 6
+      },
+      "gemini": {
+        "coverage": 6,
+        "calibration": 6,
+        "evidence": 1,
+        "robustness": 0,
+        "counterfactual": 6
+      },
+      "grok": {
+        "coverage": 4,
+        "calibration": 6,
+        "evidence": 3,
+        "robustness": 0,
+        "counterfactual": 4
+      },
+      "openai": {
+        "coverage": 4,
+        "calibration": 6,
+        "evidence": 1,
+        "robustness": 0,
+        "counterfactual": 4
+      }
+    }
+  },
+  "diff_findings": {
+    "n_pairs": 1,
+    "per_dimension_moved": {
+      "coverage": 1,
+      "calibration": 1,
+      "evidence": 1,
+      "robustness": 0,
+      "counterfactual": 0
+    },
+    "per_kind_pair_count": {
+      "llm_summary": 1
+    }
+  },
+  "outlier_findings": {
+    "per_group": {
+      "bitcoin_retirement_question": {
+        "coverage": {
+          "outliers": [
+            "four-llms-bitcoin-gemini"
+          ],
+          "values_by_member": {
+            "four-llms-bitcoin-claude": 1.0,
+            "four-llms-bitcoin-gemini": 4.0,
+            "four-llms-bitcoin-grok": 2.0,
+            "four-llms-bitcoin-openai": 2.0
+          },
+          "median": 2.0,
+          "non_comparable": false
+        },
+        "calibration": {
+          "outliers": [
+            "four-llms-bitcoin-grok"
+          ],
+          "values_by_member": {
+            "four-llms-bitcoin-claude": 0.0,
+            "four-llms-bitcoin-gemini": 0.125,
+            "four-llms-bitcoin-grok": 0.2,
+            "four-llms-bitcoin-openai": 0.0
+          },
+          "median": 0.0625,
+          "non_comparable": false
+        },
+        "evidence": {
+          "outliers": [],
+          "values_by_member": {
+            "four-llms-bitcoin-claude": null,
+            "four-llms-bitcoin-gemini": null,
+            "four-llms-bitcoin-grok": null,
+            "four-llms-bitcoin-openai": null
+          },
+          "median": null,
+          "non_comparable": true,
+          "non_comparable_reason": "At least one peer has no comparable signal_value on this dimension."
+        },
+        "robustness": {
+          "outliers": [],
+          "values_by_member": {
+            "four-llms-bitcoin-claude": 0.0,
+            "four-llms-bitcoin-gemini": 0.0,
+            "four-llms-bitcoin-grok": 0.0,
+            "four-llms-bitcoin-openai": 0.0
+          },
+          "median": null,
+          "non_comparable": true,
+          "non_comparable_reason": "All group members have 0 checked claims; signal_value=0 reflects no Source Network data, not peer agreement."
+        },
+        "counterfactual": {
+          "outliers": [
+            "four-llms-bitcoin-claude"
+          ],
+          "values_by_member": {
+            "four-llms-bitcoin-claude": 0.0,
+            "four-llms-bitcoin-gemini": 1.0,
+            "four-llms-bitcoin-grok": 1.0,
+            "four-llms-bitcoin-openai": 1.0
+          },
+          "median": 1.0,
+          "non_comparable": false
+        }
+      },
+      "startup_offer_question": {
+        "coverage": {
+          "outliers": [
+            "four-llms-startup-claude"
+          ],
+          "values_by_member": {
+            "four-llms-startup-claude": 0.0,
+            "four-llms-startup-gemini": 3.0,
+            "four-llms-startup-grok": 2.0,
+            "four-llms-startup-openai": 2.0
+          },
+          "median": 2.0,
+          "non_comparable": false
+        },
+        "calibration": {
+          "outliers": [
+            "four-llms-startup-gemini"
+          ],
+          "values_by_member": {
+            "four-llms-startup-claude": 0.0,
+            "four-llms-startup-gemini": 0.3333333333333333,
+            "four-llms-startup-grok": 0.07692307692307693,
+            "four-llms-startup-openai": 0.0
+          },
+          "median": 0.038461538461538464,
+          "non_comparable": false
+        },
+        "evidence": {
+          "outliers": [],
+          "values_by_member": {
+            "four-llms-startup-claude": null,
+            "four-llms-startup-gemini": null,
+            "four-llms-startup-grok": null,
+            "four-llms-startup-openai": null
+          },
+          "median": null,
+          "non_comparable": true,
+          "non_comparable_reason": "At least one peer has no comparable signal_value on this dimension."
+        },
+        "robustness": {
+          "outliers": [],
+          "values_by_member": {
+            "four-llms-startup-claude": 0.0,
+            "four-llms-startup-gemini": 0.0,
+            "four-llms-startup-grok": 0.0,
+            "four-llms-startup-openai": 0.0
+          },
+          "median": null,
+          "non_comparable": true,
+          "non_comparable_reason": "All group members have 0 checked claims; signal_value=0 reflects no Source Network data, not peer agreement."
+        },
+        "counterfactual": {
+          "outliers": [
+            "four-llms-startup-claude"
+          ],
+          "values_by_member": {
+            "four-llms-startup-claude": 0.0,
+            "four-llms-startup-gemini": 1.0,
+            "four-llms-startup-grok": 1.0,
+            "four-llms-startup-openai": 1.0
+          },
+          "median": 1.0,
+          "non_comparable": false
+        }
+      }
+    },
+    "summary_per_llm": {
+      "appearances_per_llm": {
+        "claude": 2,
+        "gemini": 2,
+        "grok": 2,
+        "openai": 2
+      },
+      "outlier_counts_per_llm": {
+        "claude": {
+          "coverage": 1,
+          "calibration": 0,
+          "evidence": 0,
+          "robustness": 0,
+          "counterfactual": 2
+        },
+        "gemini": {
+          "coverage": 1,
+          "calibration": 1,
+          "evidence": 0,
+          "robustness": 0,
+          "counterfactual": 0
+        },
+        "grok": {
+          "coverage": 0,
+          "calibration": 1,
+          "evidence": 0,
+          "robustness": 0,
+          "counterfactual": 0
+        }
+      },
+      "non_comparable_per_llm": {
+        "claude": {
+          "coverage": 0,
+          "calibration": 0,
+          "evidence": 2,
+          "robustness": 2,
+          "counterfactual": 0
+        },
+        "gemini": {
+          "coverage": 0,
+          "calibration": 0,
+          "evidence": 2,
+          "robustness": 2,
+          "counterfactual": 0
+        },
+        "grok": {
+          "coverage": 0,
+          "calibration": 0,
+          "evidence": 2,
+          "robustness": 2,
+          "counterfactual": 0
+        },
+        "openai": {
+          "coverage": 0,
+          "calibration": 0,
+          "evidence": 2,
+          "robustness": 2,
+          "counterfactual": 0
+        }
+      }
+    }
+  },
+  "cross_question_findings": [
+    {
+      "llm": "claude",
+      "dimension": "counterfactual",
+      "outlier_count": 2,
+      "comparable_count": 2,
+      "library_entries": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        },
+        {
+          "fvs_id": "FVS-007",
+          "title": "Failure Framing",
+          "library_resource_uri": "frame-check://library/FVS-007",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html"
+        },
+        {
+          "fvs_id": "FVS-009",
+          "title": "Risk Frame",
+          "library_resource_uri": "frame-check://library/FVS-009",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-009.html"
+        },
+        {
+          "fvs_id": "FVS-012",
+          "title": "Uncertainty Frame",
+          "library_resource_uri": "frame-check://library/FVS-012",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+        },
+        {
+          "fvs_id": "FVS-014",
+          "title": "Temporal Anchoring",
+          "library_resource_uri": "frame-check://library/FVS-014",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-014.html"
+        }
+      ],
+      "fired_patterns": [
+        {
+          "fvs_id": "FVS-007",
+          "title": "Failure Framing",
+          "library_resource_uri": "frame-check://library/FVS-007",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html",
+          "fired_in_n_documents": 2
+        },
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html",
+          "fired_in_n_documents": 1
+        }
+      ],
+      "documents_examined": 2,
+      "corpus_entries": [
+        {
+          "slug": "four-llms-bitcoin-claude",
+          "title": "Claude on whether to retire on Bitcoin (life-decision question)",
+          "corpus_resource_uri": "frame-check://corpus/four-llms-bitcoin-claude",
+          "public_url": "https://frame.clarethium.com/corpus/decision-readiness/corpus/four-llms-bitcoin-claude/"
+        },
+        {
+          "slug": "four-llms-startup-claude",
+          "title": "Claude on whether to take a startup offer (life-decision question)",
+          "corpus_resource_uri": "frame-check://corpus/four-llms-startup-claude",
+          "public_url": "https://frame.clarethium.com/corpus/decision-readiness/corpus/four-llms-startup-claude/"
+        }
+      ]
+    }
+  ],
+  "library_entries_per_dimension": {
+    "coverage": [
+      {
+        "fvs_id": "FVS-001",
+        "title": "Frame Amplification",
+        "library_resource_uri": "frame-check://library/FVS-001",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+      },
+      {
+        "fvs_id": "FVS-008",
+        "title": "Growth Frame",
+        "library_resource_uri": "frame-check://library/FVS-008",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-008.html"
+      },
+      {
+        "fvs_id": "FVS-009",
+        "title": "Risk Frame",
+        "library_resource_uri": "frame-check://library/FVS-009",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-009.html"
+      },
+      {
+        "fvs_id": "FVS-010",
+        "title": "Completeness Illusion",
+        "library_resource_uri": "frame-check://library/FVS-010",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-010.html"
+      },
+      {
+        "fvs_id": "FVS-011",
+        "title": "Stakeholder Frame",
+        "library_resource_uri": "frame-check://library/FVS-011",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-011.html"
+      },
+      {
+        "fvs_id": "FVS-014",
+        "title": "Temporal Anchoring",
+        "library_resource_uri": "frame-check://library/FVS-014",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-014.html"
+      },
+      {
+        "fvs_id": "FVS-015",
+        "title": "Efficiency Frame",
+        "library_resource_uri": "frame-check://library/FVS-015",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-015.html"
+      },
+      {
+        "fvs_id": "FVS-017",
+        "title": "False Balance",
+        "library_resource_uri": "frame-check://library/FVS-017",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-017.html"
+      }
+    ],
+    "calibration": [
+      {
+        "fvs_id": "FVS-012",
+        "title": "Uncertainty Frame",
+        "library_resource_uri": "frame-check://library/FVS-012",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+      },
+      {
+        "fvs_id": "FVS-017",
+        "title": "False Balance",
+        "library_resource_uri": "frame-check://library/FVS-017",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-017.html"
+      }
+    ],
+    "evidence": [
+      {
+        "fvs_id": "FVS-016",
+        "title": "Authority by Citation",
+        "library_resource_uri": "frame-check://library/FVS-016",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-016.html"
+      }
+    ],
+    "robustness": [
+      {
+        "fvs_id": "FVS-016",
+        "title": "Authority by Citation",
+        "library_resource_uri": "frame-check://library/FVS-016",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-016.html"
+      }
+    ],
+    "counterfactual": [
+      {
+        "fvs_id": "FVS-001",
+        "title": "Frame Amplification",
+        "library_resource_uri": "frame-check://library/FVS-001",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+      },
+      {
+        "fvs_id": "FVS-007",
+        "title": "Failure Framing",
+        "library_resource_uri": "frame-check://library/FVS-007",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html"
+      },
+      {
+        "fvs_id": "FVS-009",
+        "title": "Risk Frame",
+        "library_resource_uri": "frame-check://library/FVS-009",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-009.html"
+      },
+      {
+        "fvs_id": "FVS-012",
+        "title": "Uncertainty Frame",
+        "library_resource_uri": "frame-check://library/FVS-012",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+      },
+      {
+        "fvs_id": "FVS-014",
+        "title": "Temporal Anchoring",
+        "library_resource_uri": "frame-check://library/FVS-014",
+        "public_url": "https://frame.clarethium.com/corpus/library/FVS-014.html"
+      }
+    ]
+  },
+  "framing": "DESCRIPTIVE of this corpus state. Not inference about LLM populations. Every count names its N inline. Aggregate findings compound with corpus growth; the tool is durable, the headline N changes."
+}

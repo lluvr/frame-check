@@ -1,0 +1,427 @@
+# Frame Check Source Network Calibration Corpus
+# Seed version 0.1; 2026-04-16
+#
+# Schema reference: calibration/README.md.
+# Each claim has a primary_source_url for independent verification.
+# The corpus is versioned at the file level; claim IDs are stable
+# across versions so historical run results remain comparable.
+#
+# Numbers were accurate to the best of the author's knowledge at
+# the as_of_date. Before each calibration run the harness flags
+# claims whose as_of_date exceeds 90 days; reviewers re-verify
+# primary sources in that case.
+
+version: "0.1"
+seeded_at: "2026-04-16"
+seed_author: "Lovro Lucic"
+
+# =============================================================
+# Provider: SEC EDGAR
+# =============================================================
+# Strict-API provider. Routes company revenue/profit/cash claims
+# to XBRL company-concept endpoints. Tight thresholds (<0.5% exact,
+# 0.5-3% close, >3% contradicted). Requires quarterly/annual
+# disambiguation via fp or end-date alignment.
+
+sec_edgar:
+  coverage: "US public company financial filings (10-K/10-Q)"
+  provider_key: sec_edgar
+  claims:
+
+    - id: sec-001
+      claim: "NVIDIA reported total revenue of $60.922 billion in fiscal year 2024."
+      primary_source: "NVIDIA 10-K filed 2024-02-21 for fiscal year ended 2024-01-28"
+      primary_source_url: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001045810&type=10-K"
+      as_of_date: "2026-04-17"
+      primary_verifier: sec_edgar
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Exact match at <0.5% threshold. Consolidated FY revenue from the XBRL Revenues concept."
+
+    - id: sec-002
+      claim: "Apple reported total revenue of $383.285 billion in fiscal year 2023."
+      primary_source: "Apple 10-K filed 2023-11-03 for fiscal year ended 2023-09-30"
+      primary_source_url: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193&type=10-K"
+      as_of_date: "2026-04-17"
+      primary_verifier: sec_edgar
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Apple FY23 ended Sept 2023. Exact match on RevenueFromContractWithCustomerExcludingAssessedTax."
+
+    - id: sec-003
+      claim: "Microsoft reported total revenue of $500 billion in fiscal year 2023."
+      primary_source: "Microsoft 10-K filed 2023-07-27 for fiscal year ended 2023-06-30 (actual ~$211.9B)"
+      primary_source_url: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000789019&type=10-K"
+      as_of_date: "2026-04-17"
+      primary_verifier: sec_edgar
+      category: KNOWN_FALSE
+      expected_verdict: contradicted
+      rationale: "Claimed $500B; actual $211.9B. Difference is ~136%, far outside the 3% contradicted threshold."
+
+    - id: sec-004
+      claim: "OpenAI reported total revenue of $3 billion in 2023."
+      primary_source: "OpenAI is a private company; not in SEC EDGAR."
+      primary_source_url: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=openai"
+      as_of_date: "2026-04-16"
+      primary_verifier: sec_edgar
+      category: OUT_OF_COVERAGE
+      expected_verdict: unverifiable
+      rationale: "OpenAI is privately held and does not file 10-K/10-Q. SEC EDGAR should return no data."
+
+    - id: sec-005
+      claim: "Tesla reported Q4 2023 revenue of $25.167 billion."
+      primary_source: "Tesla 10-K filed 2024-01-29 for fiscal year 2023 (Q4 = three months ended Dec 31, 2023)"
+      primary_source_url: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001318605&type=10-K"
+      as_of_date: "2026-04-17"
+      primary_verifier: sec_edgar
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Tesla Q4 FY23. Tests quarterly disambiguation via fp=Q4 / end-date 2023-12-31."
+
+# =============================================================
+# Provider: FRED
+# =============================================================
+# Strict US macro data. 18 pre-mapped series. Tight thresholds
+# (<1% exact, 1-5% close). Requires FRED_API_KEY.
+
+fred:
+  coverage: "US macroeconomic time series (Federal Reserve Economic Data)"
+  provider_key: fred
+  claims:
+
+    - id: fred-001
+      claim: "US unemployment was 3.7% in December 2023."
+      primary_source: "FRED series UNRATE, December 2023 observation"
+      primary_source_url: "https://fred.stlouisfed.org/series/UNRATE"
+      as_of_date: "2026-04-17"
+      primary_verifier: fred
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "FRED UNRATE for Dec 2023 released 2024-01-05. Exact match within 1% threshold."
+
+    - id: fred-002
+      claim: "US national debt exceeded $34 trillion in January 2024."
+      primary_source: "FRED series GFDEBTN, Q4 2023 observation"
+      primary_source_url: "https://fred.stlouisfed.org/series/GFDEBTN"
+      as_of_date: "2026-04-17"
+      primary_verifier: fred
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "GFDEBTN crossed $34T in early 2024. Tests trillion-scale handling."
+
+    - id: fred-003
+      claim: "US inflation (CPI) was 8.5% in 2023."
+      primary_source: "FRED series CPIAUCSL, annual change 2023 (~3.4%, not 8.5%)"
+      primary_source_url: "https://fred.stlouisfed.org/series/CPIAUCSL"
+      as_of_date: "2026-04-17"
+      primary_verifier: fred
+      category: KNOWN_FALSE
+      expected_verdict: contradicted
+      rationale: "Claim says 8.5%; 2023 annual was ~3.4%. Difference ~150%. (Also tests CPI-index vs CPI-rate confusion.)"
+
+    - id: fred-004
+      claim: "Brazil unemployment was 7.8% in 2023."
+      primary_source: "Brazil macro data not in FRED (US-only). World Bank has SL.UEM.TOTL.ZS."
+      primary_source_url: "https://fred.stlouisfed.org/categories"
+      as_of_date: "2026-04-16"
+      primary_verifier: fred
+      category: OUT_OF_COVERAGE
+      expected_verdict: unverifiable
+      rationale: "FRED is US-focused. Brazil macro should not match any FRED series."
+
+    - id: fred-005
+      claim: "The federal funds rate was 5.33% at the end of 2023."
+      primary_source: "FRED series FEDFUNDS, December 2023 (effective rate ~5.33%)"
+      primary_source_url: "https://fred.stlouisfed.org/series/FEDFUNDS"
+      as_of_date: "2026-04-17"
+      primary_verifier: fred
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "FEDFUNDS December 2023 effective rate. Exact match at <1% threshold."
+
+# =============================================================
+# Provider: REST Countries
+# =============================================================
+# Country population and area. Current data only (no time series);
+# older temporal claims should contradict. 5% threshold.
+
+rest_countries:
+  coverage: "Country demographics and geography (current)"
+  provider_key: rest_countries
+  claims:
+
+    - id: rc-001
+      claim: "Germany has a population of approximately 84 million."
+      primary_source: "REST Countries v3.1 Germany entry, population field"
+      primary_source_url: "https://restcountries.com/v3.1/name/germany?fields=population,area"
+      as_of_date: "2026-04-16"
+      primary_verifier: rest_countries
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Germany population ~83.2M per REST Countries. Within 5% threshold."
+
+    - id: rc-002
+      claim: "France has an area of 551,695 square kilometers."
+      primary_source: "REST Countries v3.1 France entry, area field"
+      primary_source_url: "https://restcountries.com/v3.1/name/france?fields=population,area"
+      as_of_date: "2026-04-16"
+      primary_verifier: rest_countries
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "France metropolitan area 551,695 km². Exact match."
+
+    - id: rc-003
+      claim: "Japan has a population of 500 million."
+      primary_source: "REST Countries Japan (actual ~125M, not 500M)"
+      primary_source_url: "https://restcountries.com/v3.1/name/japan?fields=population"
+      as_of_date: "2026-04-16"
+      primary_verifier: rest_countries
+      category: KNOWN_FALSE
+      expected_verdict: contradicted
+      rationale: "Claimed 500M; actual ~125M. Difference 300%, well outside 5% threshold."
+
+    - id: rc-004
+      claim: "India had a population of 1.2 billion in 2010."
+      primary_source: "Wikipedia India article census panel (2011 census: 1,210,193,422)."
+      primary_source_url: "https://en.wikipedia.org/wiki/Demographics_of_India"
+      as_of_date: "2026-04-16"
+      primary_verifier: rest_countries
+      category: TEMPORAL_EDGE
+      expected_verdict: verified
+      rationale: "Tests that a historical claim correctly verifies through cross-provider consensus. REST Countries cannot serve 2010 data (current-only), but Wikipedia's historical coverage includes the 2011 census figure 1.21B, within 1% of the claim. The seed originally expected contradicted on the assumption that REST Countries' temporal blindspot would dominate; the first calibration run showed Wikipedia correctly resolves this. Kept in the TEMPORAL_EDGE category because the claim IS historical; it just happens to have a historical Wikipedia source."
+
+    - id: rc-005
+      claim: "Wakanda has a population of 6 million."
+      primary_source: "Fictional country; not in REST Countries or any demographic database."
+      primary_source_url: "https://restcountries.com/v3.1/name/wakanda"
+      as_of_date: "2026-04-16"
+      primary_verifier: rest_countries
+      category: OUT_OF_COVERAGE
+      expected_verdict: unverifiable
+      rationale: "Nonexistent country. Tests graceful handling of entity-not-found. Uses the natural 'N million' form to exercise the scaled_integer extraction pattern added in response to FINDINGS.md Category C; prior to that fix this shape extracted zero claims and produced a no_claim_extracted harness result."
+
+# =============================================================
+# Provider: World Bank
+# =============================================================
+# Country-level macroeconomic indicators, historical via year param.
+# 15% threshold (generous because development data is noisy).
+
+world_bank:
+  coverage: "Country-level development and economic indicators (historical)"
+  provider_key: world_bank
+  claims:
+
+    - id: wb-001
+      claim: "France's GDP was $2.78 trillion in 2022."
+      primary_source: "World Bank indicator NY.GDP.MKTP.CD for France, 2022"
+      primary_source_url: "https://api.worldbank.org/v2/country/FR/indicator/NY.GDP.MKTP.CD?date=2022:2022&format=json"
+      as_of_date: "2026-04-17"
+      primary_verifier: world_bank
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "France 2022 GDP per WB ~$2.78T USD. Within close-match threshold."
+
+    - id: wb-002
+      claim: "Germany's GDP per capita was $50,000 in 2022."
+      primary_source: "World Bank NY.GDP.PCAP.CD for Germany, 2022 (~$48,700)"
+      primary_source_url: "https://api.worldbank.org/v2/country/DE/indicator/NY.GDP.PCAP.CD?date=2022:2022&format=json"
+      as_of_date: "2026-04-17"
+      primary_verifier: world_bank
+      category: KNOWN_TRUE
+      expected_verdict: close
+      rationale: "Claim rounds to $50K; actual ~$48.7K. Within 5% close threshold, outside 1% exact."
+
+    - id: wb-003
+      claim: "Nigeria's unemployment rate was 45% in 2023."
+      primary_source: "World Bank SL.UEM.TOTL.ZS for Nigeria 2023 (~4%)"
+      primary_source_url: "https://api.worldbank.org/v2/country/NG/indicator/SL.UEM.TOTL.ZS?date=2023:2023&format=json"
+      as_of_date: "2026-04-17"
+      primary_verifier: world_bank
+      category: KNOWN_FALSE
+      expected_verdict: contradicted
+      rationale: "Claimed 45%; actual ~4%. Off by order of magnitude."
+
+    - id: wb-004
+      claim: "Vatican City's GDP was $10 billion in 2022."
+      primary_source: "World Bank does not publish GDP data for Vatican City."
+      primary_source_url: "https://api.worldbank.org/v2/country/VA/indicator/NY.GDP.MKTP.CD?format=json"
+      as_of_date: "2026-04-16"
+      primary_verifier: world_bank
+      category: OUT_OF_COVERAGE
+      expected_verdict: unverifiable
+      rationale: "Vatican is too small and too integrated with Italy's economy for WB to publish GDP."
+
+# =============================================================
+# Provider: Alpha Vantage
+# =============================================================
+# Company fundamentals. Current snapshot, no temporal context.
+# Tight thresholds (<1% exact, 1-5% close).
+
+alpha_vantage:
+  coverage: "Public company fundamentals (current snapshot)"
+  provider_key: alpha_vantage
+  claims:
+
+    - id: av-001
+      claim: "Microsoft has a market capitalization of approximately $3 trillion."
+      primary_source: "Alpha Vantage OVERVIEW for MSFT, MarketCapitalization field"
+      primary_source_url: "https://www.alphavantage.co/query?function=OVERVIEW&symbol=MSFT"
+      as_of_date: "2026-04-16"
+      primary_verifier: alpha_vantage
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "MSFT market cap in trillions. 5% close threshold accommodates daily volatility."
+
+    - id: av-002
+      claim: "Apple's market cap is $5 trillion."
+      primary_source: "Alpha Vantage MSFT market cap is ~$3.3T. Apple ~$3T."
+      primary_source_url: "https://www.alphavantage.co/query?function=OVERVIEW&symbol=AAPL"
+      as_of_date: "2026-04-16"
+      primary_verifier: alpha_vantage
+      category: KNOWN_FALSE
+      expected_verdict: contradicted
+      rationale: "Apple has never reached $5T market cap. Claim is 40%+ high."
+
+    - id: av-003
+      claim: "ByteDance has a market capitalization of $300 billion."
+      primary_source: "ByteDance is privately held; Alpha Vantage OVERVIEW returns no data."
+      primary_source_url: "https://www.alphavantage.co/query?function=OVERVIEW&symbol=BYTE"
+      as_of_date: "2026-04-16"
+      primary_verifier: alpha_vantage
+      category: OUT_OF_COVERAGE
+      expected_verdict: unverifiable
+      rationale: "Private company, no public ticker in Alpha Vantage."
+
+    - id: av-004
+      claim: "Tesla has revenue trailing twelve months of approximately $95 billion."
+      primary_source: "Alpha Vantage OVERVIEW for TSLA, RevenueTTM field"
+      primary_source_url: "https://www.alphavantage.co/query?function=OVERVIEW&symbol=TSLA"
+      as_of_date: "2026-04-16"
+      primary_verifier: alpha_vantage
+      category: KNOWN_TRUE
+      expected_verdict: close
+      rationale: "Tesla TTM revenue fluctuates around $95B. Close threshold is appropriate."
+
+# =============================================================
+# Provider: Wolfram Alpha
+# =============================================================
+# Physical and computational facts. Stable reference values.
+
+wolfram_alpha:
+  coverage: "Physical, computational, and reference facts"
+  provider_key: wolfram_alpha
+  claims:
+
+    - id: wa-001
+      claim: "Mount Everest has a height of 8,849 meters."
+      primary_source: "Wolfram Alpha 'Mount Everest height' returns 8,848.86 m"
+      primary_source_url: "https://www.wolframalpha.com/input?i=Mount+Everest+height"
+      as_of_date: "2026-04-16"
+      primary_verifier: wolfram_alpha
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Height of Everest well-established. Claimed 8,849 vs Wolfram 8,848.86; exact at <1%."
+
+    - id: wa-002
+      claim: "The speed of light in a vacuum is 299,792,458 meters per second."
+      primary_source: "Wolfram Alpha 'speed of light' returns c = 299,792,458 m/s"
+      primary_source_url: "https://www.wolframalpha.com/input?i=speed+of+light"
+      as_of_date: "2026-04-16"
+      primary_verifier: wolfram_alpha
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Defined constant. Exact match expected."
+
+    - id: wa-003
+      claim: "The diameter of Jupiter is 200,000 kilometers."
+      primary_source: "Actual Jupiter diameter ~139,820 km (Wolfram Alpha)"
+      primary_source_url: "https://www.wolframalpha.com/input?i=Jupiter+diameter"
+      as_of_date: "2026-04-16"
+      primary_verifier: wolfram_alpha
+      category: KNOWN_FALSE
+      expected_verdict: contradicted
+      rationale: "Claimed 200,000 km; actual ~139,820 km. Difference ~43%, well outside thresholds."
+
+    - id: wa-004
+      claim: "The population of Wakanda is 6 million."
+      primary_source: "Fictional entity; Wolfram Alpha should return no applicable data."
+      primary_source_url: "https://www.wolframalpha.com/input?i=population+of+Wakanda"
+      as_of_date: "2026-04-16"
+      primary_verifier: wolfram_alpha
+      category: OUT_OF_COVERAGE
+      expected_verdict: unverifiable
+      rationale: "Fictional country. Overlaps with REST Countries OUT_OF_COVERAGE case. Returned to the natural 'N million' phrasing after the scaled_integer extraction fix (FINDINGS.md Category C) landed."
+
+# =============================================================
+# Provider: Wikipedia
+# =============================================================
+# Broadest coverage, always routed first. Matches numbers found
+# anywhere in the article text. High volume (appears in almost
+# every SN result set) but was uncalibrated until this seed.
+# Ground truth for these claims uses well-established reference
+# values that Wikipedia has carried stably for years.
+
+wikipedia:
+  coverage: "Encyclopedic reference (broad, always tried first)"
+  provider_key: wikipedia
+  claims:
+
+    - id: wiki-001
+      claim: "Mount Everest has a height of 8,849 meters."
+      primary_source: "Wikipedia article on Mount Everest; 2020 survey: 8,848.86 m"
+      primary_source_url: "https://en.wikipedia.org/wiki/Mount_Everest"
+      as_of_date: "2026-04-17"
+      primary_verifier: wikipedia
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Height of Everest is one of the most stable facts in Wikipedia. 8,849 vs 8,848.86 is <0.01% diff."
+
+    - id: wiki-002
+      claim: "Tokyo has a population of approximately 14 million."
+      primary_source: "Wikipedia article on Tokyo; population of the special wards ~14M"
+      primary_source_url: "https://en.wikipedia.org/wiki/Tokyo"
+      as_of_date: "2026-04-17"
+      primary_verifier: wikipedia
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Tokyo special wards population is ~14M. Within close threshold."
+
+    - id: wiki-003
+      claim: "The Amazon River is approximately 6,400 kilometers long."
+      primary_source: "Wikipedia article on Amazon River; length ~6,400 km"
+      primary_source_url: "https://en.wikipedia.org/wiki/Amazon_River"
+      as_of_date: "2026-04-17"
+      primary_verifier: wikipedia
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Amazon length well-established at ~6,400 km. Exact match expected."
+
+    - id: wiki-004
+      claim: "The Earth is 200 million kilometers from the Sun."
+      primary_source: "Wikipedia; actual ~149.6 million km. 200M is 34% too high."
+      primary_source_url: "https://en.wikipedia.org/wiki/Earth"
+      as_of_date: "2026-04-17"
+      primary_verifier: wikipedia
+      category: KNOWN_FALSE
+      expected_verdict: contradicted
+      rationale: "Claimed 200M km; actual ~149.6M km. Difference ~34%. Well outside close threshold."
+
+    - id: wiki-005
+      claim: "Tokyo has a population of 50 million."
+      primary_source: "Wikipedia; Tokyo special wards ~14M, metro ~37M. 50M exceeds both."
+      primary_source_url: "https://en.wikipedia.org/wiki/Tokyo"
+      as_of_date: "2026-04-17"
+      primary_verifier: wikipedia
+      category: KNOWN_FALSE
+      expected_verdict: contradicted
+      rationale: "Claimed 50M; actual 14M (wards) or 37M (metro). Either way >35% off."
+
+    - id: wiki-006
+      claim: "The Andromeda Galaxy is 2.537 million light-years from Earth."
+      primary_source: "Wikipedia article on Andromeda Galaxy; distance ~2.537 Mly"
+      primary_source_url: "https://en.wikipedia.org/wiki/Andromeda_Galaxy"
+      as_of_date: "2026-04-17"
+      primary_verifier: wikipedia
+      category: KNOWN_TRUE
+      expected_verdict: verified
+      rationale: "Well-established astronomical distance. Tests Wikipedia on scientific reference data."
