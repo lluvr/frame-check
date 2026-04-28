@@ -1,0 +1,70 @@
+{
+  "methodology_url": "/corpus/decision-readiness/",
+  "methodology_version": "v0.1",
+  "status": "experimental",
+  "label_a": "four-llms-startup-gemini",
+  "label_b": "four-llms-startup-grok",
+  "peer_group": "startup_offer_question",
+  "dimensions": {
+    "coverage": {
+      "name": "Coverage of perspectives",
+      "value_a": 3,
+      "value_b": 2,
+      "comparison_text": "Coverage: four-llms-startup-gemini 3/5 vs four-llms-startup-grok 2/5. only four-llms-startup-gemini addresses trends. only four-llms-startup-grok fires FVS-001 Frame Amplification.",
+      "differs": true,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        }
+      ]
+    },
+    "calibration": {
+      "name": "Claim calibration",
+      "value_a": 0.3333333333333333,
+      "value_b": 0.07692307692307693,
+      "comparison_text": "Hedge ratio: four-llms-startup-gemini 0.33 (3 claims) vs four-llms-startup-grok 0.08 (13 claims).",
+      "differs": true,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "evidence": {
+      "name": "Evidence backing",
+      "value_a": null,
+      "value_b": null,
+      "comparison_text": "Sentence-attribution: four-llms-startup-gemini 0% vs four-llms-startup-grok 0%.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "robustness": {
+      "name": "Robustness",
+      "value_a": 0,
+      "value_b": 0,
+      "comparison_text": "Neither peer had claims checked against external sources.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "counterfactual": {
+      "name": "Counterfactual thinking",
+      "value_a": true,
+      "value_b": true,
+      "comparison_text": "Both peers engage with counterfactual thinking. only four-llms-startup-grok fires FVS-001 Frame Amplification.",
+      "differs": true,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        }
+      ]
+    }
+  },
+  "narrative": "Where four-llms-startup-gemini and four-llms-startup-grok differ structurally:\n  - Coverage of perspectives: Coverage: four-llms-startup-gemini 3/5 vs four-llms-startup-grok 2/5. only four-llms-startup-gemini addresses trends. only four-llms-startup-grok fires FVS-001 Frame Amplification.\n  - Claim calibration: Hedge ratio: four-llms-startup-gemini 0.33 (3 claims) vs four-llms-startup-grok 0.08 (13 claims).\n  - Counterfactual thinking: Both peers engage with counterfactual thinking. only four-llms-startup-grok fires FVS-001 Frame Amplification."
+}

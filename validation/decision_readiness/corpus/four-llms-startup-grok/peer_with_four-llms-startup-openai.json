@@ -1,0 +1,56 @@
+{
+  "methodology_url": "/corpus/decision-readiness/",
+  "methodology_version": "v0.1",
+  "status": "experimental",
+  "label_a": "four-llms-startup-grok",
+  "label_b": "four-llms-startup-openai",
+  "peer_group": "startup_offer_question",
+  "dimensions": {
+    "coverage": {
+      "name": "Coverage of perspectives",
+      "value_a": 2,
+      "value_b": 2,
+      "comparison_text": "Coverage: four-llms-startup-grok 2/5 vs four-llms-startup-openai 2/5. same dimensions present.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "calibration": {
+      "name": "Claim calibration",
+      "value_a": 0.07692307692307693,
+      "value_b": 0.0,
+      "comparison_text": "Hedge ratio: four-llms-startup-grok 0.08 (13 claims) vs four-llms-startup-openai 0.00 (10 claims).",
+      "differs": true,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "evidence": {
+      "name": "Evidence backing",
+      "value_a": null,
+      "value_b": null,
+      "comparison_text": "Sentence-attribution: four-llms-startup-grok 0% vs four-llms-startup-openai 0%.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "robustness": {
+      "name": "Robustness",
+      "value_a": 0,
+      "value_b": 0,
+      "comparison_text": "Neither peer had claims checked against external sources.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "counterfactual": {
+      "name": "Counterfactual thinking",
+      "value_a": true,
+      "value_b": true,
+      "comparison_text": "Both peers engage with counterfactual thinking.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    }
+  },
+  "narrative": "Where four-llms-startup-grok and four-llms-startup-openai differ structurally:\n  - Claim calibration: Hedge ratio: four-llms-startup-grok 0.08 (13 claims) vs four-llms-startup-openai 0.00 (10 claims)."
+}

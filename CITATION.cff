@@ -1,0 +1,50 @@
+cff-version: 1.2.0
+message: >-
+  If you use Frame Check in academic work, please cite it using the
+  metadata below. The methodology paper and frame library are
+  separately citeable research artifacts; see corpus.clarethium.com.
+title: "Frame Check: a research instrument for framing and verification in documents"
+type: software
+authors:
+  - family-names: Lucic
+    given-names: Lovro
+    website: "https://blog.clarethium.com"
+repository-code: "https://github.com/lluvr/frame-check"
+url: "https://frame.clarethium.com"
+abstract: >-
+  Frame Check is a structural framing analysis tool and public
+  research program. It names which perspectives a document takes,
+  which it omits, and how it positions the reader; numerical claims
+  are cross-checked against authoritative sources where coverage
+  exists. The methodology is deterministic and transparent: every
+  claim the tool makes is computed from pattern matchers that return
+  the same result on every run, with AI-assisted interpretation
+  available as a separately labelled enrichment.
+keywords:
+  - framing analysis
+  - AI verification
+  - document analysis
+  - structural framing
+  - source network verification
+  - frame vocabulary standard
+license: Apache-2.0
+version: "0.8.0-pre"
+date-released: "2026-04-26"
+references:
+  - type: article
+    title: "Frame Check Methodology"
+    authors:
+      - family-names: Lucic
+        given-names: Lovro
+    url: "https://frame.clarethium.com/corpus/methodology/"
+    license: CC-BY-4.0
+    year: 2026
+  - type: data
+    title: "Frame Vocabulary Standard"
+    authors:
+      - family-names: Lucic
+        given-names: Lovro
+    url: "https://frame.clarethium.com/corpus/library/"
+    license: CC-BY-4.0
+    version: "0.2.0"
+    year: 2026

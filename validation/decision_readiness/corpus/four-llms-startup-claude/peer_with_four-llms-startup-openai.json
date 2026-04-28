@@ -1,0 +1,77 @@
+{
+  "methodology_url": "/corpus/decision-readiness/",
+  "methodology_version": "v0.1",
+  "status": "experimental",
+  "label_a": "four-llms-startup-claude",
+  "label_b": "four-llms-startup-openai",
+  "peer_group": "startup_offer_question",
+  "dimensions": {
+    "coverage": {
+      "name": "Coverage of perspectives",
+      "value_a": 0,
+      "value_b": 2,
+      "comparison_text": "Coverage: four-llms-startup-claude 0/5 vs four-llms-startup-openai 2/5. only four-llms-startup-openai addresses risks, stakeholders. only four-llms-startup-openai fires FVS-001 Frame Amplification.",
+      "differs": true,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        }
+      ]
+    },
+    "calibration": {
+      "name": "Claim calibration",
+      "value_a": 0.0,
+      "value_b": 0.0,
+      "comparison_text": "Hedge ratio: four-llms-startup-claude 0.00 (3 claims) vs four-llms-startup-openai 0.00 (10 claims).",
+      "differs": true,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "evidence": {
+      "name": "Evidence backing",
+      "value_a": null,
+      "value_b": null,
+      "comparison_text": "Sentence-attribution: four-llms-startup-claude 0% vs four-llms-startup-openai 0%.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "robustness": {
+      "name": "Robustness",
+      "value_a": 0,
+      "value_b": 0,
+      "comparison_text": "Neither peer had claims checked against external sources.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "counterfactual": {
+      "name": "Counterfactual thinking",
+      "value_a": false,
+      "value_b": true,
+      "comparison_text": "Only four-llms-startup-openai engages with counterfactual thinking; four-llms-startup-claude does not. only four-llms-startup-claude fires FVS-007 Failure Framing; only four-llms-startup-openai fires FVS-001 Frame Amplification.",
+      "differs": true,
+      "fired_patterns_only_a": [
+        {
+          "fvs_id": "FVS-007",
+          "title": "Failure Framing",
+          "library_resource_uri": "frame-check://library/FVS-007",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html"
+        }
+      ],
+      "fired_patterns_only_b": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        }
+      ]
+    }
+  },
+  "narrative": "Where four-llms-startup-claude and four-llms-startup-openai differ structurally:\n  - Coverage of perspectives: Coverage: four-llms-startup-claude 0/5 vs four-llms-startup-openai 2/5. only four-llms-startup-openai addresses risks, stakeholders. only four-llms-startup-openai fires FVS-001 Frame Amplification.\n  - Claim calibration: Hedge ratio: four-llms-startup-claude 0.00 (3 claims) vs four-llms-startup-openai 0.00 (10 claims).\n  - Counterfactual thinking: Only four-llms-startup-openai engages with counterfactual thinking; four-llms-startup-claude does not. only four-llms-startup-claude fires FVS-007 Failure Framing; only four-llms-startup-openai fires FVS-001 Frame Amplification."
+}

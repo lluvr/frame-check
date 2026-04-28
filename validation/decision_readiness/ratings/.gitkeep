@@ -1,0 +1,9 @@
+# Intentionally empty.
+#
+# The ratings/ directory is part of the Phase 2 validation scaffold
+# (test_validation_scaffolding.py::test_scaffolding_dirs_present
+# pins its existence). External raters contribute rating YAML files
+# into this directory, which the harness then consumes. The
+# directory is tracked in git so the scaffold is reproducible on a
+# fresh clone; this .gitkeep is the only artifact until ratings
+# land.

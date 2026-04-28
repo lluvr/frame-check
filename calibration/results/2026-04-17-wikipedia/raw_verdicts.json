@@ -1,0 +1,263 @@
+[
+  {
+    "id": "wiki-001",
+    "provider_key": "wikipedia",
+    "claim": "Mount Everest has a height of 8,849 meters.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "exact",
+        "value": 8848.86,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Mount_Everest"
+      },
+      {
+        "name": "Wolfram Alpha",
+        "verdict": "exact",
+        "value": 8849.0,
+        "diff_pct": 0.0,
+        "url": "https://www.wolframalpha.com/input?i=Mount%20Everest%20height"
+      }
+    ],
+    "confidence": 0.9500000000000001,
+    "best_source": "Wolfram Alpha",
+    "best_url": "https://www.wolframalpha.com/input?i=Mount%20Everest%20height",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.85,
+        "label": "Wolfram Alpha (reference)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.9,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.8,
+        "label": "2 sources"
+      }
+    },
+    "elapsed_ms": 2495,
+    "error": ""
+  },
+  {
+    "id": "wiki-002",
+    "provider_key": "wikipedia",
+    "claim": "Tokyo has a population of approximately 14 million.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "exact",
+        "value": 14000000.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Tokyo"
+      }
+    ],
+    "confidence": 0.7200000000000001,
+    "best_source": "Wikipedia",
+    "best_url": "https://en.wikipedia.org/wiki/Tokyo",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.7,
+        "label": "Wikipedia (reference)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.72,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 901,
+    "error": ""
+  },
+  {
+    "id": "wiki-003",
+    "provider_key": "wikipedia",
+    "claim": "The Amazon River is approximately 6,400 kilometers long.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "exact",
+        "value": 6400.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Amazon_River"
+      },
+      {
+        "name": "Wolfram Alpha",
+        "verdict": "exact",
+        "value": 6400.0,
+        "diff_pct": 0.0,
+        "url": "https://www.wolframalpha.com/input?i=Amazon%20River%20length"
+      }
+    ],
+    "confidence": 0.9500000000000001,
+    "best_source": "Wolfram Alpha",
+    "best_url": "https://www.wolframalpha.com/input?i=Amazon%20River%20length",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.85,
+        "label": "Wolfram Alpha (reference)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.9,
+        "label": "strong"
+      },
+      "corroboration": {
+        "score": 0.8,
+        "label": "2 sources"
+      }
+    },
+    "elapsed_ms": 1993,
+    "error": ""
+  },
+  {
+    "id": "wiki-004",
+    "provider_key": "wikipedia",
+    "claim": "The Earth is 200 million kilometers from the Sun.",
+    "category": "KNOWN_FALSE",
+    "expected": "contradicted",
+    "observed": "verified",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "exact",
+        "value": 200000000.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Sun"
+      },
+      {
+        "name": "Wolfram Alpha",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": ""
+      }
+    ],
+    "confidence": 0.57375,
+    "best_source": "Wikipedia",
+    "best_url": "https://en.wikipedia.org/wiki/Sun",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.7,
+        "label": "Wikipedia (reference)"
+      },
+      "precision": {
+        "score": 1.0,
+        "label": "exact"
+      },
+      "context": {
+        "score": 0.57,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 1802,
+    "error": ""
+  },
+  {
+    "id": "wiki-005",
+    "provider_key": "wikipedia",
+    "claim": "Tokyo has a population of 50 million.",
+    "category": "KNOWN_FALSE",
+    "expected": "contradicted",
+    "observed": "unverifiable",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "no_data",
+        "value": 0.0,
+        "diff_pct": 0.0,
+        "url": "https://en.wikipedia.org/wiki/Tokyo"
+      }
+    ],
+    "confidence": 0.0,
+    "best_source": "",
+    "best_url": "",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0,
+        "label": "no source"
+      },
+      "precision": {
+        "score": 0,
+        "label": "no match"
+      },
+      "context": {
+        "score": 0,
+        "label": "no context"
+      },
+      "corroboration": {
+        "score": 0,
+        "label": "0 sources"
+      }
+    },
+    "elapsed_ms": 2186,
+    "error": ""
+  },
+  {
+    "id": "wiki-006",
+    "provider_key": "wikipedia",
+    "claim": "The Andromeda Galaxy is 2.537 million light-years from Earth.",
+    "category": "KNOWN_TRUE",
+    "expected": "verified",
+    "observed": "close",
+    "sources": [
+      {
+        "name": "Wikipedia",
+        "verdict": "close",
+        "value": 2500000.0,
+        "diff_pct": 1.5,
+        "url": "https://en.wikipedia.org/wiki/Andromeda_Galaxy"
+      }
+    ],
+    "confidence": 0.5999940875049269,
+    "best_source": "Wikipedia",
+    "best_url": "https://en.wikipedia.org/wiki/Andromeda_Galaxy",
+    "confidence_dimensions": {
+      "authority": {
+        "score": 0.7,
+        "label": "Wikipedia (reference)"
+      },
+      "precision": {
+        "score": 0.7,
+        "label": "1.5% diff"
+      },
+      "context": {
+        "score": 0.6,
+        "label": "moderate"
+      },
+      "corroboration": {
+        "score": 0.5,
+        "label": "1 source"
+      }
+    },
+    "elapsed_ms": 780,
+    "error": ""
+  }
+]

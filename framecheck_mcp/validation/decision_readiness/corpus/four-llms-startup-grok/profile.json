@@ -1,0 +1,197 @@
+{
+  "methodology_url": "/corpus/decision-readiness/",
+  "methodology_version": "v0.1",
+  "status": "experimental",
+  "dimensions": {
+    "coverage": {
+      "name": "Coverage of perspectives",
+      "signal_value": 2,
+      "signal_secondary": 0.5,
+      "signal_text": "2 of 5 perspectives addressed. Coverage balance: 50%.",
+      "covered": [
+        "risks",
+        "stakeholders"
+      ],
+      "missing": [
+        "causes",
+        "trends",
+        "uncertainty"
+      ],
+      "explanation": "Of five analytical dimensions (causes, risks, stakeholders, trends, uncertainty), how many the document addresses and how balanced their coverage densities are. An analysis that addresses many dimensions superficially is the Completeness Illusion (FVS-010).",
+      "library_entries": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        },
+        {
+          "fvs_id": "FVS-008",
+          "title": "Growth Frame",
+          "library_resource_uri": "frame-check://library/FVS-008",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-008.html"
+        },
+        {
+          "fvs_id": "FVS-009",
+          "title": "Risk Frame",
+          "library_resource_uri": "frame-check://library/FVS-009",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-009.html"
+        },
+        {
+          "fvs_id": "FVS-010",
+          "title": "Completeness Illusion",
+          "library_resource_uri": "frame-check://library/FVS-010",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-010.html"
+        },
+        {
+          "fvs_id": "FVS-011",
+          "title": "Stakeholder Frame",
+          "library_resource_uri": "frame-check://library/FVS-011",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-011.html"
+        },
+        {
+          "fvs_id": "FVS-014",
+          "title": "Temporal Anchoring",
+          "library_resource_uri": "frame-check://library/FVS-014",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-014.html"
+        },
+        {
+          "fvs_id": "FVS-015",
+          "title": "Efficiency Frame",
+          "library_resource_uri": "frame-check://library/FVS-015",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-015.html"
+        },
+        {
+          "fvs_id": "FVS-017",
+          "title": "False Balance",
+          "library_resource_uri": "frame-check://library/FVS-017",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-017.html"
+        }
+      ],
+      "fired_library_entries": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        }
+      ]
+    },
+    "calibration": {
+      "name": "Claim calibration",
+      "signal_value": 0.07692307692307693,
+      "signal_secondary": 1,
+      "signal_text": "1 of 13 claims hedged. 1 stated as prediction.",
+      "claim_total": 13,
+      "claim_hedged": 1,
+      "claim_unhedged": 11,
+      "claim_predictions": 1,
+      "confidence_imbalance_fired": false,
+      "explanation": "Are claims appropriately hedged given their epistemic status? Overconfidence is the canonical decision pathology in the calibration literature; the hedge ratio is a textual proxy for it.",
+      "library_entries": [
+        {
+          "fvs_id": "FVS-012",
+          "title": "Uncertainty Frame",
+          "library_resource_uri": "frame-check://library/FVS-012",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+        },
+        {
+          "fvs_id": "FVS-017",
+          "title": "False Balance",
+          "library_resource_uri": "frame-check://library/FVS-017",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-017.html"
+        }
+      ],
+      "fired_library_entries": []
+    },
+    "evidence": {
+      "name": "Evidence backing",
+      "signal_value": null,
+      "signal_secondary": 0,
+      "signal_text": "No numerical claims to verify against sources. 0% of sentences attributed to sources.",
+      "verified": 0,
+      "checked": 0,
+      "providers_count": 0,
+      "sourced_pct": 0,
+      "explanation": "Are claims supported by sources, or floating assertions? Numerical claims are checked against authoritative providers (calibrated by F1 in the calibration corpus). Source-attribution share is a second proxy for evidence backing at the sentence level.",
+      "library_entries": [
+        {
+          "fvs_id": "FVS-016",
+          "title": "Authority by Citation",
+          "library_resource_uri": "frame-check://library/FVS-016",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-016.html"
+        }
+      ],
+      "fired_library_entries": []
+    },
+    "robustness": {
+      "name": "Robustness",
+      "signal_value": 0,
+      "signal_secondary": 0,
+      "signal_text": "No claims checked against sources.",
+      "contradicted": 0,
+      "disputed": 0,
+      "checked": 0,
+      "explanation": "Does the analysis hold up under scrutiny from available evidence? Contradicted numerical claims are the load-bearing test: a single contradiction can invalidate a chain of reasoning.",
+      "library_entries": [
+        {
+          "fvs_id": "FVS-016",
+          "title": "Authority by Citation",
+          "library_resource_uri": "frame-check://library/FVS-016",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-016.html"
+        }
+      ],
+      "fired_library_entries": []
+    },
+    "counterfactual": {
+      "name": "Counterfactual thinking",
+      "signal_value": true,
+      "signal_secondary": null,
+      "signal_text": "No markers detected for the uncertainty dimension.",
+      "failure_framing_absent": false,
+      "uncertainty_addressed": false,
+      "risks_addressed": true,
+      "explanation": "Does the analysis name what would falsify it, or what alternatives it has considered? Confirmation bias is the most-documented decision pathology; the absence of limitations / risks / uncertainty markers is the structural proxy for it.",
+      "library_entries": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        },
+        {
+          "fvs_id": "FVS-007",
+          "title": "Failure Framing",
+          "library_resource_uri": "frame-check://library/FVS-007",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html"
+        },
+        {
+          "fvs_id": "FVS-009",
+          "title": "Risk Frame",
+          "library_resource_uri": "frame-check://library/FVS-009",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-009.html"
+        },
+        {
+          "fvs_id": "FVS-012",
+          "title": "Uncertainty Frame",
+          "library_resource_uri": "frame-check://library/FVS-012",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+        },
+        {
+          "fvs_id": "FVS-014",
+          "title": "Temporal Anchoring",
+          "library_resource_uri": "frame-check://library/FVS-014",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-014.html"
+        }
+      ],
+      "fired_library_entries": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        }
+      ]
+    }
+  }
+}

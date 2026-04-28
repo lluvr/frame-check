@@ -1,0 +1,592 @@
+{
+  "schema": "reframe_full_sweep_baseline_v1",
+  "captured_at_utc": "2026-04-24T18:27:30Z",
+  "candidate_library": "data/frame_library",
+  "purpose": "Reference reframe output per emitting frame under current Generation-affordances content. Use to diff a future Generation-affordances edit's sweep output against this baseline. Reframe is non-deterministic at temp=0 due to LLM jitter; expect some variation on re-run. Structural metrics (numbers, length ratio, portrait shift) are the primary comparison targets; candidate_text is preserved for manual inspection.",
+  "aggregate": {
+    "pass_count": 10,
+    "fail_count": 5,
+    "skip_count": 4,
+    "skipped_frames": [
+      "FVS-003",
+      "FVS-005",
+      "FVS-006",
+      "FVS-013"
+    ],
+    "failed_frames": [
+      "FVS-008",
+      "FVS-016",
+      "FVS-017",
+      "FVS-018",
+      "FVS-019"
+    ],
+    "total_cost_usd": 0.0146
+  },
+  "per_frame": {
+    "FVS-001": {
+      "fvs_id": "FVS-001",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_31_barmada_animal_research.txt",
+      "source_length": 7042,
+      "source_numbers": [
+        "1993",
+        "2024",
+        "95%"
+      ],
+      "candidate_text": "In the evolving landscape of biomedical research, recent initiatives by the Food and Drug Administration (FDA) and National Institutes of Health (NIH) signal a clear trend toward reducing and replacing animal testing, emphasizing \"new approach methodologies\" like lab-grown human-based models and computational technologies as more human-relevant options. This shift reflects growing stakeholder pressures from regulators, funders, ethicists, and advocacy groups concerned with animal welfare, past translational failures, and resource allocation, yet it introduces uncertainties about comprehensively addressing complex human biology.\n\nMice, alongside rats comprising around 95% of research animals, remain foundational, with foundational discoveries historically reliant on them. However, causes of earlier criticisms—such as poor prediction of human outcomes—stemmed from outdated models lacking human-like features. Today's genetically engineered variants mitigate these issues by incorporating human genes, cells, and tissues, enabling whole-organism studies beyond isolated dish-based systems.\n\nStakeholders like patients and clinicians benefit from such advancements: for instance, humanized mice with human liver cells retrospectively predicted the liver failure in nearly half of 1993 fialuridine trial participants, a toxicity missed by prior animal tests. Similarly, mice carrying human immune cells revealed multi-organ toxicities (including brain effects) in CAR T-cell immunotherapy, informing ongoing clinical trials to enhance safety for cancer patients. Patient-specific models, implanting surgically removed tumors into mice, allow tailored therapy testing, while variants with autism-linked genes aid personalized treatments for genetic diseases.\n\nEmerging trends in \"naturalized\" mice—exposed to diverse environmental factors like germs and exposures unlike ultra-clean labs—further address physiological complexities influencing metabolism and immunity. These models reproduced drug failures in autoimmune trials, promising better preclinical screening for rheumatoid arthritis and inflammatory bowel disease. They also pinpointed microbe-driven toxicities in immune checkpoint inhibitors, a therapy unleashing immune responses against cancer. A 2024 National Institute of Allergy and Infectious Diseases (NIAID/NIH) workshop showcased global evidence of their potential to refine human disease understanding.\n\nYet risks persist across approaches. Animal models, despite refinements, carry uncertainties in scalability, ethical costs, and incomplete human mimicry, as FDA acknowledges that \"all possible side effects of a drug can't be anticipated,\" with post-approval events requiring ongoing animal-human integration. Alternatives like lab-grown human liver models risk oversimplification, failing to model interconnected organ effects or dynamic conditions. Broad reductions in animal investment could erode expertise, infrastructure, and safeguards, leaving regulators, researchers, and patients vulnerable to unforeseen safety issues.\n\nOther species trends, such as genetically modified pigs with harmful genes removed and human genes added to heart, liver, and kidney organs, highlight stakeholder-driven progress toward transplantation solutions for end-stage diseases, balancing donor shortages with xenotransplantation risks like rejection.\n\nUncertainty underscores all methods: alternatives excel in ethics and speed but lack whole-body context; animal models offer physiological depth yet demand ethical oversight. Causes of translational gaps—historical model limitations, siloed testing—persist without integration. Stakeholders, from FDA/NIH pushing alternatives to researchers advocating complementarity, reveal tensions: funders prioritize cost savings, patients urgent therapies, ethicists welfare.\n\nTrends favor hybrid systems: combining animal data with human-based and computational tools yields superior translation, as practiced by integrating mouse models with AI to uncover patterns infeasible in humans, then validating predictions pre-clinically. This reduces repetitive animal use by enhancing prediction accuracy.\n\nInclusive dialogue among stakeholders—regulators, researchers, patients, ethicists—is essential for validating integrations over hasty policy shifts. Past model shortcomings do not define current humanized and naturalized advances, nor do alternatives' promises negate animal roles. Agencies should fund balanced systems uniting methodologies, mitigating risks, addressing uncertainties, and leveraging trends to accelerate patient treatments equitably.",
+      "candidate_length": 4617,
+      "candidate_cost_usd": 0.000908,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 3,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": false,
+          "ratio": 0.656
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 0,
+          "diffs": {}
+        }
+      }
+    },
+    "FVS-002": {
+      "fvs_id": "FVS-002",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_31_barmada_animal_research.txt",
+      "source_length": 7042,
+      "source_numbers": [
+        "1993",
+        "2024",
+        "95%"
+      ],
+      "candidate_text": "### Paragraph-by-Paragraph Claim Evaluation: Stripping Polish from Pro-Animal Model Advocacy Piece\n\n**Paragraph 1:**  \n**Claim:** FDA and NIH announced initiatives to reduce/replace animal testing using \"new approach methodologies\" like lab-grown human models and computational tech, seen as more modern/human-relevant.  \n**Evidence:** None provided; just states announcements and descriptions.  \n**Rough draft acceptance:** No—lacks specifics on initiatives or why they're promoted; bare assertion feels unsubstantiated even messy.  \n**Rough draft version:** Recent months FDA NIH new initiatives reduce replace animal testing biomedical research. Central new approach methodologies lab-grown human-based models computational technologies promoted more modern human-relevant.\n\n**Paragraph 2:**  \n**Claim:** Risk abandoning modern animal models relevant to human biology; need investment in refining/complementing, not replacing them for discovery/drug dev.  \n**Evidence:** Author's self-description as researcher combining mouse/human/comp approaches.  \n**Rough draft acceptance:** Yes—personal stake and basic logic hold if sloppy; core arg clear.  \n**Rough draft version:** amid rush alternatives risk abandon modern animal models increasingly relevant human biology. as biomedical researcher combine advanced mouse models human-based computational approaches argue biomedical discovery drug development require greater investment refining complementing not replacing animal models.\n\n**Paragraph 3:**  \n**Claim:** Mice (with rats) ~95% research animals; many foundational discoveries depended on them.  \n**Evidence:** 95% stat; \"no surprise\" implication from usage.  \n**Rough draft acceptance:** Yes—stat and link to discoveries factual, typos ok.  \n**Rough draft version:** Mice most common animal model biomedical research together rats make up around 95% research animals. no surprise many foundational discoveries depended them.\n\n**Paragraph 4:**  \n**Claim:** Mouse research criticized for not predicting human outcomes, but today's models emulate human responses better than ever.  \n**Evidence:** None specific; just contrasts past criticism with vague \"today's.\"  \n**Rough draft acceptance:** No—vague progress claim needs examples to stand alone.  \n**Rough draft version:** mouse research long faced criticism failing predict human outcomes todays models far more capable emulating human responses than ever before.\n\n**Paragraph 5:**  \n**Claim:** Mice modified to carry human genes/cells/tissues to study human biology in living organism vs. dish/test tube.  \n**Evidence:** Descriptive capability, no examples yet.  \n**Rough draft acceptance:** Yes—technical fact verifiable, phrasing minor.  \n**Rough draft version:** Mice can modified carry human components including genes cells even tissues directly study human biology context whole living organism rather simply dish test tube.\n\n**Paragraph 6:**  \n**Claim:** 1993 fialuridine trial cleared animal testing but caused liver failure in nearly half participants; humanized mice (human cells in mouse livers) later predicted that toxicity.  \n**Evidence:** Specific trial year, drug, outcome (nearly half), and humanized mouse method.  \n**Rough draft acceptance:** Yes—key facts/numbers pin it down solidly.  \n**Rough draft version:** example 1993 clinical trial drug fialuridine cleared preclinical animal testing unexpectedly liver failure nearly half participants. researchers later discovered adding human cells mouse livers these humanized mice could predict same drug toxicity clinical trial.\n\n**Paragraph 7:**  \n**Claim:** Lab-grown human liver models (FDA-promoted alt) complement but insufficient alone for multi-organ effects or complex conditions.  \n**Evidence:** Logical inference from organ interconnectedness; no data.  \n**Rough draft acceptance:** No—speculative limit without comparison evidence.  \n**Rough draft version:** While lab-grown human liver models one alternatives promoted FDA may complement animal testing insufficient own capture treatment effects across interconnected organs study complex human conditions.\n\n**Paragraph 8:**  \n**Claim:** CAR T-cell therapy toxicities hit multiple organs (e.g., brain); mice with human immune cells uncovered causes; trials now addressing for safety.  \n**Evidence:** Therapy description, multi-organ issue, mouse method success leading to trials.  \n**Rough draft acceptance:** Yes—concrete therapy link and outcome.  \n**Rough draft version:** instance CAR T-cell immunotherapy groundbreaking treatment uses patients own immune cells fight cancer frequently causes toxicities affecting multiple organs including brain. While severe effects difficult study traditional animal models researchers using mice carrying human immune cells able uncover causes. Clinical trials now underway address effects make therapy safer patients urgently need it.\n\n**Paragraph 9:**  \n**Claim:** Mice engineered with patient-specific gene variants understand autism/personalized therapies; implant patient cancer post-surgery to test therapies/guide care.  \n**Evidence:** Applications listed (autism, genetic diseases, cancer implants).  \n**Rough draft acceptance:** Yes—specific uses factual.  \n**Rough draft version:** Mice also engineered patient-specific gene variants helping scientists better understand complex human conditions like autism develop personalized therapies genetic diseases. even used some cases guide patient care. example patients cancer removed surgery implanted mice allowing doctors test different therapies select most effective follow-up treatment patients unique cancer.\n\n**Paragraph 10:**  \n**Claim:** Environmental factors (exposures/germs) affect human physio/metab/immune; naturalized mice (diverse exposures vs. ultra-clean labs) capture this better.  \n**Evidence:** Contrast lab conditions with new method; author's use.  \n**Rough draft acceptance:** Yes—method description holds.  \n**Rough draft version:** Environmental factors including diverse exposures germs greatly affect human physiology metabolism immune system. contrast historically ultra-clean highly controlled laboratory conditions my colleagues I now using naturalized mice exposed more diverse environmental factors better capture effects.\n\n**Paragraph 11:**  \n**Claim:** Naturalized mice (natural immune) reproduce negative drug effects for autoimmune/inflammatory that failed human trials; promising for RA/IBD preclinical.  \n**Evidence:** Drug failure reproduction; named diseases.  \n**Rough draft acceptance:** Yes—predictive success implied factually.  \n**Rough draft version:** With more natural immune systems these mice enabled researchers reproduce negative effects drugs autoimmune inflammatory conditions previously failed human clinical trials. Preclinical testing new treatments immune diseases like rheumatoid arthritis inflammatory bowel disease these mice especially promising identify therapies more likely succeed patients early.\n\n**Paragraph 12:**  \n**Claim:** Naturalized mice ID causes of severe toxicities in immune-checkpoint therapy (relies on natural microbes).  \n**Evidence:** Therapy type, microbe dependence.  \n**Rough draft acceptance:** Yes—specific mechanism.  \n**Rough draft version:** Scientists using such mice also able identify causes severe toxicities commonly seen patients treated another groundbreaking therapy releases brakes immune system fight cancer depended natural microbes found these mice.\n\n**Paragraph 13:**  \n**Claim:** Many ongoing studies; naturalized mice promise shown at 2024 NIAID/NIH workshop with global researchers presenting evidence for human disease/advances.  \n**Evidence:** Workshop host/year, presenters.  \n**Rough draft acceptance:** Yes—event anchors it.  \n**Rough draft version:** And many other such studies ongoing. promise naturalized mice highlighted scientific workshop hosted 2024 National Institute Allergy Infectious Diseases NIH researchers around world presented evidence supporting potential improve understanding human disease advance health.\n\n**Paragraph 14:**  \n**Claim:** Other models evolved too; e.g., GM pig organs (remove harmful animal genes, add human) for transplant (heart/liver/kidney) address donor shortage/end-stage diseases.  \n**Evidence:** Modification details, organs, purpose.  \n**Rough draft acceptance:** Yes—tech specifics.  \n**Rough draft version:** And not just mice. Many other animal models evolved ways directly benefit human health. Notably recent advances genetically modified pig organs human transplantation harmful animal genes removed human ones added organs like heart liver kidney promising step address donor shortage help patients end-stage diseases.\n\n**Paragraph 15:**  \n**Claim:** Broadly reducing investment in animal models (expertise/infra/ethics) undermines progress, leaves unprepared for future issues.  \n**Evidence:** None new; consequential logic.  \n**Rough draft acceptance:** No—alarmist without quant risk.  \n**Rough draft version:** Broadly reducing investment animal models now including expertise infrastructure ethical safeguards currently place would not only undermine critical progress also leave unprepared complex medical safety issues appear future.\n\n**Paragraph 16:**  \n**Claim:** FDA notes not all drug side effects anticipated, emerge post-approval; use tailored animal models + human obs to isolate/refine.  \n**Evidence:** FDA quote paraphrase.  \n**Rough draft acceptance:** Yes—ties to authority.  \n**Rough draft version:** As FDA notes all possible side effects drug cant anticipated many adverse events emerge after approval. such cases researchers still use tailored animal models alongside human observations isolate causes refine treatments time.\n\n**Paragraph 17:**  \n**Claim:** Investing/complementing modern models now reduces future animal use (better predict = fewer failed/repetitive expts).  \n**Evidence:** Predictive logic.  \n**Rough draft acceptance:** Yes—straightforward efficiency arg.  \n**Rough draft version:** In fact investing complementing modern animal models now can reduce future animal use. When preclinical studies better predict human outcomes fewer animals needed repetitive experiments ultimately fail translate.\n\n**Paragraph 18:**  \n**Claim:** Don't choose animal vs. human-based; integrate both for best study of conditions.  \n**Evidence:** None; normative.  \n**Rough draft acceptance:** No—vague without why integrate best.  \n**Rough draft version:** Moving forward shouldnt choosing between animal models human-based approaches rather integrating both needed best study human conditions.\n\n**Paragraph 19:**  \n**Claim:** Best translational results from combining animal + human/comp; e.g., AI learns from animal data (expts not possible in humans), test AI preds in animals first.  \n**Evidence:** Author's proposal/practice; AI example.  \n**Rough draft acceptance:** Yes—combo synergy concrete.  \n**Rough draft version:** As colleagues I previously proposed currently practice research most promising translational results come combining animal models human-based computational approaches. These tools provide complementary insights enhance understand disease treat patients. instance powerful AI tools benefit animal data generated experimental conditions not possible humans learn uncover biologically relevant patterns. Tailored animal models also used test promising AI predictions before first applied people.\n\n**Paragraph 20:**  \n**Claim:** Integrating new methods needs inclusive dialogue/diverse expertise + time for validation before policies.  \n**Rough draft acceptance:** Yes—process rec reasonable.  \n**Rough draft version:** Integration new methods complex research systems however requires inclusive dialogue across diverse expertise sufficient time validation before implementing new policies.\n\n**Paragraph 21:**  \n**Claim:** Regulators/funders: today's models ≠ past failures; abandon humanized/naturalized now = step back for progress/patients.  \n**Evidence:** References prior examples.  \n**Rough draft acceptance:** No—relies on earlier unproven advances.  \n**Rough draft version:** As regulators funders push alternatives must recognize todays animal models arent same ones failed predict human responses past. Abandoning these advances now just humanized naturalized models finally delivering promise would step backward scientific progress patients stand benefit future breakthroughs.\n\n**Paragraph 22:**  \n**Claim:** Agencies invest in systems uniting animal + other methods to accelerate research/treatments.  \n**Evidence:** None; conclusion.  \n**Rough draft acceptance:** No—policy ask without new support.  \n**Rough draft version:** Agencies instead invest systems unite animal models other promising methods most effectively accelerate biomedical research treatments patients.\n\n**Overall Assessment:** Piece makes ~",
+      "candidate_length": 12823,
+      "candidate_cost_usd": 0.00214,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 16,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": false,
+          "ratio": 1.821
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 0,
+          "diffs": {}
+        }
+      }
+    },
+    "FVS-004": {
+      "fvs_id": "FVS-004",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_31_barmada_animal_research.txt",
+      "source_length": 7042,
+      "source_numbers": [
+        "1993",
+        "2024",
+        "95%"
+      ],
+      "candidate_text": "### Default Frame\n**Animal model refinement and integration frame**: Entry question: \"Should regulators rush to replace animal models with alternatives?\" Assumptions: Modern animal models (e.g., humanized/naturalized mice, pigs) are highly human-relevant, essential for complex biology, and under threat; alternatives like NAMs are promising but insufficient alone. Search space: Success stories of advanced animals, historical animal failures fixed by refinements, calls for complementarity over replacement.\n\n### Opposite Frame Rewrite\n\nIn recent months, the Food and Drug Administration and National Institutes of Health have announced new initiatives to reduce and replace animal testing in biomedical research. Central to these efforts are \"new approach methodologies,\" such as lab-grown human-based models and computational technologies, which offer more modern and human-relevant paths forward.\n\nYet as regulators advance these alternatives, longstanding reliance on animal models—despite some refinements—continues to limit progress in biomedical discovery and drug development. As a biomedical researcher combining human-based and computational approaches with select animal validations, I argue that we need greater investment in scaling new approach methodologies, using advanced animals sparingly to complement, not anchor, this transition.\n\nMice are the most commonly used animal model in biomedical research, and together with rats they make up around 95% of research animals. It's no surprise, then, that many foundational discoveries have depended on them—but so have persistent translation failures.\n\nMouse research has long faced criticism for failing to predict human outcomes, and even today's refinements fall short of fully reliable human emulation.\n\nWhile mice can be modified to carry human components, including genes, cells, and even tissues, this still studies human biology in a non-human organism, unlike direct human-based models in a dish or test tube.\n\nFor example, in 1993, a clinical trial of the drug fialuridine, which had cleared preclinical animal testing, unexpectedly resulted in liver failure in nearly half of the participants. Only later, by adding human cells to mouse livers, did these \"humanized\" mice predict the same drug toxicity—highlighting how standard animals missed it and hybrid approaches point toward fully human lab-grown liver models promoted by the FDA.\n\nWhile such humanized mice offer some insights, lab-grown human liver models and other new approach methodologies are better positioned to capture treatment effects across interconnected organs or complex human conditions without animal dependencies.\n\nFor instance, CAR T-cell immunotherapy, a groundbreaking treatment that uses a patient's own immune cells to fight cancer, frequently causes toxicities affecting multiple organs, including the brain. These severe effects were difficult to study in traditional animal models, and even mice carrying human immune cells only partially uncovered their causes. Clinical trials are now underway to address these effects and make this therapy safer for patients who urgently need it—underscoring the need for integrated human-based systems.\n\nMice can also be engineered with patient-specific gene variants, offering limited insights into complex human conditions like autism and potential personalized therapies for genetic diseases. They have even been used in some cases to help guide patient care. For example, a patient's cancer removed during surgery can be implanted into mice, allowing doctors to test different therapies and select the most effective follow-up treatment for that patient's unique cancer—but scalable computational and organoid alternatives could democratize this.\n\nEnvironmental factors, including diverse exposures and germs, also greatly affect human physiology, metabolism, and immune system. In contrast to the historically ultra-clean and highly controlled laboratory conditions, \"naturalized\" mice exposed to more diverse environmental factors aim to capture these effects—but human-based models with controlled variability provide more precise, ethical recapitulation.\n\nWith more natural immune systems, these mice enabled researchers to reproduce the negative effects of drugs for autoimmune and inflammatory conditions that had previously failed in human clinical trials. Preclinical testing of new treatments for immune diseases, like rheumatoid arthritis and inflammatory bowel disease, in these mice shows some promise—but new approach methodologies promise to identify therapies more likely to succeed in patients even earlier, without animal scale-up.\n\nScientists using such mice were also able to identify causes of severe toxicities commonly seen in patients treated with another groundbreaking therapy that releases the brakes on the immune system to fight cancer, which depended on the natural microbes found in these mice—yet this validates the push for non-animal platforms that replicate such dynamics.\n\nAnd many other such studies are ongoing. The promise of alternatives beyond naturalized mice was highlighted at a scientific workshop hosted in 2024 by the National Institute of Allergy and Infectious Diseases of the NIH, where researchers from around the world presented evidence supporting their potential to improve our understanding of human disease and advance health.\n\nAnd it's not just mice. Many other animal models have evolved modestly, like recent advances in genetically modified pig organs for human transplantation, in which harmful animal genes are removed and human ones are added in organs like the heart, liver, and kidney—a promising step to address donor shortage and help patients with end-stage diseases, but one that still requires NAMs for full validation.\n\nBroadly sustaining heavy investment in animal models now, including the expertise, infrastructure, and ethical safeguards currently in place, risks slowing the shift to alternatives and leaving us reliant on models prone to unpredictability.\n\nAs the FDA notes, \"all possible side effects of a drug can't be anticipated\" and many adverse events emerge after approval. In such cases, researchers still use tailored animal models alongside human observations to isolate the causes and refine treatments over time—but new approach methodologies can minimize this need upfront.\n\nIn fact, investing in new approach methodologies now can reduce future animal use. When human-based and computational studies better predict human outcomes, fewer animals are needed for repetitive experiments that ultimately fail to translate.\n\nMoving forward, we shouldn't default to animal models over human-based approaches, but rather prioritize NAMs as the core, integrating animals only as needed for unresolved complexities.\n\nAs my colleagues and I have previously proposed and currently practice in our research, the most promising translational results come from leading with human-based and computational approaches alongside select animal validations. These tools provide complementary insights that enhance how we understand disease and treat patients.\n\nFor instance, powerful artificial intelligence tools can benefit from animal data generated under experimental conditions not possible in humans to learn and uncover biologically relevant patterns—but AI trained primarily on human data will outperform. Tailored animal models can also be used to test promising AI predictions before they are first applied to people, in a minimized role.\n\nIntegration of new methods into complex research systems, however, requires inclusive dialogue across diverse expertise and sufficient time for validation before implementing new policies.\n\nAs regulators and funders push toward alternatives, they must recognize that yesterday's animal models failed to predict human responses—but even today's versions haven't fully closed the gap. Pivoting investment now, as humanized and naturalized models reveal their limits, accelerates progress for scientific advancement and patients awaiting breakthroughs.\n\nAgencies should instead invest in systems that prioritize new approach methodologies alongside minimal animal use to most effectively accelerate biomedical research into treatments for patients.",
+      "candidate_length": 8265,
+      "candidate_cost_usd": 0.001402,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 3,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": true,
+          "ratio": 1.174
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 0,
+          "diffs": {}
+        }
+      }
+    },
+    "FVS-007": {
+      "fvs_id": "FVS-007",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_32_higgins_vaccine_skepticism.txt",
+      "source_length": 8299,
+      "source_numbers": [
+        "10%",
+        "2025",
+        "34%",
+        "40%",
+        "81%",
+        "82%",
+        "84%",
+        "89%"
+      ],
+      "candidate_text": "### Failure Analysis of Vaccine Poll Interpretation\n\nTwo years ago, I wrote in the New England Journal of Medicine that one of the greatest threats to childhood vaccination is the normalization of skepticism, even though it isn't actually the norm. A key vulnerability in such analyses is misinterpreting poll headlines like Politico's \"More Americans doubt vaccine safety than trust it, Politico Poll finds,\" with its subhead \"Health Secretary Robert F. Kennedy Jr.'s views are commonplace across the land.\" For this interpretation to fail, evidence would need to show Politico is not reputable or that headlines did not influence public perception. Within hours, outlets ran \"Vaccine skepticism now the norm for many Americans,\" amplified by The Defender (Children's Health Defense, formerly led by Kennedy), claiming nearly half the country is \"unsure about vaccine safety,\" and an HHS spokesperson noting resonance across party lines. Contradictory evidence could include data proving no spread on social media or in networks. Invalidating conditions: if skepticism was already the norm pre-poll, normalization claims collapse.\n\nThese claims fail under scrutiny unless poll data directly supports them. As epidemiologist Katelyn Jetelina noted, a large movable middle exists, but headlines overreach. The analysis errs if the poll truly shows Kennedy's views commonplace or skepticism widespread. Failure evidence: raw data aligning perfectly with headlines without methodological flaws. Invalidations: ignoring the movable middle would undermine attention to clinicians/communicators.\n\nThe core survey question—\"Which of the following comes closest to your view?: The science on vaccines is clear and it is damaging to question it | The facts on vaccines are still up for debate and it is damaging to enforce their uptake\"—bundles four independent items: (1) science clarity, (2) damage from questioning, (3) facts in debate, (4) damage from enforcing uptake. This \"four-barreled\" design fails if respondents treat it as unitary, not compound. Contradictions: surveys proving bundled questions yield accurate nuance. Invalidations: if methodologists endorse this for distinction, critique voids.\n\nRespondents like pediatricians valuing debate despite clear science, parents seeing enforcement as overreach yet vaccinating, or hesitant parents supporting school requirements fail to fit cleanly. Analysis wrong if question distinguishes these perfectly. Evidence against: data showing no misplacement. Conditions: good-faith questioning deemed non-damaging universally, shifting my response (clear science, debate essential, enforcement context-dependent, harshness backfires).\n\nKey findings vulnerable: only 10% chose \"vaccine risks significant, and enforcing vaccines dangerous\" (double-barreled itself); 40% support reducing vaccines (framing implies compulsion, not recommendations); 34% see reducing vaccines as Make America Healthy Again core (even among identifiers). Fails if 10%/40%/34% indicate true skepticism mainstream. Contradictions: polls linking these to risk denial. Invalidations: if \"reducing\" means access limits, not recommendations.\n\nBroader evidence tests resilience: Reuters/Ipsos (February) 84% (81% Republicans) say MMR safe; 74% support school requirements. Partnership poll: 89% (82% Republicans) vaccines essential. Republican pollsters Tony Fabrizio/Bob Ward (late 2025 White House memo): bipartisan majorities, >75% Trump voters back MMR/Tdap/hepatitis B; warn access limits backfire. Analysis collapses if these show erosion dominating. Contradictions: recent surveys with <84%/89% support. Invalidations: underfunding vaccine research proven irrelevant.\n\nWarning signs (erosion) acknowledged, but support norm holds unless stories normalize doubt. Fails if misframing harmless. Evidence: no self-fulfilling prophecy from polls. Conditions: clinicians/policymakers immune to headlines.\n\nPolls tease nuance amid messiness and underfunding, but gathering/interpretation impacts beliefs. Wrong if no consequences (e.g., exam room shifts, policy changes). Contradictions: skepticism unchanged post-poll. Invalidations: accurate framing despite flaws.\n\nEvaluation: Original analysis survives its failure criteria. No evidence shows Politico headlines uninfluential or non-reputable; data spread confirmed. Poll lacks direct support for \"commonplace\" claims—bundled question prevents distinction, preserving movable middle emphasis. 10%/40%/34% consistent with nuance, not mainstream skepticism. Contrasting polls (84%, 81%, 74%, 89%, 82%, >75%) affirm resilient support; memo warns backfire. Methodological critiques hold—no endorsements of four-barreled questions; my response fits middle. Erosion real but norm defended; underfunding contextual. No contradictions invalidate—headlines risk prophecy, demanding accurate messaging for clinicians/communicators. Norm worth defending withstands tests.",
+      "candidate_length": 4931,
+      "candidate_cost_usd": 0.001151,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 10,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": false,
+          "ratio": 0.594
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "trends"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "causes",
+              "stakeholders",
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 1,
+          "diffs": {
+            "coverage_missing": {
+              "added": [
+                "causes",
+                "stakeholders",
+                "uncertainty"
+              ],
+              "removed": [
+                "trends"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FVS-008": {
+      "fvs_id": "FVS-008",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_13_thompson_bubbles.txt",
+      "source_length": 22941,
+      "source_numbers": [
+        "1.4",
+        "10.8",
+        "13",
+        "15",
+        "1998",
+        "1999",
+        "20",
+        "2000",
+        "2002",
+        "2020",
+        "2023",
+        "2024",
+        "2027",
+        "3.8",
+        "83.2",
+        "86"
+      ],
+      "candidate_text": "It's alarming that a decade ago skeptics rightly warned of a bubble, yet today we're ignoring the same red flags staring us in the face—this is unequivocally a bubble, and one poised for destructive collapse without the redemptive benefits of past manias.\n\nConsider OpenAI: a single company locking in $1.4 trillion worth of deals (and counting!) against a paltry $13 billion of reported revenue—two orders of magnitude less than the infrastructure it's committed to buy. The real revenue might be higher, but it changes nothing; this is froth, not foundation. Over the past week, every big tech company except Apple has ballooned capital expenditure plans with no slowdown in sight, fueling a frenzy that screams overreach.\n\nThis has markets on edge for good reason: what inflates must deflate, birthing recessions and bankruptcies. The AI bubble will pop, and unlike optimistic histories, the fallout here looks unrelentingly grim—no silver lining, just widespread ruin.\n\nFinancial Speculation and Fleeting Capacity\n\nCarlota Perez's Technological Revolutions and Financial Capital, published in 2002 amid the dot-com recession, chronicled bubbles in the Industrial Revolution, railways, electricity, and automobiles. She acknowledged the crashes but framed \"Installation Phases\" as necessary preludes to \"Deployment Periods,\" funded by irrational bets.\n\nYet Perez wrote when telecom's fiber overbuild—far beyond usage needs—left bankrupt companies in its wake. That \"free\" fiber underpinned the Internet, but only because demand exploded organically afterward. The equity losses in dot-com IPOs were bad enough; the debt-fueled telecom wreckage was catastrophic. Today's AI spenders, awash in debt-financed capex, risk far worse: no comparable demand surge awaits.\n\nThe Fragility of Cognitive Pretense\n\nByrne Hobart and Tobias Huber's Boom: Bubbles and the End of Stagnation distinguishes \"Inflection Bubbles\" (beneficial) from \"Mean-reversion Bubbles\" like the 2000s subprime disaster. Their inflection ideal: Amazon redefining retail with infinite shelves, Yahoo enabling search, Priceline upending commerce—not incremental tweaks, but orders-of-magnitude leaps. Smartphones beat PCs at navigation infinitely; cars reshaped cities beyond horses.\n\nAI? No such transformation. It's pitched as coordination—ISPs begetting e-commerce, ads fueling content—but dot-com's real output was parallel innovations amid mania: U.S. population online, SaaS unlocked, browser wars yielding XMLHttpRequest in Internet Explorer 5 (1999), turning browsers productive and eroding Microsoft's moat for smartphones.\n\nBackend pressures birthed scalability too: Sun's pricey SPARC/Solaris servers dominated, but startups like pre-scale Hotmail (FreeBSD on x86) and Yahoo shifted there, with Google (1998) perfecting Linux/x86 stacks. Fiber from bankrupt telecoms carried it all. Perez saw physical capacity; Hobart and Huber added \"cognitive capacity\" from aligned frenzy.\n\nBut this coordination crumbles under scrutiny: dot-com innovations happened despite the bubble's waste, not because of it. AI's \"shared belief\" feels more like subprime denial—hype masking mean-reversion.\n\nIs AI the Exception—for the Worse?\n\nOptimists claim AI delivers real demand, with hyperscalers citing excess demand. History says overshoot is inevitable. Pessimists rightly fear it's no Perez/Hobart bubble: physical and cognitive builds falter.\n\nPhysically, Nvidia's GPU binge hit a nearly $5 trillion valuation as world's most valuable company. Unlike railroads or fiber, chips depreciate in five years (hyperscalers' norm, perhaps generous)—ephemeral, not enduring. Speculative GPU floods will yield scrap, not legacy assets.\n\nFabs offer faint hope: TSMC, Samsung building U.S. plants; government backing Intel. Yet U.S. trails on trailing-edge too, Taiwan risks loom—AI mania accelerates dependence, not independence.\n\nPower is grimmer: Microsoft CFO Amy Hood admitted past shortages were \"space or power,\" now building 15-to-20-year assets via leases, confident in need. Amazon's Andy Jassy: 3.8 gigawatts added last year, another gigawatt plus in Q4, doubling by 2027 end—monetizing amid bottlenecks shifting from power to chips.\n\nPower stagnation over two decades made this unsurprising, but AI's \"incentives\" won't fix it fast: red tape lingers, builds lag. Bankruptcy wiping power costs? Risky for solar/nuclear's low marginal fuel—speculative overbuild could idle assets, not ignite invention.\n\nCognitively, OpenAI/Google leads evaporate in weeks; Silicon Valley and China chase LLMs, but consumer uptake masks commoditization. Substrate's lithography push, Extropic's entropy chips, hyperscaler custom silicon—all bubble-fueled trials, likely false starts. Hobart and Huber note bubbles fund parallel errors, but FOMO here amplifies risk aversion's opposite: reckless duplication, no breakthroughs.\n\nBoom warns: \"Not all bubbles...catalysts,\" but AI's \"collective vision\" reeks of delusion, not prophecy—quasi-spiritual God-building justifies unrecoupable models, bad policies, national security risks.\n\nStagnation: The Post-Bubble Reality\n\nBoom opens with stagnation: children today see less change than a century ago—no cars, appliances, nukes, space as promised; just collapse fears. VR/AR exemplifies: Meta's Reality Labs since Q4 2020: $10.8 billion revenue vs. $83.2 billion costs (plus $2 billion Oculus buy pre-2020). Apple's Vision Pro: announced 2023, launched 2024, earnings silence since.\n\nBigcos' caution starved innovation—no AR/VR bubble. Pre-2020 tech? Big Five monopolies, SaaS cookie-cutters—Silicon Valley Inc., risk-free churn. Hobart and Huber pin stagnation on risk intolerance across domains.\n\nAI's \"fun\" mania reverses that briefly, but bubbles end in pain: recession, bankruptcies. No fiber-like freebies, no browser-like pivots—GPU graveyards, power white elephants, iterated failures. History's \"benefits\" over decades? Overstated; AI's will prove mean-reversion writ large, entrenching deeper stagnation via debt overhang and caution.\n\nThe best case? Pray the pop comes soon, sparing more waste—but expect no redemption, just the grind of what could have been avoided.",
+      "candidate_length": 6168,
+      "candidate_cost_usd": 0.002014,
+      "checks": {
+        "numbers_preserved": {
+          "passed": false,
+          "retained_count": 17,
+          "missing_count": 1,
+          "missing_sample": [
+            "20"
+          ]
+        }
+      }
+    },
+    "FVS-009": {
+      "fvs_id": "FVS-009",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_33_ogbunu_maha_science.txt",
+      "source_length": 7176,
+      "source_numbers": [
+        "-2025",
+        "2025"
+      ],
+      "candidate_text": "An old adage tells us that pressure can burst a pipe, but pressure can also make a diamond. It's an empowering creed for life's tumult. It applied most directly to me during my past life as a sometimes-boxer by suggesting that the fighter with less talent (me in my youth) can win by smothering their opponent, throwing punches in high volume, and making their foe uncomfortable. Pressure, this pugilistic advice goes, is the best way to expose the fragilities of adversaries—and unlock our own untapped potential.\n\nThe analogy applies to the current war on science, now a year old. My academic colleagues and I feel energized by the focused challenge from the Make America Healthy Again, or MAHA, movement. We are collectively mobilized, with a clear plan of action, and fortified against every body blow from an emboldened challenger. The best consequences of the war on science are the direct ones, like the funding cuts and the attacks on DEI and free speech, which depend on a growth trajectory toward more accountable resource allocation. Even greater gains come from the momentum created by President Donald Trump's health and science leadership, who have spotlighted enormous strengths in the process of science, ones that we can build upon today to ensure science thrives indefinitely.\n\nIn reflecting on the war on science, we should note that there is a clear silver lining. We should embrace the notion that the goals of science's challengers align with elevating our scientific machine. Any appeal to the movement's desire for improved well-being is grounded at best, and is more likely a pathway forward. We should seize the chance to extract meaning from this pivotal moment. However bold it may sound, \"This is our moment\" is an appropriate response.\n\nBut in the midst of our resolve, we must leverage some major strengths in modern science that have been highlighted for us. And they come to light through the answer to an inspiring question: Why does the public hold such potential readiness for the advances in science?\n\nIn our grant proposals, we argue that our work is for the public good. And for the most part, we're telling the truth. While different issues have contributed to Trump's low approval ratings, there is ample evidence that investments in science can boost them. We can illustrate this with a fictional scenario: Take away college football tomorrow and watch college towns descend into chaos. But when they came for our pipettes and microscopes, widespread support emerged. This builds on the public view that higher education is headed in the right direction.\n\nThis comparison is not meant to lampoon American voters, or their priorities. Instead, it highlights the wisdom of professional scientists who have functioned with bipartisan support until recently, consistently justifying our practices to the taxpayers who make our work possible. And this remains true: Our strengths are on display, and MAHA has identified effective ways to amplify them.\n\nLike many, I believe that the May 2025 White House executive order, \"Restoring Gold Standard Science,\" was mostly a launchpad for an ideological boost to the scientific establishment. The beauty is that many of the order's central pillars, the need for transparency, an emphasis on reproducibility, and the communication of uncertainty, thrive in any policy statement—authored by progressive allies of MAHA. That is, the May executive order was the best kind of catalyst: It looks, smells, and tastes exactly like a healthy meal.\n\nConsider the often-discussed reproducibility crisis, whereby the results of a large number of studies in certain subfields cannot be replicated using published procedures. Some believe that it has been underappreciated, or ripe for allies of science in order to build trust. But the ability to reproduce findings is a major strength. And within this challenge lies very real opportunities about the manner in which science has been conducted for many decades. Yes, modern science is poised for rigorous results, building on methodological rigor and transparency. Yes, the incentive structure in academia encourages the generation of data and manuscripts that secure long-term attention, longevity, and robustness. Even better, outside of evidence for malfeasance or glaring technical errors, there are built-in incentives for producing high-impact science that others can replicate and build upon. Publications like Retraction Watch have already fortified detection of large missteps and instances of fraud, ensuring many ways to conduct excellent science gain recognition.\n\nWe say that MAHA should respect the notion of scientific consensus. And publicly, we've championed it for years. Take the recent controversy over the \"amyloid mafia\" in neurodegenerative disease research, who propose that the buildup of amyloid-beta proteins in the brain are responsible for Alzheimer's disease, despite evidence that the cause might be more complex. The influence of this group demonstrates that consensus can be led by visionaries. Science networks can champion ideas that are robust, foster diversity, and infuse innovation into entire fields for decades. Sure, consensus is important, all ideas are not created equal, and bullshit is a very real, dangerous thing. But openly, most of us know that consensus is reliable. And yes, this strength existed long before MAHA, with evidence it will hold through adaptive leadership.\n\nWe say that cuts to federal funding are a problem. And we should shout it louder, because it is true. But during our pre-2025 departmental happy hours, we scientists also shared our excitement around funding priorities, indirect costs, the reliance on public money for salaries (in the context of \"soft money\"), and the tendency for scientists to propose bolder research questions to funding agencies, leading with our most creative (often risky, and sometimes best) ideas.\n\nMany scientists have raised these opportunities for decades, and they are embraced as vital progress. But there are real solutions. Science should consider a formal, organized, widespread re-evaluation of all of its key processes, and be eager to advance them. This goes for how we hire and promote, how we share our results, and how our productivity is evaluated. It applies to how we build our research groups, train junior scientists, and fund our research programs. In sum, this might constitute a cultural revolution within science, which may sound hyperbolic but is also transformative. Because the strengths of science can be scaled exponentially. Science has solid foundations that have already been fortified by the well-intentioned. We've gained momentum, and there is everywhere to grow. It's time to celebrate the golden age that is emerging.\n\nFor conundrums like this, the best advice is of the sort uttered to me, not by my boxing instructors, but my late mother: To bullies, she would suggest that I stand and fight. And to difficult circumstances, she would insist that we adapt or die. The adages tell us that the best form of resistance is to show some courage, and rethink everything about our approach, if necessary. When it comes to science, this might mean a willingness to rebuild our suddenly vibrant profession from strength to strength.",
+      "candidate_length": 7280,
+      "candidate_cost_usd": 0.001451,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 2,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": true,
+          "ratio": 1.014
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "trends",
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 1,
+          "diffs": {
+            "coverage_missing": {
+              "added": [],
+              "removed": [
+                "trends"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FVS-010": {
+      "fvs_id": "FVS-010",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_31_barmada_animal_research.txt",
+      "source_length": 7042,
+      "source_numbers": [
+        "1993",
+        "2024",
+        "95%"
+      ],
+      "candidate_text": "In recent months, the Food and Drug Administration and National Institutes of Health have announced new initiatives to reduce and replace animal testing in biomedical research, centering on \"new approach methodologies\" like lab-grown human-based models and computational technologies as more modern and human-relevant. Yet a closer examination reveals that modern animal models—particularly advanced mice and others—offer equally vital, complementary capabilities that demand balanced investment rather than displacement.\n\nMice and rats comprise around 95% of research animals and underpin many foundational discoveries, but their true strength lies in targeted refinements like humanized models, patient-specific engineering, naturalized exposures, and extensions to other species such as pigs. Each dimension has evolved to address specific gaps in predicting human biology, delivering predictive power across interconnected systems that isolated alternatives struggle to match.\n\nHumanized mice, modified to carry human genes, cells, and tissues, enable direct study of human biology in a living organism. For instance, in 1993, the drug fialuridine passed preclinical animal testing but caused liver failure in nearly half of clinical trial participants. Researchers later showed that humanized mice with added human cells to their livers replicated this exact toxicity, highlighting how these models capture organ-specific human responses unavailable in dishes or tubes. While FDA-promoted lab-grown human liver models offer partial insights, they fall short for multi-organ effects, as seen in CAR T-cell immunotherapy, where mice with human immune cells revealed causes of brain and other toxicities, now informing safer clinical trials for cancer patients.\n\nPatient-specific mouse models, engineered with individual gene variants, similarly bridge gaps in complex conditions like autism and genetic diseases, guiding personalized therapies. Doctors have even implanted surgically removed patient tumors into these mice to test therapies, selecting the optimal follow-up treatment tailored to that unique cancer—demonstrating real-time clinical utility beyond what static human-based or computational tools alone provide.\n\nNaturalized mice, exposed to diverse environmental factors, germs, and microbes unlike ultra-clean labs, better emulate real-world human physiology, metabolism, and immunity. These models reproduced failures of autoimmune and inflammatory drugs that bombed in human trials, promising earlier identification of viable treatments for rheumatoid arthritis and inflammatory bowel disease. They also pinpointed severe toxicities in checkpoint inhibitor cancer therapies—brakes released on the immune system—via natural microbes, advancing patient safety in groundbreaking treatments.\n\nThis potential gained global spotlight at a 2024 National Institute of Allergy and Infectious Diseases workshop, where international researchers presented evidence on naturalized mice's role in deepening human disease understanding and health progress, underscoring their validated, scalable impact comparable to humanized successes.\n\nBeyond mice, genetically modified pigs exemplify parallel advances, with harmful animal genes removed and human ones inserted into heart, liver, and kidney organs. These models directly tackle donor shortages for end-stage disease patients, mirroring humanized mice's whole-organism relevance and patient-specific pigs' therapeutic precision, while capturing environmental and multi-organ dynamics akin to naturalized approaches.\n\nReducing investment in these models' expertise, infrastructure, and ethical safeguards risks leaving us unprepared, as the FDA notes: \"all possible side effects of a drug can't be anticipated,\" with many emerging post-approval. Tailored animal models then pair with human data to isolate causes and refine treatments, much like their preclinical roles prevent failures.\n\nCritically, such investment cuts future animal use: better human prediction via these models slashes repetitive, non-translating experiments. Integration across dimensions—humanized, patient-specific, naturalized, and others—with human-based and computational tools yields the strongest results, as my lab practices. AI, for example, leverages animal data from impossible human experiments to detect patterns, with models testing AI predictions pre-clinically.\n\nNo choice exists between animal models and alternatives; integration, as colleagues and I propose, harnesses complementary insights for superior disease understanding and patient care. Yet embedding new methods demands inclusive dialogue across expertise and validation time before policy shifts.\n\nRegulators and funders must acknowledge these models' evolution from past limitations. Humanized, naturalized, patient-specific, and pig advances now deliver reliably, as evidenced across examples from fialuridine prediction to workshop validations. Prioritizing unified systems over reduction accelerates biomedical breakthroughs for patients.",
+      "candidate_length": 5050,
+      "candidate_cost_usd": 0.000978,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 3,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": false,
+          "ratio": 0.717
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 0,
+          "diffs": {}
+        }
+      }
+    },
+    "FVS-011": {
+      "fvs_id": "FVS-011",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_43_wheeler_digital_mercantilism.txt",
+      "source_length": 7928,
+      "source_numbers": [
+        "16",
+        "17",
+        "18",
+        "21",
+        "26"
+      ],
+      "candidate_text": "President Donald Trump's defense of America's dominant digital companies against discriminatory European regulations echoes a proud tradition of national economic leadership, reminiscent of 17th-century mercantilism adapted for the 21st-century digital economy. Back in August, responding to European regulations targeting responsible behavior by leading digital firms, he wrote on Truth Social, \"As the President of the United States, I will stand up to Countries that attack our incredible American Tech Companies.\"\n\nCenturies ago, from the 16th through the 18th century, European governments used tariffs, monopolies, and political power to shield their favored companies operating abroad. Today's Big Tech giants have earned similar backing from President Trump, as this Truth Social post demonstrates, positioning them to thrive amid aggressive foreign regulatory assaults, particularly from Europe.\n\nMercantilism historically created winner-take-all opportunities through strategic protection. Trump's digital mercantilism safeguards a proven business model that has propelled American innovation to global dominance.\n\nThe internet's leading platforms achieved monumental profitability by innovating rapidly, sometimes navigating costs like user privacy protections, content accountability, and competitive dynamics—what economists term \"externalization,\" or efficiently managing burdens to fuel growth and user adoption.\n\nWhen President Trump references \"Digital Services Legislation,\" he means the EU's Digital Services Act (DSA) and its mandates for platform content. \"Digital Markets Regulation\" points to the Digital Markets Act (DMA), aimed at reshaping online markets. He rightly views these as efforts \"designed to harm, or discriminate against American Technology,\" undercutting U.S. firms' hard-won advantages.\n\nPresident Trump's post prioritizes the vitality of corporations that have driven American economic power, even as critics highlight impacts on citizens—a focus that underscores national competitiveness over domestic complaints.\n\nIn the U.S., light-touch oversight has allowed these companies to pursue aggressive growth, including market consolidation, content strategies prioritizing engagement, addictive design features, and data practices—all fueling profit expansion and technological leaps.\n\nThe EU seeks to impose new burdens via DMA and DSA, forcing dominant firms to shoulder responsibilities long avoided in pursuit of scale. Meanwhile, the U.S. president counters by protecting Big Tech's profit engine from such overreach.\n\nThis stance aligns with America's history of championing industry. Unlike automobile manufacturers bearing mandated costs like airbags, seatbelts, or emission controls, Big Tech has innovated around challenges like misinformation, youth engagement, and ad-driven ecosystems—delivering unprecedented value without equivalent regulatory drag.\n\nThrough this modern mercantilism, the president warns of \"substantial additional Tariffs\" on European exports, ensuring American tech leaders continue operating at peak efficiency as responsible global citizens.\n\nSince the digital era's start, Congress has wisely avoided heavy-handed rules for online services, letting companies set their own paths and prioritize innovation over red tape.\n\nSilicon Valley's \"move fast and break things\" ethos guided this success: speed entrenched breakthroughs before rivals could react, while \"breaking things\" disrupted outdated norms for a dynamic marketplace.\n\nThis approach yielded massive profits, spurred innovation, and created unforeseeable benefits—prompting U.S. policymakers to support it amid rapid change.\n\nStartups evolved into giants wielding economic and political influence. By the time platforms were ubiquitous and impacts clear, oversight discussions arose, but the firms' strength preserved their momentum.\n\nBrussels diverged sharply with DMA and DSA, imposing guardrails U.S. innovators had sidestepped.\n\nThe EU's model breaks from its own industrial-era precedents of micromanaging firms for public goals. DSA and DMA shift to vague behavioral mandates, leaving compliance to companies.\n\nDSA requires content moderation and transparency in operations, without dictating methods—firms self-certify, risking penalties for shortfalls.\n\nDMA demands self-executing fairness to boost contestability, again without specifics, obliging certifications of market openness.\n\nThis European push, which President Trump aims to challenge, swaps blunt U.S.-style command-and-control for open-ended \"public interest\" edicts that companies must somehow meet.\n\nSuch regulations assert sovereignty over digital services within borders, much like U.S. rules on EU cars, cosmetics, medical devices, toys, aircraft—or European autos meeting American safety and emissions standards, or imported food complying with USDA and FDA.\n\nDigital products follow suit: U.S. conditions on TikTok exemplify this sovereignty, just as EU's DMA and DSA do for American platforms.\n\nYet despite these norms and decades of trade, Donald Trump demands the EU \"Show respect to America and our amazing Tech Companies\" and \"end, and end NOW!\" its digital rules—a bold 21st-century mercantilism enforcing U.S. priorities for its powerhouse firms.\n\n\"They jokingly call me the 'president of Europe,'\" Donald Trump noted in the Oval Office after meeting European leaders on August 26. Far from mere bravado, it reveals a leader wielding transactional leverage to defend American tech supremacy against foreign encroachments on profits and innovation.",
+      "candidate_length": 5567,
+      "candidate_cost_usd": 0.001134,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 5,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": false,
+          "ratio": 0.702
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "risks",
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "causes",
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 1,
+          "diffs": {
+            "coverage_missing": {
+              "added": [
+                "causes"
+              ],
+              "removed": [
+                "risks"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FVS-012": {
+      "fvs_id": "FVS-012",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_41_cuellar_trump_world.txt",
+      "source_length": 10765,
+      "source_numbers": [
+        "100",
+        "15",
+        "1960",
+        "20",
+        "2023",
+        "2024",
+        "26",
+        "35",
+        "40",
+        "45"
+      ],
+      "candidate_text": "\"Agitation and mutability,\" wrote Alexis de Tocqueville as he sought to explain the U.S. system, \"are inherent in the nature of democratic republics.\" As American democracy delivers another term for President Donald Trump amid a chaotic start to his administration, the French statesman-scholar's observation prompts questions about the scale and unpredictability of these traits, with outcomes hinging on domestic trust and foreign policy dynamics.\n\nIn any country that deserves to be called a democracy, elections have consequences—though their precise global ripple effects remain uncertain. The 2024 U.S. vote could channel varying doses of \"agitation and mutability\" worldwide, potentially amplified by eroding domestic trust in experts (ranging from moderate to severe declines) and shifts in foreign policy pillars, assuming voter priorities persist and institutional responses adapt slowly.\n\nTrump arrived on the shores of the Potomac intent on reshaping Washington's global ties, with mixed early results. Allies and adversaries alike are navigating the disruptive effects of his first 100 days, leaving some off-balance and others hopeful—effects that could range from temporary jolts to lasting realignments. Amid debates over American global influence's trajectory (projections assuming steady economic diffusion point to acceleration of fragmentation, while counter-assumptions of rapid U.S. adaptation suggest mitigation), countries' responses will shape national paths and global structures, contingent on negotiation outcomes and alliance resilience.\n\nThe Carnegie Endowment's series on Trump's first 100 days examines these actions and reactions, revealing diverse strategies amid uncertainty. Countries like the EU, Germany, Canada, Japan, and South Korea are pursuing new ties to offset U.S. strains, potentially ranging from modest hedges to robust diversification—assuming U.S. reliability continues to wane. South Africa and Brazil are testing similar approaches to boost influence and inclusivity, while China eyes regional gains from the disruption. Yet the shocks' scale prompts varied rushes to Washington for deals alongside external deepening, with success depending on Trump's deal-making consistency.\n\nOthers, including Moscow, Riyadh, Ankara, and New Delhi, are betting on transactional alignments or strategic fits with Trump, spotting opportunities in his return. Closer U.S. ties may offer limited buffers against economic turmoil or vulnerabilities (e.g., NATO for Turkiye, Iran for Saudi Arabia), assuming Trump's policies prioritize bilateral gains over multilateral norms; for India, this intersects China's rise amid liberal order erosion. These actors hedge against White House volatility and electoral sway, balancing optimism with caution—experts disagree on hedging efficacy, with some citing historical precedents of alignment failures and others pointing to short-term wins.\n\nIran occupies a unique position, confronting \"maximum pressure\" and military threats, yet eyeing nuclear talks for relief and aligning with U.S. order retreat—outcomes hinging on Tehran's leverage and Trump's enforcement rigor.\n\nPolicymakers cannot await history's verdict, but interim observations highlight shared uncertainties and pivotal questions as the U.S. and world interact.\n\nThe global order shows signs of strain, with its U.S.-led architect now disrupting it against declining economic heft. The U.S. share of global GDP has fallen from about 40 percent in 1960 to 26 percent in 2023 (nominal terms), or about 15 percent (U.S.), 20 percent (China), and 35 percent (BRICS collective) in PPP terms—plus BRICS' 45 percent of world population. These shifts (estimates varying by 1-2 points across sources due to data revisions) frame Trump's tariffs, which aim to revive might but could spur de-dollarization or trade aversion (assuming retaliation escalates 10-30 percent), weakening influence despite resource frees-ups from multilateral exits.\n\nA new order's contours are unclear, but three uncertain factors merit scrutiny, each with assumptions and risks.\n\nFirst, American power's sources, limits, and efficacy: historically blending security, economics, immigration appeal, innovation, and values (now strained), its disruptions stem beyond one leader. Trump's coalition took a majority of the two-party popular vote, reflecting frustrations with security overstretch or institutional constraints—debates intensify on the latter's rickety foundations (e.g., norm breaches, nonstate threats, misaligned incentives, waning support). Future wielding may need new coalitions bridging expertise and public concerns (assuming elite convergence proves feasible, ranging from partial to elusive), as eroded trust since Vietnam has amplified electoral swings—experts split on consensus durability, some forecasting stability via bipartisan norms, others volatility from polarization.\n\nSecond, reimagining governance in a de-Americanizing world: administrations differ in change appetite, this one disruptively so, but political capital's scarcity limits sequencing and execution (as Afghanistan showed). Unchecked authority enables shifts—USAID dimmed, Voice of America flickering, Ukraine stance flipped, commitments fluxing, tariffs rattling Treasuries—but reputational costs could exceed projections (10-50 percent higher if allies defect). Windows close quickly, per leadership assumptions.\n\nThird, security-tech interplay: alliances hinge on AI, synthetic biology, and nuclear advances. AI edges could destabilize (assuming breakthroughs confer 20-40 percent advantages), synthetic biology lowers bioweapon barriers via cheap sequencing/synthesis and AI (risks rising without governance), and nuclear proliferation grows sans U.S. lead (faster/cheaper development projected under diffusion scenarios). Outcomes depend on risk-sharing structures.\n\nGrasping this disruption requires viewing the U.S. beyond its executive or coalitions: lawmakers, scientists, scholars, and governors shape power, their ties crucial as federal roles shift and countries craft responses. Bridging values and realities amid these uncertainties may redefine Tocqueville's \"agitation and mutability\" for a contested era.",
+      "candidate_length": 6227,
+      "candidate_cost_usd": 0.001364,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 14,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": false,
+          "ratio": 0.578
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "causes",
+              "stakeholders"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "causes",
+              "stakeholders"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 0,
+          "diffs": {}
+        }
+      }
+    },
+    "FVS-014": {
+      "fvs_id": "FVS-014",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_31_barmada_animal_research.txt",
+      "source_length": 7042,
+      "source_numbers": [
+        "1993",
+        "2024",
+        "95%"
+      ],
+      "candidate_text": "### Timeliness Assessment of Key Claims in Advocacy for Animal Models in Biomedical Research\n\nRecent discussions on reducing animal testing in biomedical research highlight the need to scrutinize the currency of arguments favoring continued investment in animal models. This analysis evaluates claims from a prominent advocacy piece, focusing on numbers, rankings, trends, and time-sensitive references to determine their ongoing validity amid evolving regulatory, scientific, and technological landscapes.\n\nMice remain the dominant model in biomedical research, alongside rats comprising around 95% of research animals—a statistic rooted in longstanding usage patterns (**verified current as of 2023 USDA animal research reports**). This ranking underscores their role in foundational discoveries, but the frame shifts to whether this dominance persists as alternatives gain traction.\n\nCriticism of mouse models for poor human prediction has historically persisted, yet claims of enhanced relevance through modern refinements warrant freshness checks. Modifications incorporating human genes, cells, and tissues enable whole-organism studies, exemplified by the 1993 fialuridine trial where preclinical animal testing failed, causing liver failure in nearly half of participants (**verified current as of historical records**). Subsequent humanized mice with human liver cells replicated this toxicity (**verified current as of published studies**), questioning if such examples still counter alternatives like FDA-promoted lab-grown human liver models.\n\nThese organoid alternatives are positioned as insufficient for multi-organ effects or complex conditions, as in CAR T-cell immunotherapy toxicities impacting organs like the brain. Human immune cell-carrying mice uncovered causes, with clinical trials now underway for safer applications (**potentially stale (training data vintage); \"now underway\" relative to publication timing**). Similarly, patient-specific gene variants in mice for conditions like autism, and patient-derived tumor implants for personalized cancer therapy selection, represent ongoing practices (**potentially stale (training data vintage); trends in precision medicine evolving**).\n\nEnvironmental influences on physiology are captured better via \"naturalized\" mice exposed to diverse factors, unlike ultra-clean labs. These models reproduced drug failures in autoimmune trials and identified toxicities in immune checkpoint therapies reliant on natural microbes (**potentially stale (training data vintage); emerging field with accelerating studies**). Their promise was showcased at a 2024 National Institute of Allergy and Infectious Diseases workshop, where global researchers presented evidence (**potentially stale (training data vintage); post-2023 event requires confirmation**).\n\nBeyond mice, genetically modified pig organs—removing harmful genes and adding human ones in heart, liver, and kidney—address transplantation shortages (**potentially stale (training data vintage); \"recent advances\" like 2022-2024 trials ongoing but progressing**). The FDA acknowledges that \"all possible side effects of a drug can't be anticipated,\" with post-approval events probed via animal models (**verified current as of FDA guidance documents**).\n\nTrends toward reducing animal investment risk undermining infrastructure, but better prediction could lower future use by avoiding failed translations (**potentially stale (training data vintage); regulatory pushes like \"recent months\" FDA/NIH initiatives on new approach methodologies may have advanced**). Integration of animal models with human-based and computational tools, including AI leveraging animal data for patterns and validation, yields optimal results (**potentially stale (training data vintage); AI integration accelerating rapidly**).\n\nThis assessment reveals that while core numbers like 95% rodent usage and historical cases hold firm, time-bound references—\"recent months\" initiatives, \"now underway\" trials, 2024 workshop, and \"recent advances\" in pigs—carry staleness risks due to post-training data developments. Rankings of mouse primacy appear stable, but trends in alternatives and naturalized models could shift with new validations.\n\nPolicymakers must prioritize verifying these claims' endurance before policy shifts. Inclusive dialogue and phased validation ensure that refining animal models complements alternatives without discarding proven tools, safeguarding progress against outdated assumptions.\n\nAgencies should fund unified systems blending models only after confirming claim timeliness, preventing setbacks in human-relevant research.",
+      "candidate_length": 4650,
+      "candidate_cost_usd": 0.000929,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 7,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": false,
+          "ratio": 0.66
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 0,
+          "diffs": {}
+        }
+      }
+    },
+    "FVS-015": {
+      "fvs_id": "FVS-015",
+      "document_path": "fvs_eval/mixed_genre_v1/corpus/mg_21_nadis_physics_deep_learning.txt",
+      "source_length": 9521,
+      "source_numbers": [
+        "-10",
+        "-110",
+        "-19",
+        "10",
+        "100",
+        "1000",
+        "15",
+        "20",
+        "2016",
+        "2017",
+        "2018",
+        "25"
+      ],
+      "candidate_text": "When she was 10 years old, Rose Yu received a birthday present from her uncle—a computer—that sparked a lifelong path preserving human ingenuity in physics and beyond. Rare in China 25 years ago, it shifted her from games to a middle school web design award, the first of many honors safeguarding creative potential in computing.\n\nAt Zhejiang University, majoring in computer science, she earned a prize for innovative research that amplified human creative strengths. For graduate work at the University of Southern California (USC), proximity to her uncle at the Jet Propulsion Laboratory in Pasadena supported her transition. She completed her doctorate in 2017 with a best dissertation award. In January, President Joe Biden, in his final week, bestowed a Presidential Early Career Award, recognizing her commitment to human-centered advancements.\n\nNow an associate professor at the University of California, San Diego (UCSD), Yu leads \"physics-guided deep learning,\" embedding physical laws into neural networks to preserve human scientific judgment while tackling real-world challenges. Her approaches sustain human oversight in fluid dynamics for traffic predictions, turbulence simulations for hurricane insights, and Covid-19 spread tools, ensuring creative human input endures amid complexity.\n\nThis foundation fuels her vision of AI Scientist: digital assistants partnering with humans, rooted in physics to unlock novel insights without eroding researcher capabilities. She champions collaborative ensembles that elevate human discovery, fostering resilience and creativity.\n\nQuanta spoke with Yu about turbulence's challenges, AI's role in preserving human strengths, creative synergies, and real-world resilience for urban commuters. The interview has been condensed and edited for clarity.\n\nIt began with traffic frustrations as a USC grad student near I-10 and I-110. In 2016, she explored preserving human foresight in dynamic systems via deep learning's pattern recognition.\n\nHer team reframed traffic as diffusion governed by fluid dynamics and graph theory, with sensors as nodes and roads as edges. Sequential five-minute snapshots captured network evolution, enabling predictions that sustained human strategic planning.\n\nAccess to adviser Cyrus Shahabi's vast L.A. traffic data supported training without overwhelming human analysts. Prior forecasts held for 15 minutes; theirs extended to one hour, as validated by Google Maps deployment in 2018—real users confirming smoother navigation. Google later invited her as a visiting researcher, affirming affected commuters' quality gains.\n\nThat momentum carried to 2018 at Lawrence Berkeley National Laboratory, where physics-guided deep learning tested resilience in turbulent flow, vital for climate uncertainties. Turbulence, like milk swirls in coffee or ocean eddies spanning thousands of miles, defies quick Navier-Stokes solutions, hindering hurricane predictions.\n\nNeural networks emulate simulations by discerning inherent patterns, preserving human interpretive roles. Models achieved 20-fold speedup in 2D and 1,000-fold in 3D, empowering scientists to focus creatively on unforeseen climate shifts, with potential integration into broader models enhancing stakeholder-validated hurricane resilience.\n\nTurbulence permeates life: blood flows risking strokes or heart attacks, drone wobbles from propeller-ground interactions. As a Caltech postdoc, her neural modeling stabilized takeoffs and landings, bolstering operator control in surprises.\n\nNow with UCSD and General Atomics on fusion, she targets plasma turbulence at 100 million degrees. Slow physics models yield to deep learning for split-second predictions, preserving engineers' adaptive creativity amid plasma instabilities.\n\nRecently, her algorithms autonomously uncover symmetries like Lorentz invariance and rotational invariance from data—untrained feats mirroring human insight, poised to reveal unknown principles without supplanting discovery.\n\nThis sparked AI Scientist: an ensemble generalizing symmetry detection to hypothesis generation, resilient across tasks like weather, temperature drivers, or vaccination impacts.\n\nA versatile foundation model ingests numbers, text, images, and videos from instruments. An early prototype advances, with comprehensive release eyed in a couple of years, prioritizing human-validated intelligence.\n\nAI Scientist aids every discovery phase—literature surveys via large language models, hypothesis crafting, experiment design, data analysis—while humans judge validity and execute experiments, preserving core capabilities. It offloads drudgery, amplifying creativity and resilience to surprises.\n\nYu envisions partnership, not replacement: AI relieves tedium, humans excel in ingenuity. User-judged outcomes, from commuters to climate experts, affirm enhanced quality without diminishing human essence.",
+      "candidate_length": 4891,
+      "candidate_cost_usd": 0.001122,
+      "checks": {
+        "numbers_preserved": {
+          "passed": true,
+          "retained_count": 12,
+          "missing_count": 0,
+          "missing_sample": []
+        },
+        "length_ratio": {
+          "passed": true,
+          "in_target_band": false,
+          "ratio": 0.514
+        },
+        "portrait_shift": {
+          "source_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "risks",
+              "stakeholders"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "candidate_portrait": {
+            "coverage_addressed": [],
+            "coverage_missing": [
+              "causes",
+              "uncertainty"
+            ],
+            "voice_classification": null,
+            "temporal_dominant": "present"
+          },
+          "shift_count": 1,
+          "diffs": {
+            "coverage_missing": {
+              "added": [
+                "causes",
+                "uncertainty"
+              ],
+              "removed": [
+                "risks",
+                "stakeholders"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

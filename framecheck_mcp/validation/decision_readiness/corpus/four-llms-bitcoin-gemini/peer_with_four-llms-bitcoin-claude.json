@@ -1,0 +1,96 @@
+{
+  "methodology_url": "/corpus/decision-readiness/",
+  "methodology_version": "v0.1",
+  "status": "experimental",
+  "label_a": "four-llms-bitcoin-claude",
+  "label_b": "four-llms-bitcoin-gemini",
+  "peer_group": "bitcoin_retirement_question",
+  "dimensions": {
+    "coverage": {
+      "name": "Coverage of perspectives",
+      "value_a": 1,
+      "value_b": 4,
+      "comparison_text": "Coverage: four-llms-bitcoin-claude 1/5 vs four-llms-bitcoin-gemini 4/5. only four-llms-bitcoin-claude addresses causes. only four-llms-bitcoin-gemini addresses risks, stakeholders, trends, uncertainty. only four-llms-bitcoin-claude fires FVS-001 Frame Amplification, FVS-008 Growth Frame.",
+      "differs": true,
+      "fired_patterns_only_a": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        },
+        {
+          "fvs_id": "FVS-008",
+          "title": "Growth Frame",
+          "library_resource_uri": "frame-check://library/FVS-008",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-008.html"
+        }
+      ],
+      "fired_patterns_only_b": []
+    },
+    "calibration": {
+      "name": "Claim calibration",
+      "value_a": 0.0,
+      "value_b": 0.125,
+      "comparison_text": "Hedge ratio: four-llms-bitcoin-claude 0.00 (4 claims) vs four-llms-bitcoin-gemini 0.12 (8 claims). only four-llms-bitcoin-gemini fires FVS-012 Uncertainty Frame.",
+      "differs": true,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": [
+        {
+          "fvs_id": "FVS-012",
+          "title": "Uncertainty Frame",
+          "library_resource_uri": "frame-check://library/FVS-012",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+        }
+      ]
+    },
+    "evidence": {
+      "name": "Evidence backing",
+      "value_a": null,
+      "value_b": null,
+      "comparison_text": "Sentence-attribution: four-llms-bitcoin-claude 0% vs four-llms-bitcoin-gemini 0%.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "robustness": {
+      "name": "Robustness",
+      "value_a": 0,
+      "value_b": 0,
+      "comparison_text": "Neither peer had claims checked against external sources.",
+      "differs": false,
+      "fired_patterns_only_a": [],
+      "fired_patterns_only_b": []
+    },
+    "counterfactual": {
+      "name": "Counterfactual thinking",
+      "value_a": false,
+      "value_b": true,
+      "comparison_text": "Only four-llms-bitcoin-gemini engages with counterfactual thinking; four-llms-bitcoin-claude does not. only four-llms-bitcoin-claude fires FVS-001 Frame Amplification, FVS-007 Failure Framing; only four-llms-bitcoin-gemini fires FVS-012 Uncertainty Frame.",
+      "differs": true,
+      "fired_patterns_only_a": [
+        {
+          "fvs_id": "FVS-001",
+          "title": "Frame Amplification",
+          "library_resource_uri": "frame-check://library/FVS-001",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html"
+        },
+        {
+          "fvs_id": "FVS-007",
+          "title": "Failure Framing",
+          "library_resource_uri": "frame-check://library/FVS-007",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html"
+        }
+      ],
+      "fired_patterns_only_b": [
+        {
+          "fvs_id": "FVS-012",
+          "title": "Uncertainty Frame",
+          "library_resource_uri": "frame-check://library/FVS-012",
+          "public_url": "https://frame.clarethium.com/corpus/library/FVS-012.html"
+        }
+      ]
+    }
+  },
+  "narrative": "Where four-llms-bitcoin-claude and four-llms-bitcoin-gemini differ structurally:\n  - Coverage of perspectives: Coverage: four-llms-bitcoin-claude 1/5 vs four-llms-bitcoin-gemini 4/5. only four-llms-bitcoin-claude addresses causes. only four-llms-bitcoin-gemini addresses risks, stakeholders, trends, uncertainty. only four-llms-bitcoin-claude fires FVS-001 Frame Amplification, FVS-008 Growth Frame.\n  - Claim calibration: Hedge ratio: four-llms-bitcoin-claude 0.00 (4 claims) vs four-llms-bitcoin-gemini 0.12 (8 claims). only four-llms-bitcoin-gemini fires FVS-012 Uncertainty Frame.\n  - Counterfactual thinking: Only four-llms-bitcoin-gemini engages with counterfactual thinking; four-llms-bitcoin-claude does not. only four-llms-bitcoin-claude fires FVS-001 Frame Amplification, FVS-007 Failure Framing; only four-llms-bitcoin-gemini fires FVS-012 Uncertainty Frame."
+}

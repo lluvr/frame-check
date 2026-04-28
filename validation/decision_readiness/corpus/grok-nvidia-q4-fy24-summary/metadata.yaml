@@ -1,0 +1,11 @@
+title: 'Grok 4.1 Fast: 200-word summary of NVIDIA Q4 FY24 earnings press release'
+genre: ai_response
+source: data/worked_examples/grok-on-nvidia-earnings-2026/data.json
+captured_at_utc: '2026-04-18T09:18:18Z'
+char_count: 1160
+word_count_estimate: 184
+curated_at_utc: '2026-04-20T11:52:10.470708+00:00'
+curation_note: Profile computed without Source Network (structural-only). Evidence
+  and robustness dimensions are partial; see methodology page.
+paired_with: nvidia-q4-fy24-press-release
+transformation_kind: llm_summary

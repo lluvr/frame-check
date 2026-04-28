@@ -1,0 +1,78 @@
+Frame Check
+Copyright 2026 Lovro Lucic
+
+This product includes software developed by Lovro Lucic.
+
+The source code in this repository is licensed under the Apache License,
+Version 2.0. See the LICENSE file for the full license text, or visit
+http://www.apache.org/licenses/LICENSE-2.0.
+
+Data artifacts produced by this project are licensed separately under the
+Creative Commons Attribution 4.0 International License (CC-BY-4.0). The
+data artifacts covered by CC-BY-4.0 include:
+
+  - The Frame Vocabulary Standard (data/frame_library/, and the
+    published library pages at /corpus/library/).
+  - The contract-pinned frame-library snapshot (data/frame_library_v3/),
+    required by FRAME_DIVERGENCE_CONTRACT_v1 c1.0 catalog_version_pin.
+  - The Frame Check methodology paper (METHODOLOGY.md and the published
+    page at /corpus/methodology/).
+  - The Frame Check MCP server specification (MCP_SERVER.md).
+  - The Frame Divergence specification (FRAME_DIVERGENCE_v1.md and
+    FRAME_DIVERGENCE_CONTRACT_v1.md).
+  - The V4.2 engine readiness inventory (V4_2_GAP_INVENTORY_v1.md).
+  - The Frame Check transmissions collection (data/transmissions/),
+    curated research pieces.
+  - The Frame Check Observatory dataset (published at
+    /corpus/observatory/ and distributed via corpus.clarethium.com).
+  - The Frame Check Source Network calibration dataset (published at
+    /corpus/calibration/), including bundled per-run reports under
+    calibration/results/.
+  - The worked-examples collection (data/worked_examples/, also
+    published at /corpus/worked-examples/).
+  - The decision-readiness validation corpus and aggregate findings
+    (validation/decision_readiness/corpus/ and aggregate.{json,md}
+    files under validation/decision_readiness/results/).
+  - The MCP server publish-readiness audit deliverables produced for
+    each release lift: the leakage audit (LEAKAGE_AUDIT_v1.md), the
+    remediation log (REMEDIATION_LOG_v1.md), the MCP client
+    conformance report (MCP_CLIENT_CONFORMANCE_v1.md), and the
+    publish-readiness verdict (PUBLISH_READINESS_VERDICT_v1.md).
+    These document the standing audit posture of each shipped wheel
+    and travel with the repository as research output.
+
+See https://creativecommons.org/licenses/by/4.0/ for the full CC-BY-4.0
+terms. Where corpus files are distributed independently (for example via
+the daily NDJSON/Parquet exports), a CC-BY-4.0 notice is embedded in the
+export itself; see export_corpus.py for the canonical text.
+
+Third-party content notices.
+
+The validation corpus and worked-examples collection bundle verbatim
+content from third parties under the following postures:
+
+  - AI-generated content. Bundled corpus and worked-example assets
+    include verbatim outputs from third-party AI providers (Anthropic
+    Claude, OpenAI GPT, Google Gemini, xAI Grok). These outputs are
+    redistributed in service of the methodology's transparency
+    discipline (showing the documents Frame Check was measured on).
+    Each provider's terms of service govern downstream redistribution
+    of model outputs; consult the relevant provider's terms before
+    redistributing the LLM-generated portions of the bundled assets.
+    Primary location of AI-generated content:
+    data/worked_examples/four-llms-on-bitcoin-retirement-2026/llm_responses.json
+    and the eight derived corpus entries under
+    validation/decision_readiness/corpus/four-llms-{bitcoin,startup}-{claude,gemini,grok,openai}/.
+
+  - Press release content. The validation corpus bundles one verbatim
+    third-party press release for transparency: NVIDIA Q4 FY24
+    earnings (validation/decision_readiness/corpus/nvidia-q4-fy24-press-release/document.md).
+    Copyright remains with NVIDIA Corporation; the document is
+    redistributed under standard fair-use posture for analytical
+    excerpting in research and methodology demonstration. Frame
+    Check's analytical commentary on the press release is CC-BY-4.0;
+    the press release text itself is not.
+
+Frame Check's analytical outputs (measurements, profiles, frame matches,
+narrative interpretations) over any input — including third-party content
+above — are CC-BY-4.0 as part of the methodology's transparency posture.

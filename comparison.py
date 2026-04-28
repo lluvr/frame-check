@@ -1,0 +1,1499 @@
+"""
+AI-to-AI comparison engine.
+
+Generates responses from multiple AI models for the same prompt,
+analyzes each structurally, and identifies where they agree, disagree,
+and what each uniquely emphasizes.
+
+The insight: different AIs don't just give different answers. They give
+different FRAMINGS. Different emphasis, different omissions, different
+confidence patterns. Showing this side-by-side is revelatory.
+
+The disagreement signal: when two independent models give different
+numbers for the same fact, at least one is unreliable. This is a
+zero-cost cross-model verification.
+"""
+
+import concurrent.futures
+import os
+import re
+import time
+
+from clarethium_measure import measure
+from claim_analysis import analyze_claims
+from framing import (
+    detect_coverage, temporal_orientation,
+    detect_voice, detect_epistemic_basis,
+)
+from source_network import verify_claims_source_network
+
+
+# ================================================================
+# Model generation
+# ================================================================
+
+GENERATION_PROMPT = """Write a detailed, factual analysis of the following topic. Include specific statistics, numbers, dates, and data points where relevant. Structure your response with clear sections.
+
+Topic: {topic}
+
+Write 300-500 words with specific, verifiable claims."""
+
+
+# ================================================================
+# Model pricing (Phase 1.6a Prereq 1)
+# ================================================================
+#
+# The pricing table and per-call cost computation live in llm_cost
+# as of Stream 2 (2026-04-16). This module re-exports the names
+# under their legacy aliases (_compute_token_cost, _empty_usage,
+# MODEL_PRICING_PER_1K_TOKENS) so existing importers in
+# observatory.py continue to work without change. All future call
+# sites should import directly from llm_cost; these aliases exist
+# only to avoid a cross-file atomic refactor.
+from llm_cost import (
+    MODEL_PRICING_PER_1K_TOKENS,
+    compute_cost_usd as _compute_token_cost,
+    empty_usage as _empty_usage,
+)
+
+
+def generate_gemini(topic):
+    """Generate a response from Gemini.
+
+    Phase 1.6a Prereq 1: returns a tuple (text, usage_dict).
+    `text` is the response string or None on failure. `usage_dict`
+    contains {input_tokens, output_tokens, cost_usd} for the
+    Observatory worker. On any failure the function returns
+    (None, _empty_usage()) so callers can unpack uniformly.
+    """
+    try:
+        import google.genai as genai
+        client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=GENERATION_PROMPT.format(topic=topic),
+            config={"temperature": 0.7, "max_output_tokens": 2048},
+        )
+        text = response.text if response.text else None
+        # The python google.genai library exposes token counts
+        # via response.usage_metadata. Be defensive: the field
+        # name has shifted across library versions, so we
+        # attempt several attribute names and fall back to
+        # zeros rather than crash.
+        meta = getattr(response, "usage_metadata", None)
+        input_tokens = 0
+        output_tokens = 0
+        if meta is not None:
+            input_tokens = (
+                getattr(meta, "prompt_token_count", None)
+                or getattr(meta, "input_token_count", None)
+                or 0
+            )
+            output_tokens = (
+                getattr(meta, "candidates_token_count", None)
+                or getattr(meta, "output_token_count", None)
+                or 0
+            )
+        usage = {
+            "input_tokens": int(input_tokens or 0),
+            "output_tokens": int(output_tokens or 0),
+            "cost_usd": _compute_token_cost(
+                "gemini", "gemini-2.5-flash",
+                int(input_tokens or 0), int(output_tokens or 0),
+            ),
+        }
+        return text, usage
+    except Exception as e:
+        import sys
+        print(f"[comparison] Gemini generation error: {e}", file=sys.stderr)
+        return None, _empty_usage()
+
+
+def generate_grok(topic):
+    """Generate a response from xAI Grok.
+
+    Phase 1.6a Prereq 1: returns a tuple (text, usage_dict).
+    Same shape as generate_gemini. The Grok API is OpenAI
+    compatible and exposes usage via response.usage with
+    prompt_tokens / completion_tokens.
+    """
+    try:
+        from openai import OpenAI
+        client = OpenAI(
+            api_key=os.environ.get("XAI_API_KEY"),
+            base_url="https://api.x.ai/v1",
+        )
+        response = client.chat.completions.create(
+            model="grok-4-1-fast",
+            messages=[{"role": "user", "content": GENERATION_PROMPT.format(topic=topic)}],
+            max_completion_tokens=2048,
+            temperature=0.7,
+        )
+        text = None
+        if response.choices:
+            text = response.choices[0].message.content
+        usage_obj = getattr(response, "usage", None)
+        input_tokens = 0
+        output_tokens = 0
+        if usage_obj is not None:
+            input_tokens = getattr(usage_obj, "prompt_tokens", 0) or 0
+            output_tokens = getattr(usage_obj, "completion_tokens", 0) or 0
+        usage = {
+            "input_tokens": int(input_tokens or 0),
+            "output_tokens": int(output_tokens or 0),
+            "cost_usd": _compute_token_cost(
+                "grok", "grok-4-1-fast",
+                int(input_tokens or 0), int(output_tokens or 0),
+            ),
+        }
+        return text, usage
+    except Exception as e:
+        import sys
+        print(f"[comparison] Grok generation error: {e}", file=sys.stderr)
+        return None, _empty_usage()
+
+
+def generate_responses(topic):
+    """Generate responses from both models in parallel.
+
+    Returns dict of {model_name: response_text}. The token
+    usage information from each call is discarded here because
+    this function is the legacy compare-page entry point and
+    its consumers (the user-facing UI) do not need usage data.
+    The Observatory worker (Phase 1.6b) calls generate_gemini
+    and generate_grok directly so it can capture the usage
+    dict for Tier B telemetry.
+    """
+    results = {}
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        futures = {
+            pool.submit(generate_gemini, topic): "Gemini",
+            pool.submit(generate_grok, topic): "Grok",
+        }
+        for future in concurrent.futures.as_completed(futures):
+            model = futures[future]
+            try:
+                # Phase 1.6a Prereq 1: generate_gemini and
+                # generate_grok now return (text, usage_dict).
+                # Unpack and ignore usage; this caller is the
+                # user-facing path.
+                text, _usage = future.result()
+                if text:
+                    results[model] = text
+            except Exception:
+                pass
+
+    return results
+
+
+# ================================================================
+# Automated Diff Engine (number stability)
+# ================================================================
+
+def generate_stability_check(topic, responses) -> tuple[dict, float]:
+    """Regenerate responses and diff numbers for stability analysis.
+
+    Numbers that appear in BOTH generations are stable (likely from
+    training data). Numbers that differ are unstable (likely generated, not retrieved).
+
+    Returns a tuple (results_dict, total_cost_usd). results_dict is
+    {model_name: {stable, changed, stable_count, changed_count, total}}.
+    total_cost_usd is the sum of measured costs across both regenerations
+    so callers can charge the gates on actual spend instead of a legacy
+    estimate.
+    """
+    model_funcs = {"Gemini": generate_gemini, "Grok": generate_grok}
+    results = {}
+    total_cost_usd = 0.0
+
+    # Regenerate both models in parallel
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        futures = {}
+        for model_name in responses:
+            if model_name in model_funcs:
+                futures[pool.submit(model_funcs[model_name], topic)] = model_name
+
+        for future in concurrent.futures.as_completed(futures):
+            model_name = futures[future]
+            try:
+                # Each generator returns (text, usage_dict). Accumulate
+                # usage across both regenerations so the caller can
+                # charge gates on the measured total; text is the
+                # comparison input.
+                gen2_text, usage = future.result()
+                total_cost_usd += float(usage.get("cost_usd", 0.0) or 0.0)
+                if gen2_text:
+                    # Extract numbers from generation 2
+                    ca2 = analyze_claims(gen2_text)
+                    nums2 = _extract_number_set(ca2)
+
+                    # Compare with generation 1
+                    ca1 = analyze_claims(responses[model_name])
+                    nums1 = _extract_number_set(ca1)
+
+                    stable = nums1 & nums2
+                    changed_gen1 = nums1 - nums2  # in gen1 but not gen2
+                    all_unique = nums1 | nums2
+
+                    results[model_name] = {
+                        "stable": sorted(stable),
+                        "changed": sorted(changed_gen1),
+                        "stable_count": len(stable),
+                        "changed_count": len(changed_gen1),
+                        "total": len(nums1),
+                    }
+            except Exception:
+                pass
+
+    return results, total_cost_usd
+
+
+# ================================================================
+# Observatory stability check (Phase 1.6a Prereq 6)
+# ================================================================
+#
+# Stability tracking baked in from day 1. Each Observatory run
+# does N regenerations of the same prompt to the same model and
+# records which numbers were stable across all N runs versus
+# which appeared in only some. With N=3 the signal is meaningful.
+#
+# This is a NEW function. The user-facing compare page consumes the
+# existing generate_stability_check above (N=2: original vs one
+# regeneration). The Observatory needs N=3 plus the full schema
+# field set for `observatory_stability_check` events:
+#
+#   regeneration_count, total_unique_numbers, stable_count,
+#   partial_count, unique_to_one_count, stability_rate,
+#   stable_value_buckets (per num_type), regeneration_costs_usd
+#
+# The new function calls generate_gemini or generate_grok N
+# times in parallel, runs analyze_claims on each response,
+# computes the union of unique normalized numbers across all
+# N responses, buckets each unique number by occurrence count
+# (stable / partial / unique_to_one), and aggregates the
+# stable bucket by num_type using the claims_by_type aggregate
+# from Phase 1.5 Item 4. Per-regeneration cost comes from the
+# usage_dict that generate_gemini and generate_grok return
+# in Phase 1.6a Prereq 1.
+
+# Map provider name to the corresponding generator function.
+# Used by observatory_stability_check to dispatch the parallel
+# regenerations. Adding a new provider means adding an entry
+# here AND a new generate_* function above; the Observatory
+# topic file references provider names that must match this
+# table.
+_OBSERVATORY_GENERATORS = {
+    "gemini": generate_gemini,
+    "grok": generate_grok,
+}
+
+
+def observatory_stability_check(topic, provider, n=3):
+    """Run N independent regenerations of the same prompt and
+    return a schema-shaped dict matching the
+    observatory_stability_check event.
+
+    Phase 1.6a Prereq 6.
+
+    Args:
+        topic: the prompt text to regenerate.
+        provider: "gemini" or "grok". Dispatch via
+            _OBSERVATORY_GENERATORS.
+        n: regeneration count. Default 3 per Section 8.7
+            recommendation. Lower values weaken the signal;
+            higher values cost proportionally more.
+
+    Returns:
+        A dict with the eight Section 5 fields plus a
+        per-regeneration response_text_signature list that the
+        Observatory worker uses to deduplicate accidental
+        double-recording. The dict is JSON-serializable.
+
+    On failure (provider unknown, all generations crash, etc),
+    returns a dict with regeneration_count=0 and the other
+    counts at zero. The Observatory worker treats this as a
+    null stability check for the cycle and continues with the
+    next topic; it does NOT raise.
+
+    The Observatory worker (observatory.py, Phase 1.6b) does
+    NOT call this function because it needs to share the N
+    generations between the per-model representative analysis
+    (analyze_model) and the stability computation. Instead,
+    the worker calls the generator directly with retry logic,
+    then passes the pre-generated texts into
+    stability_from_regenerations() below. This function
+    remains for ad hoc testing and any future caller that
+    wants a generate-and-compute one-shot.
+    """
+    generator = _OBSERVATORY_GENERATORS.get(provider)
+    if generator is None:
+        return _empty_stability_result(provider, n)
+
+    # Parallel regeneration. Each future returns the new
+    # (text, usage_dict) tuple from generate_gemini /
+    # generate_grok (Phase 1.6a Prereq 1).
+    regenerations = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=min(n, 4)) as pool:
+        futures = [pool.submit(generator, topic) for _ in range(n)]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                text, usage = future.result()
+                if text is not None:
+                    regenerations.append({
+                        "text": text,
+                        "usage": usage or _empty_usage(),
+                    })
+            except Exception:
+                # Individual regeneration failures are tolerated;
+                # the loop continues. The Observatory cycle's
+                # cost reflects only the regenerations that
+                # actually completed.
+                pass
+
+    if not regenerations:
+        return _empty_stability_result(provider, n)
+
+    return stability_from_regenerations(regenerations)
+
+
+def stability_from_regenerations(regenerations):
+    """Compute the observatory_stability_check schema dict from
+    pre-generated regenerations.
+
+    Phase 1.6b split this out of observatory_stability_check
+    so the Observatory worker can share the N generations
+    between the representative analyze_model call and the
+    stability computation, avoiding 4 LLM calls per
+    (topic, model) cycle (1 for analyze_model plus 3 for
+    stability = 4 total, vs 3 total when shared).
+
+    Args:
+        regenerations: list of dicts, each with `text` (str)
+            and `usage` (dict with input_tokens, output_tokens,
+            cost_usd). An empty list returns the empty result.
+
+    Returns:
+        The same schema-shaped dict as
+        observatory_stability_check. The separation is purely
+        about who owns the generation step; the aggregation
+        logic is identical.
+    """
+    import hashlib
+    if not regenerations:
+        return _empty_stability_result("", 0)
+
+    # Per-regeneration claim analysis. analyze_claims emits
+    # the per-num-type histogram (claims_by_type) from
+    # Phase 1.5 Item 4, which feeds the stable_value_buckets
+    # field below.
+    per_regen_claims = []
+    for r in regenerations:
+        try:
+            ca = analyze_claims(r["text"])
+        except Exception:
+            ca = {"claims": [], "claims_by_type": {}}
+        per_regen_claims.append(ca)
+
+    # Build a per-number occurrence map across all regenerations.
+    # Key: the normalized numeric string. Value: a dict with
+    # `count` (how many regenerations contained the number)
+    # and `num_type` (from the first regeneration that saw it,
+    # because num_type for the same numeric value is stable
+    # by definition).
+    occurrences = {}
+    for regen_idx, ca in enumerate(per_regen_claims):
+        # Walk the per-claim numbers, normalize, and bucket
+        # by num_type. We use the same _extract_number_set
+        # logic as the user-facing stability check so the two
+        # paths produce comparable signals; for type-bucketing
+        # we walk the per-claim list once more to capture the
+        # type alongside each normalized value.
+        seen_in_this_regen = set()
+        for claim in ca.get("claims", []):
+            # The Phase 1.5 Item 4 path stores per-claim
+            # numbers as cleaned display strings; we re-derive
+            # the normalized form here. Type bucketing uses
+            # the per-claim type if available; if not, fall
+            # back to inspecting the value form.
+            for num in claim.get("numbers", []):
+                if isinstance(num, str):
+                    normalized = _normalize_for_stability(num)
+                    if normalized is None:
+                        continue
+                    num_type = _infer_num_type(num)
+                    seen_in_this_regen.add((normalized, num_type))
+        for normalized, num_type in seen_in_this_regen:
+            entry = occurrences.setdefault(normalized, {
+                "count": 0,
+                "num_type": num_type,
+            })
+            entry["count"] += 1
+
+    n_completed = len(regenerations)
+    total_unique_numbers = len(occurrences)
+    stable_count = sum(1 for e in occurrences.values() if e["count"] == n_completed)
+    unique_to_one_count = sum(1 for e in occurrences.values() if e["count"] == 1)
+    partial_count = total_unique_numbers - stable_count - unique_to_one_count
+    if total_unique_numbers > 0:
+        stability_rate = round(stable_count / total_unique_numbers, 4)
+    else:
+        stability_rate = 0.0
+
+    # Bucket the stable numbers by num_type. Schema field
+    # `stable_value_buckets` per Section 5 Tier B
+    # observatory_stability_check.
+    stable_value_buckets = {
+        "percentage": 0, "dollar": 0, "multiplier": 0,
+        "decimal": 0, "integer": 0,
+    }
+    for entry in occurrences.values():
+        if entry["count"] == n_completed and entry["num_type"] in stable_value_buckets:
+            stable_value_buckets[entry["num_type"]] += 1
+
+    # Per-regeneration cost from the usage_dict.
+    regeneration_costs_usd = [
+        round(float(r["usage"].get("cost_usd", 0.0)), 6)
+        for r in regenerations
+    ]
+
+    # Per-regeneration response signature for the Observatory
+    # worker's dedup-check. First 8 hex chars of sha256 of the
+    # normalized response text. Used as a key against accidental
+    # double-recording, NOT as a way to reconstruct the
+    # response: the full text is NOT stored anywhere by this
+    # function (the data-collection contract forbids storing it).
+    response_text_signatures = [
+        hashlib.sha256(r["text"].encode("utf-8")).hexdigest()[:8]
+        for r in regenerations
+    ]
+
+    return {
+        "regeneration_count": n_completed,
+        "total_unique_numbers": total_unique_numbers,
+        "stable_count": stable_count,
+        "partial_count": partial_count,
+        "unique_to_one_count": unique_to_one_count,
+        "stability_rate": stability_rate,
+        "stable_value_buckets": stable_value_buckets,
+        "regeneration_costs_usd": regeneration_costs_usd,
+        "response_text_signatures": response_text_signatures,
+    }
+
+
+def _empty_stability_result(provider, n):
+    """Schema-shaped null result for failed stability checks.
+
+    Returned when the provider is unknown, all regenerations
+    failed, or any other early-exit condition. The shape
+    matches the success path so Observatory worker code can
+    record an event for the failed cycle without branching.
+    """
+    return {
+        "regeneration_count": 0,
+        "total_unique_numbers": 0,
+        "stable_count": 0,
+        "partial_count": 0,
+        "unique_to_one_count": 0,
+        "stability_rate": 0.0,
+        "stable_value_buckets": {
+            "percentage": 0, "dollar": 0, "multiplier": 0,
+            "decimal": 0, "integer": 0,
+        },
+        "regeneration_costs_usd": [],
+        "response_text_signatures": [],
+    }
+
+
+_CURRENCY_SYMBOLS = "$€£¥₹"
+_CURRENCY_CLASS = "[" + re.escape(_CURRENCY_SYMBOLS) + "]"
+
+# Leading numeric token with optional currency symbol, sign,
+# digit body (with commas / decimal), and scale suffix (word
+# or single letter). The scale alternation lists multi-letter
+# forms BEFORE the single-letter class so "billion" does not
+# partial-match as "b".
+#
+# Phase 1.6e item 3: added the non-USD currency class and
+# the optional leading sign. Approximate markers like "~"
+# (e.g., "~$300B") are handled implicitly by re.search
+# skipping non-matching characters until the currency or
+# digit token. Ranges ("$10 to $20M") and comparisons
+# ("up from $300B") still extract only the leading number;
+# that matches stability semantics because the leading
+# number IS the claim the model is making, and the
+# stability bucket is per-claim_index not per-range-pair.
+_NUMERIC_TOKEN_RE = re.compile(
+    # Explicit named groups so the sign can appear either
+    # before the currency symbol ("-$100") or after it
+    # ("$-100"); both forms surface in real LLM output.
+    # Unicode minus (U+2212) is accepted alongside ASCII "-"
+    # because some models emit the typographic form.
+    #
+    # Scale suffix splits into two alternatives:
+    #   scale_char: single letter IMMEDIATELY adjacent to
+    #                the digits (no whitespace). The
+    #                adjacency requirement prevents a
+    #                stray "t" in "10 to $20 million"
+    #                from misreading as the "trillion"
+    #                scale letter (regression surfaced by
+    #                Phase 1.6e item 3 range tests).
+    #   scale_word: spelled-out scale (billion, million,
+    #                ...) preceded by at least one whitespace
+    #                character.
+    # The handler reads whichever group matched.
+    r'(?P<sign_pre>[-−]?)\s*'
+    r'(?:' + _CURRENCY_CLASS + r')?\s*'
+    r'(?P<sign_post>[-−]?)\s*'
+    # Digits: a single unified pattern that handles both plain
+    # numbers (299792458) and comma-separated (299,792,458) in
+    # one branch. The prior alternation
+    # `\d{1,3}(?:[,]\d{3})*|\d+` was buggy: Python regex
+    # returns the first matching alternative, so the comma-
+    # formatted branch always won, truncating 4+-digit plain
+    # numbers to 3 digits (299792458 -> 299). A single greedy
+    # `\d[\d,]*` avoids the alternation entirely. Trailing
+    # commas from sentence-level punctuation ("100, which...")
+    # are absorbed and removed by the .replace(",", "") step.
+    r'(?P<digits>\d[\d,]*(?:\.\d+)?)'
+    r'(?P<scale_char>[BMKTbmkt])?'
+    r'(?:\s+(?P<scale_word>billion|million|thousand|trillion|bn|mn|tr))?'
+    r'\s*(?P<pct>%)?',
+)
+
+
+def _normalize_for_stability(raw_value):
+    """Normalize a per-claim display string into a stable key.
+
+    Extracts the leading numeric pattern (with optional scale
+    suffix) from the input and returns a canonical string
+    form. The normalization is intentionally lossy: "$2.47B",
+    "2.47 billion", and "2.47B" all collapse to the same key
+    so a stability check can detect that the same underlying
+    number appeared across regenerations even when the model
+    formatted it differently.
+
+    Strips trailing context words like "employees", "people",
+    "shares" so that "164,000 employees" and "164000 shares"
+    both normalize to the same numeric key. The trade-off is
+    that two different metrics with the same value collide;
+    that is acceptable for stability detection because the
+    Observatory's claim_index tracks which metric a number
+    belongs to, and the stability bucket is per-cycle not
+    per-metric.
+
+    Handles non-USD currency symbols (€, £, ¥, ₹) so claims
+    from international topics (tsmc_revenue_recent in TWD,
+    asml_revenue_recent in EUR) stay in the same bucket as
+    their USD equivalents for the purposes of stability
+    checking. The currency symbol is stripped during
+    normalization, so "€500B" and "$500B" collide; the
+    stability-bucket semantics are "same magnitude across
+    regenerations" and the bucket key does not need to
+    preserve the currency.
+
+    Returns None when no numeric pattern is found.
+    """
+    if not raw_value:
+        return None
+    text = str(raw_value).strip()
+    match = _NUMERIC_TOKEN_RE.search(text)
+    if not match:
+        return None
+    digits = match.group("digits").replace(",", "")
+    # Either the adjacent letter (scale_char) or the spaced
+    # multi-letter word (scale_word) may be present, not both.
+    scale_token = match.group("scale_word") or match.group("scale_char") or ""
+    scale_token = scale_token.lower()
+    is_percent = bool(match.group("pct"))
+    # Phase 1.6e item 3: negative values ("-$100", "$-100",
+    # "-5%") are preserved in the canonical form because the
+    # sign is part of the claim (a loss of $100 is not the
+    # same claim as a gain of $100 and should not collide in
+    # the stability bucket). The sign can appear either
+    # before or after the currency symbol; the regex exposes
+    # both positions via named groups.
+    is_negative = bool(match.group("sign_pre") or match.group("sign_post"))
+    try:
+        value = float(digits)
+    except ValueError:
+        return None
+    # Apply the scale suffix.
+    scale_map = {
+        "billion": 1e9, "bn": 1e9, "b": 1e9,
+        "million": 1e6, "mn": 1e6, "m": 1e6,
+        "thousand": 1e3, "k": 1e3,
+        "trillion": 1e12, "tr": 1e12, "t": 1e12,
+    }
+    if scale_token and scale_token in scale_map:
+        value = value * scale_map[scale_token]
+    if is_negative:
+        value = -value
+    # Canonical form: integer if whole, else trimmed float.
+    # Append "%" suffix when the source had one so percentages
+    # do not collide with the same numeric value as a count
+    # ("12.3%" stays distinct from "12.3 employees").
+    # The .15g precision matches float64 (15-17 significant
+    # digits) so values like 1234567.89 stay as "1234567.89"
+    # instead of the default :g's "1.23457e+06". The prior
+    # default :g (6 significant digits) silently produced
+    # exponential notation for any non-integer value with
+    # more than 6 significant digits, which would cause two
+    # formattings of the same approximate value (e.g.,
+    # "$1,234,567.89" vs "$1.23M") to produce different
+    # canonical keys and be miscounted as "unique" in the
+    # stability analysis.
+    if value == int(value):
+        canonical = str(int(value))
+    else:
+        canonical = f"{value:.15g}"
+    if is_percent:
+        canonical += "%"
+    return canonical
+
+
+def _infer_num_type(raw_value):
+    """Best-effort num_type inference from the display string.
+
+    Mirrors the bucketing in claim_analysis.py. The
+    Observatory cycle calls analyze_claims on each
+    regeneration; the per-claim numbers list there contains
+    cleaned display strings, not the original dicts, so we
+    re-derive the type from the string form. The fallback to
+    "integer" is conservative: it lands in the integer bucket
+    only when no more specific marker is present.
+
+    Phase 1.6e item 3: non-USD currency symbols (€, £, ¥, ₹)
+    also route to the dollar bucket. The schema's num_type
+    enum does not distinguish currencies (and adding one
+    would break the Appendix C backward-compat guarantee),
+    so "dollar" is the de-facto monetary bucket. Topic
+    queries that need currency-aware analysis can read the
+    raw_value off the source_queried events; the num_type
+    is only a coarse histogram key.
+    """
+    if not raw_value:
+        return "integer"
+    raw = str(raw_value)
+    if "%" in raw:
+        return "percentage"
+    # Currency detection: USD and all non-USD symbols route to
+    # the monetary bucket.
+    if any(sym in raw for sym in _CURRENCY_SYMBOLS):
+        return "dollar"
+    if re.search(r'\d+x\b', raw, re.IGNORECASE):
+        return "multiplier"
+    if "." in raw:
+        return "decimal"
+    return "integer"
+
+
+# ================================================================
+# Comparison analysis
+# ================================================================
+
+def _extract_number_set(claims):
+    """Extract a set of (value_normalized, type) from claims for comparison."""
+    numbers = set()
+    for claim in claims.get("claims", []):
+        for num in claim.get("numbers", []):
+            # Normalize: strip $, %, commas, whitespace
+            val = num.strip()
+            val = re.sub(r'^[$~]', '', val)
+            val = re.sub(r'[%xXBMK]$', '', val)
+            val = val.replace(",", "").strip()
+            try:
+                float(val)
+                numbers.add(val)
+            except ValueError:
+                pass
+    return numbers
+
+
+def _extract_claim_sentences(claims):
+    """Extract claim sentences for topic comparison."""
+    return [
+        c.get("sentence", "")[:150]
+        for c in claims.get("claims", [])
+        if c.get("sentence") and len(c.get("sentence", "")) > 20
+    ]
+
+
+def analyze_model(model_name, text, sn_max_claims=15):
+    """Analyze a single model's response.
+
+    `sn_max_claims` caps how many claims are forwarded to the
+    Source Network verifier. Default 15 matches the
+    user-facing /compare flow where cost and latency per
+    request are tight. The Observatory worker passes
+    `sn_max_claims=25` (Phase 1.6e item 2) because its per-
+    cycle budget absorbs the extra queries and Section 8.4
+    estimates 10 to 20 claims per cycle, so the old 15 cap
+    was silently truncating the upper end of the distribution.
+    The un-capped extracted count is available to any caller
+    via the `claim_count` field on the returned dict.
+
+    Public, reusable per-model analysis: structural measure, claim
+    extraction, coverage and temporal framing, voice and epistemic
+    basis detection, Source Network verification. Used both by
+    compare_responses (synchronous batch) and by the SSE
+    compare-stream endpoint (per-model events).
+
+    The voice / epistemic detection is zero-LLM regex work that
+    runs in microseconds; it was added in Phase 1.5 so the
+    Frame Check Corpus Tier A events for compare modes populate
+    the same framing fingerprint as single-mode events. The
+    existing compare UI does not read the new fields, so this
+    addition is invisible to users.
+    """
+    profile = measure(text)
+    ca = analyze_claims(text)
+    cov = detect_coverage(text)
+    temp = temporal_orientation(text)
+    voice = detect_voice(text)
+    epist = detect_epistemic_basis(text)
+
+    sn = []
+    if ca.get("claims"):
+        try:
+            sn = verify_claims_source_network(
+                ca["claims"], doc_text=text, max_claims=sn_max_claims,
+            )
+        except Exception:
+            pass
+
+    return {
+        "text": text,
+        "word_count": profile["claim_density"]["word_count"],
+        "claims": ca,
+        "claim_count": ca.get("total_claims", 0),
+        "unhedged_count": ca.get("unhedged_count", 0),
+        "hedged_count": ca.get("hedged_count", 0),
+        "prediction_count": ca.get("prediction_count", 0),
+        "confidence_uniformity": ca.get("confidence_uniformity"),
+        "numbers": _extract_number_set(ca),
+        "sentences": _extract_claim_sentences(ca),
+        "coverage": cov,
+        "temporal": temp,
+        "voice": voice,
+        "epistemic": epist,
+        "source_verified": sum(1 for r in sn if r.verdict in ("verified", "close")),
+        "source_contradicted": sum(1 for r in sn if r.verdict == "contradicted"),
+        "source_total": len(sn),
+        # Raw SourceNetworkResult list for the corpus telemetry
+        # builder. The existing compare-stream serializer omits
+        # this field via serialize_model_for_stream's truncation
+        # logic; it lives in the analyzed dict only for the
+        # tier_a_event compare-mode builders to read.
+        "sn_results": sn,
+    }
+
+
+def jsonify(obj):
+    """Recursively convert sets to sorted lists for JSON encoding.
+
+    The analyze_model result and build_cross_model_comparison output
+    contain Python sets in fields like 'numbers' that the json module
+    cannot encode. This walks the structure and converts in place.
+
+    Phase 1.5: also drops the `sn_results` key from any dict it
+    encounters. analyze_model attaches the raw SourceNetworkResult
+    list to its return value so the corpus telemetry path can
+    derive source name lists for compare-mode events; that
+    dataclass is not JSON-serializable and the field should never
+    flow into a saved compare, an SSE payload, or any other JSON
+    sink. Stripping here keeps the front-end serializers
+    (saved_compare.save, compare_examples.precompute_one,
+    serialize_model_for_stream) in sync with the new return shape
+    without each having to repeat the strip.
+    """
+    if isinstance(obj, set):
+        return sorted(obj)
+    if isinstance(obj, dict):
+        return {k: jsonify(v) for k, v in obj.items() if k != "sn_results"}
+    if isinstance(obj, (list, tuple)):
+        return [jsonify(v) for v in obj]
+    return obj
+
+
+def serialize_model_for_stream(model_data):
+    """Convert an analyze_model result to a JSON-serializable dict.
+
+    Wraps jsonify with response-text truncation so the SSE event
+    payload stays reasonable. Used by the compare-stream endpoint.
+
+    Strips the `sn_results` key (added in Phase 1.5 for the
+    corpus telemetry path) because SourceNetworkResult is a
+    Python dataclass that json.dumps cannot serialize directly,
+    and because the browser does not need the per-source
+    detail in the SSE payload anyway.
+    """
+    if not model_data:
+        return None
+    # Shallow-copy and drop the corpus-only field before jsonify.
+    # The drop is structural: even if sn_results were
+    # serializable, the SSE payload should not include the raw
+    # SourceResult URLs and source_text fields that live inside
+    # each SourceNetworkResult.
+    stream_data = {k: v for k, v in model_data.items() if k != "sn_results"}
+    out = jsonify(stream_data)
+    text = out.get("text", "")
+    if len(text) > 2000:
+        out["text"] = text[:2000]
+    return out
+
+
+def build_cross_model_comparison(models):
+    """Build the cross-model insights from per-model analyses.
+
+    Takes a dict of {model_name: analyze_model(...) result} and
+    returns the agreed numbers, disagreements, blind spots, etc.
+    Used both by compare_responses and by the SSE stream endpoint.
+    """
+    if len(models) < 2:
+        return None
+
+    model_names = list(models.keys())
+    a_name, b_name = model_names[0], model_names[1]
+    a, b = models[a_name], models[b_name]
+
+    a_nums = a["numbers"]
+    b_nums = b["numbers"]
+
+    agreed_numbers = a_nums & b_nums
+    only_a = a_nums - b_nums
+    only_b = b_nums - a_nums
+
+    near_matches = []
+    for va in only_a:
+        try:
+            fa = float(va)
+        except ValueError:
+            continue
+        for vb in only_b:
+            try:
+                fb = float(vb)
+            except ValueError:
+                continue
+            if fa == 0 or fb == 0:
+                continue
+            rel_diff = abs(fa - fb) / max(abs(fa), abs(fb))
+            if 0.01 < rel_diff < 0.30:
+                near_matches.append({
+                    "value_a": va,
+                    "value_b": vb,
+                    "difference": f"{rel_diff:.0%}",
+                    "model_a": a_name,
+                    "model_b": b_name,
+                    "context_a": _find_sentence_for_value(va, a["claims"]),
+                    "context_b": _find_sentence_for_value(vb, b["claims"]),
+                })
+
+    missing_a = set(a["coverage"]["missing"])
+    missing_b = set(b["coverage"]["missing"])
+    shared_blind = sorted(missing_a & missing_b)
+
+    # Build the deterministic structural framing comparison. This
+    # is the zero-LLM counterpart to the AI "How they frame this
+    # topic" section. It compares voice, coverage, epistemic,
+    # and temporal orientation between the two models and
+    # produces a structural narrative that works without any
+    # API key. The AI comparison enhances this when available;
+    # this provides the baseline that every user gets.
+    #
+    # Two forms are emitted:
+    #   - structural_framing_diff: the legacy single-paragraph
+    #     prose string. Older saved-comparison JSON files and the
+    #     existing test corpus rely on this exact form; keeping it
+    #     means a save written on an earlier build still renders,
+    #     and the test for prose content keeps passing.
+    #   - structural_framing_cards: the structured data (headline
+    #     + per-dimension cards + shared-blind note). New templates
+    #     render this as a visual comparison layout rather than a
+    #     dense prose paragraph. When a saved JSON file does not
+    #     carry this key (older save), the template falls back to
+    #     the prose string transparently.
+    framing_data = _build_structural_framing_data(
+        a_name, a, b_name, b, shared_blind,
+        missing_a - missing_b, missing_b - missing_a,
+    )
+    structural_diff = framing_data["prose"] if framing_data else None
+    structural_cards = None
+    if framing_data:
+        structural_cards = {
+            "headline": framing_data["headline"],
+            "cards": framing_data["cards"],
+            "unique_omissions": framing_data["unique_omissions"],
+            "shared_blind_note": framing_data["shared_blind_note"],
+        }
+
+    return {
+        "models": models,
+        "model_names": model_names,
+        "framing_comparison": None,
+        "structural_framing_diff": structural_diff,
+        "structural_framing_cards": structural_cards,
+        "agreed_numbers": sorted(
+            agreed_numbers,
+            key=lambda x: float(x) if x.replace(".", "").isdigit() else 0,
+        ),
+        "only_a": sorted(only_a),
+        "only_b": sorted(only_b),
+        "near_matches": near_matches,
+        "blind_spots": shared_blind,
+        "only_a_missing": sorted(missing_a - missing_b),
+        "only_b_missing": sorted(missing_b - missing_a),
+        "summary": {
+            "total_agreed": len(agreed_numbers),
+            "total_only_a": len(only_a),
+            "total_only_b": len(only_b),
+            "disagreements": len(near_matches),
+        },
+    }
+
+
+def _build_structural_framing_data(
+    a_name, a, b_name, b,
+    shared_blind, only_a_blind, only_b_blind,
+):
+    """Build a deterministic structural framing comparison as
+    structured data. Zero LLM.
+
+    Returns a dict with:
+      - headline: optional opening characterization (str or None)
+      - cards: list of per-dimension comparison cards, each with:
+          dimension, label, a_value, b_value, note (implication)
+      - unique_omissions: {"a_omits": [...], "b_omits": [...]}
+      - shared_blind_note: {"dimensions": [...], "consequence": str}
+        or None
+      - prose: the joined single-paragraph prose form, derived from
+        the structured content, for surfaces that cannot render
+        structured layouts (the legacy structural_framing_diff
+        string used by older saved-comparison JSON and by tests).
+
+    This is the Frame Check core value for compare mode: a
+    computational structural diff that reveals how two responses
+    frame the same topic differently. It works without any API
+    key and produces the same output every time for the same
+    inputs. The prose form and the structured cards are produced
+    together so the prose rendering stays word-identical to the
+    pre-refactor output for the test corpus and for already-saved
+    comparisons.
+    """
+    prose_parts = []
+    cards = []
+    headline = None
+    shared_blind_note = None
+
+    a_cov = a.get("coverage", {})
+    b_cov = b.get("coverage", {})
+    a_count = a_cov.get("coverage_count", 0)
+    b_count = b_cov.get("coverage_count", 0)
+    a_voice = (a.get("voice") or {}).get("voice", "")
+    b_voice = (b.get("voice") or {}).get("voice", "")
+    a_sourced = (a.get("epistemic") or {}).get("sourced_pct", 0) or 0
+    b_sourced = (b.get("epistemic") or {}).get("sourced_pct", 0) or 0
+    a_temp = (a.get("temporal") or {}).get("dominant", "")
+    b_temp = (b.get("temporal") or {}).get("dominant", "")
+
+    # Count divergent dimensions for opening characterization
+    divergences = 0
+    if a_count != b_count:
+        divergences += 1
+    if a_voice and b_voice and a_voice != b_voice:
+        divergences += 1
+    if abs(a_sourced - b_sourced) >= 10:
+        divergences += 1
+    if a_temp and b_temp and a_temp != b_temp:
+        divergences += 1
+
+    # ── Opening: characterize the relationship ──
+    if divergences == 0:
+        if shared_blind:
+            headline = (
+                "Both documents take a structurally similar approach. "
+                "The shared framing means shared blind spots."
+            )
+        else:
+            headline = (
+                "Both documents take a structurally similar approach, "
+                "with comparable analytical coverage, voice, and sourcing."
+            )
+    elif divergences >= 3:
+        headline = (
+            "These documents position the reader differently "
+            "across multiple structural dimensions."
+        )
+    if headline:
+        prose_parts.append(headline)
+
+    # ── Coverage ──
+    if a_count != b_count:
+        wider = a_name if a_count > b_count else b_name
+        narrower = b_name if a_count > b_count else a_name
+        wider_n = max(a_count, b_count)
+        narrower_n = min(a_count, b_count)
+        if narrower_n == 0:
+            cov_prose = (
+                f"{wider} has markers for {wider_n} of 5 analytical "
+                f"perspectives. {narrower} has none."
+            )
+            cov_note = None
+        else:
+            cov_prose = (
+                f"{wider} has markers for {wider_n} of 5 analytical "
+                f"perspectives while {narrower} has {narrower_n}. The "
+                f"narrower document produces conclusions from less "
+                f"context."
+            )
+            cov_note = (
+                "The narrower document produces conclusions from less context."
+            )
+        cards.append({
+            "dimension": "coverage",
+            "label": "Analytical coverage",
+            "a_value": f"{a_count} of 5 perspectives",
+            "b_value": f"{b_count} of 5 perspectives",
+            "note": cov_note,
+        })
+        prose_parts.append(cov_prose)
+    elif a_count == b_count and a_count < 5:
+        cards.append({
+            "dimension": "coverage",
+            "label": "Analytical coverage",
+            "a_value": f"{a_count} of 5 perspectives",
+            "b_value": f"{b_count} of 5 perspectives",
+            "note": "Shared coverage footprint across both documents.",
+        })
+        prose_parts.append(
+            f"Both cover {a_count} of 5 analytical perspectives."
+        )
+
+    if only_a_blind:
+        prose_parts.append(
+            f"Only {a_name} has no detected markers for: "
+            f"{', '.join(sorted(only_a_blind))}."
+        )
+    if only_b_blind:
+        prose_parts.append(
+            f"Only {b_name} has no detected markers for: "
+            f"{', '.join(sorted(only_b_blind))}."
+        )
+
+    # ── Voice ──
+    if a_voice and b_voice and a_voice != b_voice:
+        # "analytical" is the residual cascade classification (no
+        # prescriptive/promotional/descriptive/advisory markers fired).
+        # Per METHODOLOGY §1.3.1 and fvs_eval/CONSTRUCT_HONESTY_AUDIT_v1.md
+        # L3a, report as evidence-absence rather than existential
+        # "presents third-person examination."
+        voice_implications = {
+            "promotional": "positions the reader as a buyer",
+            "prescriptive": "tells the reader what to do",
+            "analytical": "has no directive/promotional/descriptive voice markers detected",
+            "descriptive": "catalogs facts without interpretation",
+            "advisory": "offers guidance with some direction",
+        }
+        a_imp = voice_implications.get(a_voice, f"uses {a_voice} voice")
+        b_imp = voice_implications.get(b_voice, f"uses {b_voice} voice")
+        cards.append({
+            "dimension": "voice",
+            "label": "Voice",
+            "a_value": a_voice,
+            "b_value": b_voice,
+            "note": (
+                f"{a_name} {a_imp}; {b_name} {b_imp}. "
+                f"The same data serves different purposes depending on "
+                f"which document a reader encounters first."
+            ),
+        })
+        prose_parts.append(
+            f"{a_name} {a_imp}; {b_name} {b_imp}. "
+            f"The same data serves different purposes depending on "
+            f"which document a reader encounters first."
+        )
+
+    # ── Epistemic ──
+    if abs(a_sourced - b_sourced) >= 10:
+        better = a_name if a_sourced > b_sourced else b_name
+        better_pct = max(a_sourced, b_sourced)
+        worse = b_name if a_sourced > b_sourced else a_name
+        worse_pct = min(a_sourced, b_sourced)
+        cards.append({
+            "dimension": "sourcing",
+            "label": "Sourcing",
+            "a_value": f"{a_sourced}% attributed",
+            "b_value": f"{b_sourced}% attributed",
+            "note": (
+                f"Conclusions from {worse} are harder to independently verify."
+            ),
+        })
+        prose_parts.append(
+            f"{better} attributes {better_pct}% of claims to sources; "
+            f"{worse} attributes {worse_pct}%. "
+            f"Conclusions from {worse} are harder to independently verify."
+        )
+
+    # ── Hedging strategy / certainty ──
+    a_claims = a.get("claim_count", 0)
+    b_claims = b.get("claim_count", 0)
+    a_unhedged = a.get("unhedged_count", 0)
+    b_unhedged = b.get("unhedged_count", 0)
+
+    if a_claims >= 3 and b_claims >= 3:
+        a_unhedged_pct = round(a_unhedged / a_claims * 100)
+        b_unhedged_pct = round(b_unhedged / b_claims * 100)
+        if abs(a_unhedged_pct - b_unhedged_pct) >= 20:
+            assertive = a_name if a_unhedged_pct > b_unhedged_pct else b_name
+            cautious = b_name if a_unhedged_pct > b_unhedged_pct else a_name
+            assertive_pct = max(a_unhedged_pct, b_unhedged_pct)
+            cautious_pct = min(a_unhedged_pct, b_unhedged_pct)
+            cards.append({
+                "dimension": "certainty",
+                "label": "Certainty",
+                "a_value": f"{a_unhedged_pct}% as fact",
+                "b_value": f"{b_unhedged_pct}% as fact",
+                "note": (
+                    f"A reader of {assertive} receives more confidence "
+                    f"than the evidence warrants compared to {cautious}."
+                ),
+            })
+            prose_parts.append(
+                f"{assertive} states {assertive_pct}% of claims as "
+                f"definitive fact; {cautious} states {cautious_pct}%. "
+                f"The certainty gap means a reader of {assertive} receives "
+                f"more confidence than the evidence warrants compared "
+                f"to {cautious}."
+            )
+
+    # ── Temporal ──
+    if a_temp and b_temp and a_temp != b_temp:
+        temp_implications = {
+            "past": "grounds conclusions in historical data",
+            "present": "describes current state",
+            "future": "projects forward based on assumptions",
+        }
+        a_imp = temp_implications.get(a_temp, f"is {a_temp}-oriented")
+        b_imp = temp_implications.get(b_temp, f"is {b_temp}-oriented")
+        cards.append({
+            "dimension": "temporal",
+            "label": "Time horizon",
+            "a_value": a_temp,
+            "b_value": b_temp,
+            "note": f"{a_name} {a_imp}; {b_name} {b_imp}.",
+        })
+        prose_parts.append(f"{a_name} {a_imp}; {b_name} {b_imp}.")
+
+    # ── Closing: combined blind spot ──
+    if shared_blind:
+        perspective_desc = {
+            "causes": "why things happen",
+            "risks": "what could go wrong",
+            "stakeholders": "who is affected",
+            "trends": "what is changing",
+            "uncertainty": "what is unknown",
+        }
+        blind_expanded = [perspective_desc.get(b, b) for b in shared_blind]
+        shared_blind_note = {
+            "dimensions": list(shared_blind),
+            "consequence": (
+                f"A reader of both would still not know: "
+                f"{'; '.join(blind_expanded)}."
+            ),
+        }
+        prose_parts.append(
+            f"Neither document has detected markers for "
+            f"{', '.join(shared_blind)}. A reader of both would still "
+            f"not know: {'; '.join(blind_expanded)}."
+        )
+
+    prose = " ".join(prose_parts) if prose_parts else None
+    if not (headline or cards or only_a_blind or only_b_blind
+            or shared_blind_note):
+        return None
+
+    return {
+        "headline": headline,
+        "cards": cards,
+        "unique_omissions": {
+            "a_omits": sorted(only_a_blind) if only_a_blind else [],
+            "b_omits": sorted(only_b_blind) if only_b_blind else [],
+            "a_name": a_name,
+            "b_name": b_name,
+        },
+        "shared_blind_note": shared_blind_note,
+        "prose": prose,
+    }
+
+
+def _build_structural_framing_diff(
+    a_name, a, b_name, b,
+    shared_blind, only_a_blind, only_b_blind,
+):
+    """Legacy wrapper: return the framing comparison as the single
+    prose paragraph string older saved-JSON files and existing
+    tests expect. New consumers should call
+    _build_structural_framing_data() directly for the structured
+    form."""
+    data = _build_structural_framing_data(
+        a_name, a, b_name, b,
+        shared_blind, only_a_blind, only_b_blind,
+    )
+    return data["prose"] if data else None
+
+
+def _find_sentence_for_value(val, claims):
+    """Find the claim sentence containing this value."""
+    for c in claims.get("claims", []):
+        for n in c.get("numbers", []):
+            cleaned = n.strip().lstrip("$~").rstrip("%xXBMK").replace(",", "").strip()
+            if cleaned == val:
+                sent = c.get("sentence", "")
+                return sent[:100] if sent else ""
+    return ""
+
+
+def compare_responses(responses):
+    """Analyze and compare responses from multiple models.
+
+    Synchronous batch entry point. Calls analyze_model for each
+    response in parallel, then build_cross_model_comparison.
+
+    Args:
+        responses: dict of {model_name: response_text}
+
+    Returns comparison dict with per-model analysis and cross-model insights.
+    """
+    if len(responses) < 2:
+        return None
+
+    # Analyze both models in parallel (Source Network is the bottleneck)
+    models = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        futures = {
+            pool.submit(analyze_model, name, text): name
+            for name, text in responses.items()
+        }
+        for future in concurrent.futures.as_completed(futures):
+            name = futures[future]
+            try:
+                models[name] = future.result()
+            except Exception:
+                pass
+
+    if len(models) < 2:
+        return None
+
+    return build_cross_model_comparison(models)
+
+
+# ================================================================
+# Example topics (static, no API calls)
+# ================================================================
+
+def get_comparison_examples():
+    """Return static example topics. No API calls. No cost."""
+    return [
+        {
+            "id": "semiconductor",
+            "topic": "Global semiconductor market size, growth, and key players in 2025",
+            "description": "Financial/market topic with specific numbers",
+        },
+        {
+            "id": "climate",
+            "topic": "Current state of climate change: temperature rise, CO2 levels, and ice loss statistics",
+            "description": "Scientific topic with verifiable data",
+        },
+        {
+            "id": "ai",
+            "topic": "State of AI adoption in enterprise: spending, deployment rates, and ROI statistics",
+            "description": "Technology topic with industry projections",
+        },
+    ]
+
+
+# ================================================================
+# Example document pairs (static, no API calls)
+# ================================================================
+#
+# These pairs let users demo documents-mode without pasting anything.
+# Each pair is engineered to surface a distinct analytical signal:
+#
+#   1. Numerical disagreement: same topic, conflicting numbers,
+#      to demonstrate the cross-model verification feature
+#   2. Voice / framing contrast: same event, opposite tone,
+#      to demonstrate how omissions differ between PR and analysis
+#   3. Stakeholder coverage gaps: same regulation, opposite sides,
+#      to demonstrate the shared blind spots feature
+#
+# The texts are deliberately fictional (made-up companies, made-up
+# numbers) so we are not putting words in real organizations' mouths.
+# They are written in the same register as the AI-generated content
+# Frame Check is built to analyze.
+
+def get_document_comparison_examples():
+    """Return preset document pairs for the documents mode demo.
+
+    Each pair is well under MAX_DOC_CHARS so the textareas validate
+    without truncation. Hooks summarize the analytical insight users
+    will see after running the comparison.
+    """
+    return [
+        {
+            "id": "ev-forecasts",
+            "title": "Bullish vs cautious EV market forecast",
+            "description": "Same market, two analyst takes, different numbers",
+            "hook": (
+                "Numerical disagreements jump out: market size, growth "
+                "rate, battery prices, and market share all conflict. "
+                "Voice and temporal framing diverge."
+            ),
+            "doc_a_label": "Bullish forecast",
+            "doc_a": (
+                "## Electric Vehicle Market 2025: Acceleration\n\n"
+                "The global electric vehicle market reached $623 billion "
+                "in 2024, growing at 28% year over year. Battery prices "
+                "declined to $89 per kWh, an 18% drop from 2023. Tesla, "
+                "BYD, and Volkswagen together captured 47% of global "
+                "sales.\n\n"
+                "Charging infrastructure expanded dramatically: public "
+                "charging points increased to 4.2 million worldwide, up "
+                "from 2.7 million in 2023. Government incentives in 27 "
+                "countries directly subsidize EV purchases. Goldman Sachs "
+                "projects the market will reach $1.1 trillion by 2028, "
+                "implying continued 15% annual growth.\n\n"
+                "Adoption is accelerating across every major segment. "
+                "Commercial fleets transitioned 23% of new purchases to "
+                "electric models. Two-wheeler electrification reached "
+                "67% in Asian markets."
+            ),
+            "doc_b_label": "Cautious forecast",
+            "doc_b": (
+                "## Electric Vehicle Market 2025: Headwinds\n\n"
+                "Electric vehicle sales slowed in late 2024 as growth "
+                "fell from prior peaks. The global market reached "
+                "approximately $580 billion, growing at 12% year over "
+                "year, well below the 28% rate analysts had expected. "
+                "Battery prices declined modestly to $103 per kWh, but "
+                "the pace of cost reductions has flattened.\n\n"
+                "Tesla, BYD, and Volkswagen jointly held 39% of global "
+                "sales as Chinese rivals captured share. Charging "
+                "infrastructure remains uneven: public charging points "
+                "reached 3.6 million globally, but half of new "
+                "installations cluster in China and the EU. Several "
+                "governments scaled back purchase incentives due to "
+                "budget pressures.\n\n"
+                "McKinsey estimates the market will reach roughly $850 "
+                "billion by 2028, representing slower growth of 8 to 10 "
+                "percent annually. Used EV depreciation accelerated 22% "
+                "in 2024."
+            ),
+        },
+        {
+            "id": "earnings-takes",
+            "title": "Press release vs analyst note",
+            "description": "Same quarter, opposite framing: what gets left out",
+            "hook": (
+                "Both texts use the same headline numbers, but the "
+                "analyst note adds decelerating growth, a workforce "
+                "reduction, and competitive pressure. Voice analysis "
+                "catches the PR vs analytical tone."
+            ),
+            "doc_a_label": "Company release",
+            "doc_a": (
+                "## NovaTech Q4 2024 Highlights\n\n"
+                "NovaTech delivered exceptional Q4 results, with revenue "
+                "reaching $4.27 billion, a 31% increase year over year. "
+                "Cloud Platform sales grew 42% to $1.83 billion, our "
+                "fastest-growing segment ever. Operating margin expanded "
+                "to 27.4%, up 220 basis points. Net income reached $812 "
+                "million.\n\n"
+                "Customer wins this quarter included three Fortune 100 "
+                "enterprises across financial services, healthcare, and "
+                "retail. Our AI Assistant product crossed 12 million "
+                "active users, adding 4.1 million in Q4 alone, an "
+                "extraordinary pace.\n\n"
+                "Looking ahead, we are guiding full-year 2025 revenue of "
+                "$19.5 to $20.2 billion, reflecting strong momentum "
+                "across all segments and continued execution on our "
+                "long-term strategy."
+            ),
+            "doc_b_label": "Analyst note",
+            "doc_b": (
+                "## NovaTech Q4 2024: A Closer Look\n\n"
+                "NovaTech reported Q4 revenue of $4.27 billion, hitting "
+                "consensus but marking the third straight quarter of "
+                "decelerating growth. The 31% year-over-year increase "
+                "compares with 38% in Q3 and 47% in Q1. Cloud Platform "
+                "growth of 42% remains strong but trails the 51% "
+                "reported by larger rival Apex Cloud.\n\n"
+                "Operating margin of 27.4% reflects aggressive cost "
+                "cuts that included a 6% workforce reduction in October. "
+                "AI Assistant active users reached 12 million, but the "
+                "company did not disclose paying users or revenue "
+                "contribution from this product, which we estimate at "
+                "less than 4% of total.\n\n"
+                "Full-year 2025 guidance of $19.5 to $20.2 billion "
+                "implies 18% growth at the midpoint, below buy-side "
+                "expectations of $20.5 billion. Management did not "
+                "address competitive pressure from Apex and DataPrime."
+            ),
+        },
+        {
+            "id": "privacy-perspectives",
+            "title": "Industry vs consumer-advocate perspective",
+            "description": "Same regulation, opposite sides, shared blind spots",
+            "hook": (
+                "Each side cites different statistics for the same "
+                "policy. The blind-spots view shows what each text "
+                "leaves out: industry omits consumer harms, advocates "
+                "omit small-business burden."
+            ),
+            "doc_a_label": "Industry view",
+            "doc_a": (
+                "## Impact of New Data Privacy Regulations\n\n"
+                "The proposed federal data privacy framework would "
+                "impose significant compliance costs on US businesses, "
+                "with industry estimates ranging from $14.5 billion to "
+                "$23.8 billion annually. Companies would face mandatory "
+                "data audits every 12 months, breach notification "
+                "within 72 hours, and individual data deletion rights "
+                "that average 240 hours of engineering work per "
+                "request.\n\n"
+                "Small businesses with fewer than 500 employees face "
+                "the greatest burden: compliance costs are projected to "
+                "consume 4.2% of revenue for affected firms. The "
+                "Chamber of Commerce estimates 38% of small tech "
+                "companies would be unable to fully comply within the "
+                "proposed 18-month timeline, putting up to 220,000 jobs "
+                "at risk.\n\n"
+                "International coordination remains weak. The framework "
+                "diverges from EU GDPR in three significant ways, "
+                "creating dual-compliance burden for any business "
+                "serving both markets."
+            ),
+            "doc_b_label": "Consumer view",
+            "doc_b": (
+                "## Why Americans Need Data Privacy Protection\n\n"
+                "US consumers lose an estimated $58 billion annually to "
+                "data breaches, identity theft, and unauthorized data "
+                "sales. The proposed federal data privacy framework "
+                "would establish basic rights that 47 other countries "
+                "already provide, including the right to know what data "
+                "companies collect, the right to delete it, and the "
+                "right to refuse sale of personal information.\n\n"
+                "Currently, 78% of Americans report feeling that they "
+                "have little control over how companies use their data. "
+                "Only 9% say they fully understand what they are "
+                "agreeing to in privacy policies. The framework would "
+                "require plain-language disclosures and create real "
+                "penalties for violations, with fines of up to 4% of "
+                "global revenue for systematic abuse.\n\n"
+                "The Chamber of Commerce opposes the framework, "
+                "arguing compliance costs are excessive. Independent "
+                "analysis suggests these estimates are inflated 3 to 5 "
+                "times by including normal business operations as "
+                "compliance costs."
+            ),
+        },
+    ]

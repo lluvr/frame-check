@@ -1,0 +1,10 @@
+title: Claude on whether to retire on Bitcoin (life-decision question)
+genre: ai_response
+source: data/worked_examples/four-llms-on-bitcoin-retirement-2026/llm_responses.json
+captured_at_utc: ''
+char_count: 1249
+word_count_estimate: 187
+curated_at_utc: '2026-04-20T11:52:10.495139+00:00'
+curation_note: Profile computed without Source Network (structural-only). Evidence
+  and robustness dimensions are partial; see methodology page.
+peer_group: bitcoin_retirement_question

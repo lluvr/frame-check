@@ -1,0 +1,11 @@
+title: NVIDIA Q4 FY2024 earnings press release (source document)
+genre: financial
+source: data/worked_examples/grok-on-nvidia-earnings-2026/data.json (source.text)
+captured_at_utc: '2026-04-18T09:18:18Z'
+char_count: 1847
+word_count_estimate: 305
+curated_at_utc: '2026-04-20T11:52:10.504562+00:00'
+curation_note: Profile computed without Source Network (structural-only). Evidence
+  and robustness dimensions are partial; see methodology page.
+paired_with: grok-nvidia-q4-fy24-summary
+transformation_kind: source_document
