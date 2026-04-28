@@ -61,7 +61,7 @@ The methodology page's coverage_balance signal partially detects this; per-persp
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -77,14 +77,14 @@ Per-family positives (of 15 docs): Claude 3, Gemini 0, Grok 1, GPT-5 0.
 
 **Interpretation:** Kappa paradox pattern (low Cohen's kappa due to prevalence extreme 7%, but Gwet's AC1 shows substantial cross-family agreement). Reliable under prevalence-robust metrics.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04; prevalence 7 percent)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04; prevalence 7 percent)
 - FVS-010 Completeness Illusion (related pattern)
 - `detect_coverage` in `framing.py`
 - PROTOCOL_ARCHITECTURE.md CHD curation meta-frame
@@ -100,7 +100,7 @@ Per-family positives (of 15 docs): Claude 3, Gemini 0, Grok 1, GPT-5 0.
 1. Climate science worked example (v1 Identification). Document gave "equal paragraphs" to the scientific consensus (over 97 percent of published climate science) and to fringe questioning of human contribution (under 3 percent). Equal treatment misrepresents the field. Operational diagnostic: ask "if I removed the minority position, would the analysis be more accurate" - for false balance the answer is yes; for genuine debate the answer is no.
 2. Calibration dimension partial signal. coverage_balance partially detects false balance through structural balance vs evidentiary-weight gap. Per-perspective evidentiary weighting is the missing dimension and is named as v0 limitation. Operational integration point with decision-readiness Calibration dimension; calibration failure is bidirectional (overconfidence in lower-supported view; under-confidence in better-supported view).
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught a "balanced" presentation that gave equal weight to unequally-supported empirical claims; (2) the evidence-distribution check applied (what is the actual proportion of expert opinion or evidence behind each perspective); (3) outcome differential observed (presentation re-weighted to evidence; minority position scoped to its actual evidence base; conclusion re-anchored on consensus); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught a "balanced" presentation that gave equal weight to unequally-supported empirical claims; (2) the evidence-distribution check applied (what is the actual proportion of expert opinion or evidence behind each perspective); (3) outcome differential observed (presentation re-weighted to evidence; minority position scoped to its actual evidence base; conclusion re-anchored on consensus); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~1-2 minutes per balanced-looking analysis (assess evidence distribution per perspective)

@@ -43,7 +43,7 @@ Frame Check has two release postures:
 
 - **Web service** (`frame.clarethium.com`): a live deploy, not a
   released product with version ranges. The master branch at
-  github.com/lluvr/frame-check is the authoritative source. The
+  github.com/lluvr/frame-check-mcp is the authoritative source. The
   Fly.io image tracks master with operator-controlled deploy
   cadence.
 - **MCP package** (`frame-check-mcp` on PyPI, planned 0.8.0

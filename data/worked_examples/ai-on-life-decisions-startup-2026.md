@@ -3,7 +3,7 @@ title: One LLM, one life decision: what framing your AI imposes when you ask it 
 slug: ai-on-life-decisions-startup-2026
 author: Lovro Lucic
 published: 2026-04-18
-source_document_url: https://github.com/lluvr/frame-check/tree/master/data/worked_examples/ai-on-life-decisions-startup-2026
+source_document_url: https://github.com/lluvr/frame-check-mcp/tree/master/data/worked_examples/ai-on-life-decisions-startup-2026
 source_document_title: GPT-5 response to a startup career-change prompt (2026-04-18)
 source_document_author: OpenAI GPT-5 (`gpt-5-2025-08-07`)
 source_document_type: LLM response to a life-decision prompt
@@ -209,7 +209,7 @@ in resource metadata is designed to support.
 Lucic, L. (2026). *One LLM, one life decision: what framing your
 AI imposes when you ask it for advice*. Frame Check Worked
 Examples.
-frame.clarethium.com/corpus/worked-examples/ai-on-life-decisions-startup-2026/
+(production paused)
 
 Licensed CC-BY-4.0. The LLM response analysed is the output of a
 third-party system (OpenAI GPT-5). Its reproduction here is for

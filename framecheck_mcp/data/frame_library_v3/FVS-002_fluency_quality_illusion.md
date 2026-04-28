@@ -75,7 +75,7 @@ This entry describes how readers (human or LLM) evaluate documents, not a proper
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -91,14 +91,14 @@ Per-family positives (of 15 docs): Claude 11, Gemini 11, Grok 14, GPT-5 12.
 
 **Interpretation:** Substantial cross-family agreement.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
 - HI-012 Fluency-Quality Illusion case study
 - EXP-073 (100 percent LLM agreement at 38 percent human agreement on quality judgments; single human evaluator)
 - M-002 The 60-Second Pause (somatic-side companion vocabulary)
@@ -114,7 +114,7 @@ Per-family positives (of 15 docs): Claude 11, Gemini 11, Grok 14, GPT-5 12.
 1. Pharma market analysis worked example (v1 Identification). Document presented confident superlatives ("remarkable transformation," "unprecedented advances," "revolutionary potential") with cited projections (6.2 percent CAGR, $2.1T by 2028) and no countervailing factors. Fluency-as-quality-signal fired. Counter-frame test (rough-draft rewrite without adjectives) exposed: source unknown, drivers vague, risks not mentioned. The rough-draft test is the operational antidote.
 2. Branch B pre-commit operational concept. The write-first step is the antidote: user articulates their own (less fluent) version before reading AI's polished output. Comparison creates the gap where fluency-vs-substance becomes visible. Operationalized in methodology and outreach materials.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where polished AI output passed casual inspection but the rough-draft test (strip the polish, evaluate the bullets) revealed substantive weakness; (2) the contrast between the polished-pass-through reading and the rough-draft-test reading is concrete; (3) outcome differential observed (claim rejected, additional verification demanded, draft re-grounded); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where polished AI output passed casual inspection but the rough-draft test (strip the polish, evaluate the bullets) revealed substantive weakness; (2) the contrast between the polished-pass-through reading and the rough-draft-test reading is concrete; (3) outcome differential observed (claim rejected, additional verification demanded, draft re-grounded); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~1-2 minutes (read once for fluency response; rough-draft rewrite for substance check)

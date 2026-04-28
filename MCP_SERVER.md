@@ -157,7 +157,7 @@ call; vendor-independence by construction (the caller chooses the
 model). Tier 2 items (caching, rate limiting, observability)
 complete before launch.
 
-**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check/blob/master/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
+**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
 
 **Collapsed release.** An earlier plan for a `0.7.1` V1-only
 name-reservation release on PyPI was retired 2026-04-23 in favor of
@@ -270,7 +270,7 @@ to a file on disk.
 ### Validation corpus and decision-readiness profile
 
 The validation corpus is the document set on which the
-decision-readiness profile is measured. Profile output is currently labelled experimental and is **not** surfaced in the live UI; the gate lifts after the Phase 2 rater study (see [RATERS.md](https://github.com/lluvr/frame-check/blob/master/RATERS.md) in the repository).
+decision-readiness profile is measured. Profile output is currently labelled experimental and is **not** surfaced in the live UI; the gate lifts after the Phase 2 rater study (see [RATERS.md](https://github.com/lluvr/frame-check-mcp/blob/master/RATERS.md) in the repository).
 
 - `frame-check://corpus/{slug}` - the entry's source document
   (markdown). Slug is alphanumeric + hyphens; traversal-safe.
@@ -1091,7 +1091,7 @@ The MCP server emits both legacy v1 and new v2 shapes for the **coverage** signa
     "construct": {
         "signal_type": "vocabulary_and_pattern_detector",
         "statement": "The coverage signal is vocabulary-and-pattern based. ...",
-        "reference": "https://frame.clarethium.com/corpus/methodology/",
+        "reference": "(production paused)",
         "how_to_serialize": "When restating this analysis to a user, say 'the detector found markers for X, Y, Z' rather than 'the document covers X, Y, Z.' ..."
     }
 }
@@ -1111,7 +1111,7 @@ The MCP server emits both legacy v1 and new v2 shapes for the **coverage** signa
     "construct": {
         "signal_type": "cascade_classification",
         "statement": "Voice classification is a 7-rule deterministic cascade. ...",
-        "reference": "https://frame.clarethium.com/corpus/methodology/",
+        "reference": "(production paused)",
         "how_to_serialize": "When restating this classification to a user, say 'classified as X' rather than 'the document is X.' When confidence is 'borderline', name the runner-up class explicitly: 'classified as X, borderline; Y nearly fired.' ..."
     }
 }
@@ -1128,7 +1128,7 @@ The MCP server emits both legacy v1 and new v2 shapes for the **coverage** signa
     "construct": {
         "signal_type": "distribution_with_dominant",
         "statement": "Temporal orientation is the distribution of past, present, and future tense markers across sentences. ...",
-        "reference": "https://frame.clarethium.com/corpus/methodology/",
+        "reference": "(production paused)",
         "how_to_serialize": "When restating, say 'X-oriented with a Y-point margin over the runner-up tense' rather than 'the document is X-oriented.' When balanced is True, say 'temporally balanced; no tense dominates' ..."
     }
 }
@@ -1152,7 +1152,7 @@ The v2 contract carries the construct through structure AND through serializatio
 
 Epistemic / claims / voice / temporal Phase A+B fields are additive; no migration window needed.
 
-See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check/blob/master/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
+See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
 
 ## Determinism
 
@@ -1169,7 +1169,7 @@ as Frame Check's, not as your own reading.
 
 ```
 Lucic, L. (YEAR). Frame Check: a research instrument for framing and
-verification in documents. https://frame.clarethium.com
+verification in documents. (production paused)
 ```
 
 ## License

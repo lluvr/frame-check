@@ -2,7 +2,7 @@
 
 You are rating a document on five dimensions of decision support.
 Each dimension is rated on a 1-5 scale. Read the methodology page
-at [/corpus/decision-readiness/](https://frame.clarethium.com/corpus/decision-readiness/)
+at /corpus/decision-readiness/
 for the underlying framework; this guide gives you the operational
 definitions and anchor descriptions you use while rating.
 
@@ -191,7 +191,7 @@ opposing views? Does it engage with how it might be wrong?
   it were the only one.
 - **1: Absent.** No counterfactual engagement at all
   (corresponds to the named pattern
-  [FVS-007: Failure Framing absent](https://frame.clarethium.com/corpus/library/FVS-007.html)
+  FVS-007: Failure Framing absent
   in the Frame Vocabulary Standard).
   The document makes confident claims with no engagement with how
   it might be wrong, what would change the conclusion, or what

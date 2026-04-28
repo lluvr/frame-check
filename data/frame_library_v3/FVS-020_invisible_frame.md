@@ -90,7 +90,7 @@ This entry IS its own worked example. You are reading a library entry that claim
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -104,6 +104,6 @@ Per-family positives (of 15 docs): Claude 14, Gemini 11, Grok 15, GPT-5 5.
 
 **V4 detection mode:** meta (not detected by rule-based; consensus evaluation only)
 
-**Interpretation:** Persistent cross-family divergence across all three metrics. Detection is interpretation-dependent; see [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for split-vote reasoning analysis.
+**Interpretation:** Persistent cross-family divergence across all three metrics. Detection is interpretation-dependent; see fvs_eval/v4/RELIABILITY_STUDY.md for split-vote reasoning analysis.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.

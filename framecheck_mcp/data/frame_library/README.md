@@ -13,8 +13,8 @@ snapshot at `../frame_library_v4/` (Identification sections only).
 |---|---|---|
 | Living library (this directory) | `data/frame_library/` | Reviewer-facing prose. Edits accumulate continuously. Renders to corpus pages. |
 | Frozen snapshot | `data/frame_library_v4/` | Ratified library_v4 snapshot. Engine reads `## Identification` sections from here. Never edited post-ratification (see snapshot's POST_RATIFICATION_DIVERGENCE.md). |
-| Per-entry status | [INDEX.md](https://github.com/lluvr/frame-check/blob/master/data/frame_library/INDEX.md) (this directory) | Canonical status, citation rules, detection class for each FVS-XXX. |
-| Engine reliability values | [fvs_eval/v4/library_v4_reliability.json](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/library_v4_reliability.json) | Per-frame `library_consensus_ac1` that the engine emits in V4.2 results. |
+| Per-entry status | [INDEX.md](https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/INDEX.md) (this directory) | Canonical status, citation rules, detection class for each FVS-XXX. |
+| Engine reliability values | fvs_eval/v4/library_v4_reliability.json | Per-frame `library_consensus_ac1` that the engine emits in V4.2 results. |
 | Library version | `VERSION` (this directory) | SemVer of the living library. Bumped at ratification time. |
 | Canon-promotion dossiers | `promotions/FVS-XXX_v1.md` | Reviewer-engagement packages for canon-candidate frames. |
 
@@ -42,7 +42,7 @@ are reviewer-facing only and do not require LLM-behavior checks.
 Each entry's `## Cross-family reliability` section carries a top-of-block
 ratification framing line that names library_v4 = library_v3 byte-equivalent
 on Identifications. The engine-canonical reliability number for each frame
-is in [fvs_eval/v4/library_v4_reliability.json](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/library_v4_reliability.json) (`frames[FVS-XXX].ac1_avg`)
+is in fvs_eval/v4/library_v4_reliability.json (`frames[FVS-XXX].ac1_avg`)
 and matches what V4.2 emits as `library_consensus_ac1` in its results.
 
 The `## Cross-family reliability` block in each entry presents engine-
@@ -52,7 +52,7 @@ library_v2 (earlier variant) as historical comparisons.
 
 ## Drift-prevention tests
 
-Two structural tests in [test_v4_2_discipline_boundary.py](https://github.com/lluvr/frame-check/blob/master/test_v4_2_discipline_boundary.py) enforce
+Two structural tests in [test_v4_2_discipline_boundary.py](https://github.com/lluvr/frame-check-mcp/blob/master/test_v4_2_discipline_boundary.py) enforce
 the discipline:
 
 - `test_v4_2_labeling_prompt_only_uses_identification_sections`: catches
@@ -71,21 +71,21 @@ These tests are part of the canonical runner (`python3 run_tests.py`).
 1. Edit the entry markdown in this directory.
 2. If the edit touches `## Identification`, run a section 2.4.3 ablation
    before merging. Reference harnesses from the library_v4 ratification:
-   [fvs_eval/v4_2/measure_ablation.py](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/measure_ablation.py) (general per-frame ablation
-   loop) and [fvs_eval/v4_2/measure_ablation_cur_v4_cand.py](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/measure_ablation_cur_v4_cand.py)
+   fvs_eval/v4_2/measure_ablation.py (general per-frame ablation
+   loop) and fvs_eval/v4_2/measure_ablation_cur_v4_cand.py
    (mixed-genre n=15 measurement against a candidate library directory).
    Worked example of a passing ablation: the FVS-007 result at
-   [fvs_eval/v4_2/FVS_007_ABLATION_RESULTS_v1.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/FVS_007_ABLATION_RESULTS_v1.md). Worked example
+   fvs_eval/v4_2/FVS_007_ABLATION_RESULTS_v1.md. Worked example
    of a section 2.4.3-blocked revision and how it was resolved by
    composition: the library_v3 → library_v4 ratification at
-   [fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md).
+   fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md.
 3. If the edit touches `## Generation affordances`, run a reframe-behavior
-   smoke test before merging via [scripts/reframe_smoke_test.py](https://github.com/lluvr/frame-check/blob/master/scripts/reframe_smoke_test.py)
+   smoke test before merging via [scripts/reframe_smoke_test.py](https://github.com/lluvr/frame-check-mcp/blob/master/scripts/reframe_smoke_test.py)
    (single-frame manual recipe currently runnable; see file-top docstring
    for what "passing" means and for the full-sweep TODO).
 4. If the edit touches any other section, no LLM-behavior check is required.
 5. Run `python3 ../../run_tests.py` to confirm the discipline-boundary
-   tests in [test_v4_2_discipline_boundary.py](https://github.com/lluvr/frame-check/blob/master/test_v4_2_discipline_boundary.py) still pass; in
+   tests in [test_v4_2_discipline_boundary.py](https://github.com/lluvr/frame-check-mcp/blob/master/test_v4_2_discipline_boundary.py) still pass; in
    particular the engine-emit disclosure test catches drift between this
    directory's entries and the engine's reliability artifact.
 6. If the edit changes which library variant is engine-canonical,
@@ -99,6 +99,6 @@ These tests are part of the canonical runner (`python3 run_tests.py`).
 See METHODOLOGY section 2.4.3 (revision discipline) and section 2.4.4
 (engine pinning + Generation-affordances corollary) for full procedure.
 The 2026-04-24 library_v3 → library_v4 ratification at
-[fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md) serves as the
+fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md serves as the
 reference worked example, including the post-ratification stress-test
 pass documented in section 8b.

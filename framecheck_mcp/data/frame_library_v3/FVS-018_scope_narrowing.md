@@ -67,7 +67,7 @@ The frame does NOT fire when:
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -81,16 +81,16 @@ Per-family positives (of 15 docs): Claude 13, Gemini 2, Grok 3, GPT-5 2.
 
 **V4 detection mode:** meta (not detected by rule-based; consensus evaluation only)
 
-**Interpretation:** Persistent cross-family divergence across all three metrics. Detection is interpretation-dependent; see [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for split-vote reasoning analysis.
+**Interpretation:** Persistent cross-family divergence across all three metrics. Detection is interpretation-dependent; see fvs_eval/v4/RELIABILITY_STUDY.md for split-vote reasoning analysis.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; revised Phase 1C 2026-04-23 (covert-vs-acknowledged narrowing distinction per Revision note above); grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; revised Phase 1C 2026-04-23 (covert-vs-acknowledged narrowing distinction per Revision note above); grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04 measured pre-Phase 1C; post-revision pending)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04 measured pre-Phase 1C; post-revision pending)
 - HI-061 Frame Amplification (the mechanism that drives scope narrowing)
 - M-004 Frame Inventory exercise
 - EXP-094 hard-topics extension (paired-topic isolation revealed scope-dependent findings)
@@ -106,7 +106,7 @@ Per-family positives (of 15 docs): Claude 13, Gemini 2, Grok 3, GPT-5 2.
 1. Coverage analysis on broad-titled documents. When a document titled "The Future of Work in the Age of AI" is analyzed and coverage shows narrow focus on developer tooling without scope-acknowledgment markers, scope narrowing is the structural signal. The detection method (compare title-promised scope to body coverage; check for explicit narrowing markers) is operational at the consensus-evaluation level.
 2. MCP integration as canonical absent-frame. FVS-018 cited in MCP `_PROMPT_CHALLENGE_DOCUMENT` as canonical absent-frame: "FVS-018 (Scope Narrowing) absent leads to question 'Is the document answering the question I asked, or a narrower question?'" Operationally embedded as agent-facing divergence target.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the question "is this document answering the broad question I asked, or a narrower one without acknowledgment" to a broad-titled document revealed silent scope reduction; (2) outcome differential observed (rejected the conclusion as not addressing the original question; demanded broader analysis; revised the original question); (3) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the question "is this document answering the broad question I asked, or a narrower one without acknowledgment" to a broad-titled document revealed silent scope reduction; (2) outcome differential observed (rejected the conclusion as not addressing the original question; demanded broader analysis; revised the original question); (3) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~1-2 minutes (compare opening promise to body coverage; check for explicit narrowing markers)

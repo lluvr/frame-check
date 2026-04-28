@@ -257,10 +257,35 @@ def main() -> int:
     print("Operator pushes manually:")
     print("  git push && git push --tags")
     print()
-    print(f"GitHub release: https://github.com/lluvr/frame-check/releases/new?tag=v{version}")
+    print(f"GitHub release: {_release_page_url(version)}")
     print("  Release notes: paste output of `git tag -n99 v{version}` or click")
     print("  'Generate release notes' (the annotated tag body is already the notes).")
     return 0
+
+
+def _release_page_url(version: str) -> str:
+    """Derive the GitHub releases/new URL from `git remote get-url origin`.
+
+    Path A.1 split-repo discipline: the public source repo
+    `lluvr/frame-check-mcp` is the user-visible release target; the
+    upstream development tree `lluvr/frame-check` carries audit-trail-only
+    tags. Both are valid call sites for cut_release.py, so the URL
+    must reflect whichever repo this script is actually running in
+    rather than carrying a hardcoded reference.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            check=True, capture_output=True, text=True
+        )
+        url = result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return f"https://github.com/<owner>/<repo>/releases/new?tag=v{version}"
+
+    m = re.match(r"^(?:https://github\.com/|git@github\.com:)([^/]+/[^/.]+)(?:\.git)?$", url)
+    if not m:
+        return f"{url} (releases/new?tag=v{version})"
+    return f"https://github.com/{m.group(1)}/releases/new?tag=v{version}"
 
 
 if __name__ == "__main__":

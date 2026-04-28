@@ -66,7 +66,7 @@ def main() -> int:
         ok = (
             resp.get("result", {}).get("protocolVersion") == "2024-11-05"
             and resp["result"]["serverInfo"]["name"] == "frame-check"
-            and resp["result"]["serverInfo"]["version"] == "0.8.1"
+            and resp["result"]["serverInfo"]["version"] == "0.8.2"
         )
         record("initialize handshake", ok,
                f"protocol={resp['result']['protocolVersion']} "

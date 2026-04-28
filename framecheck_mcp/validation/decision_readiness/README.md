@@ -1,7 +1,7 @@
 # Decision-readiness validation
 
 Validation harness for the Frame Check decision-readiness profile
-(see [/corpus/decision-readiness/](https://frame.clarethium.com/corpus/decision-readiness/)
+(see /corpus/decision-readiness/
 for the methodology). Phase 2 of the validation work, per that page.
 
 ## What's in here

@@ -16,7 +16,7 @@ Currently all 20 entries are `draft` on the canon trajectory. Four are `withdraw
 
 ## Parallel directory: v2 §11 grounded-authorship retrofit
 
-A v2 §11 grounded-authorship retrofit shipped 2026-04-25 in a parallel directory at `../frame_library_v3/`. That directory carries the FVS entries (FVS-001 through FVS-019; FVS-020 retained at v1 form) with v2 §11 grounded-authorship sections appended (eight fields per entry: authorship dated, context of testing, failure record, success record, lived-experience anchor, applicability metadata, empirical track record, plus internal-operational friction-cost estimate). Lived-experience anchors are uniformly held "Open" with entry-specific criteria pending curator authorship per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/lluvr/frame-check/blob/master/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
+A v2 §11 grounded-authorship retrofit shipped 2026-04-25 in a parallel directory at `../frame_library_v3/`. That directory carries the FVS entries (FVS-001 through FVS-019; FVS-020 retained at v1 form) with v2 §11 grounded-authorship sections appended (eight fields per entry: authorship dated, context of testing, failure record, success record, lived-experience anchor, applicability metadata, empirical track record, plus internal-operational friction-cost estimate). Lived-experience anchors are uniformly held "Open" with entry-specific criteria pending curator authorship per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
 
 The two directories serve different layers of catalog discipline:
 
@@ -25,7 +25,7 @@ The two directories serve different layers of catalog discipline:
 | `data/frame_library/` (this directory) | Canon-promotion track. Detailed measurement evidence (cross-family reliability, generation comparison, target-scope construct validity). Source for the `build_corpus_site.py` rendered library pages. The directory the canon-promotion review process operates on per the criteria below. |
 | `data/frame_library_v3/` | v2 architectural surface. v2 §11 grounded-authorship sections appended to entries; structural-grade across all 19 active entries; full-grade requires authored anchors. Cross-curator practitioners apply the anchor methodology against these entries. |
 
-Citation discipline: cite the canon-promotion entry from `data/frame_library/`; cite the v2 §11 retrofit from `data/frame_library_v3/`. The two are not competing; they sit at different layers of the same catalog. See [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §16 for the v2 spec implementation status.
+Citation discipline: cite the canon-promotion entry from `data/frame_library/`; cite the v2 §11 retrofit from `data/frame_library_v3/`. The two are not competing; they sit at different layers of the same catalog. See [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §16 for the v2 spec implementation status.
 
 ### Library version landscape (for reading cross-family reliability tables)
 
@@ -36,11 +36,11 @@ Entry-level "Cross-family reliability" sections cite multiple library version st
 | `library_current` | `data/frame_library/` (this directory) | Working library; reviewer-facing source. Renders to `corpus_site/library/`. |
 | `library_v2` | `data/frame_library_v2/` | Archived earlier baseline; cited for historical reliability comparison. |
 | `library_v3` | `data/frame_library_v3/` | Step-4 detection-testing variant (commit `9abeb3d`, 2026-04-18) plus v2 §11 grounded-authorship retrofit (2026-04-25). Engine-canonical Identifications under library_v4 by byte-equivalence. |
-| `library_v4` | `data/frame_library_v4/` | Frozen ratified snapshot (2026-04-24 per [fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md)). Engine reads `## Identification` sections from here. Composed as library_v3 Identifications + library_current non-Identifications. POST_RATIFICATION_DIVERGENCE.md explains where the snapshot's reviewer-facing prose lags. |
+| `library_v4` | `data/frame_library_v4/` | Frozen ratified snapshot (2026-04-24 per fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md). Engine reads `## Identification` sections from here. Composed as library_v3 Identifications + library_current non-Identifications. POST_RATIFICATION_DIVERGENCE.md explains where the snapshot's reviewer-facing prose lags. |
 
 When an entry reports `MG_v3 0.86` and `MG_cur 0.85`, that means: mixed-genre cross-family AC1 measured against library_v3 entries was 0.86; against library_current entries was 0.85. Engine-canonical numbers are library_v3 (= library_v4 by byte-equivalence on Identifications); library_current numbers are pre-ratification working-library state preserved for transparency.
 
-**2026-04-27 Identification drift note.** Adjacency reconciliation work 2026-04-26 to 2026-04-27 (per [ADJACENCY_RECONCILIATION_v1.md](https://github.com/lluvr/frame-check/blob/master/data/frame_library/ADJACENCY_RECONCILIATION_v1.md) Groups A/B/C closure) modified `## Identification` content in the living library by extending Adjacent frames lines with Group A reciprocate, Group B directionalize, Group C reciprocate, and active-to-withdrawn disclosure parentheticals. The frozen `data/frame_library_v4/` snapshot was not modified; the V4.2 engine continues to read v4 snapshot Identifications without change. Living library Identifications and v4 snapshot Identifications now differ. Future re-ratification (creating a v5 snapshot) will require section 2.4.3 ablation testing to characterize the drift before promoting the living-library Identifications to engine-canonical. Cross-family reliability numbers cited in entries (library_v3 = library_v4 by Identification byte-equivalence) remain accurate for the engine's current Identification reads; they do not reflect the living library's post-drift state.
+**2026-04-27 Identification drift note.** Adjacency reconciliation work 2026-04-26 to 2026-04-27 (per ADJACENCY_RECONCILIATION_v1.md Groups A/B/C closure) modified `## Identification` content in the living library by extending Adjacent frames lines with Group A reciprocate, Group B directionalize, Group C reciprocate, and active-to-withdrawn disclosure parentheticals. The frozen `data/frame_library_v4/` snapshot was not modified; the V4.2 engine continues to read v4 snapshot Identifications without change. Living library Identifications and v4 snapshot Identifications now differ. Future re-ratification (creating a v5 snapshot) will require section 2.4.3 ablation testing to characterize the drift before promoting the living-library Identifications to engine-canonical. Cross-family reliability numbers cited in entries (library_v3 = library_v4 by Identification byte-equivalence) remain accurate for the engine's current Identification reads; they do not reflect the living library's post-drift state.
 
 ## Purpose
 
@@ -84,7 +84,7 @@ A rule is moved to `retired` when it fires on cases it should not flag and misse
 
 ## The Frames
 
-**Format note:** the six-column order below (`ID | Name | Class | Detection | Status | Curated`) is parsed by `frame_library_index.py` for citation blocks and MCP responses. Column reorder, column addition, or `Status` field value changes require coordinated updates to `frame_library_index.py`, `test_frame_library_index.py`, and downstream consumers (`build_corpus_site.py`, `mcp_server.py`). See [CONTRIBUTING.md](https://github.com/lluvr/frame-check/blob/master/CONTRIBUTING.md) for the contribution workflow; DR-1 in [SESSION_STATE.md §3](https://github.com/lluvr/frame-check/blob/master/SESSION_STATE.md) names this as a tracked drift risk.
+**Format note:** the six-column order below (`ID | Name | Class | Detection | Status | Curated`) is parsed by `frame_library_index.py` for citation blocks and MCP responses. Column reorder, column addition, or `Status` field value changes require coordinated updates to `frame_library_index.py`, `test_frame_library_index.py`, and downstream consumers (`build_corpus_site.py`, `mcp_server.py`). See [CONTRIBUTING.md](https://github.com/lluvr/frame-check-mcp/blob/master/CONTRIBUTING.md) for the contribution workflow; DR-1 in SESSION_STATE.md §3 names this as a tracked drift risk.
 
 | ID | Name | Class | Detection | Status | Curated |
 |----|------|-------|-----------|--------|---------|
@@ -131,13 +131,13 @@ Full rationales in `build_corpus_site.py._WITHDRAWN`. Withdrawal decisions are r
   (FVS-001, 008, 015), 9 meta-side `n/a`. Zero outstanding
   `gap` entries.
 - The three `retired` rules were retired 2026-04-18 after the
-  external validation study ([fvs_eval/validation_study](https://github.com/lluvr/frame-check/tree/master/fvs_eval/validation_study)) found
+  external validation study (fvs_eval/validation_study) found
   their v1 implementations failed their design intent (false-
   positive rates high, zero true positives on the detectable
   cases across the 12-document corpus). The frame concepts
   remain text-side and the library entries remain in place; the
   detection rules are pending redesign. See
-  [METHODOLOGY.md §2.4.1](https://github.com/lluvr/frame-check/blob/master/METHODOLOGY.md) for the full v1-to-v2 measurement
+  [METHODOLOGY.md §2.4.1](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) for the full v1-to-v2 measurement
   comparison and the audit that led to the retirements.
 
 **Class-assignment curator pass (2026-04-18).** FVS-017, FVS-018,
@@ -189,7 +189,7 @@ A frame moves from `draft` to `canon` when ALL of:
 4. **Adjacent frames mutual.** Relationships to other FVS entries stated and reciprocal (if FVS-001 lists FVS-002 as adjacent, FVS-002 lists FVS-001 back). Mutual reciprocity applies among active entries.
 
    **Three principled-asymmetric exceptions satisfy this criterion** (each must be explicit in the entry's parenthetical, not implicit):
-   - **Specific-form-of-Y asymmetry** (per [ADJACENCY_RECONCILIATION_v1.md](https://github.com/lluvr/frame-check/blob/master/data/frame_library/ADJACENCY_RECONCILIATION_v1.md) Group B directionalize style). When X is structurally a specific form of Y (e.g., risk framing as a specific form of frame amplification, growth framing as a specific form of frame amplification), the edge from X listing Y is documented one-way with explicit "the inverse is not symmetric" wording in X's parenthetical.
+   - **Specific-form-of-Y asymmetry** (per ADJACENCY_RECONCILIATION_v1.md Group B directionalize style). When X is structurally a specific form of Y (e.g., risk framing as a specific form of frame amplification, growth framing as a specific form of frame amplification), the edge from X listing Y is documented one-way with explicit "the inverse is not symmetric" wording in X's parenthetical.
    - **Precondition-for-Y asymmetry**. When X is one precondition for Y to operate but Y can operate without X (e.g., identity-aligned-with-default as precondition for frame amplification), the edge from X listing Y is documented one-way with explicit precondition-asymmetry wording.
    - **Withdrawn-target documentation**. When the listed entry is withdrawn from v1 publication (per "v1 publication state" table), the active entry's parenthetical notes the withdrawal status. Withdrawn entries carry their own Adjacent frames lines as historical-conceptual record and do not require reciprocity in the active-entries criterion.
 5. **Honest limits stated.** What the frame does not cover, where it misleads, what evidence is missing.
@@ -216,14 +216,14 @@ Cite a specific frame entry as:
 
 ```
 Lucic, L. (2026). FVS-008 Growth Frame, v1. FrameCheck Frame Library 0.2.0.
-https://frame.clarethium.com/corpus/library/FVS-008
+(production paused)
 ```
 
 Cite the library as a whole as:
 
 ```
 Lucic, L. (2026). FrameCheck Frame Library, v0.2.0.
-https://frame.clarethium.com/corpus/library
+(production paused)
 ```
 
 Citation form will stabilize when the first `canon` frame is promoted.
@@ -232,7 +232,7 @@ Citation form will stabilize when the first `canon` frame is promoted.
 
 These block this index from becoming operational. Each needs a decision:
 
-1. ~~**Class assignments.**~~ **RESOLVED 2026-04-23** (IDX-1 library audit). FVS-019 reclassified to meta-side in the 2026-04-18 curator pass (absorbed by FVS-002). FVS-006 verified as meta-side: its core claim is prompt-technique efficacy (counter-default identity shifts behavior, matching-default identity does not), which requires measuring output variance across prompts and is therefore off-text. Surface mentions of identity language in documents are orthogonal to what FVS-006 actually claims. FVS-001 text-side classification is generation-dependent: at v1 signal substrate the frame is not text-decidable (hence rule retirement 2026-04-18); at V4.2 LLM-judge it is text-decidable per measured cross-family data in [fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md). FVS-007 text-side classification rests on the document-side reading of the frame (does the document make its evaluative criteria visible?) rather than the prompt-technique reading; a scope note has been added to the entry. All 20 class assignments are now verified consistent with the class-assignment criterion named above.
+1. ~~**Class assignments.**~~ **RESOLVED 2026-04-23** (IDX-1 library audit). FVS-019 reclassified to meta-side in the 2026-04-18 curator pass (absorbed by FVS-002). FVS-006 verified as meta-side: its core claim is prompt-technique efficacy (counter-default identity shifts behavior, matching-default identity does not), which requires measuring output variance across prompts and is therefore off-text. Surface mentions of identity language in documents are orthogonal to what FVS-006 actually claims. FVS-001 text-side classification is generation-dependent: at v1 signal substrate the frame is not text-decidable (hence rule retirement 2026-04-18); at V4.2 LLM-judge it is text-decidable per measured cross-family data in fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md. FVS-007 text-side classification rests on the document-side reading of the frame (does the document make its evaluative criteria visible?) rather than the prompt-technique reading; a scope note has been added to the entry. All 20 class assignments are now verified consistent with the class-assignment criterion named above.
 2. **External reviewer count.** Two reviewers is the minimum that prevents single-curator drift. Higher (3-5) gives more confidence but slows promotion. What threshold survives "we want canon to mean something" without becoming "nothing ever promotes"?
 3. **Detection gap policy.** In the v1-published set, only FVS-017 (False Balance) lacks a suggestion rule. FVS-017's own Honest Limits section acknowledges it is not fully detectable automatically ("requires knowing the actual evidence distribution for the topic"). Does the library treat FVS-017 as Class B (structural signal + reader judgment) and allow canon promotion on that basis, or hold it at `draft` until stronger detection ships?
 4. **First promotion candidate.** FVS-001 has the deepest evidence (HI-061, EXP-094, worked example, detection). FVS-008 has the most worked examples. FVS-002 has the most cross-references. Picking a first promotion validates the criteria against a real case.
@@ -247,4 +247,4 @@ When this index is operational:
 - VERSION file rules are enforced (e.g., a check that fails if `canon` frame changes without VERSION bump)
 - `data/frame_library/` README points new readers at this INDEX as the entry point
 
-[CONTRIBUTING.md](https://github.com/lluvr/frame-check/blob/master/CONTRIBUTING.md) already exists at the repo root with per-contribution-type instructions for new FVS entries, detection rules, calibration data, and MCP server additions.
+[CONTRIBUTING.md](https://github.com/lluvr/frame-check-mcp/blob/master/CONTRIBUTING.md) already exists at the repo root with per-contribution-type instructions for new FVS entries, detection rules, calibration data, and MCP server additions.

@@ -78,7 +78,7 @@ When this frame fires, the document is heavy on growth/trends signals and thin o
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -94,32 +94,32 @@ Per-family positives (of 15 docs): Claude 5, Gemini 2, Grok 4, GPT-5 1.
 
 **Interpretation:** Substantial cross-family agreement.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
 - EXP-094 NVIDIA fiscal-2024 analysis case study (HI-061 Frame Amplification deep dive)
 - M-004 Frame Inventory corpus (multiple business-content samples)
 - Observatory daily-topic stream from 2026-04-08 forward (Tier B paused 2026-04-22 per Option D ratification; aggregate fire rates pending Tier A quarterly export)
 
 **Failure record.** Three failure modes observed in operation:
 1. Known false positives in metaphorical-growth contexts. Rule-based detector fires on figurative growth language ("the city's heartbeat grew louder") without genre context. V4.2 LLM judge usually catches; rule-only mode does not.
-2. Dismissive-mention bypass (mitigated 2026-04). Documents mentioning risks briefly then dismissing them ("there are some risks, but they are largely overblown") historically passed through as Growth-Frame-without-risk-balance. Sentence-bounded bidirectional diminisher filter shipped per [METHODOLOGY.md](https://github.com/lluvr/frame-check/blob/master/METHODOLOGY.md) §3.5; three new tests cover the regression.
+2. Dismissive-mention bypass (mitigated 2026-04). Documents mentioning risks briefly then dismissing them ("there are some risks, but they are largely overblown") historically passed through as Growth-Frame-without-risk-balance. Sentence-bounded bidirectional diminisher filter shipped per [METHODOLOGY.md](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) §3.5; three new tests cover the regression.
 3. Cross-family variance on implicit growth framing. Documents where growth is embedded in enabling-infrastructure narrative rather than explicit growth language produce per-family disagreement (F-2026-027: Claude 5/15, GPT-5 1/15; 5x family-disagreement gap on subtle growth). Documented sensitivity, not yet resolved.
 
 **Success record.** Two operationalized cases with traceable outcome:
 1. NVIDIA fiscal-2024 analysis (EXP-094, HI-061). Document presented market dominance + sustained growth without risk discussion. Growth Frame fired. Counter-frame rewrite (Risk Frame application via L2 reframe) surfaced concentration risk, $190B-bubble scenario, regulatory exposure (80% market share threshold), historical-pattern reversal. Material additions a strategic reader would want before commitment.
-2. L2 reframe controlled-transformation study. Growth-to-Risk pair scored 5/5 on coverage shift, 5/5 on density shift, 5/5 on suggestion shift across two documents and frame-pairs (per [METHODOLOGY.md](https://github.com/lluvr/frame-check/blob/master/METHODOLOGY.md) §5.2). One of the cleanest reframe operations in the L2 study; structural validation that Growth and Risk are operationally distinct counters, not nominal opposites.
+2. L2 reframe controlled-transformation study. Growth-to-Risk pair scored 5/5 on coverage shift, 5/5 on density shift, 5/5 on suggestion shift across two documents and frame-pairs (per [METHODOLOGY.md](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) §5.2). One of the cleanest reframe operations in the L2 study; structural validation that Growth and Risk are operationally distinct counters, not nominal opposites.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment from business or strategy work where Growth Frame (FVS-008) was operative whether visible or invisible at the time; (2) the contrast between the Growth-framed reading and a counter-frame reading on the same data (typically Risk Frame FVS-009, Stakeholder Frame FVS-011, or Failure Framing FVS-007 applied as the canonical counter); (3) the outcome differential that recognition produced (or that non-recognition cost); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment from business or strategy work where Growth Frame (FVS-008) was operative whether visible or invisible at the time; (2) the contrast between the Growth-framed reading and a counter-frame reading on the same data (typically Risk Frame FVS-009, Stakeholder Frame FVS-011, or Failure Framing FVS-007 applied as the canonical counter); (3) the outcome differential that recognition produced (or that non-recognition cost); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application (no tools, experienced reader): ~30-60 seconds to recognize "growth language without risk balance" in a document of 500-2000 words
-- V4.2 LLM judge invocation: ~$0.0008/document (Grok 4.1 fast non-reasoning per [fvs_eval/v4/MODEL_PANEL.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/MODEL_PANEL.md) NEW panel; web production target)
+- V4.2 LLM judge invocation: ~$0.0008/document (Grok 4.1 fast non-reasoning per fvs_eval/v4/MODEL_PANEL.md NEW panel; web production target)
 - One-pass detection: appropriate for any business-strategy reading
 - Deep-dive engagement: appropriate when the document drives a high-stake decision; L2 counter-frame rewrite adds ~$0.010/invocation
 

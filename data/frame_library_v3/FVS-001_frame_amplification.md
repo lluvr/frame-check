@@ -78,7 +78,7 @@ When this frame fires, the document amplifies one frame at the expense of others
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -94,30 +94,30 @@ Per-family positives (of 15 docs): Claude 0, Gemini 2, Grok 2, GPT-5 4.
 
 **Interpretation:** Moderate cross-family agreement.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
 - HI-061 Frame Amplification 5-hour session case study (foundational, N=1)
 - EXP-094 confound audit (April 2026 Source Network coverage improvements)
 - M-004 Frame Inventory corpus
-- FVS-001 cross-family targeted measurement ([fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md))
+- FVS-001 cross-family targeted measurement (fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md)
 - Observatory daily-topic stream from 2026-04-08 forward (Tier B paused 2026-04-22)
 
 **Failure record.** Three failure modes observed in operation:
-1. Low Cohen's kappa despite moderate AC1. F-2026-027 showed kappa 0.066 (near-zero) while AC1 reached 0.699. The kappa-AC1 divergence indicates per-family bias in what counts as amplification: prevalence-based correction in kappa exposes disagreement that AC1's paradox-resistant calculation absorbs. The frame is operationally fuzzy across families. The [fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md) targeted-scope study examines this directly.
+1. Low Cohen's kappa despite moderate AC1. F-2026-027 showed kappa 0.066 (near-zero) while AC1 reached 0.699. The kappa-AC1 divergence indicates per-family bias in what counts as amplification: prevalence-based correction in kappa exposes disagreement that AC1's paradox-resistant calculation absorbs. The frame is operationally fuzzy across families. The fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md targeted-scope study examines this directly.
 2. N=1 origin claim. The "5 hours of analysis killed 90% of 406 proposals" finding (HI-061) is from a single curator session. Magnitude of the effect in typical user sessions has not been measured; the causal chain (amplification leads to worse outcomes) has not been validated in a controlled experiment with real decisions. Stated in honest_limits; surfaced here because the entry's foundational evidence is anecdotal.
 3. Detector cannot detect itself. Frame amplification operates within AI-generated content; the detector inspects that content. The detector cannot verify whether IT ITSELF has been amplified during multi-document analysis. Self-detection is structurally precluded by the architecture (v1 detector is rule-based; V4.2 LLM judge has the same issue at LLM scale). Branch B (pre-commit intervention) is the architectural workaround.
 
 **Success record.** Two operationalized cases:
 1. NVIDIA fiscal-2024 analysis (EXP-094, HI-061). Identified frame-amplified document; counter-frame rewrite preserved data points but reframed as risk evidence; demonstrated that sophistication of the original analysis did not equal completeness. Material additions a strategic reader would want.
-2. Branch B (pre-commit intervention) operational concept. The "write your own analysis first before consulting AI" pattern is in active use as the primary preventive against frame amplification. Concept is shipped via methodology and outreach materials ([FVS_001_OUTREACH_EMAIL_SHORT_v1.md](https://github.com/lluvr/frame-check/blob/master/FVS_001_OUTREACH_EMAIL_SHORT_v1.md)); quantified outcomes pending.
+2. Branch B (pre-commit intervention) operational concept. The "write your own analysis first before consulting AI" pattern is in active use as the primary preventive against frame amplification. Concept is shipped via methodology and outreach materials (FVS_001_OUTREACH_EMAIL_SHORT_v1.md); quantified outcomes pending.
 
-**Lived-experience anchor.** Authored 2026-04-26 per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/lluvr/frame-check/blob/master/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
+**Lived-experience anchor.** Authored 2026-04-26 per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
 
 Late March 2026, approximately one month before the v2 architectural work landed. A four-hour continuous session with Claude as primary interlocutor (ChatGPT secondary), building proposals for new app projects with all proposals coupling tightly to the curator's existing measurement, evaluation, and vault-experiment work. Claude converged hard on the curator's existing context across the full session: whatever new direction the curator probed, Claude pattern-matched the response back to the curator's known repertoire and built proposals adjacent to it. The frame held for four hours.
 
@@ -141,7 +141,7 @@ Outcome differential. The product orientation shifted from intelligence-edge fra
 
 **Empirical track record (consolidated).**
 - Cross-family reliability (F-2026-027): kappa 0.066 (near-zero), AC1 0.699 (moderate), raw 0.778, union prevalence 13% (Claude 0, Gemini 2, Grok 2, GPT-5 4 of 15)
-- FVS-001 cross-family targeted measurement: see [fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md)
+- FVS-001 cross-family targeted measurement: see fvs_eval/v4_2/FVS_001_CROSS_FAMILY_v1.md
 - HI-061 case study: 5-hour session N=1; foundational but not generalizable
 - Observatory fire rate: pending Tier A quarterly export
 - User-reported outcomes: not yet collected (Tier 3 future work)

@@ -74,7 +74,7 @@ About how assigned roles shift LLM behavior asymmetrically. The [decision-readin
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -90,14 +90,14 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 
 **Interpretation:** Frame absent from this corpus; reliability undefined by lack of variability.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04; frame absent from corpus, prevalence 0 percent)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04; frame absent from corpus, prevalence 0 percent)
 - HI-021 Identity Framing Asymmetry case study (origin)
 - EXP-005 controlled experiment (57 trials, 3 model families)
 - EXP-025 negation specificity
@@ -114,7 +114,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 1. EXP-005 well-supported across 3 model families. The asymmetry is reproducible: counter-default identity framing produces measurable behavioral shifts; aligned identity framing produces no measurable change. 57 trials across 3 model families is a solid empirical foundation.
 2. Cross-domain replication (EXP-027/028). Domain-dependent effects observed; some domains (strategy) show zero locks while others (regulated) show many. This dependency itself is an empirical finding that anchors the claim that identity framing is not universally effective. Operational diagnostic: ask "what is the model's default for this question; is the assigned identity counter-default or aligned" before assuming identity framing will shift behavior.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves applying redundant identity framing (telling AI to do what it would have done anyway) versus genuinely counter-default framing; (2) the asymmetry diagnostic applied (did the framing actually shift output); (3) outcome differential observed (prompt-engineering practice revised, identity framing dropped where redundant or replaced with counter-default); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves applying redundant identity framing (telling AI to do what it would have done anyway) versus genuinely counter-default framing; (2) the asymmetry diagnostic applied (did the framing actually shift output); (3) outcome differential observed (prompt-engineering practice revised, identity framing dropped where redundant or replaced with counter-default); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~30-60 seconds per identity-framing decision (ask "is this counter-default or aligned")

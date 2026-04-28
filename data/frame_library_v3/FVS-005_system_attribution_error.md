@@ -75,7 +75,7 @@ About attribution of behavior to 'the model' when invisible system layers contri
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -91,14 +91,14 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 
 **Interpretation:** Frame absent from this corpus; reliability undefined by lack of variability.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04; frame absent from corpus, prevalence 0 percent)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04; frame absent from corpus, prevalence 0 percent)
 - HI-063 The System Attribution Error case study (origin)
 - T-422 The Four Layers (wrapper, context, prompt, model)
 - M-002 fifth layer (the body)
@@ -115,7 +115,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 1. Claude Code source leak quantitative evidence. The leak revealed 512K lines of harness code shaping behavior. Quantitative anchor for "the wrapper layer is enormous and largely invisible." Negative-space behaviors (what the AI is told NOT to do) are most invisible because they prevent behaviors users never see; the source leak made these visible at scale. Foundation evidence for the four-layer model.
 2. Worked example: Claude vs GPT-4o consulting attribution (v1 Identification). Document attributed "more nuanced analysis" to Claude and "more direct" to GPT-4o. System-attribution counter-frame surfaced: nuance may be Anthropic harness design (multi-perspective + hedging instructions); directness may be OpenAI UX choice (priority on actionability). The "controlled comparison with same system prompt" is the verification path; most end users cannot run this test, which is exactly why the error persists at population scale.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves attributing AI behavior to "the model" when investigation revealed harness, context, or prompt was the actual cause; (2) four-layer attribution analysis applied (which layer is the actual variable); (3) outcome differential observed (capability claim corrected, procurement decision adjusted, debugging path redirected); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves attributing AI behavior to "the model" when investigation revealed harness, context, or prompt was the actual cause; (2) four-layer attribution analysis applied (which layer is the actual variable); (3) outcome differential observed (capability claim corrected, procurement decision adjusted, debugging path redirected); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~30-60 seconds per attribution claim

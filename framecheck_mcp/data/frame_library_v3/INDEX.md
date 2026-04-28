@@ -56,7 +56,7 @@ A rule is moved to `retired` when it fires on cases it should not flag and misse
 
 ## The Frames
 
-**Format note:** the six-column order below (`ID | Name | Class | Detection | Status | Curated`) is parsed by `frame_library_index.py` for citation blocks and MCP responses. Column reorder, column addition, or `Status` field value changes require coordinated updates to `frame_library_index.py`, `test_frame_library_index.py`, and downstream consumers (`build_corpus_site.py`, `mcp_server.py`). See [CONTRIBUTING.md](https://github.com/lluvr/frame-check/blob/master/CONTRIBUTING.md) for the contribution workflow; DR-1 in [SESSION_STATE.md §3](https://github.com/lluvr/frame-check/blob/master/SESSION_STATE.md) names this as a tracked drift risk.
+**Format note:** the six-column order below (`ID | Name | Class | Detection | Status | Curated`) is parsed by `frame_library_index.py` for citation blocks and MCP responses. Column reorder, column addition, or `Status` field value changes require coordinated updates to `frame_library_index.py`, `test_frame_library_index.py`, and downstream consumers (`build_corpus_site.py`, `mcp_server.py`). See [CONTRIBUTING.md](https://github.com/lluvr/frame-check-mcp/blob/master/CONTRIBUTING.md) for the contribution workflow; DR-1 in SESSION_STATE.md §3 names this as a tracked drift risk.
 
 | ID | Name | Class | Detection | Status | Curated |
 |----|------|-------|-----------|--------|---------|
@@ -103,13 +103,13 @@ Full rationales in `build_corpus_site.py._WITHDRAWN`. Withdrawal decisions are r
   (FVS-001, 008, 015), 9 meta-side `n/a`. Zero outstanding
   `gap` entries.
 - The three `retired` rules were retired 2026-04-18 after the
-  external validation study ([fvs_eval/validation_study](https://github.com/lluvr/frame-check/tree/master/fvs_eval/validation_study)) found
+  external validation study (fvs_eval/validation_study) found
   their v1 implementations failed their design intent (false-
   positive rates high, zero true positives on the detectable
   cases across the 12-document corpus). The frame concepts
   remain text-side and the library entries remain in place; the
   detection rules are pending redesign. See
-  [METHODOLOGY.md §2.4.1](https://github.com/lluvr/frame-check/blob/master/METHODOLOGY.md) for the full v1-to-v2 measurement
+  [METHODOLOGY.md §2.4.1](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) for the full v1-to-v2 measurement
   comparison and the audit that led to the retirements.
 
 **Class-assignment curator pass (2026-04-18).** FVS-017, FVS-018,
@@ -183,14 +183,14 @@ Cite a specific frame entry as:
 
 ```
 Lucic, L. (2026). FVS-008 Growth Frame, v1. FrameCheck Frame Library 0.1.0.
-https://frame.clarethium.com/corpus/library/FVS-008
+(production paused)
 ```
 
 Cite the library as a whole as:
 
 ```
 Lucic, L. (2026). FrameCheck Frame Library, v0.1.0.
-https://frame.clarethium.com/corpus/library
+(production paused)
 ```
 
 Citation form will stabilize when the first `canon` frame is promoted.
@@ -214,4 +214,4 @@ When this index is operational:
 - VERSION file rules are enforced (e.g., a check that fails if `canon` frame changes without VERSION bump)
 - `data/frame_library/` README points new readers at this INDEX as the entry point
 
-[CONTRIBUTING.md](https://github.com/lluvr/frame-check/blob/master/CONTRIBUTING.md) already exists at the repo root with per-contribution-type instructions for new FVS entries, detection rules, calibration data, and MCP server additions.
+[CONTRIBUTING.md](https://github.com/lluvr/frame-check-mcp/blob/master/CONTRIBUTING.md) already exists at the repo root with per-contribution-type instructions for new FVS entries, detection rules, calibration data, and MCP server additions.
