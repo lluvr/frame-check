@@ -8,6 +8,8 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-04-28
+
 ### Distribution: dead-content-link cleanup (2026-04-28)
 
 - **0.8.2 closes the second class of dead-link defect.** A fresh-eyes
