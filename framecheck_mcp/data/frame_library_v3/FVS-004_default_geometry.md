@@ -69,7 +69,7 @@ Human cognitive defaults and AI training defaults share behavioral geometry. Bot
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -85,14 +85,14 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 
 **Interpretation:** Frame absent from this corpus; reliability undefined by lack of variability.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04; frame absent from corpus, prevalence 0 percent)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04; frame absent from corpus, prevalence 0 percent)
 - HI-027 The Default Geometry case study (origin)
 - EXP-064 cross-evaluator compression
 - EXP-077/b prompt attribution controlled experiment
@@ -108,7 +108,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 1. European-expansion worked example (v1 Identification). Document operated from "expansion is the right move" default. Default-geometry counter-frame surfaced the unasked questions: should we expand at all; what are the costs of expansion vs deepening existing markets; what does 12 percent projected growth mean for our capacity to capture it; what happens if we expand and fail. The diagnostic: name the default ("this document assumes expansion is the right move") and cost the default ("what would have to be true for NOT expanding to be the better decision").
 2. Branch B pre-commit as default-naming step. The pre-commit intervention forces the user to name their default before AI responds. Operational principle: "you cannot escape a default you have not named." Operationalized across Frame Check methodology as the default-diagnostic step preceding any open-ended AI consultation.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught a default frame in their own thinking that AI was about to amplify; (2) the name-it-and-cost-it procedure applied; (3) outcome differential observed (default abandoned, alternative pursued, decision reframed; or default confirmed but with explicit awareness of the alternative); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught a default frame in their own thinking that AI was about to amplify; (2) the name-it-and-cost-it procedure applied; (3) outcome differential observed (default abandoned, alternative pursued, decision reframed; or default confirmed but with explicit awareness of the alternative); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~1-2 minutes (identify default; cost it; explore alternative briefly)

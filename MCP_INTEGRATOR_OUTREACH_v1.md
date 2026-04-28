@@ -6,10 +6,10 @@
 
 **Pre-conditions** (both must hold before sending any of these):
 
-1. `frame-check-mcp` is published on PyPI. **Met as of 2026-04-27** (https://pypi.org/project/frame-check-mcp/0.8.0/).
-2. The package's Project-URLs (Repository, Issues, Changelog, Security, Methodology, Frame Library) resolve to public endpoints. **NOT met as of 2026-04-27**: the `frame-check` GitHub repo is private and `frame.clarethium.com` is paused; all seven Project-URLs in the 0.8.0 metadata return 404 or timeout. Sending outreach against a 404 source link is the standard Python-ecosystem signal for "abandoned or sketchy" and produces a non-response. **Outreach is blocked until the URL surface is fixed.**
+1. `frame-check-mcp` is published on PyPI. **Met as of 2026-04-28** (https://pypi.org/project/frame-check-mcp/0.8.1/; 0.8.0 superseded by the URL-fix republish).
+2. The package's Project-URLs (Repository, Issues, Changelog, Security, Methodology, Frame Library) resolve to public endpoints. **MET as of 2026-04-28**: Path A.1 fully executed. All six Project-URLs in the deployed 0.8.1 METADATA return HTTP 200 against `lluvr/frame-check-mcp`. GitHub Release page at https://github.com/lluvr/frame-check-mcp/releases/tag/v0.8.1 is published. **Outreach is now unblocked.**
 
-The URL surface fix path is documented in `REPO_STRATEGY_DECISION_v1.md` (three paths: split repo / make public / urls-only patch). The 0.8.0 release stays as it is on PyPI; the operator ships 0.8.1 with the URL fix once the strategy is chosen, then this outreach unblocks.
+The Path A.1 lift is documented in `REPO_STRATEGY_DECISION_v1.md` v1.2 (fully executed + URL verification matrix).
 
 **Sequencing.** Send to ONE integrator first. Wait two weeks for a response. Adjust the template based on the engagement (or non-engagement). Then send to a second. Burst-sending five identical cold emails on day one is a low-information move; sequential single-target outreach lets each response inform the next.
 
@@ -52,7 +52,7 @@ The asks:
 - Five-minute install verification: `pip install frame-check-mcp`, point your MCP client at the entry point, run any document through `frame_check`. If it lands cleanly, what's the path to default-catalog or featured-community status?
 - If something breaks during install or first-use, GitHub issues on `lluvr/frame-check` are the right place to surface it; same-day response on cold-start setup defects.
 
-The package is Apache-2.0 licensed. Source: `https://github.com/lluvr/frame-check`. PyPI: `https://pypi.org/project/frame-check-mcp/`. Methodology paper: `https://github.com/lluvr/frame-check/blob/master/METHODOLOGY.md`.
+The package is Apache-2.0 licensed. Source: `https://github.com/lluvr/frame-check-mcp`. PyPI: `https://pypi.org/project/frame-check-mcp/`. Methodology paper: `https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md`.
 
 Happy to talk on Discord, GitHub, or async whatever fits.
 
@@ -91,7 +91,7 @@ Honest state:
 
 The ask: a five-minute install + spot-check. `pip install frame-check-mcp`, point an MCP client at the entry point, run a document through `frame_check`. If clean, what's the path to catalog inclusion? If broken, GitHub issues on `lluvr/frame-check` are the channel.
 
-Apache-2.0 licensed. Source: `https://github.com/lluvr/frame-check`. PyPI: `https://pypi.org/project/frame-check-mcp/`.
+Apache-2.0 licensed. Source: `https://github.com/lluvr/frame-check-mcp`. PyPI: `https://pypi.org/project/frame-check-mcp/`.
 
 Lovro Lucic
 [CONTACT]

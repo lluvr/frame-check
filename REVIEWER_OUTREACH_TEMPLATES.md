@@ -24,13 +24,13 @@ I'm reaching out because your work on [SPECIFIC PAPER / TOPIC, e.g., "the role o
 
 Frame Check is a deterministic structural-framing analysis tool with a 20-entry Frame Vocabulary Standard (FVS) library. The first entry approaching canon promotion, FVS-001 Frame Amplification, names a pattern where a framing choice made early in a document compounds through subsequent paragraphs. You can read the candidate entry at:
 
-https://github.com/lluvr/frame-check/blob/master/data/frame_library/promotions/FVS-001_v1.md
+(see upstream development tree)
 
 Honest state: the library is single-curator-authored. Zero entries have been promoted to canon. The detector associated with FVS-001 scored F1 = 0.36 against expert labelers in a pre-registered validation, below the useful threshold of 0.4; this negative result is published in full at `fvs_eval/validation_study/REPORT_V3_TRACK_A.md`. The canon promotion is not about detector accuracy (which is below useful); it's about whether the named framing pattern is a worthwhile vocabulary contribution at all. Your review would test exactly that.
 
 The ask: a 1,500-3,000 word adversarial review against the five promotion criteria in `data/frame_library/INDEX.md`. Per-engagement terms are specified at:
 
-https://github.com/lluvr/frame-check/blob/master/REVIEWERS.md
+https://github.com/lluvr/frame-check-mcp/blob/master/REVIEWERS.md
 
 Compensation defaults to co-curator aspiration plus named attribution; a situational honorarium ($500-$1,000) applies where your context requires it (unpaid academic year, visiting position). This is not a bug-bounty transaction; it's a research-contribution invitation.
 
@@ -61,7 +61,7 @@ I'm writing because Frame Check, a structural-framing analysis instrument I've b
 
 The eval measures what a model PRODUCES structurally (coverage of five analytical dimensions, voice cascade, temporal orientation, epistemic basis) on a prompt corpus designed to elicit framing variation. Scoring is deterministic regex, not LLM-as-judge. The thesis is that framing is a safety-adjacent behavioral axis no existing benchmark targets (TruthfulQA, BBQ, HELM, Sycophancy evals each target something else). The full v0 spec is at:
 
-https://github.com/lluvr/frame-check/blob/master/fvs_eval/SPEC.md
+(see upstream development tree)
 
 The specific ask: measurement-construct review. The spec makes five load-bearing claims (§19 "Key claims for reviewer stress-test"); your review would evaluate whether those claims hold under safety-team scrutiny. 1,000-2,000 word budget per REVIEWERS.md.
 
@@ -95,11 +95,11 @@ Hi [NAME],
 
 I'm reaching out because you're one of the small number of people who would actually use a tool like Frame Check in your work, and the first frame entry approaching canon publication would benefit from your eye before it lands.
 
-Frame Check is a deterministic structural-framing analysis tool for documents. It surfaces which perspectives a document takes and which it omits, classifies voice (prescriptive / promotional / analytical), names numeric claims that were or were not attributable to sources, and matches the document against a Frame Vocabulary Standard of named patterns. I have a public-facing essay draft in progress about what it does (https://frame.clarethium.com).
+Frame Check is a deterministic structural-framing analysis tool for documents. It surfaces which perspectives a document takes and which it omits, classifies voice (prescriptive / promotional / analytical), names numeric claims that were or were not attributable to sources, and matches the document against a Frame Vocabulary Standard of named patterns. I have a public-facing essay draft in progress about what it does ((production paused)).
 
 The FVS entry approaching canon promotion is FVS-001 Frame Amplification. Candidate entry with worked example at:
 
-https://github.com/lluvr/frame-check/blob/master/data/frame_library/promotions/FVS-001_v1.md
+(see upstream development tree)
 
 The ask, adapted to a practitioner: read the entry, read the worked example, and tell me whether the named pattern is one you recognize from documents you actually encounter. If yes, is the definition tight enough to be useful? Is the worked example load-bearing or ceremonial? Are there failure cases (documents that exhibit the pattern but the entry misses, or vice versa) you know from your own reading?
 
@@ -107,7 +107,7 @@ Format: whatever works for you. A typed response, a Zoom call with notes, voice 
 
 Honest state: the library is currently all-draft, zero promotions. I'd be inviting you to be one of three reviewers on the first promotion. What I don't have is user-study evidence that the tool helps readers see frames they would otherwise miss; that's a separate pre-registered study, not yet run. What I do have is the computational substrate that makes the named patterns reproducibly detectable.
 
-Terms at https://github.com/lluvr/frame-check/blob/master/REVIEWERS.md (compensation defaults to co-curator aspiration plus named attribution; situational honorarium where applicable; no paid-transaction framing).
+Terms at https://github.com/lluvr/frame-check-mcp/blob/master/REVIEWERS.md (compensation defaults to co-curator aspiration plus named attribution; situational honorarium where applicable; no paid-transaction framing).
 
 Interested? If yes, I'll send the scoped reading package. If no, a pointer to a colleague you trust is welcome.
 
@@ -161,15 +161,15 @@ You came up on my shortlist for inviting review on Frame Check's first Frame Voc
 
 Candidate entry: FVS-001 Frame Amplification. Dossier with self-assessment against promotion criteria and named weaknesses for reviewer stress-test at:
 
-https://github.com/lluvr/frame-check/blob/master/data/frame_library/promotions/FVS-001_v1.md
+(see upstream development tree)
 
 Terms and honest state of what you would be reviewing at:
 
-https://github.com/lluvr/frame-check/blob/master/REVIEWERS.md
+https://github.com/lluvr/frame-check-mcp/blob/master/REVIEWERS.md
 
 The project's self-enumerated limits (20 anticipated critiques with current defenses) at:
 
-https://github.com/lluvr/frame-check/blob/master/ANTICIPATED_CRITIQUES.md
+https://github.com/lluvr/frame-check-mcp/blob/master/ANTICIPATED_CRITIQUES.md
 
 Target: 3 reviewers for the first promotion. 1,500-3,000 words per review, 3-6 month timeline. Compensation: co-curator aspiration, named attribution, situational honorarium.
 
@@ -216,7 +216,7 @@ Thanks for the quick and honest reply. No hard feelings on the decline; reviewer
 Two things before I step off:
 
 - If you think of someone who fits better, a pointer is welcome at any time. No urgency.
-- The project is open source (Apache-2.0 / CC-BY-4.0 split); if you want to engage at a lower commitment level (a one-line issue on GitHub, a brief conversation), the surface is at https://github.com/lluvr/frame-check.
+- The project is open source (Apache-2.0 / CC-BY-4.0 split); if you want to engage at a lower commitment level (a one-line issue on GitHub, a brief conversation), the surface is at https://github.com/lluvr/frame-check-mcp.
 
 Thanks for considering.
 

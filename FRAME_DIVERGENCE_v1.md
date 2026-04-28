@@ -139,10 +139,10 @@ Part 1 is load-bearing for the other three: every contract claim, integration de
 ## References
 
 - Part 2 contract: `FRAME_DIVERGENCE_CONTRACT_v1.md` (bundled).
-- Engine tier architecture synthesis: [ENGINE_TIER_STRATEGY_v1.md](https://github.com/lluvr/frame-check/blob/master/ENGINE_TIER_STRATEGY_v1.md).
-- Model panel pinning and re-validation policy: [fvs_eval/v4/MODEL_PANEL.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/MODEL_PANEL.md).
-- V4.2 Options A/B/C cost-performance data: [fvs_eval/v4/V4_2_DECISION_OPTIONS.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/V4_2_DECISION_OPTIONS.md).
+- Engine tier architecture synthesis: [ENGINE_TIER_STRATEGY_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/ENGINE_TIER_STRATEGY_v1.md).
+- Model panel pinning and re-validation policy: fvs_eval/v4/MODEL_PANEL.md.
+- V4.2 Options A/B/C cost-performance data: fvs_eval/v4/V4_2_DECISION_OPTIONS.md.
 - FVS library: `data/frame_library/` entries FVS-001 through FVS-020 (library_v3 current per commit `9abeb3d`; FVS-012/016/018 revised, FVS-010 kept library_v1 text with `honest_limit`, FVS-020 retired from detection).
 - Methodology paper: `METHODOLOGY.md` (bundled).
-- Confidence-field resolution (Path C, confidence_level removed): commit `928a447` and the V4 confidence-inversion impact study at [V4_CONFIDENCE_INVERSION_IMPACT_v1.md](https://github.com/lluvr/frame-check/blob/master/V4_CONFIDENCE_INVERSION_IMPACT_v1.md).
-- Construct-honesty audit infrastructure: [VALIDATION_PROGRAM.md](https://github.com/lluvr/frame-check/blob/master/VALIDATION_PROGRAM.md).
+- Confidence-field resolution (Path C, confidence_level removed): commit `928a447` and the V4 confidence-inversion impact study at [V4_CONFIDENCE_INVERSION_IMPACT_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/V4_CONFIDENCE_INVERSION_IMPACT_v1.md).
+- Construct-honesty audit infrastructure: [VALIDATION_PROGRAM.md](https://github.com/lluvr/frame-check-mcp/blob/master/VALIDATION_PROGRAM.md).

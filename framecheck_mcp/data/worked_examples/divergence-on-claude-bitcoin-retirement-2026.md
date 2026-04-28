@@ -3,7 +3,7 @@ title: Frame divergence in action: what frames Claude's Bitcoin retirement recom
 slug: divergence-on-claude-bitcoin-retirement-2026
 author: Lovro Lucic
 published: 2026-04-24
-source_document_url: https://github.com/lluvr/frame-check/tree/master/data/worked_examples/divergence-on-claude-bitcoin-retirement-2026
+source_document_url: https://github.com/lluvr/frame-check-mcp/tree/master/data/worked_examples/divergence-on-claude-bitcoin-retirement-2026
 source_document_title: Claude Haiku 4.5 response to a Bitcoin retirement prompt (2026-04-18 run)
 source_document_author: AI-generated (Anthropic Claude Haiku 4.5, `claude-haiku-4-5-20251001`)
 source_document_type: AI-generated financial-advice response
@@ -324,7 +324,7 @@ valid shape.
 Lucic, L. (2026). *Frame divergence in action: what frames Claude's
 Bitcoin retirement recommendation did not use*. Frame Check Worked
 Examples.
-frame.clarethium.com/corpus/worked-examples/divergence-on-claude-bitcoin-retirement-2026/
+(production paused)
 
 Licensed CC-BY-4.0. The source document (Claude Haiku 4.5 response)
 is the output of a third-party system (Anthropic); its reproduction

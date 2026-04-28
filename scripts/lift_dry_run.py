@@ -27,6 +27,17 @@ Sequence:
      and the production site was paused. Skip with --skip-urls
      for offline runs or when URLs are knowingly being staged for
      an upcoming change.
+ 10. Wheel content scan: no embedded references to the private
+     upstream repo (`github.com/lluvr/frame-check` without the
+     `-mcp` suffix) or the paused production site
+     (`frame.clarethium.com`) survive into the released wheel's
+     markdown content. This catches the 2026-04-28 defect where
+     0.8.1 metadata URLs were correct (Path A.1 fix) but the
+     wheel-bundled .md files still carried roughly 400 hyperlinks
+     to the private repo and 460 to the paused production site,
+     because step 9 only checks METADATA Project-URLs, not
+     embedded link surface in shipped content. Skip with
+     --skip-content for offline runs or staged releases.
 
 If every step passes, prints the exact `twine upload` commands the
 operator would run for TestPyPI then PyPI, with explicit "operator
@@ -103,7 +114,7 @@ VAULT_DOC_PATTERNS = [
 ]
 
 
-_TOTAL_STEPS = 9
+_TOTAL_STEPS = 10
 
 
 def step(num: int, label: str) -> None:
@@ -365,6 +376,55 @@ def main() -> int:
                 "or pass --skip-urls if this is an intentional staging release."
             )
         print(f"  {len(urls)} URLs all resolve publicly")
+
+    # 10. Wheel content scan: no embedded references to upstream development tree
+    #     or paused production site survive into the released wheel.
+    skip_content = "--skip-content" in sys.argv
+    step(10, "Wheel content scan (no private/paused refs in shipped markdown)")
+    if skip_content:
+        print("  SKIPPED (--skip-content)")
+    else:
+        with zipfile.ZipFile(wheel) as z:
+            text_members = [
+                n for n in z.namelist()
+                if n.endswith(".md") or n.endswith(".txt")
+            ]
+            text_blobs: dict[str, str] = {}
+            for n in text_members:
+                try:
+                    text_blobs[n] = z.read(n).decode("utf-8", errors="ignore")
+                except Exception:
+                    continue
+        bad_pats = (
+            (
+                "lluvr/frame-check (private repo, 404 to public)",
+                re.compile(r"github\.com/lluvr/frame-check(?!-mcp)"),
+            ),
+            (
+                "frame.clarethium.com (production paused 2026-04-23)",
+                re.compile(r"\bframe\.clarethium\.com\b"),
+            ),
+        )
+        violations: list[tuple[str, str, int]] = []
+        for label, pat in bad_pats:
+            for fname, content in text_blobs.items():
+                hits = len(pat.findall(content))
+                if hits:
+                    violations.append((label, fname, hits))
+        if violations:
+            print("  WHEEL CONTENT contains forbidden references:")
+            for label, fname, hits in violations[:10]:
+                print(f"    {label}: {fname}  ({hits} hits)")
+            if len(violations) > 10:
+                print(f"    ... + {len(violations) - 10} more")
+            return fail(
+                f"{len(violations)} content-reference violations across "
+                f"{len(text_members)} wheel-bundled .md/.txt files. "
+                "Run scripts/extract_public_repo.py to apply rewrite_content_links "
+                "before re-building the wheel; or pass --skip-content if these "
+                "references are intentionally being staged for an upcoming change."
+            )
+        print(f"  {len(text_members)} markdown/text files clean")
 
     # All gates green.
     print("\n" + "=" * 60)

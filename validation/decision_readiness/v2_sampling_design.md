@@ -3,7 +3,7 @@
 The v1 seeded corpus is convenience-sampled from documents
 already captured for other Frame Check worked examples. This is
 documented honestly on the
-[methodology page](https://frame.clarethium.com/corpus/decision-readiness/)
+methodology page
 under "Sampling honesty," but acknowledgment alone does not
 defend the methodology against selection-bias critique.
 

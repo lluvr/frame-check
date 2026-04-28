@@ -176,7 +176,7 @@ installed locally.
 - **Risk:** pyodide is ~15MB compressed; not all MCP clients
   are patient about startup latency.
 
-### Option E: Thin TypeScript MCP that calls the hosted frame.clarethium.com API
+### Option E: Thin TypeScript MCP that calls the hosted (production paused) API
 
 **Shape:** a TypeScript MCP server that implements the
 protocol surface but performs analysis by HTTPS call to the

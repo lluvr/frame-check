@@ -51,7 +51,7 @@ A document tells a coherent story. The data points connect. The logic flows. The
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -67,14 +67,14 @@ Per-family positives (of 15 docs): Claude 14, Gemini 15, Grok 15, GPT-5 15.
 
 **Interpretation:** Kappa paradox pattern (low Cohen's kappa due to prevalence extreme 98%, but Gwet's AC1 shows substantial cross-family agreement). Reliable under prevalence-robust metrics.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04; prevalence 98 percent - the highest-prevalence frame in the catalog)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04; prevalence 98 percent - the highest-prevalence frame in the catalog)
 - HI-012 Fluency-Quality Illusion (narrative coherence is the macro-level instance of fluency)
 - EXP-094 confound (correct analysis within wrong frame produces coherent but wrong narrative)
 - Company-decline worked example (v1 Identification)
@@ -89,7 +89,7 @@ Per-family positives (of 15 docs): Claude 14, Gemini 15, Grok 15, GPT-5 15.
 1. Company-decline worked example (v1 Identification). Document constructed compelling causal narrative ("rising costs led to margin pressure, which caused reduced investment, which led to competitive weakness, which accelerated the decline"). Counter-frame surfaced: did rising costs actually cause margin pressure, or did management decisions cause both? The narrative picks one causal chain and tells it coherently, hiding alternatives. Diagnostic: produce two alternative causal chains explaining the same data; identify which data points are consistent with all three vs only one.
 2. EXP-094 confound integration. The confound where "correct analysis within wrong frame produces a coherent but wrong narrative" is the operational case study for narrative coherence as separate from factual accuracy. A perfectly coherent story can be false; a collection of accurate facts can be incoherent. The construction trace (T-356) is the antidote: generating your own causal model before reading AI's narrative creates the comparison point that reveals whether you adopted AI's narrative or maintained your own.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator accepted a coherent AI narrative as true and later found that an alternative causal chain explained the data better, or that data points were omitted to maintain the narrative's coherence; (2) the alternative-narrative diagnostic applied (could other causal chains explain the same data); (3) outcome differential observed (narrative challenged, alternative pursued, decision re-anchored on more accurate causal model); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator accepted a coherent AI narrative as true and later found that an alternative causal chain explained the data better, or that data points were omitted to maintain the narrative's coherence; (2) the alternative-narrative diagnostic applied (could other causal chains explain the same data); (3) outcome differential observed (narrative challenged, alternative pursued, decision re-anchored on more accurate causal model); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~2-5 minutes (identify causal chain; produce 1-2 alternative chains; check data points against each)

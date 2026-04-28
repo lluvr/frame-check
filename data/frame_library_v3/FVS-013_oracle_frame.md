@@ -74,7 +74,7 @@ This entry does not have a traditional worked example because the oracle frame i
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -90,14 +90,14 @@ Per-family positives (of 15 docs): Claude 0, Gemini 1, Grok 0, GPT-5 0.
 
 **Interpretation:** Kappa paradox pattern (low Cohen's kappa due to prevalence extreme 2%, but Gwet's AC1 shows substantial cross-family agreement). Reliable under prevalence-robust metrics.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
 - the sovereignty thesis
 - HI-062 amplification thesis
 - M-004 frame inventory
@@ -115,7 +115,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 1, Grok 0, GPT-5 0.
 1. Branch B pre-commit intervention as Frame Check's anti-oracle mechanism. The construction trace (write-first step) is the operationalization that prevents oracle mode. User generates own answer before reading AI; comparison creates the gap where oracle mode becomes visible. Operationalized in `_PROMPT_AI_RESPONSE_AUDIT` (asks user to articulate own response before showing analysis) and the broader sovereignty-thesis methodology.
 2. Frame Check's framing portrait as oracle-mode interrupt. The framing portrait plus frame suggestions provide an external check that interrupts oracle mode. User sees "Growth Frame detected" plus "What would a risk analyst say?" which forces a moment of evaluation that oracle mode would otherwise skip. This is how Frame Check operationally addresses oracle mode without needing to detect it directly: by surfacing structural framing in a way that requires reader engagement.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves in oracle mode (accepting AI output without independent evaluation, possibly by noticing they could not reconstruct the key claims from memory or had not changed anything in the AI output); (2) the construction-trace antidote applied; (3) outcome differential observed (claim challenged, alternative discovered, decision reconsidered, error caught); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves in oracle mode (accepting AI output without independent evaluation, possibly by noticing they could not reconstruct the key claims from memory or had not changed anything in the AI output); (2) the construction-trace antidote applied; (3) outcome differential observed (claim challenged, alternative discovered, decision reconsidered, error caught); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual self-check: ~30 seconds ("could I reconstruct the key claims from memory; did I change, add, or remove anything in the AI output before using it")

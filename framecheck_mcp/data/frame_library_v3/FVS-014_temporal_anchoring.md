@@ -78,7 +78,7 @@ Frame Check's temporal distribution signal (in the Document Structure card) is t
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -94,14 +94,14 @@ Per-family positives (of 15 docs): Claude 14, Gemini 14, Grok 14, GPT-5 12.
 
 **Interpretation:** Kappa paradox pattern (low Cohen's kappa due to prevalence extreme 90%, but Gwet's AC1 shows substantial cross-family agreement). Reliable under prevalence-robust metrics.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
 - `temporal_orientation` in `framing.py` (PAST_RE, FUTURE_RE regex patterns; rule-based detector)
 - EXP-094 training-cutoff confabulation regimes
 - Observatory cadence design (structural answer to temporal anchoring)
@@ -117,7 +117,7 @@ Per-family positives (of 15 docs): Claude 14, Gemini 14, Grok 14, GPT-5 12.
 1. AI healthcare worked example (v1 Identification). Document presented "achieved 95 percent accuracy" plus "reached 38 percent during the pandemic" plus "continues to grow" - past results presented in present tense with extrapolation. Vintage-check question ("when from?") exposes the temporal anchoring is in training data, not in current reality. Operationalized as "verified current as of [date]" or "potentially stale (training data vintage)" annotation per claim.
 2. Observatory cadence design. The Observatory's daily-topic stream is the structural answer to temporal anchoring at the methodology level: regular cadence ensures that what Frame Check measures is current, not training-vintage. The temporal-orientation detector plus Observatory cadence together address the temporal-anchoring failure mode at the methodology level rather than the per-document level.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught a temporal-anchoring issue in AI output (data presented as current that was actually vintage from training data); (2) the vintage-check antidote applied (asking "when from" for each numerical claim); (3) outcome differential observed (claim re-verified against current source, conclusion adjusted, projection re-grounded); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught a temporal-anchoring issue in AI output (data presented as current that was actually vintage from training data); (2) the vintage-check antidote applied (asking "when from" for each numerical claim); (3) outcome differential observed (claim re-verified against current source, conclusion adjusted, projection re-grounded); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~30-60 seconds (check vintage of each numerical claim; apply tense-vs-vintage check)

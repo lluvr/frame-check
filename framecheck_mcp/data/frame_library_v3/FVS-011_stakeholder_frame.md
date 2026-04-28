@@ -78,7 +78,7 @@ When this frame fires, the document explicitly organizes around who is affected,
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -94,17 +94,17 @@ Per-family positives (of 15 docs): Claude 6, Gemini 12, Grok 9, GPT-5 7.
 
 **Interpretation:** Moderate cross-family agreement.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
 
 - `detect_coverage` stakeholders dimension in `framing.py` (rule-based detector)
-- L2 reframe study (Growth-to-Stakeholder pair tested per [METHODOLOGY.md](https://github.com/lluvr/frame-check/blob/master/METHODOLOGY.md) §5.2)
+- L2 reframe study (Growth-to-Stakeholder pair tested per [METHODOLOGY.md](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) §5.2)
 - MCP integration: cited as canonical absent-frame in `_PROMPT_CHALLENGE_DOCUMENT` (`mcp_server.py` line ~3426)
 - Observatory daily-topic stream from 2026-04-08 forward (Tier B paused)
 
@@ -117,7 +117,7 @@ Per-family positives (of 15 docs): Claude 6, Gemini 12, Grok 9, GPT-5 7.
 1. Automation-platform worked example. The 40%-cost-reduction document presented company perspective as default; stakeholder-frame counter-frame surfaced "whose 40% is being reduced." The labor-to-technology cost transfer became visible. Demonstrates the operational value of perspective-shift even on a short document.
 2. MCP `divergence` block integration. Stakeholder Frame is one of the canonical absent-frames cited in MCP prompts. The mapping `FVS-011 absent -> "Who does this recommendation affect differently that the document does not surface?"` is operationally embedded in the agent-facing surface as a high-leverage divergence target. Confirms the frame is useful to AI agents calling Frame Check via MCP, not only to direct readers.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific decision or analysis where the for-whom question was missing or wrong; (2) recognizing the stakeholder frame produced a different conclusion or surfaced a stakeholder you would not have considered; (3) the contrast between the company-default (or whoever-default) perspective and the stakeholder-shifted perspective is concrete, not generic; (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific decision or analysis where the for-whom question was missing or wrong; (2) recognizing the stakeholder frame produced a different conclusion or surfaced a stakeholder you would not have considered; (3) the contrast between the company-default (or whoever-default) perspective and the stakeholder-shifted perspective is concrete, not generic; (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application (no tools, experienced reader): ~30-60 seconds to scan a document for stakeholder presence/absence; substantive re-imagining from a specific stakeholder perspective takes longer (3-10 minutes depending on document complexity)
@@ -133,7 +133,7 @@ Per-family positives (of 15 docs): Claude 6, Gemini 12, Grok 9, GPT-5 7.
 
 **Empirical track record (consolidated).**
 - Cross-family reliability (F-2026-027): kappa 0.395, AC1 0.403 (moderate), raw 0.689, union prevalence 57% (Claude 6, Gemini 12, Grok 9, GPT-5 7 of 15)
-- L2 reframe study: tested in Growth-to-Stakeholder pair (per [METHODOLOGY.md](https://github.com/lluvr/frame-check/blob/master/METHODOLOGY.md) §5.2; coverage and density shifts confirmed)
+- L2 reframe study: tested in Growth-to-Stakeholder pair (per [METHODOLOGY.md](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) §5.2; coverage and density shifts confirmed)
 - MCP integration: operationally embedded in `_PROMPT_CHALLENGE_DOCUMENT` as canonical absent-frame
 - Observatory fire rate: pending Tier A quarterly export
 - User-reported outcomes: not yet collected (Tier 3 future work)

@@ -30,11 +30,11 @@ Of 12 pairs, three outcomes per dimension: peers measurably differ, peers agree 
 
 When a dimension diverges in this aggregate, the named patterns in the Frame Vocabulary Standard describe the structural failure modes that produce the divergence. Click through to read the canonical entry for each frame.
 
-- **Coverage**: [FVS-001 Frame Amplification](https://frame.clarethium.com/corpus/library/FVS-001.html), [FVS-008 Growth Frame](https://frame.clarethium.com/corpus/library/FVS-008.html), [FVS-009 Risk Frame](https://frame.clarethium.com/corpus/library/FVS-009.html), [FVS-010 Completeness Illusion](https://frame.clarethium.com/corpus/library/FVS-010.html), [FVS-011 Stakeholder Frame](https://frame.clarethium.com/corpus/library/FVS-011.html), [FVS-014 Temporal Anchoring](https://frame.clarethium.com/corpus/library/FVS-014.html), [FVS-015 Efficiency Frame](https://frame.clarethium.com/corpus/library/FVS-015.html), [FVS-017 False Balance](https://frame.clarethium.com/corpus/library/FVS-017.html)
-- **Calibration**: [FVS-012 Uncertainty Frame](https://frame.clarethium.com/corpus/library/FVS-012.html), [FVS-017 False Balance](https://frame.clarethium.com/corpus/library/FVS-017.html)
-- **Evidence**: [FVS-016 Authority by Citation](https://frame.clarethium.com/corpus/library/FVS-016.html)
-- **Robustness**: [FVS-016 Authority by Citation](https://frame.clarethium.com/corpus/library/FVS-016.html)
-- **Counterfactual**: [FVS-001 Frame Amplification](https://frame.clarethium.com/corpus/library/FVS-001.html), [FVS-007 Failure Framing](https://frame.clarethium.com/corpus/library/FVS-007.html), [FVS-009 Risk Frame](https://frame.clarethium.com/corpus/library/FVS-009.html), [FVS-012 Uncertainty Frame](https://frame.clarethium.com/corpus/library/FVS-012.html), [FVS-014 Temporal Anchoring](https://frame.clarethium.com/corpus/library/FVS-014.html)
+- **Coverage**: FVS-001 Frame Amplification, FVS-008 Growth Frame, FVS-009 Risk Frame, FVS-010 Completeness Illusion, FVS-011 Stakeholder Frame, FVS-014 Temporal Anchoring, FVS-015 Efficiency Frame, FVS-017 False Balance
+- **Calibration**: FVS-012 Uncertainty Frame, FVS-017 False Balance
+- **Evidence**: FVS-016 Authority by Citation
+- **Robustness**: FVS-016 Authority by Citation
+- **Counterfactual**: FVS-001 Frame Amplification, FVS-007 Failure Framing, FVS-009 Risk Frame, FVS-012 Uncertainty Frame, FVS-014 Temporal Anchoring
 
 ### Per-peer-group breakdown
 
@@ -75,7 +75,7 @@ Legend: Cov = Coverage, Cal = Calibration, Evi = Evidence, Rob = Robustness, CF 
 
 When the same LLM is identified as the outlier on the same dimension across multiple distinct peer groups (different questions), that consistency is a stronger structural signal than any single-group outlier identification. The findings below report every (LLM, dimension) cell where the LLM is the outlier in EVERY comparable group it appears in.
 
-- **claude** is the counterfactual outlier in **all 2 of 2** comparable peer groups it appears in. Fired patterns in claude's outlier documents: [FVS-007 Failure Framing](https://frame.clarethium.com/corpus/library/FVS-007.html) (2 of 2), [FVS-001 Frame Amplification](https://frame.clarethium.com/corpus/library/FVS-001.html) (1 of 2). Named library entries for counterfactual (full canon space): [FVS-001 Frame Amplification](https://frame.clarethium.com/corpus/library/FVS-001.html), [FVS-007 Failure Framing](https://frame.clarethium.com/corpus/library/FVS-007.html), [FVS-009 Risk Frame](https://frame.clarethium.com/corpus/library/FVS-009.html), [FVS-012 Uncertainty Frame](https://frame.clarethium.com/corpus/library/FVS-012.html), [FVS-014 Temporal Anchoring](https://frame.clarethium.com/corpus/library/FVS-014.html). See claude's corpus entries: [Claude on whether to retire on Bitcoin (life-decision question)](https://frame.clarethium.com/corpus/decision-readiness/corpus/four-llms-bitcoin-claude/), [Claude on whether to take a startup offer (life-decision question)](https://frame.clarethium.com/corpus/decision-readiness/corpus/four-llms-startup-claude/).
+- **claude** is the counterfactual outlier in **all 2 of 2** comparable peer groups it appears in. Fired patterns in claude's outlier documents: FVS-007 Failure Framing (2 of 2), FVS-001 Frame Amplification (1 of 2). Named library entries for counterfactual (full canon space): FVS-001 Frame Amplification, FVS-007 Failure Framing, FVS-009 Risk Frame, FVS-012 Uncertainty Frame, FVS-014 Temporal Anchoring. See claude's corpus entries: Claude on whether to retire on Bitcoin (life-decision question), Claude on whether to take a startup offer (life-decision question).
 
 These findings still inherit the corpus-level N caveat (current peer groups: 2). Cross-question consistency is more compelling at 2 groups than at 1, more compelling at 5 than at 2. The threshold for 'corpus-level finding' rises with the question-diversity of the peer groups.
 
@@ -110,5 +110,5 @@ Of 1 pairs, the count of pairs where the transformation measurably moved a dimen
 
 ## Citation
 
-Lucic, L. (2026). Frame Check decision-readiness aggregate findings, corpus revision `7a6e2f294c9e`, computed 2026-04-24. https://frame.clarethium.com/corpus/decision-readiness/
+Lucic, L. (2026). Frame Check decision-readiness aggregate findings, corpus revision `7a6e2f294c9e`, computed 2026-04-24. (production paused)
 

@@ -30,11 +30,11 @@ Of 12 pairs, three outcomes per dimension: peers measurably differ, peers agree 
 
 When a dimension diverges in this aggregate, the named patterns in the Frame Vocabulary Standard describe the structural failure modes that produce the divergence. Click through to read the canonical entry for each frame.
 
-- **Coverage**: [FVS-001](https://frame.clarethium.com/corpus/library/FVS-001.html), [FVS-008](https://frame.clarethium.com/corpus/library/FVS-008.html), [FVS-009](https://frame.clarethium.com/corpus/library/FVS-009.html), [FVS-010](https://frame.clarethium.com/corpus/library/FVS-010.html), [FVS-011](https://frame.clarethium.com/corpus/library/FVS-011.html), [FVS-014](https://frame.clarethium.com/corpus/library/FVS-014.html), [FVS-015](https://frame.clarethium.com/corpus/library/FVS-015.html), [FVS-017](https://frame.clarethium.com/corpus/library/FVS-017.html)
-- **Calibration**: [FVS-012](https://frame.clarethium.com/corpus/library/FVS-012.html), [FVS-017](https://frame.clarethium.com/corpus/library/FVS-017.html)
-- **Evidence**: [FVS-016](https://frame.clarethium.com/corpus/library/FVS-016.html)
-- **Robustness**: [FVS-016](https://frame.clarethium.com/corpus/library/FVS-016.html)
-- **Counterfactual**: [FVS-001](https://frame.clarethium.com/corpus/library/FVS-001.html), [FVS-007](https://frame.clarethium.com/corpus/library/FVS-007.html), [FVS-009](https://frame.clarethium.com/corpus/library/FVS-009.html), [FVS-012](https://frame.clarethium.com/corpus/library/FVS-012.html), [FVS-014](https://frame.clarethium.com/corpus/library/FVS-014.html)
+- **Coverage**: FVS-001, FVS-008, FVS-009, FVS-010, FVS-011, FVS-014, FVS-015, FVS-017
+- **Calibration**: FVS-012, FVS-017
+- **Evidence**: FVS-016
+- **Robustness**: FVS-016
+- **Counterfactual**: FVS-001, FVS-007, FVS-009, FVS-012, FVS-014
 
 ### Per-peer-group breakdown
 
@@ -75,7 +75,7 @@ Legend: Cov = Coverage, Cal = Calibration, Evi = Evidence, Rob = Robustness, CF 
 
 When the same LLM is identified as the outlier on the same dimension across multiple distinct peer groups (different questions), that consistency is a stronger structural signal than any single-group outlier identification. The findings below report every (LLM, dimension) cell where the LLM is the outlier in EVERY comparable group it appears in.
 
-- **claude** is the counterfactual outlier in **all 2 of 2** comparable peer groups it appears in. Named library entries for counterfactual: [FVS-001](https://frame.clarethium.com/corpus/library/FVS-001.html), [FVS-007](https://frame.clarethium.com/corpus/library/FVS-007.html), [FVS-009](https://frame.clarethium.com/corpus/library/FVS-009.html), [FVS-012](https://frame.clarethium.com/corpus/library/FVS-012.html), [FVS-014](https://frame.clarethium.com/corpus/library/FVS-014.html).
+- **claude** is the counterfactual outlier in **all 2 of 2** comparable peer groups it appears in. Named library entries for counterfactual: FVS-001, FVS-007, FVS-009, FVS-012, FVS-014.
 
 These findings still inherit the corpus-level N caveat (current peer groups: 2). Cross-question consistency is more compelling at 2 groups than at 1, more compelling at 5 than at 2. The threshold for 'corpus-level finding' rises with the question-diversity of the peer groups.
 
@@ -110,5 +110,5 @@ Of 1 pairs, the count of pairs where the transformation measurably moved a dimen
 
 ## Citation
 
-Lucic, L. (2026). Frame Check decision-readiness aggregate findings, corpus revision `a842af74b555`, computed 2026-04-20. https://frame.clarethium.com/corpus/decision-readiness/
+Lucic, L. (2026). Frame Check decision-readiness aggregate findings, corpus revision `a842af74b555`, computed 2026-04-20. (production paused)
 

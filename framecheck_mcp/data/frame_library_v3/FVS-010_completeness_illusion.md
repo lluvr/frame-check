@@ -90,7 +90,7 @@ When this frame fires, the document covers many analytical perspectives at very 
 
 ## Cross-family reliability (F-2026-027, April 2026 baseline)
 
-Measured on [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) n=15 across four top-tier LLM families
+Measured on fvs_eval/mixed_genre_v1 n=15 across four top-tier LLM families
 (Claude Sonnet 4.6, Gemini 2.5 Pro, Grok 4, OpenAI GPT-5):
 
 | Metric | Value |
@@ -104,16 +104,16 @@ Per-family positives (of 15 docs): Claude 11, Gemini 9, Grok 14, GPT-5 5.
 
 **V4 detection mode:** honest-limit
 
-**Interpretation:** Persistent cross-family divergence across all three metrics. Detection is interpretation-dependent; see [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for split-vote reasoning analysis.
+**Interpretation:** Persistent cross-family divergence across all three metrics. Detection is interpretation-dependent; see fvs_eval/v4/RELIABILITY_STUDY.md for split-vote reasoning analysis.
 
-**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See [fvs_eval/v4/RELIABILITY_STUDY.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/RELIABILITY_STUDY.md) for methodology, [fvs_eval/v4/DESIGN.md](https://github.com/lluvr/frame-check/blob/master/fvs_eval/v4/DESIGN.md) for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
+**Latest-model discipline:** values reflect April 2026 Gemini 2.5 Pro baseline (and equivalents for other families at time of F-2026-027 run). Newer model versions may shift reliability; periodic re-calibration is V4 operational doctrine. See fvs_eval/v4/RELIABILITY_STUDY.md for methodology, fvs_eval/v4/DESIGN.md for architecture, and F-2026-027 / F-2026-028 for pre-registration + outcome.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
-- [fvs_eval/mixed_genre_v1](https://github.com/lluvr/frame-check/tree/master/fvs_eval/mixed_genre_v1) (n=15, four-family panel; F-2026-027 baseline 2026-04)
+- fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
 - HI-048 The Depth Illusion case study
 - `detect_coverage` 5-category system in `framing.py` (rule-based detector)
 - M-004 omission mechanism
@@ -131,7 +131,7 @@ Per-family positives (of 15 docs): Claude 11, Gemini 9, Grok 14, GPT-5 5.
 1. Tesla market analysis worked example (v1 Identification). Document scored 4/5 categories present but analytical weight was approximately 70% growth, 5% risk, 5% stakeholders, 15% trends, 5% uncertainty. Single-sentence "regulatory challenges exist" was performative not analytical. Strip-the-mention test confirmed: removing the risk mention does not change the document's argument; the mention is cosmetic.
 2. EXP-096 CHD pilot validation (2026-04-14). 124-page frontier-lab AI safety evaluation scored 6/18 (33%) on a 9-point evaluation honesty checklist. Coverage of 12+ safety categories was extraordinary; reflection on what evaluation methodology cannot detect was zero. Highest-scoring document in pilot (11/18, 61%) had explicit "what is missing" section structured by the benchmark's own taxonomy. Demonstrates the completeness illusion operating at the highest-stakes level: deployment decisions made on the impression that evaluation was thorough.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the strip-the-mention or density-not-presence test to a "comprehensive" analysis revealed weighted concentration on one frame; (2) the contrast between the surface-comprehensive reading and the density-weighted reading is concrete; (3) outcome differential observed (claim re-scoped, additional analysis demanded, conclusion downgraded in confidence); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the strip-the-mention or density-not-presence test to a "comprehensive" analysis revealed weighted concentration on one frame; (2) the contrast between the surface-comprehensive reading and the density-weighted reading is concrete; (3) outcome differential observed (claim re-scoped, additional analysis demanded, conclusion downgraded in confidence); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~2-5 minutes (read, identify dimensions, estimate per-dimension weight, run strip-the-mention test on thin sections)

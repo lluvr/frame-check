@@ -163,7 +163,7 @@ Rationale: additive. No consumer breaks. New consumers read `coverage_v2` direct
     "construct": {
         "signal_type": "vocabulary_and_pattern_detector",
         "statement": "The coverage signal is vocabulary-and-pattern based. Each dimension has a regex expressing the lexical markers the detector counts as evidence. 'detected' means the detector matched at least one marker; 'not_detected' means it matched none. Both directions carry measurement error: 'detected' may be substantive or nominal (see signal_strength and density_per_1kw), and 'not_detected' may reflect vocabulary the detector does not recognize rather than absence of coverage in the document. The measurement is a lower-bound claim about vocabulary, not an upper-bound claim about the document.",
-        "reference": "https://frame.clarethium.com/corpus/methodology/#13-construct-what-the-analytical-coverage-detector-actually-measures",
+        "reference": "(production paused)",
         "how_to_serialize": "When restating this analysis to a user, say 'the detector found markers for X, Y, Z' rather than 'the document covers X, Y, Z.' Say 'no markers detected for trends and uncertainty' rather than 'the document does not address trends or uncertainty.' Under-detection is a known failure mode and this construct statement is the authoritative phrasing."
     }
 }
@@ -430,7 +430,7 @@ Voice is a 7-rule deterministic cascade emitting one of {prescriptive, promotion
 "construct": {
     "signal_type": "cascade_classification",
     "statement": "Voice classification is a 7-rule deterministic cascade. ...",
-    "reference": "https://frame.clarethium.com/corpus/methodology/",
+    "reference": "(production paused)",
     "how_to_serialize": "When restating... say 'classified as X' rather than 'the document is X.' When confidence is 'borderline', name the runner-up class explicitly..."
 }
 ```

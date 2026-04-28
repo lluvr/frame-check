@@ -13,7 +13,7 @@ distinct from rating), `validation/decision_readiness/rater_guide.md`
 
 An open invitation and a contract-in-plain-prose for the Phase 2
 expert validation of Frame Check's decision-readiness profile. The
-profile lives at https://frame.clarethium.com/corpus/decision-readiness/
+profile lives at (production paused)
 with explicit `experimental` status pending Phase 2 results. Without
 external raters, the profile stays experimental indefinitely and the
 methodology cannot be cited as validated.
@@ -307,7 +307,7 @@ markers and I count substance").
 ## How to engage
 
 1. **Read the methodology page** at
-   https://frame.clarethium.com/corpus/decision-readiness/
+   (production paused)
    to confirm the framework matches what you are willing to rate
    against.
 2. **Read this document** (RATERS.md) in full for the contract.
@@ -339,7 +339,7 @@ markers and I count substance").
    is settled.
 9. **Submit ratings** as a GitHub pull request adding your
    YAML files to `validation/decision_readiness/ratings/`.
-   Public-facing repository: https://github.com/lluvr/frame-check.
+   Public-facing repository: https://github.com/lluvr/frame-check-mcp.
 
 ---
 
@@ -387,7 +387,7 @@ the v2 expansion.
 ## How to reach the curator
 
 GitHub: open an issue at
-https://github.com/lluvr/frame-check/issues with the title
+https://github.com/lluvr/frame-check-mcp/issues with the title
 prefix `[phase-2-rating]` and a brief expression of interest.
 The curator monitors this label.
 
