@@ -118,7 +118,7 @@ SERVER_NAME = "frame-check"
 # test_server_version_bumped_for_decision_readiness_capability;
 # adding suffixes here would break that pin and the handshake
 # parser shape downstream consumers may rely on.
-SERVER_VERSION = "0.8.2"
+SERVER_VERSION = "0.8.3"
 
 # Defensive ceiling against pathological multi-GB inputs that would
 # hang the stdio loop. Not a product constraint on legitimate use:
@@ -132,6 +132,31 @@ SERVER_VERSION = "0.8.2"
 # only.
 MAX_DOCUMENT_CHARS = 1_000_000
 MAX_SOURCE_CHARS = 2_000_000  # source can be longer than the doc under analysis
+
+# Production-hosting status. The provenance block emitted by every
+# frame_check response carries `tool_url`, `methodology_paper`, and
+# similar URLs pointing at https://frame.clarethium.com. Production
+# hosting was paused 2026-04-23 (`fly scale count 0` on
+# fabrication-profiler) with resume as the default trajectory; the
+# URLs forward-point to the canonical production site that resumes
+# per operator decision. Until then, those URLs may not resolve.
+# Surfacing this status inline in provenance lets agents avoid
+# treating non-resolution as a tool defect, and lets downstream
+# tooling distinguish "URL canonicalized but currently paused" from
+# "URL malformed or wrong." Flip to "active" on production resume;
+# the resume protocol is documented in RUNBOOK.md.
+PRODUCTION_STATUS = "paused"
+PRODUCTION_STATUS_NOTE = (
+    "Production hosting at frame.clarethium.com paused 2026-04-23; "
+    "resume is the default trajectory. The tool_url, "
+    "methodology_paper, frame_library, and calibration_corpus "
+    "fields in this provenance block forward-point to the canonical "
+    "production site and may not currently resolve; this reflects "
+    "hosting state, not a tool defect. Live alternates while the "
+    "site is paused: GitHub repository "
+    "https://github.com/lluvr/frame-check-mcp; PyPI package "
+    "frame-check-mcp (this server)."
+)
 
 # Lazy-loaded INDEX.md derivatives. build_epistemic_payload populates
 # these on first call so startup stays fast and repeated calls avoid
@@ -350,6 +375,8 @@ def _build_provenance(
         "methodology_paper": "https://frame.clarethium.com/corpus/methodology/",
         "frame_library": "https://frame.clarethium.com/corpus/library/",
         "calibration_corpus": "https://frame.clarethium.com/corpus/calibration/",
+        "production_status": PRODUCTION_STATUS,
+        "production_status_note": PRODUCTION_STATUS_NOTE,
         "license": {
             "code": "Apache-2.0",
             "corpus": "CC-BY-4.0",
@@ -359,6 +386,18 @@ def _build_provenance(
             ),
         },
         "frame_check_version": FRAME_CHECK_VERSION,
+        # The MCP server's wheel version. Distinct axis from
+        # frame_check_version above (which is the brand/methodology
+        # version, also stamped into telemetry events and CITATION.cff;
+        # see version.py for the two-axes rationale). server_version
+        # is the version an MCP integrator sees in the initialize
+        # handshake's serverInfo.version; surfacing it in provenance
+        # lets agents and bug reports cross-reference the wheel without
+        # having to re-issue an initialize handshake. Both fields are
+        # legitimate; an integrator running frame-check-mcp 0.8.x
+        # against a Frame Check methodology snapshot at brand version Y
+        # will see server_version=0.8.x and frame_check_version=Y.
+        "server_version": SERVER_VERSION,
         # clarethium_measure is the measurement stack. Its version
         # is pinned independently from the app version so MCP
         # clients can verify the measurement contract separately
@@ -2085,6 +2124,18 @@ def _build_temporal_construct(temp: dict) -> dict:
 
 _CLAIM_LEVEL_DETECTOR = "detector_measurement"
 _CLAIM_LEVEL_CLASSIFIER = "classifier_output"
+# Added 2026-04-28 per CONSTRUCT_VALIDITY_AUDIT_v1 v1.2 / OPEN_DECISIONS
+# v1 D1 Proposal A. Names the LLM-judge binary classification shape
+# distinct from `classifier_output`'s deterministic-cascade-with-
+# confidence shape. V4.2 emissions are the canonical instance: binary
+# `exhibits` value with reasoning text and per-frame reliability tier
+# but no per-emission confidence or runner-up. The borderline-vs-
+# decisive distinction is a property of the macro aggregate (macro-F1
+# across the validation corpus, intra-rater AC1 across run-pairs)
+# rather than the per-emission. As of 2026-04-28 V4.2 ships only on
+# the evaluation engine surface; the first MCP wheel that ships V4.2
+# emissions on the wire MUST tag them with this claim_level.
+_CLAIM_LEVEL_LLM_CLASSIFIER = "llm_classifier_output"
 _CLAIM_LEVEL_COMPOSED = "composed_pattern"
 _CLAIM_LEVEL_AGENT_GENERATED = "agent_generated"
 
@@ -2141,6 +2192,57 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
             "how_to_cite": (
                 "Frame Check's detector found markers for X / no "
                 "markers detected for X."
+            ),
+        },
+        _CLAIM_LEVEL_LLM_CLASSIFIER: {
+            "claim_type": (
+                "LLM-judge binary or categorical classification with "
+                "curated definition + reasoning text but WITHOUT "
+                "per-emission confidence/runner-up structure. V4.2 "
+                "FVS detection is the canonical instance."
+            ),
+            "validation_status": {
+                "deterministic": False,
+                "methodology_documented": True,
+                "inter_rater_reliability": "macro_aggregate_only",
+                "validity_data": (
+                    "Reliability is reported at the macro aggregate "
+                    "level (macro-F1 across the validation corpus, "
+                    "intra-rater AC1 across run-pairs), not at the "
+                    "per-emission level. The borderline-vs-decisive "
+                    "distinction is a property of the aggregate, not "
+                    "the per-emission. F-2026-035 macro-F1 = 0.732 on "
+                    "the mg_v2 n=26 corpus; per-frame F1 documented "
+                    "in result JSONs. Two named per-frame chronic "
+                    "gaps (FVS-007 over-fire, FVS-001 low-recall) "
+                    "diagnosed at substrate level in "
+                    "FVS_007_001_SHIP_READINESS_v1.md."
+                ),
+            },
+            "caveats": [
+                "The reasoning text is the engine's rationale for "
+                "the binary judgment, not a confidence proxy. Do not "
+                "paraphrase it as 'Frame Check is X% confident'.",
+                "Per-emission borderline-vs-decisive distinction is "
+                "unavailable. Cite the per-frame reliability tier as "
+                "the macro-aggregate evidence; do not treat any "
+                "single emission as decisive without disclosing the "
+                "intra-rater variance.",
+                "Surface honest_limit caveats verbatim when the "
+                "engine emits one. The honest_limit text is per-"
+                "frame and names the operationalization gap in "
+                "single-emission terms.",
+                "The construct is LLM-judged, not deterministic. "
+                "Two engine runs on the same document at temperature "
+                "0 can disagree on individual binary judgments at "
+                "rates consistent with F-2026-032's MODERATE-NOISE "
+                "band; aggregate reliability is the load-bearing "
+                "evidence.",
+            ],
+            "how_to_cite": (
+                "Frame Check's V4.2 engine judged the document as "
+                "exhibiting X (tier Y reliability; honest_limit Z "
+                "when present)."
             ),
         },
         _CLAIM_LEVEL_CLASSIFIER: {
@@ -2760,6 +2862,18 @@ def _build_divergence_block(
             "claim_level": _CLAIM_LEVEL_DETECTOR,
             "affects_dimensions": affects_dims,
             "citation_uri": f"{RESOURCE_SCHEME}://library/{fvs_id}",
+            # GitHub URL pointing at the entry's markdown source on
+            # the public repository (lluvr/frame-check-mcp). End-users
+            # in MCP clients (Claude Desktop, Cursor) cannot click
+            # frame-check://library/... resource URIs because those
+            # are MCP-internal; the library_url gives them an HTTP
+            # link they can follow. Always-resolvable regardless of
+            # hosted-production status. None when no canonical
+            # filename is known for the ID.
+            "library_url": (
+                _library_entry_ref(fvs_id).get("public_url")
+                if fvs_id else None
+            ),
             "corpus_context": frame_corpus_ctx,
             "genre_relevance": frame_genre_relevance,
             "goal_relevance": frame_goal_relevance,
@@ -3196,11 +3310,16 @@ def _build_divergence_block(
     #
     # Slice levels:
     #   minimal: top-3 absent_frames, top-1 cluster, top-1 pattern.
-    #     For agents in tight working-memory budgets (quick responses).
+    #     agent_guidance compressed (downstream block). For agents in
+    #     tight working-memory budgets (quick responses).
     #   standard: top-5 absent_frames, all clusters, all patterns.
-    #     Middle ground; preserves cluster + pattern surfaces.
-    #   full (default): unfiltered; backwards-compatible with prior
-    #     callers who omit the parameter.
+    #     agent_guidance compressed (same compression as minimal).
+    #     Middle ground; preserves full cluster + pattern surfaces
+    #     while halving guidance token cost.
+    #   full (default): unfiltered output, full inline guidance.
+    #     Backwards-compatible with prior callers who omit the
+    #     parameter; suitable for first-time orientation and
+    #     methodology demos where worked examples earn their tokens.
     pre_slice_absent = len(absent_records)
     pre_slice_clusters = len(absence_clusters)
     pre_slice_patterns = len(triggered_patterns)
@@ -3411,6 +3530,174 @@ def _build_divergence_block(
     }
 
 
+def _compress_agent_guidance_to_load_bearing(
+    full_guidance: dict, level: str = "minimal",
+) -> dict:
+    """Compress agent_guidance to load-bearing prescriptions only.
+
+    Used when compose_budget is "standard" or "minimal" to reduce
+    per-call token cost for agents that invoke frame_check at high
+    frequency (per-turn self-audit loops, batch document processing).
+    Default compose_budget is "full" which preserves the complete
+    agent_guidance; this function runs on explicit opt-in to either
+    compressed tier.
+
+    The compression is identical at the "standard" and "minimal" tiers;
+    the two tiers differ in their divergence-side slicing (top-5 vs
+    top-3 absent_frames; all clusters/patterns vs top-1). The `level`
+    parameter only flows into compose_budget_applied_note so callers
+    sizing token budgets can confirm which tier produced the cut.
+
+    Compression rules:
+      - composition_discipline: keep the discipline points as a
+        compressed list, drop worked examples (the cite-by-name
+        lesson, the per-level example trios). Worked examples teach
+        the discipline at first read; once the agent has seen them
+        in `full` mode, repeating on every call is dead weight.
+      - how_to_cite_faithfully: condense to one sentence per rule
+        (name Frame Check, no paraphrase, no "fails to address",
+        no quality-score use).
+      - when_invoked_on_own_output: keep (load-bearing for the self-
+        audit case which is the most frequent per-turn invocation).
+      - claim_level_treatments: replaced with a short note because
+        the table is identical across calls; an agent can fetch it
+        once via a compose_budget="full" call and cache for
+        subsequent compose_budget="standard"/"minimal" calls.
+        Surfaced as claim_level_treatments_note so the schema-shaped
+        key survives and consumers parse around it.
+      - what_this_tool_tells_you / what_this_tool_does_not_tell_you:
+        replaced with a single inline pair of sentences. The full
+        text is for first-time orientation, not per-call discipline.
+      - how_to_map_user_intent: dropped. The agent has its own NLU;
+        the guidance was for surface-level prompts and is not load-
+        bearing for tight-loop callers.
+      - how_to_cite_frame_matches / how_to_cite_claims: rolled into
+        how_to_cite_faithfully.
+      - dual_use_note: kept (anti-misuse is load-bearing).
+      - scope_regime_guidance: passed through verbatim if present
+        (it is verification-conditional and already concise).
+      - frame_opportunities_discipline / how_to_render_divergence /
+        any other divergence-merged keys: passed through verbatim
+        because they govern dynamic blocks the caller asked for.
+
+    Measured reduction on a representative document: agent_guidance
+    drops from ~31 KB to ~12 KB (roughly 2.6x). The actual cut is
+    reported in compose_budget_applied.note in the divergence
+    envelope so a caller sizing token budget can confirm it.
+    """
+    compressed = {
+        "composition_discipline": (
+            "Compose ONE insight grounded in cited measurements, in "
+            "reading-form ('the pattern reads as X'), never verdict-"
+            "form ('the document is X'). Cite measurements as Frame "
+            "Check's; the reading is the agent's. Do not walk the "
+            "measurements one by one. Discipline: "
+            "(1) every clause cites a measurement; "
+            "(2) reading-form, never verdict-form; "
+            "(3) confidence-gate (under 100 words, non-English, non-"
+            "analytical structure) pivots the frame to a reading of "
+            "Frame Check's scope, not a reading of the document; "
+            "(4) cross-context compounding only when it sharpens the "
+            "reading, never as scenery; "
+            "(5) absence is not prescription (name what the framing "
+            "does, never what the document should have done); "
+            "(6) per-level claim treatment per the claim_level field "
+            "on each entity; "
+            "(7) when divergence.frame_patterns is non-empty, lead "
+            "with the pattern reading and cite the pattern by its id "
+            "verbatim; when frame_patterns is empty and "
+            "divergence.absence_clusters is non-empty, lead with the "
+            "cluster reading and cite by dimension name."
+        ),
+        "claim_level_treatments_note": (
+            "Full per-level claim discipline is available inline at "
+            "compose_budget='full' under "
+            "agent_guidance.claim_level_treatments. The table is "
+            "identical across calls; an agent can fetch once via a "
+            "compose_budget='full' invocation and cache the result "
+            "for subsequent compose_budget='standard'/'minimal' calls."
+        ),
+        "what_this_tool_tells_you": (
+            "Structural framing of the document: coverage across five "
+            "analytical perspectives, voice classification, temporal "
+            "orientation, epistemic basis, named pattern matches from "
+            "the Frame Vocabulary Standard, claim-density and hedge "
+            "calibration, and (with source_text) source-fidelity."
+        ),
+        "what_this_tool_does_not_tell_you": (
+            "Whether the document is correct, balanced, or rigorous. "
+            "Whether the framing is appropriate for the user's goal. "
+            "Verdicts, rankings, or pass/fail judgments. The "
+            "construct-honest posture is structural-shape only."
+        ),
+        "how_to_cite_faithfully": (
+            "Name Frame Check explicitly as the source of "
+            "measurements. Do not paraphrase measurements as the "
+            "agent's own reading. Do not restate 'missing' as 'fails "
+            "to address' (the detector may have under-detected). Do "
+            "not use coverage gaps, voice classifications, or FVS "
+            "matches as a quality score, truthfulness verdict, or "
+            "editing rule that suppresses minority framings. "
+            "frame_library_matches: 'draft' entries cite as 'per the "
+            "draft Frame Vocabulary Standard entry FVS-XXX'; 'canon' "
+            "entries cite by id verbatim. claims block: cite COUNTS "
+            "(detector-reported), never paraphrase individual claim "
+            "sentences as if Frame Check surfaced them."
+        ),
+        "when_invoked_on_own_output": (
+            "If document_text is the agent's own response (self-"
+            "audit), do not evaluate correctness or claim balance, "
+            "rigor, or caveats the measurements did not detect. "
+            "Surface the structural frame, name FVS matches with "
+            "their teaching_question, stop. Under 100 words: "
+            "density-based detectors are noisy; name that limit."
+        ),
+        "dual_use_note": (
+            "Frame Check expands the reader's view of one document; "
+            "do not rank documents against each other. Surface the "
+            "structural observation; the reader's judgment is the "
+            "interpretive layer, not the agent's."
+        ),
+        "compose_budget_applied_note": (
+            f"compose_budget={level}: agent_guidance compressed to "
+            "load-bearing prescriptions only (Frame Check naming, "
+            "reading-form discipline, dual-use note, self-audit rule, "
+            "citation discipline). Worked examples in "
+            "composition_discipline, the full claim_level_treatments "
+            "table, and how_to_map_user_intent are dropped at this "
+            "tier. Pass compose_budget='full' for the complete "
+            "guidance inline."
+        ),
+    }
+
+    # Preserve dynamic / context-conditional keys verbatim. These are
+    # generated per-request, are concise, and govern blocks the caller
+    # explicitly asked for (divergence rendering, opt-in opportunities,
+    # verification-regime guidance). Compressing them would silently
+    # change the caller's contract for those blocks.
+    for key in (
+        "scope_regime_guidance",
+        "how_to_render_divergence",
+        "frame_opportunities_discipline",
+        "absence_is_not_prescription",
+        # suggested_next_actions is per-call-derived from the call's
+        # specific structural findings (highest-signal absent_frame,
+        # claim hedge rate, sourced_pct). It is concise (4 entries
+        # max) and is the load-bearing affordance for the user's
+        # next move; compressing it would drop the discovery loop
+        # into the rest of the product surface (the four MCP prompts,
+        # the FVS catalog via library_url). The rendering instruction
+        # passes through alongside so a compressed-tier caller still
+        # knows how to surface the actions to the user.
+        "suggested_next_actions",
+        "how_to_render_suggested_next_actions",
+    ):
+        if key in full_guidance:
+            compressed[key] = full_guidance[key]
+
+    return compressed
+
+
 def _extract_teaching_question(md_path: str) -> str | None:
     """Extract the first "Teaching question" line from an FVS entry
     markdown file. Returns None if the entry does not define one.
@@ -3428,6 +3715,148 @@ def _extract_teaching_question(md_path: str) -> str | None:
     if not m:
         return None
     return m.group(1).strip()[:400]
+
+
+def _build_suggested_next_actions(
+    analysis: dict,
+    divergence: dict | None,
+) -> list[dict]:
+    """Derive 2-4 specific next-action suggestions from this call's
+    findings. Each action is structural-finding-anchored: it points
+    at a concrete gap in the analysis and gives the user (via the
+    agent) a concrete move that addresses it.
+
+    The actions surface the rest of the product surface (the
+    challenge_document MCP prompt, the FVS catalog via library_url)
+    so an end-user reading a Frame Check result has a discoverable
+    path forward, not just a static reading. Prior to this block
+    being shipped, the tool surfaced findings without telling the
+    user what to do about them; the discovery loop into the four
+    MCP prompts and the 100+ resources was invisible.
+
+    Each entry shape:
+      kind            "reprompt" | "resource" | "prompt_followup"
+      action_text     human-readable description; agent renders
+                      verbatim or near-verbatim
+      rationale       one sentence on why this action is suggested
+                      for THIS specific call's findings (so the
+                      reader can judge relevance)
+      related_url     library_url for "resource" kind, optional
+      related_fvs_id  FVS-ID for "resource" kind, optional
+
+    Capped at 4 entries: more becomes noise. Ordering:
+      1. Highest signal_strength absent_frame resource pointer
+         (most actionable, most specific to the document)
+      2-3. Up to two reprompt suggestions derived from claim/
+         epistemic/coverage findings when the thresholds fire
+      Last. Always-include prompt_followup pointing at
+         challenge_document so the deeper multi-turn loop is
+         discoverable on every call
+
+    Deterministic: same input produces same output, same order.
+    """
+    actions: list[dict] = []
+
+    # Rule 1: highest-signal absent_frame -> resource pointer.
+    # absent_frames are sorted by signal_strength tier (high first)
+    # then frame_id ascending; absent_frames[0] is the strongest
+    # absence-shaped finding for this document.
+    if divergence:
+        absent_frames = divergence.get("absent_frames", []) or []
+        if absent_frames:
+            top = absent_frames[0]
+            fvs_id = top.get("frame_id", "")
+            title = top.get("frame_title", "")
+            url = top.get("library_url")
+            if fvs_id and title and url:
+                actions.append({
+                    "kind": "resource",
+                    "action_text": (
+                        f"Read the entry for the strongest absent frame "
+                        f"in this reading: [{fvs_id} {title}]({url})."
+                    ),
+                    "rationale": (
+                        f"{fvs_id} ({title}) is the highest signal_strength "
+                        f"absent_frame in the divergence block; reading "
+                        f"the catalog entry grounds the absence in the "
+                        f"frame's identification cues and worked examples, "
+                        f"not the agent's paraphrase."
+                    ),
+                    "related_fvs_id": fvs_id,
+                    "related_url": url,
+                })
+
+    # Rule 2: high unhedged claim rate -> reprompt for hedging.
+    # Threshold 0.5 picks documents where the majority of numeric
+    # claims operate in the confidence register; below that the
+    # signal does not justify a prompt for the user.
+    claims = analysis.get("claims_extracted", {}) or {}
+    total_claims = claims.get("total", 0) or 0
+    unhedged_count = claims.get("unhedged_count", 0) or 0
+    if total_claims >= 5 and unhedged_count / total_claims >= 0.5:
+        unhedged_pct = round(100 * unhedged_count / total_claims)
+        actions.append({
+            "kind": "reprompt",
+            "action_text": (
+                "Ask the source AI: \"For each numeric claim in your "
+                "analysis, what is the confidence interval, and where "
+                "does the figure come from?\""
+            ),
+            "rationale": (
+                f"{unhedged_count} of {total_claims} numeric claims "
+                f"({unhedged_pct} percent) carry no hedging language. "
+                f"A hedge-by-claim pass surfaces the uncertainty the "
+                f"original draft did not name."
+            ),
+        })
+
+    # Rule 3: very low sourced_pct -> reprompt for attribution.
+    # Threshold 10 percent picks documents whose claims read as the
+    # author's own knowledge rather than measurements someone made.
+    epistemic = analysis.get("epistemic", {}) or {}
+    sourced_pct = epistemic.get("sourced_pct", 100)
+    total_sentences = epistemic.get("total_sentences", 0) or 0
+    if total_sentences >= 5 and sourced_pct < 10:
+        actions.append({
+            "kind": "reprompt",
+            "action_text": (
+                "Ask the source AI: \"For the claims in this analysis, "
+                "what specific sources support each one? Cite per "
+                "claim, not in a closing footnote.\""
+            ),
+            "rationale": (
+                f"Only {sourced_pct} percent of sentences carry "
+                f"detector-recognized attribution markers; the claims "
+                f"read as facts the author knows rather than "
+                f"measurements someone made."
+            ),
+        })
+
+    # Always-include: prompt_followup pointing at the
+    # challenge_document MCP prompt so the deeper multi-turn loop
+    # is discoverable on every call. The user can invoke it by
+    # asking the agent to "use the challenge_document prompt"; the
+    # prompt derives adversarial questions traced to the structural
+    # gaps in this reading.
+    actions.append({
+        "kind": "prompt_followup",
+        "action_text": (
+            "Use the `challenge_document` MCP prompt for an "
+            "adversarial-questions readout traced directly to the "
+            "structural gaps surfaced here."
+        ),
+        "rationale": (
+            "challenge_document derives questions from the absent_frames "
+            "and weakest dimensions in this reading; running it gives "
+            "a structured list of follow-up questions the user can put "
+            "back to the source AI."
+        ),
+    })
+
+    # Cap at 4. Resource pointer (if present) wins position 1;
+    # prompt_followup always wins last position; the middle is
+    # filled with reprompt suggestions in derivation order.
+    return actions[:4]
 
 
 def build_epistemic_payload(
@@ -3752,9 +4181,17 @@ def build_epistemic_payload(
             {
                 "fvs_id": f.get("fvs_id"),
                 "name": f.get("name"),
+                # GitHub URL pointing at the entry's markdown source
+                # on the public repository (lluvr/frame-check-mcp).
+                # End-users can click this to read the entry directly;
+                # GitHub is always resolvable regardless of hosted-
+                # production status (frame.clarethium.com is paused
+                # 2026-04-23, so the previous-form library_url
+                # pointing at the corpus site has been retired).
+                # None when no canonical filename is known for the ID.
                 "library_url": (
-                    f"https://frame.clarethium.com{f.get('url', '')}"
-                    if f.get("url") else None
+                    _library_entry_ref(f.get("fvs_id", "")).get("public_url")
+                    if f.get("fvs_id") else None
                 ),
                 # MCP resource URI for the same library entry.
                 # Agents running entirely through MCP (no web
@@ -4164,12 +4601,27 @@ def build_epistemic_payload(
             "provenance the reader needs to evaluate the claim."
         ),
         "how_to_cite_frame_matches": (
-            "Each frame_library_matches entry carries a status field. "
-            "'canon' entries have stable ID, name, and identification. "
-            "'draft' entries have a stable ID but name or identification "
-            "may revise. When surfacing a draft match to the user, say "
-            "'per the draft Frame Vocabulary Standard entry FVS-XXX' so "
-            "the stability guarantee is carried forward."
+            "Render every FVS reference as a clickable markdown link "
+            "using the entry's library_url field: "
+            "`[FVS-XXX Frame Title](library_url)`. The library_url "
+            "points at the entry's markdown source on the public "
+            "GitHub repository, which is always resolvable for the "
+            "end-user. Plain-text 'FVS-XXX' references give the "
+            "reader an identifier they cannot follow; the markdown "
+            "link gives them the full identification text, worked "
+            "examples, and adjacent-frames graph in one click. "
+            "Apply this to frame_library_matches entries, to "
+            "absent_frames entries inside the divergence block, and "
+            "to typical_co_fires / typical_co_absences inside each "
+            "absent_frames entry's corpus_context. Each carries the "
+            "same library_url field. "
+            "Stability discipline: each frame_library_matches entry "
+            "carries a status field. 'canon' entries have stable "
+            "ID, name, and identification. 'draft' entries have a "
+            "stable ID but name or identification may revise. When "
+            "surfacing a draft match, prefix the link with 'per the "
+            "draft entry' so the stability guarantee is carried "
+            "forward; canon matches need no prefix."
         ),
         "how_to_cite_claims": (
             "The claims block reports per-type COUNTS extracted from "
@@ -4375,6 +4827,55 @@ def build_epistemic_payload(
         # Merge the two required agent_guidance additions per §4.4.
         for key, value in divergence_bundle["agent_guidance_additions"].items():
             agent_guidance[key] = value
+
+    # Suggested next actions: 2-4 specific moves the user can take
+    # based on this call's findings. Surfaces the rest of the
+    # product (challenge_document MCP prompt, FVS catalog via
+    # library_url) so a Frame Check finding has a discoverable
+    # path forward, not a static reading. Built AFTER divergence
+    # because the highest-leverage action draws on the strongest
+    # absent_frame, which only exists when include_divergence=True.
+    # When divergence is off, the action list still includes the
+    # findings-based reprompts and the always-present prompt
+    # followup.
+    agent_guidance["suggested_next_actions"] = (
+        _build_suggested_next_actions(
+            analysis,
+            payload.get("divergence"),
+        )
+    )
+    agent_guidance["how_to_render_suggested_next_actions"] = (
+        "When composing the response, present "
+        "suggested_next_actions as a small explicit list at the end "
+        "of the reading (after the insight + question), introduced "
+        "with one sentence like 'Things you can do next:'. Render "
+        "the action_text verbatim or near-verbatim; do not paraphrase "
+        "the rationale. The list is bounded (max 4 entries); render "
+        "all entries the tool returned. Each 'resource' kind action "
+        "already carries a clickable markdown link in its action_text "
+        "(library_url-shaped); preserve the link form so the user "
+        "can follow it. The 'reprompt' kind actions give the user a "
+        "ready-made follow-up question for the source AI; render the "
+        "quoted question verbatim. The 'prompt_followup' kind action "
+        "names a Frame Check MCP prompt the user can ask you to "
+        "invoke; surface it so the multi-turn loop is discoverable."
+    )
+
+    # compose_budget="standard" and "minimal" both compress
+    # agent_guidance to load-bearing prescriptions only. The two tiers
+    # differ in their divergence-side slicing (handled in the slicing
+    # block above), not in the agent_guidance shape. Compression runs
+    # AFTER the divergence merge so any divergence-specific keys
+    # (how_to_render_divergence, frame_opportunities_discipline) are
+    # preserved verbatim. compose_budget="full" keeps the rich
+    # agent_guidance unchanged for first-time orientation, methodology
+    # demos, or any case where the inline worked examples + claim-
+    # level table earn their tokens. See
+    # _compress_agent_guidance_to_load_bearing for compression rules.
+    if compose_budget in ("standard", "minimal"):
+        payload["agent_guidance"] = _compress_agent_guidance_to_load_bearing(
+            agent_guidance, level=compose_budget,
+        )
     return payload
 
 
@@ -4498,9 +4999,15 @@ def _summarize_per_document(doc: dict, text: str) -> dict:
             {
                 "fvs_id": f.get("fvs_id"),
                 "name": f.get("name"),
+                # GitHub URL pointing at the entry's markdown source
+                # on the public repository (lluvr/frame-check-mcp).
+                # See the frame_check tool's matching field for the
+                # full rationale; same shape, same resolution
+                # behavior, so a client can handle both surfaces
+                # uniformly.
                 "library_url": (
-                    f"https://frame.clarethium.com{f.get('url', '')}"
-                    if f.get("url") else None
+                    _library_entry_ref(f.get("fvs_id", "")).get("public_url")
+                    if f.get("fvs_id") else None
                 ),
                 # MCP resource URI and per-entry version (same
                 # fields as the frame_check tool response so a
@@ -4750,6 +5257,15 @@ def handle_initialize(_params: dict) -> dict:
     The clientInfo in params is accepted but not used; if future
     versions want to gate features by client, it is available
     here.
+
+    The top-level `instructions` field carries server-orientation
+    prose to the agent: when to use Frame Check, default invocation
+    shape, and the four-prompt workflow surface. Per the MCP
+    protocol this is the canonical place for cross-tool guidance
+    (per-tool descriptions are delivered separately via tools/list);
+    surfacing the orientation here is what lets a client whose UI
+    shows the InitializeResult give the user a one-line answer to
+    'what is this server.'
     """
     return {
         "protocolVersion": PROTOCOL_VERSION,
@@ -4762,6 +5278,36 @@ def handle_initialize(_params: dict) -> dict:
             "name": SERVER_NAME,
             "version": SERVER_VERSION,
         },
+        "instructions": (
+            "Frame Check is a structural framing-analysis tool for "
+            "any English analytical document. Use it when the user "
+            "wants to read a document with a structural lens (which "
+            "perspectives it covers, which it omits, how confidently "
+            "it speaks) or when you want to self-audit your own "
+            "response before the user acts on it.\n\n"
+            "Default invocation is zero-arg: "
+            "`frame_check(document_text=<text>)`. The defaults "
+            "produce the full output, including the divergence block "
+            "(perspectives the document does not use) and a per-call "
+            "suggested_next_actions block. Pass the optional "
+            "parameters only when the user has provided the relevant "
+            "context (source material, decision goal, working-memory "
+            "budget).\n\n"
+            "Two tools: `frame_check` (single document) and "
+            "`frame_compare` (two documents on the same subject).\n\n"
+            "Four prompts surface the common workflows: "
+            "`frame_check_my_response` (self-audit your last reply), "
+            "`frame_check_this_ai_response` (the user pastes another "
+            "AI's reply), `challenge_document` (adversarial questions "
+            "traced to structural gaps), `explain_framing` (guided "
+            "walkthrough of a completed result). The user can ask "
+            "you to use any of them by name.\n\n"
+            "Cite each measurement as Frame Check's; frame your "
+            "reading as a reading ('the pattern reads as X'), never "
+            "as a verdict ('the document is X'). The deterministic "
+            "path returns identical measurements on identical "
+            "inputs at zero LLM cost."
+        ),
     }
 
 
@@ -5009,8 +5555,12 @@ _PROMPT_SELF_AUDIT = (
     "decision_readiness dimension reading). When absence_clusters "
     "is empty, fall back to per-frame composition. Reading-form, "
     "not verdict-form: 'the pattern reads as X', never 'your "
-    "response is X'. Cite inline as `[FVS-XXX Title]("
-    "frame-check://library/FVS-XXX)`; never add a bottom Sources "
+    "response is X'. Cite inline as `[FVS-XXX Frame Title]("
+    "library_url)` using each frame's library_url field (the "
+    "GitHub markdown URL, always resolvable for the user); "
+    "never use the frame-check:// resource URI for end-user "
+    "citations because users in MCP clients cannot click it. "
+    "Never add a bottom Sources "
     "bibliography. Do NOT walk the measurements one by one; the "
     "measurement walk is the expand path. When corpus_context "
     "fields are present (on matched frames, absent frames, or "
@@ -5078,8 +5628,12 @@ _PROMPT_AI_RESPONSE_AUDIT = (
     "absent_frame, decision_readiness dimension reading). When "
     "absence_clusters is empty, fall back to per-frame composition. "
     "Reading-form, not verdict-form: 'the pattern reads as X', "
-    "never 'the AI is X'. Cite inline as `[FVS-XXX Title]("
-    "frame-check://library/FVS-XXX)`; never add a bottom Sources "
+    "never 'the AI is X'. Cite inline as `[FVS-XXX Frame Title]("
+    "library_url)` using each frame's library_url field (the "
+    "GitHub markdown URL, always resolvable for the user); "
+    "never use the frame-check:// resource URI for end-user "
+    "citations because users in MCP clients cannot click it. "
+    "Never add a bottom Sources "
     "bibliography. Do NOT walk the measurements one by one; the "
     "measurement walk is the expand path. When corpus_context "
     "fields are present (on matched frames, absent frames, or "
@@ -5146,7 +5700,9 @@ _PROMPT_CHALLENGE_DOCUMENT = (
     "reading the user could not see by re-reading their own "
     "document, expressed in question form.\n\n"
     "Top 2-3 highest-leverage questions, with INLINE citations "
-    "`[FVS-XXX Title](frame-check://library/FVS-XXX)`:\n"
+    "`[FVS-XXX Frame Title](library_url)` (the library_url field "
+    "on each frame entry; never the frame-check:// resource URI "
+    "in end-user output, since users cannot click MCP URIs):\n"
     "- When divergence.absence_clusters is non-empty, the strongest "
     "cluster's reading is the source of the lead question: translate "
     "the dimension-level theme into a question (e.g., counterfactual "
@@ -5242,8 +5798,12 @@ _PROMPT_EXPLAIN_FRAMING = (
     "measurements one by one in the compact response; that "
     "mechanical readout is the expand path. Reading-form, not "
     "verdict-form: 'the pattern reads as X', never 'the document "
-    "is X'. Cite inline as `[FVS-XXX Title](frame-check://library/"
-    "FVS-XXX)`; never add a bottom Sources bibliography. When "
+    "is X'. Cite inline as `[FVS-XXX Frame Title](library_url)` "
+    "using each frame's library_url field (the GitHub markdown URL, "
+    "always resolvable for the user); never use the frame-check:// "
+    "resource URI for end-user citations because users in MCP "
+    "clients cannot click it. Never add a bottom Sources "
+    "bibliography. When "
     "corpus_context fields are present (on matched frames, absent "
     "frames, or clusters), anchor the reading in their prevalence "
     "and peer-pair-difference signals; honor "
@@ -5433,23 +5993,30 @@ def handle_prompts_get(params: dict) -> dict:
 _FRAME_CHECK_TOOL = {
     "name": "frame_check",
     "description": (
-        "Deterministic structural framing analysis. Returns analysis "
-        "(measurements) + agent_guidance (composition discipline, "
-        "scope-regime guidance, faithfulness rules) + provenance "
-        "(versions, license, citation). When source_text is provided, "
-        "also runs Layer 4 source_fidelity and Layer 11 "
-        "grounding_decomposition with a Monte-Carlo-verified scope "
-        "regime. When include_divergence=true (default at 0.8.0), the "
-        "response carries a top-level divergence block sorted by "
-        "signal_strength. The agent's role is to compose ONE insight "
-        "grounded in the cited measurements (a reading the user could "
-        "not see by reading their own document), not to walk the "
-        "measurements one by one. The measurements are Frame Check's; "
-        "the reading is the agent's. Cite measurements as Frame "
-        "Check's; frame the reading as a reading ('the pattern reads "
-        "as X'), never as a verdict ('the document is X'). Repeated "
-        "calls with identical inputs return identical measurements; "
-        "the agent's insight is a composition over them."
+        "Read a document with a structural lens: which analytical "
+        "perspectives it covers, which it omits, how confidently it "
+        "speaks, and which framing patterns from the Frame Vocabulary "
+        "Standard fire on it.\n\n"
+        "Use this when the user pastes a document and asks for a "
+        "structural read, when you want to self-audit your own last "
+        "response before the user acts on it, or when the user pastes "
+        "another AI's reply and asks what that AI did structurally.\n\n"
+        "Zero-arg invocation works for any English analytical document: "
+        "`frame_check(document_text=<text>)`. The defaults produce the "
+        "full output, including the divergence block (perspectives the "
+        "document does not use) and a per-call suggested_next_actions "
+        "block. Pass the optional parameters only when the user has "
+        "provided the relevant context (source material, decision "
+        "goal, working-memory budget).\n\n"
+        "Compose ONE insight grounded in the cited measurements (a "
+        "reading the user could not see by reading the document "
+        "themselves), not a walk through the measurements one by one. "
+        "The measurements are Frame Check's; the reading is yours. "
+        "Cite each measurement as Frame Check's; frame the reading as "
+        "a reading ('the pattern reads as X'), never as a verdict "
+        "('the document is X'). Repeated calls with identical inputs "
+        "return identical measurements; zero LLM cost on the "
+        "deterministic path."
     ),
     "inputSchema": {
         "type": "object",
@@ -5457,7 +6024,10 @@ _FRAME_CHECK_TOOL = {
             "document_text": {
                 "type": "string",
                 "description": (
-                    "The document to analyse. English. 300-10,000 words. "
+                    "The document to analyse. English. 300 to 10,000 "
+                    "words is the validated range; under 100 words "
+                    "the analysis carries a low-confidence note, over "
+                    "1,000,000 characters returns a truncation guidance. "
                     "Markdown accepted. This is the text whose framing "
                     "you want named."
                 ),
@@ -5466,153 +6036,66 @@ _FRAME_CHECK_TOOL = {
             "source_text": {
                 "type": "string",
                 "description": (
-                    "Optional. The source material the document is "
-                    "supposed to ground in (research report, filing, "
-                    "primary source). Unlocks Layer 4 source_fidelity "
-                    "(digit-level match) and Layer 11 "
-                    "grounding_decomposition (sentence-level G/F/P) "
-                    "with a scope regime telling you which layer to "
-                    "trust on number-dense sources. Without this, "
-                    "only structural framing analysis runs."
+                    "Pass when the user has the source material the "
+                    "document was supposed to ground in (research "
+                    "report, SEC filing, primary source). Unlocks "
+                    "digit-level source-fidelity verification "
+                    "(Layer 4) plus a sentence-level grounded / "
+                    "fabricated / paraphrased decomposition (Layer "
+                    "11) with a scope regime telling you which layer "
+                    "to trust on number-dense sources. Skip when no "
+                    "source material is available; the structural "
+                    "framing analysis runs either way."
                 ),
                 "maxLength": MAX_SOURCE_CHARS,
-            },
-            "prefer_contract_version": {
-                "type": "integer",
-                "description": (
-                    "Optional. Coverage contract version the client "
-                    "prefers. 1 (default): emit both v1 coverage and "
-                    "v2 coverage_v2 (Phase 1 compatibility window). "
-                    "2: emit only coverage_v2 and omit v1 (for clients "
-                    "that have migrated and want to avoid payload "
-                    "duplication). See MCP_CONTRACT_V2_PROPOSAL.md "
-                    "and MCP_SERVER.md 'Contract versions' section. "
-                    "When Phase 3 activates, v1 will stop emitting "
-                    "regardless of this parameter."
-                ),
-                "enum": [1, 2],
             },
             "include_divergence": {
                 "type": "boolean",
                 "description": (
-                    "Optional. Frame divergence output per "
-                    "FRAME_DIVERGENCE_CONTRACT_v1 Part 2. When true "
-                    "(default at 0.8.0; was opt-in at 0.7.x), the "
-                    "response carries a top-level `divergence` block "
-                    "(absent_frames array sorted by signal_strength "
-                    "tier, FaithfulnessEnvelope with divergence_summary "
-                    "prose) and two `agent_guidance` additions "
-                    "(how_to_render_divergence, "
-                    "absence_is_not_prescription). MCP surface does "
-                    "not invoke any LLM for divergence; the caller's "
-                    "agent model completes the composition using the "
-                    "guidance + library resources. Set explicitly to "
-                    "false to receive the v0.7.x-shape response with "
-                    "no divergence block. Default: true."
-                ),
-            },
-            "domain_hint": {
-                "type": "string",
-                "description": (
-                    "Optional. Hint about the document's domain used "
-                    "to filter absent frames for domain relevance. "
-                    "Only meaningful when include_divergence=true. "
-                    "If omitted, the envelope reports "
-                    "domain_inferred='unfiltered' and all absent "
-                    "frames are returned. Domain-metadata-based "
-                    "filtering is a future contract minor version; "
-                    "the current implementation echoes the hint to "
-                    "the envelope without field-level filtering "
-                    "(documented in envelope.limitations)."
-                ),
-                "enum": list(_DOMAIN_HINT_ENUM),
-            },
-            "divergence_rendering": {
-                "type": "string",
-                "description": (
-                    "Optional. How the caller wants absent-frame "
-                    "records decorated. Only affects "
-                    "AbsentFrameRecord decoration (teaching_question "
-                    "field present in 'teaching_questions' mode); "
-                    "all other modes return the same data. The "
-                    "caller's agent model renders per this preference "
-                    "with faithfulness guarantees from "
-                    "agent_guidance.how_to_render_divergence. "
-                    "Default: 'list'."
-                ),
-                "enum": list(_DIVERGENCE_RENDERING_ENUM),
-            },
-            "catalog_version_pin": {
-                "type": "string",
-                "description": (
-                    "Optional. Pin the FVS catalog version used for "
-                    "absent-frame set difference. If omitted, the "
-                    "latest stable catalog version is used (currently "
-                    "library_v3 per commit 9abeb3d). Unsupported "
-                    "pins are coerced to library_v3 with a limitation "
-                    "note in envelope.limitations."
+                    "Default true. You do not need to pass this. The "
+                    "divergence block (frame patterns the document "
+                    "does not use, sorted by signal_strength) is the "
+                    "headline output and ships by default. Set "
+                    "explicitly to false only if you need the legacy "
+                    "0.7.x-shape response with no divergence block "
+                    "(rare; use only when an integrator pinned the "
+                    "older shape)."
                 ),
             },
             "user_context": {
                 "type": "string",
                 "description": (
-                    "Optional. The user's situation, role, or decision "
-                    "context in plain prose (e.g., 'I'm a startup "
-                    "founder making a hire decision in healthcare AI', "
-                    "'reviewing a research paper on language model "
-                    "alignment', 'drafting a Substack post on agent "
-                    "safety'). When provided, "
-                    "agent_guidance.how_to_render_divergence is extended "
-                    "to instruct the caller's model to filter divergence "
-                    "relevance for this context. The MCP does NOT echo "
-                    "the value back into the response (privacy posture); "
-                    "the caller's agent has it from the call args. "
-                    "Discipline: the context personalizes RELEVANCE "
-                    "FILTERING; never PRESCRIPTION. The "
-                    "absence_is_not_prescription guarantee extends to "
-                    "contextual surfacing. Default: omitted (no "
-                    "contextual filtering). Maximum length 2000 chars."
+                    "Pass when the user has stated their situation, "
+                    "role, or decision context in the conversation "
+                    "(for example, 'I am a startup founder making a "
+                    "hire decision in healthcare AI', 'reviewing a "
+                    "research paper on language-model alignment'). "
+                    "When provided, the rendering guidance is "
+                    "extended so divergence relevance is filtered "
+                    "for this context. The context personalizes "
+                    "RELEVANCE FILTERING; never PRESCRIPTION (the "
+                    "absence-is-not-prescription guarantee holds). "
+                    "The MCP does not echo the value back in the "
+                    "response. Skip when no role or decision context "
+                    "is established. Maximum length 2000 chars."
                 ),
                 "maxLength": 2000,
-            },
-            "include_frame_opportunities": {
-                "type": "boolean",
-                "description": (
-                    "Optional. Opt-in flag for LLM-augmented "
-                    "frame-opportunity composition (Item 12 of the "
-                    "substrate-side composition roadmap). When "
-                    "true, divergence.frame_opportunities carries "
-                    "up to 3 document-specific questions composed "
-                    "by the LLM from absent-frame teaching "
-                    "questions plus the document's content. Each "
-                    "opportunity carries model_provenance with "
-                    "model name, cost_usd, and is_deterministic="
-                    "false. The deterministic substrate (clusters, "
-                    "patterns, absences) is unchanged. Cost is "
-                    "bounded at ~0.001 USD per invocation (3 "
-                    "Gemini Flash calls max). Falls back to empty "
-                    "opportunities list with available=false if "
-                    "GEMINI_API_KEY is not set or the google.genai "
-                    "library is unavailable. Default: false "
-                    "(deterministic substrate only)."
-                ),
             },
             "user_goal": {
                 "type": "string",
                 "description": (
-                    "Optional. The user's stated goal for invoking "
-                    "Frame Check. One of 'decide', 'brainstorm', "
-                    "'persuade', 'learn', 'audit'. When provided, "
+                    "Pass when the user has stated a goal for "
+                    "invoking Frame Check. One of: 'decide' (working "
+                    "through a choice), 'brainstorm' (exploring "
+                    "options), 'persuade' (writing to influence), "
+                    "'learn' (understanding the topic), 'audit' "
+                    "(default-equivalent: structural read with no "
+                    "goal-specific override). When provided, "
                     "absent_frames carry a goal_relevance dict for "
-                    "frames load-bearing for the chosen goal, and "
-                    "the absent_frames sort promotes goal-relevant "
-                    "entries within their signal_strength tier "
-                    "(goal precedes genre in the within-tier "
-                    "ranking). 'audit' is the default-equivalent "
-                    "posture: no goal-specific override is applied; "
-                    "the existing catalog/coverage/genre ranking "
-                    "stands. When omitted, behavior matches 'audit'. "
-                    "Substrate-side composition Item 11."
+                    "goal-load-bearing frames, and the absent_frames "
+                    "sort promotes goal-relevant entries within "
+                    "their signal_strength tier. Skip when the user "
+                    "has not named a goal; behavior matches 'audit'."
                 ),
                 "enum": [
                     "decide", "brainstorm", "persuade",
@@ -5622,22 +6105,57 @@ _FRAME_CHECK_TOOL = {
             "compose_budget": {
                 "type": "string",
                 "description": (
-                    "Optional. Bound the substrate's output volume so "
-                    "an agent in a tight working-memory budget can "
-                    "request a compact reading without losing "
-                    "structural shape. 'minimal' = top-3 absent_"
-                    "frames, top-1 absence_cluster, top-1 frame_"
-                    "pattern. 'standard' = top-5 absent_frames, all "
-                    "clusters, all patterns. 'full' (default) = "
-                    "unfiltered. The envelope.tier_counts always "
-                    "reflects PRE-slice counts so the agent sees the "
-                    "truncation honestly; divergence.compose_budget_"
-                    "applied carries per-layer returned/total counts. "
-                    "Substrate-side composition L5 interface UX. "
-                    "Backwards-compatible: omit to preserve current "
-                    "behavior."
+                    "Default 'full'. Switch to 'standard' or "
+                    "'minimal' when in a tight working-memory "
+                    "budget (per-turn self-audit loops, batch "
+                    "document processing).\n"
+                    "  'minimal' = top-3 absent_frames, top-1 "
+                    "cluster, top-1 pattern; agent_guidance "
+                    "compressed to load-bearing prescriptions only "
+                    "(the inline claim_level_treatments table and "
+                    "worked examples drop; the compressed shape "
+                    "carries a claim_level_treatments_note pointing "
+                    "you to compose_budget='full' for the full "
+                    "table).\n"
+                    "  'standard' = top-5 absent_frames, all "
+                    "clusters, all patterns; agent_guidance "
+                    "compressed (same rules as minimal).\n"
+                    "  'full' = unfiltered output, full inline "
+                    "agent_guidance.\n"
+                    "The suggested_next_actions block survives at "
+                    "all tiers (per-call-derived, load-bearing for "
+                    "the user's discovery loop)."
                 ),
                 "enum": ["minimal", "standard", "full"],
+            },
+            "include_frame_opportunities": {
+                "type": "boolean",
+                "description": (
+                    "Default false. Set true when the user wants up "
+                    "to 3 LLM-augmented document-specific questions "
+                    "composed from absent-frame teaching questions "
+                    "plus the document's content. Adds "
+                    "frame_opportunities to the divergence block "
+                    "with model_provenance per opportunity. Cost "
+                    "bounded at roughly 0.001 USD per invocation "
+                    "(3 Gemini Flash calls maximum). Falls back to "
+                    "an empty list with available=false if "
+                    "GEMINI_API_KEY is not set or the google.genai "
+                    "library is unavailable. Skip for the "
+                    "deterministic-only path."
+                ),
+            },
+            "divergence_rendering": {
+                "type": "string",
+                "description": (
+                    "Default 'list'. Switch to 'teaching_questions' "
+                    "when the absent-frame records should carry a "
+                    "teaching_question field for surfacing as "
+                    "questions rather than identifiers. All other "
+                    "modes return the same data; this only affects "
+                    "record decoration."
+                ),
+                "enum": list(_DIVERGENCE_RENDERING_ENUM),
             },
         },
         "required": ["document_text"],
@@ -5648,15 +6166,25 @@ _FRAME_CHECK_TOOL = {
 _FRAME_COMPARE_TOOL = {
     "name": "frame_compare",
     "description": (
-        "Deterministic structural comparison of two documents on the "
-        "same subject. Returns analysis (per-document summaries plus "
-        "the cross-document comparison: shared blind spots, unique "
-        "coverage gaps, voice / temporal / epistemic deltas, and a "
-        "structured framing-differences narrative with per-dimension "
-        "reader implications) + agent_guidance (what comparison "
-        "tells and does not tell you, how to cite without implying "
-        "a ranking) + provenance. Repeated calls with identical "
-        "inputs return identical results. No LLM is invoked."
+        "Compare the framing of two documents on the same subject. "
+        "Surfaces shared blind spots, unique coverage gaps, voice / "
+        "temporal / epistemic deltas, and a structured framing-"
+        "differences narrative with per-dimension reader "
+        "implications.\n\n"
+        "Use this when the user has two documents on the same "
+        "subject (two AI responses to the same prompt, two analyst "
+        "memos, an earnings release versus a press summary) and "
+        "wants to see how they frame the same question differently.\n\n"
+        "Pass `document_a_label` and `document_b_label` only when "
+        "the user has named the documents (for example 'Gemini "
+        "response' and 'Claude response'). Otherwise the comparison "
+        "narrative falls back to 'Document A' and 'Document B'.\n\n"
+        "Cite each measurement as Frame Check's; never imply that "
+        "one document is better, more rigorous, or more biased "
+        "than the other. The structural comparison surfaces what "
+        "differs; the reader judges what the difference means. "
+        "Repeated calls with identical inputs return identical "
+        "results. No LLM is invoked."
     ),
     "inputSchema": {
         "type": "object",
@@ -6389,7 +6917,7 @@ STARTUP AND TROUBLESHOOTING
 RESOURCES
   Public docs:   https://frame.clarethium.com
   Methodology:   https://frame.clarethium.com/corpus/methodology/
-  Repo:          https://github.com/lluvr/frame-check
+  Repo:          https://github.com/lluvr/frame-check-mcp
 """
 
 

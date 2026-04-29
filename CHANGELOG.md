@@ -8,70 +8,114 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 
 ## [Unreleased]
 
+### Public-repo completeness
+
+- `.github/` directory now ships to the public repository at `lluvr/frame-check-mcp`. Three GitHub Actions workflows that already existed in the upstream tree (`tests.yml` for pytest on PR + push, `publish.yml` for build + smoke-test on tag with PyPI publish steps commented out for safety, `dco-check.yml` for Developer Certificate of Origin verification on every PR) now visibly demonstrate the project's engineering rigor on every PR. Issue templates (`bug_report`, `feature_request`, `frame_proposal`) and the PR template ship alongside, closing the dead `.github/ISSUE_TEMPLATE/` reference in `SECURITY.md`. Fixed in `extract_public_repo.py` `INCLUDE_DIRS`.
+
+- Audit deliverables now ship to the public repository: `LEAKAGE_AUDIT_v1.md` (16 pre-publish leakage findings, 14 closed + 2 partial), `REMEDIATION_LOG_v1.md` (the per-finding remediation record), and `PUBLISH_READINESS_VERDICT_v1.md` (the campaign synthesis verdict). `SECURITY.md` references these as "verify the audit yourself" reproducibility artifacts; previously they existed in the upstream private tree only, so the references were dead. The deliverables ship to the public repo root and are NOT bundled in the wheel (the wheel `gate-8 audit-doc check` enforces that). Aligns with the existing self-disclosure pattern (`V4_2_GAP_INVENTORY_v1.md` and `MCP_CLIENT_CONFORMANCE_v1.md` already shipped publicly under the same evidence discipline).
+
+### Tool interface
+
+- Tool descriptions for `frame_check` and `frame_compare` rewritten to lead with WHEN to use the tool, not just WHAT it returns. The new descriptions name the use case ("Use this when the user pastes a document and asks for a structural read"), surface the zero-arg invocation shape (`frame_check(document_text=<text>)` works for any English analytical document), and reserve the "what it returns" detail for a second paragraph. The previous descriptions opened with "Returns analysis (measurements) + agent_guidance + provenance," which told the agent the output shape but not the use case.
+
+- Per-parameter descriptions rewritten to lead with the trigger condition. `include_divergence` now opens with "Default true. You do not need to pass this," so an agent reading the schema does not defensively pass `include_divergence=true` (the most common cause of the parameter being specified despite the default already being correct since 0.8.0). `source_text`, `user_context`, and `user_goal` now lead with "Pass when ..." so the agent knows the trigger condition (the user provided source material; the user stated a decision context; the user named a goal), not just the field shape.
+
+- Three maintainer-internal parameters removed from the agent-facing schema: `prefer_contract_version` (coverage v1/v2 migration window), `catalog_version_pin` (stability pin for advanced integrators), and `domain_hint` (echo-only with no field-level filtering). These are not decisions an agent should be making per call; they pollute the agent's decision space without adding value. Backward compatible: the dispatch layer still accepts all three when passed explicitly, so an integrator who pinned the older surface is not broken.
+
+- New `instructions` field on the MCP InitializeResult (top-level, per the MCP protocol). Carries server-orientation prose to the agent: when to use Frame Check, the default invocation shape, the four-prompt workflow surface (`frame_check_my_response`, `frame_check_this_ai_response`, `challenge_document`, `explain_framing`). The previous handshake returned only `protocolVersion`, `capabilities`, and `serverInfo`; the missing orientation field meant the agent had to read every per-tool description to learn the workflow shape. Three new regression tests pin the field's presence and content.
+
+### Output usability
+
+- FVS frame references in `frame_check` and `frame_compare` responses now carry a `library_url` field pointing at the entry's markdown source on the public GitHub repository (`github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/...`). End-users in MCP clients (Claude Desktop, Cursor) cannot click `frame-check://library/...` resource URIs because those are MCP-internal; the new field gives them an HTTP link they can follow. Applies to `analysis.frame_library_matches[]`, `divergence.absent_frames[]`, and the `typical_co_fires` / `typical_co_absences` entries inside each absent frame's `corpus_context`. The previous-form `library_url` (which pointed at `frame.clarethium.com/corpus/library/FVS-XXX.html`) was the paused production URL; the new GitHub URL is always resolvable regardless of hosting state. The same change updates `decision_readiness.library_entry_ref` so canon-graph references in the decision-readiness profile and aggregate findings carry the same GitHub URL form.
+
+- `agent_guidance.how_to_cite_frame_matches` now mandates rendering FVS references as markdown links: `[FVS-XXX Frame Title](library_url)`. Previously the guidance instructed agents to render plain-text "FVS-XXX" references that the user could not follow. The four MCP prompts (`frame_check_my_response`, `frame_check_this_ai_response`, `challenge_document`, `explain_framing`) carry the same updated citation form so the discipline is uniform across surfaces.
+
+- New `agent_guidance.suggested_next_actions` block carries 2-4 specific next-action entries derived from the call's structural findings. Each entry is structural-finding-anchored (the highest-signal absent frame's library entry, a hedge-by-claim reprompt when the unhedged-claim rate exceeds 50 percent, an attribution reprompt when sourced sentences fall below 10 percent, and an always-included pointer to the `challenge_document` MCP prompt for the deeper multi-turn loop). The block exists so a Frame Check finding has a discoverable path forward instead of a static reading; previously the tool surfaced findings without telling the user what to do about them, and the four MCP prompts were invisible to anyone not reading `prompts/list`. Capped at 4 entries; survives `compose_budget` compression so compact callers still get the discovery loop.
+
+- `agent_guidance.how_to_render_suggested_next_actions` carries the rendering instruction so the agent knows to surface the actions as a small explicit list at the end of the response, with action_text rendered verbatim (the embedded markdown link in resource-kind entries preserved, the quoted reprompt question rendered as-is, the prompt name surfaced for prompt_followup discoverability).
+
+### Security
+
+- Prompt-injection protection now covers all four LLM-backed endpoints. The optional AI-narrative path (Grok), the reframe endpoint, the cross-model topic generator, and the consensus verifier previously interpolated user-supplied document text into model prompts with no isolation, so a document containing the substring `</user_document>` could terminate the prompt's data block early and have its trailing content read as instructions. The new `prompt_safety` module centralizes a sentinel-wrap-and-reject pattern that every LLM-backed endpoint now applies before any model client is constructed, so hostile input never reaches the network. Pinned by 14 new tests covering the primitives, per-endpoint pre-LLM rejection via a patched client, and consensus claim-skip behavior.
+
+### Provenance
+
+- Every `frame_check` and `frame_compare` response now carries `production_status` and `production_status_note` in the `provenance` block. The hosted site `frame.clarethium.com` was paused 2026-04-23 with resume as the default trajectory; the URLs in `provenance` (tool URL, methodology, frame library, calibration corpus) point at the canonical addresses but may not currently resolve. The new fields let MCP clients distinguish "URL canonicalized but currently paused" from "URL malformed or wrong." The active artifacts during the pause are the GitHub repository (`lluvr/frame-check-mcp`) and the PyPI package (`frame-check-mcp`), both named in the note.
+
+### Documentation
+
+- `MCP_SERVER.md` Citation block now points at the GitHub repository instead of the paused production site. The published wheel previously rendered the citation as "Lucic, L. (YEAR). Frame Check ... verification in documents. (production paused)" because the extract pipeline rewrote the bare production URL inside the citation code block. The new form (`https://github.com/lluvr/frame-check-mcp`) matches `CITATION.cff` and survives the extract pipeline cleanly.
+
+- `FRAME_DIVERGENCE_CONTRACT_v1.md` corrects two contract specification contradictions: §2.2 and §7.1 listed `include_divergence` default as `false`, but §3.1 and the shipped server behavior since 0.8.0 are `true`. All three sections now agree. §8.5 release-state language updated to reflect the 0.8.0 / 0.8.1 / 0.8.2 PyPI publish history.
+
+- `STRATEGY.md` PL1 row replaces previously-pinned test counts (which had decayed past accuracy) with a construct-honest description: approximately 906 test functions across 59 files; precise pass count requires running `python3 run_tests.py`.
+
+- `README.md` clarifies repository scope: the PyPI MCP install is the primary path; the Flask web app in this repository is repository-only and is not bundled in the wheel.
+
+### Notes for contributors
+
+- `prompt_safety` deliberately re-exports the V4.2 markers rather than importing from the V4.2 engine, because the V4.2 engine is dev-tree-only and cannot be imported from the wheel. A test pins byte-equivalence between the two copies in environments where both are importable. The module is added to `pyproject.toml` `py-modules` and to `scripts/extract_public_repo.py` `INCLUDE_FILES` so it ships in the wheel.
+
+- Internal vault references previously embedded in `FRAME_DIVERGENCE_v1.md` and `FRAME_DIVERGENCE_CONTRACT_v1.md` status headers are removed; `lift_dry_run.py` step 8 now reports zero vault references against a fresh wheel build.
+
+- `scripts/lift_dry_run.py` gate 10 (wheel-content scan) regex aligned with the `extract_public_repo.py` rewriter's exclusion policy. Both now share the same `(?<![@\w`/])` lookbehind that excludes email addresses, word-character concatenations, backtick-protected code-span text mentions, and path-internal slashes. Without this alignment, the gate would flag references the rewriter intentionally preserves (a doc section that explains "the previous form was `frame.clarethium.com/corpus/library/...`" is intentional documentation surrounded by backticks; the rewriter leaves it alone, and the gate now does too). Pinned by a regression test in `test_mcp_server.py` that verifies the gate's regex behavior matches the rewriter's exclusion contexts.
+
+- Verified locally pre-commit: lift_dry_run gates 1-8 + 10-11 pass with versions temporarily aligned at 0.8.3 (gate 9 Project-URL HEAD checks pass against the extract-rewritten public-tree pyproject and are expected to fail on the dev tree by design); 247 targeted tests across `test_mcp_server` and `test_prompt_safety` pass; em-dash and smart-quote scan clean on all session-touched files.
+
+### MCP wire-payload weight reduction (2026-04-28)
+
+- **`compose_budget="standard"` now compresses `agent_guidance` to load-bearing prescriptions** (essence-preserving: every load-bearing rule preserved verbatim). Prior to this change, the `standard` tier was effectively `full` for `agent_guidance`: it only trimmed divergence-side output volume (top-5 absent_frames) but left the 31 KB guidance block untouched. Standard now applies the same compression that `minimal` uses, while keeping standard's divergence-side semantics (all clusters, all patterns; top-5 absent_frames). Measured on a 6-sentence document: agent_guidance 31,487 -> 11,917 bytes (62 percent reduction), total wire payload 83,127 -> 50,401 bytes (39 percent reduction). The compression drops the inline `claim_level_treatments` table, worked examples in `composition_discipline`, and `how_to_map_user_intent` from the wire; load-bearing rules (Frame Check naming, reading-form-not-verdict-form, dual-use anti-misuse, self-audit rule, citation discipline) are preserved verbatim. The compressed shape carries a `claim_level_treatments_note` and an updated `compose_budget_applied_note` pointing callers to `compose_budget="full"` for the inline table; the table is identical across calls so an agent can fetch once at full and cache for subsequent compressed-tier calls.
+
+- **Default `compose_budget="full"` is unchanged**: existing integrators omitting the parameter continue to receive the verbose guidance with all worked examples and the full L5 claim-level table inline. Standard becomes the recommended tier for production agent loops; minimal stays the recommendation for tight per-turn loops where divergence-side cluster/pattern surfaces are also acceptable cuts. The default-flip decision (standard vs full) is queued for operator review as a public-contract change requiring a SERVER_VERSION minor bump.
+
+- **Tool-schema description updated** so MCP clients surface the corrected per-tier semantics (`mcp_server.py` `frame_check` tool definition).
+
+- **Polish: trust-posture cleanup.** The compressed-tier notes had inherited a pre-existing reference to `frame-check://docs/claim_levels` and `frame-check://docs/composition_discipline` (commit `2e9ede3b`), but neither URI is served via `_list_resources()`; the wire payload was promising agents a 404-able resource. Both notes now describe the architectural pattern in plain language without the broken URI claim. The `claim_level_treatments_uri` field is renamed to `claim_level_treatments_note` to match its now-accurate value shape (no URI). The internal compression helper is renamed `_compress_agent_guidance_minimal` -> `_compress_agent_guidance_to_load_bearing` to reflect that both `standard` and `minimal` route through it.
+
+- **Regression tests pinned**: `test_compose_budget_standard_compresses_agent_guidance` asserts (a) standard agent_guidance is at least 1.5x smaller than full, (b) standard and minimal share agent_guidance key shape (same compression rules), (c) `compose_budget_applied_note` reports `standard` AND does not promise a `frame-check://` URI, (d) load-bearing rules survive (Frame Check named, reading-form preserved, dual-use note kept, self-audit rule kept), (e) standard divergence-side preserves all clusters and all frame_patterns (only minimal cuts those). `test_compose_budget_minimal_compresses_agent_guidance` updated for the renamed `claim_level_treatments_note` field and gains an explicit "no `frame-check://` URI promised" assertion plus a "points at `compose_budget='full'`" assertion. Full test suite: 49/49 suites pass; quality driver: 38/39 (unchanged from baseline; the single FAIL is the parked D3 teaching_questions gap covered by `KNOWN_HARNESS_GAPS`).
+
+### Methodology + audit increments (2026-04-28)
+
+- **SUBSTRATE_PARALLEL_AUDIT_v1.md (new)**: closes recommended next move #1 from the v1.1 LLM-judge audit. Runs the deterministic regex/structural substrate detection (construct #7: `framing.py` analyzers + `frame_library.py::suggest_frames` rules; the actually-shipping detection layer in the 0.8.1 PyPI wheel) against the same mg_v1 + mg_v2 corpora and same 4-family panel as the V4.2 LLM-judge audit. **Headline (apples-to-apples 8-frame, FVS-001 excluded on both sides since substrate retires it):** substrate macro-F1 = 0.222 (mg_v1) / 0.211 (mg_v2) against the same panel that V4.2 LLM-judge scored 0.511 / 0.761 against (8-frame, run-pair avg). The 0.29 / 0.55 gap quantifies the V4.2 architectural transition's value-add on a denominator-matched comparison; the canonical 9-frame V4.2 macro-F1 from F-2026-034 / F-2026-035 (0.510 / 0.732) is reported with FVS-001 contributing f1=0.500, while the substrate 9-frame macro under FVS-001=0 is 0.198 / 0.188, so the 9-frame gap (~0.31 / ~0.54) is also constructively unfair (mixed denominators). The 8-frame number is the construct-honest gap; the F-V4-2 threshold (0.40) is set for the V4.2 LLM-judge architecture and not directly comparable to a structural-signal layer. **Per-frame substrate classification:** 5 of 9 frames have ZERO TPs across both corpora (FVS-001 RETIRED in substrate; FVS-002 + FVS-007 STRUCTURAL_BLIND because constructs are semantic; FVS-014 STRUCTURAL_THRESHOLD_TOO_STRICT + STRUCTURAL_RULE_GAP because the rule has no present-anchor path despite present being the dominant tense in 3 of 4 spot-checked panel-positive docs; FVS-015 STRUCTURAL_THRESHOLD_TOO_STRICT). FVS-011 is the strongest substrate frame (mg_v2 f1 = 0.61); FVS-008 (mg_v2 f1 = 0.55, perfect precision) and FVS-009 / FVS-012 (high precision, low recall) are partial detectors. Substrate's 0.8.1-shipping value is the framing portrait + teaching questions + library cross-references, NOT panel-aligned per-frame binary verdicts; the architectural staging in `METHODOLOGY.md` and `METHODOLOGY_PAPER_v2_6a_TRACK_A_REVISITED_v1.md` §6a.6 has always declared this. **Recommended next moves**: (a) substrate calibration v1 (FVS-014 dominant-anchor rule + threshold drop, FVS-009 conjunction relaxation, FVS-015 conjunction simplification, FVS-012 threshold relaxation; each with adversarial fixture coverage) -- highest leverage; (b) F-2026-035 outcome-body clarification distinguishing evaluation construct from shipping construct -- low cost; (c) operator decision on whether to ship a parallel substrate-honest-limits surface on the wheel README or MCP tool description. Files: `SUBSTRATE_PARALLEL_AUDIT_v1.md` (synthesis doc), `scripts/audit_substrate_parallel.py` (deterministic per-doc per-frame fire matrix script, zero API calls, runs `framing.py` analyzers + `frame_library.py::suggest_frames` against corpus + panel labels), `fvs_eval/v4/substrate_parallel_audit.md` (auto-generated per-frame fire-pattern dump for hand-classification), `fvs_eval/v4/substrate_parallel_audit.json` (machine-readable summary).
+
+- **TP_RATIONALE_PATTERN_AUDIT_v1.md (v1.1)**: stress-test pass on the v1 audit shipped 2026-04-27 surfaced two real defects + one understatement, all closed in v1.1.
+  - **Numbers fix in §1**: FVS-007 row used run-pair averages (FP=7.5, 9.5; precision 0.118, 0.174) while every other frame in the same table used union-across-runs counts (matching `audit_tp_rationale_patterns.py` script output and §2 cross-frame summary). Replaced with union counts (FP=9, 11; precision 0.100, 0.154) for uniform metric. Ship-readiness doc §1 retains run-pair averages by methodological declaration; the two views are reconcilable but should not be mixed in one table.
+  - **Retraction of §5 caveat #5**: v1 asserted panel labels store binary `exhibits` fields without rationales. **This was factually wrong.** Panel labels in `*_new_library_v{3,4}.json` actually store `{'exhibits': bool, 'reasoning': str}` cells. v1.1 retracts the caveat and ships a panel-rationale parallel audit.
+  - **Counterfactual macro-F1 added to §3.1**: removing FVS-007 + FVS-001 from the macro RAISES the macro on every cell on both corpora (mg_v1 0.58 -> 0.64; mg_v2 0.73 -> 0.83). The two confused frames DRAG macro down, not inflate it. v1's "macro is intact at macro level" framing was understated; v1.1 sharpens to "library_v5 fixes likely shift macro UP toward upper edge of 0.65-0.75 band, not collapse out of it".
+
+- **panel_rationale_pattern_audit.md + scripts/audit_panel_rationale_patterns.py (new)**: deterministic per-frame panel rationale dump for all 9 default-mode frames across mg_v1 + mg_v2. Zero API spend; reads `*_new_library_v{3,4}.json` reasoning fields. Closes the v1 audit's central not-verified caveat. **Headline panel-level findings:**
+  - **FVS-007 panel co-confusion confirmed**: 3 of 4 panel families (Gemini, Grok-panel, GPT) consistently apply the substrate-confused failure-of-subject reading; only Claude consistently applies the library-construct failure-of-self reading. The 2 mg_v2 panel TPs (mg2_33_nadelson, mg2_43_cirincione) achieve 3-of-4 consensus via co-confusion of the 3 permissive families, not via panel-correct convergence. Strengthens the prediction that library_v5 disambiguation will shift both detector AND panel emissions on those docs.
+  - **FVS-001 panel-direction misapplication**: ALL 4 panel families misapply the construct, in two opposite directions. Engine + Grok-panel apply strict session-wise reading and reject all single-turn docs. Claude / Gemini / GPT extend "iterative refinement" to within-document elaboration (multi-example single-thesis structure). Neither matches the library Identification text precisely; both miss Branch A's static-document coverage-imbalance criterion. Library_v5 fold-in of Branch A is the structural resolution.
+  - **Other 7 frames CONSTRUCT_CORRECT verdicts confirmed at panel level**: panel families converge on intended construct (FVS-009 vulnerability-coverage; FVS-002 polish-vs-substance; FVS-014 dominant-vs-balanced temporal anchoring with Claude-strict-vs-rest-permissive threshold latitude); disagreements reflect threshold latitude, not substrate-level criterion misapplication.
+
+- **FVS_007_001_SHIP_READINESS_v1.md disclosure draft voice fix (§2.4 + §3.4)**: existing engine `HONEST_LIMIT_DISCLOSURES` entries (FVS-002 / FVS-004 / FVS-010 / FVS-016 at `fvs_eval/v4/v4_2_engine.py:204-262`) follow a uniform second-clause structure ("Step 4 cross-family AC1 = X.XXX"). The 2026-04-27 v1 drafts substituted cross-corpus emission-rate language, creating apparent voice divergence. Updated drafts now lead with intra-rater AC1 -> Step 4 cross-family AC1 (FVS-007 = 0.42 moderate, FVS-001 = 0.62 moderate, per `library_v4_reliability.json`) -> panel-rationale construct decomposition -> cross-corpus emission rate as supplemental evidence -> operator guidance. Voice now parallels the existing template.
+
+- **FVS_007_001_SHIP_READINESS_v1.md §5 caveat #3 update**: "CLOSED 2026-04-27 by TP_RATIONALE_PATTERN_AUDIT_v1.md" extended to "EXTENDED 2026-04-28 by panel-rationale parallel audit (audit doc v1.1)" with three nuance points: (a) FVS-007 substrate confusion is NOT detector-only; (b) FVS-001 panel application is itself misapplied, in different direction from engine; (c) other 7 frames CONSTRUCT_CORRECT verdicts confirmed at panel level. Recommendation unchanged (disclosure now + library-fix at v5).
+
 ## [0.8.2] - 2026-04-28
 
-### Distribution: dead-content-link cleanup (2026-04-28)
+### Distribution: in-content link rewriter + lift_dry_run step 10 (2026-04-28)
 
-- **0.8.2 closes the second class of dead-link defect.** A fresh-eyes
-  stress test on the 0.8.1 wheel (post Path A.1 lift) found the wheel
-  METADATA Project-URLs were clean (six of six resolve), but the
-  wheel-bundled markdown content carried roughly 400 hyperlinks to
-  `lluvr/frame-check` (private repo, 404 to non-collaborator visitors)
-  and 460 to `frame.clarethium.com` (production paused 2026-04-23).
-  Every FVS frame library entry, every worked example, MCP_SERVER,
-  METHODOLOGY, and FRAME_DIVERGENCE_v1/v2 docs each had 6-18 dead
-  hyperlinks. `lift_dry_run.py` step 9 missed the defect because
-  step 9 only checks Project-URLs in METADATA, not embedded link
-  surface in shipped content.
+- **0.8.2 closes the second class of dead-link defect surfaced by fresh-eyes stress test on the 0.8.1 wheel.** The 0.8.1 wheel METADATA Project-URLs were correct (Path A.1 fix in 0.8.1), but the wheel-bundled markdown content carried roughly 400 hyperlinks to `lluvr/frame-check` (private repo, 404 to non-collaborator visitors) and 460 to `frame.clarethium.com` (production paused 2026-04-23). Every FVS frame library entry, every worked example, MCP_SERVER, METHODOLOGY, and FRAME_DIVERGENCE v1/v2 doc each had 6 to 18 dead hyperlinks. `lift_dry_run.py` step 9 missed the defect because step 9 only checks Project-URLs in METADATA, not embedded link surface. No functional code changes from 0.8.1; the deployment-affecting deltas are bundled markdown content + bumped `SERVER_VERSION = "0.8.2"`.
 
-- **Structural fix in `scripts/extract_public_repo.py`** (commit
-  `5a5df3e`): new `rewrite_content_links()` pass walks every .md/.txt
-  in the public extract destination and applies four rewrites:
-    - Markdown link `[label](url)` to private repo: rewrite to public
-      repo URL if path exists in dest, else drop link wrapper and keep
-      the label as plain text.
-    - Markdown link to `frame.clarethium.com`: drop link wrapper, keep
-      label as plain text.
-    - Bare URL to private repo: same path-existence rule;
-      non-existent paths replaced with `(see upstream development tree)`.
-    - Bare URL to `frame.clarethium.com`: replaced with `(production
-      paused)`.
-  Schemeless forms (`github.com/...`, `frame.clarethium.com/...`)
-  caught by a negative lookbehind that excludes `@` (email), word
-  chars (concatenations), backtick (code-span textual mentions), and
-  forward slash (path-internal). Trailing sentence punctuation is
-  stripped from the URL match before substitution and re-attached
-  after.
+- **`scripts/extract_public_repo.py` grows `rewrite_content_links()`** (commit `5a5df3e`). Walks every `.md` / `.txt` in the destination tree and applies four rewrites between pyproject rewrite and README write:
+  - Markdown link `[label](url)` where `url` points at the private repo: rewrite to the new public repo URL if the linked path exists in dest, else drop the link wrapper and keep `label` as plain text.
+  - Markdown link where `url` points at `frame.clarethium.com`: drop the link wrapper, keep `label`.
+  - Bare `https://github.com/lluvr/frame-check-mcp/...` URLs: same path-existence rule; non-existent paths replaced with `(see upstream development tree)`.
+  - Bare `(production paused)...` URLs: replaced with `(production paused)`.
 
-- **Recurrence-prevention gate in `scripts/lift_dry_run.py`** (same
-  commit): step 10 of 10 scans every .md/.txt member of the built
-  wheel for `github.com/lluvr/frame-check` (without `-mcp` suffix) or
-  `frame.clarethium.com`. Fails the dry-run on any hit, naming
-  `extract_public_repo.py` as the source of the rewrite that closes
-  the leak. Bypassed with `--skip-content` for staged scenarios.
-  This catches the defect-class on every future release; 0.8.0 and
-  0.8.1 both shipped under-tested by the prior 8-step / 9-step gates.
+  Schemeless forms (`github.com/...`, `frame.clarethium.com/...`) handled with a negative lookbehind that excludes email `@`, word chars, code-span backtick, and path-internal slash so textual mentions inside code blocks and email addresses (`curator@frame.clarethium.com`) are left intact. Trailing sentence punctuation stripped from the URL match before substitution and reattached after. Tested on full upstream tree to v2 extract: 1269 private refs + 1455 production refs reduced to 0 + 0; 1764 refs rewritten, 1539 stripped. Default `--new-version` bumped to `0.8.2`.
 
-- **Defect counts (upstream → public after rewrite):**
-  - `https://github.com/lluvr/frame-check-mcp` references: **1269 → 0**
-  - `(production paused)` references: **1455 → 0**
-  - Schemeless `github.com/lluvr/frame-check`: **detected → 0**
-  - Schemeless `frame.clarethium.com`: **detected → 0**
-  - References rewritten to public: **228** (in-tree paths that exist
-    in the public extract; mostly METHODOLOGY, FRAME_DIVERGENCE_v1/v2,
-    INDEX, CONTRIBUTING, ANCHOR_AUTHORSHIP_METHODOLOGY, MCP_SERVER)
-  - References stripped (link wrapper dropped, plain-text label kept):
-    **1539** (paths under `fvs_eval/`, `validation/decision_readiness/
-    results/`, `data/falsifications/`, etc. that don't ship in the
-    public split)
+- **`scripts/lift_dry_run.py` grows step 10 of 10: wheel content scan** (commit `5a5df3e`). Iterates every `.md` / `.txt` member of the built wheel and scans for `github.com/lluvr/frame-check` (without `-mcp` suffix) or `frame.clarethium.com`. Returns the violating files + hit counts and FAILS the dry-run, naming `extract_public_repo.py` as the source of the rewrite that closes the leak. Bypassed with `--skip-content` for staged-release scenarios. The defect that shipped in 0.8.0 + 0.8.1 cannot recur silently.
 
-- **Wheel size:** 0.8.1 shipped 208 files; 0.8.2 ships 210 (small
-  delta from rewrite touching previously-omitted symlink-resolved
-  variants of the same content).
+- **Lift sequence executed 2026-04-28** (this upstream is source-of-truth; public lift on `lluvr/frame-check-mcp`):
+  - Fresh extract of upstream HEAD to public split tree under `/tmp/frame-check-mcp-public/`.
+  - `lift_dry_run.py` 10/10 GREEN (208 → 210 files due to symlink resolution after content edits, 0 leaks, 0 vault refs, 0 audit-doc accidents bundled, `twine check --strict` PASSES, 32/32 conformance, URL surface 6/6, content scan 106 markdown/text files clean).
+  - Public commit `ac596da` ("Cut v0.8.2 release") + annotated tag `v0.8.2` pushed to `lluvr/frame-check-mcp`; package live at `https://pypi.org/project/frame-check-mcp/0.8.2/`.
+  - `mcp_server.py` `SERVER_VERSION = "0.8.2"`; `pyproject.toml` bumped from `0.8.2.dev0` to `0.8.3.dev0` for next dev cycle.
+  - This upstream commit (`67ea167`) mirrors the cut so the audit trail stays aligned across both repos.
 
-- **No functional code changes from 0.8.1.** The MCP server, tools,
-  resources, prompts, conformance shape, and 32-of-32 round-trip
-  contract all unchanged. The diff is content-text only.
+- **Two-repo discipline reinforced.** Step 10 enforces that wheel-bundled content cannot leak private-repo or paused-domain hyperlinks at lift time; the gate is bypassable only with explicit `--skip-content`. Future releases will re-run extract + lift_dry_run from upstream HEAD.
 
 ## [0.8.1] - 2026-04-28
 
@@ -97,24 +141,6 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 - **Two-repo discipline now in force.** Wheel-relevant source changes land in upstream private repo first, then re-extract via `scripts/extract_public_repo.py` and push to public. The public repo is a frozen projection, never the editing surface. Strategic vault, web app, Tier-A research, audit chain, full FVS library v1+v2+v3+v4, methodology paper, claim A protocol + sealed Phase 1 outputs all stay private.
 
 - **Outreach unblocks.** `MCP_INTEGRATOR_OUTREACH_v1.md` Templates 1-3 are no longer blocked by the dead-URL surface: the deployed PyPI artifact at https://pypi.org/project/frame-check-mcp/ is now 0.8.1 with all six Project-URLs resolving. The remaining gates for Cline outreach are maintainer-side (GitHub Release page authored, channel chosen, contact field populated).
-
-### Methodology + audit increments (2026-04-28)
-
-- **SUBSTRATE_PARALLEL_AUDIT_v1.md (new)**: closes recommended next move #1 from the v1.1 LLM-judge audit. Runs the deterministic regex/structural substrate detection (construct #7: `framing.py` analyzers + `frame_library.py::suggest_frames` rules; the actually-shipping detection layer in the 0.8.1 PyPI wheel) against the same mg_v1 + mg_v2 corpora and same 4-family panel as the V4.2 LLM-judge audit. **Headline (apples-to-apples 8-frame, FVS-001 excluded on both sides since substrate retires it):** substrate macro-F1 = 0.222 (mg_v1) / 0.211 (mg_v2) against the same panel that V4.2 LLM-judge scored 0.511 / 0.761 against (8-frame, run-pair avg). The 0.29 / 0.55 gap quantifies the V4.2 architectural transition's value-add on a denominator-matched comparison; the canonical 9-frame V4.2 macro-F1 from F-2026-034 / F-2026-035 (0.510 / 0.732) is reported with FVS-001 contributing f1=0.500, while the substrate 9-frame macro under FVS-001=0 is 0.198 / 0.188, so the 9-frame gap (~0.31 / ~0.54) is also constructively unfair (mixed denominators). The 8-frame number is the construct-honest gap; the F-V4-2 threshold (0.40) is set for the V4.2 LLM-judge architecture and not directly comparable to a structural-signal layer. **Per-frame substrate classification:** 5 of 9 frames have ZERO TPs across both corpora (FVS-001 RETIRED in substrate; FVS-002 + FVS-007 STRUCTURAL_BLIND because constructs are semantic; FVS-014 STRUCTURAL_THRESHOLD_TOO_STRICT + STRUCTURAL_RULE_GAP because the rule has no present-anchor path despite present being the dominant tense in 3 of 4 spot-checked panel-positive docs; FVS-015 STRUCTURAL_THRESHOLD_TOO_STRICT). FVS-011 is the strongest substrate frame (mg_v2 f1 = 0.61); FVS-008 (mg_v2 f1 = 0.55, perfect precision) and FVS-009 / FVS-012 (high precision, low recall) are partial detectors. Substrate's 0.8.1-shipping value is the framing portrait + teaching questions + library cross-references, NOT panel-aligned per-frame binary verdicts; the architectural staging in `METHODOLOGY.md` and `METHODOLOGY_PAPER_v2_6a_TRACK_A_REVISITED_v1.md` §6a.6 has always declared this. **Recommended next moves**: (a) substrate calibration v1 (FVS-014 dominant-anchor rule + threshold drop, FVS-009 conjunction relaxation, FVS-015 conjunction simplification, FVS-012 threshold relaxation; each with adversarial fixture coverage) -- highest leverage; (b) F-2026-035 outcome-body clarification distinguishing evaluation construct from shipping construct -- low cost; (c) operator decision on whether to ship a parallel substrate-honest-limits surface on the wheel README or MCP tool description. Files: `SUBSTRATE_PARALLEL_AUDIT_v1.md` (synthesis doc), `scripts/audit_substrate_parallel.py` (deterministic per-doc per-frame fire matrix script, zero API calls, runs `framing.py` analyzers + `frame_library.py::suggest_frames` against corpus + panel labels), `fvs_eval/v4/substrate_parallel_audit.md` (auto-generated per-frame fire-pattern dump for hand-classification), `fvs_eval/v4/substrate_parallel_audit.json` (machine-readable summary).
-
-- **TP_RATIONALE_PATTERN_AUDIT_v1.md (v1.1)**: stress-test pass on the v1 audit shipped 2026-04-27 surfaced two real defects + one understatement, all closed in v1.1.
-  - **Numbers fix in §1**: FVS-007 row used run-pair averages (FP=7.5, 9.5; precision 0.118, 0.174) while every other frame in the same table used union-across-runs counts (matching `audit_tp_rationale_patterns.py` script output and §2 cross-frame summary). Replaced with union counts (FP=9, 11; precision 0.100, 0.154) for uniform metric. Ship-readiness doc §1 retains run-pair averages by methodological declaration; the two views are reconcilable but should not be mixed in one table.
-  - **Retraction of §5 caveat #5**: v1 asserted panel labels store binary `exhibits` fields without rationales. **This was factually wrong.** Panel labels in `*_new_library_v{3,4}.json` actually store `{'exhibits': bool, 'reasoning': str}` cells. v1.1 retracts the caveat and ships a panel-rationale parallel audit.
-  - **Counterfactual macro-F1 added to §3.1**: removing FVS-007 + FVS-001 from the macro RAISES the macro on every cell on both corpora (mg_v1 0.58 -> 0.64; mg_v2 0.73 -> 0.83). The two confused frames DRAG macro down, not inflate it. v1's "macro is intact at macro level" framing was understated; v1.1 sharpens to "library_v5 fixes likely shift macro UP toward upper edge of 0.65-0.75 band, not collapse out of it".
-
-- **panel_rationale_pattern_audit.md + scripts/audit_panel_rationale_patterns.py (new)**: deterministic per-frame panel rationale dump for all 9 default-mode frames across mg_v1 + mg_v2. Zero API spend; reads `*_new_library_v{3,4}.json` reasoning fields. Closes the v1 audit's central not-verified caveat. **Headline panel-level findings:**
-  - **FVS-007 panel co-confusion confirmed**: 3 of 4 panel families (Gemini, Grok-panel, GPT) consistently apply the substrate-confused failure-of-subject reading; only Claude consistently applies the library-construct failure-of-self reading. The 2 mg_v2 panel TPs (mg2_33_nadelson, mg2_43_cirincione) achieve 3-of-4 consensus via co-confusion of the 3 permissive families, not via panel-correct convergence. Strengthens the prediction that library_v5 disambiguation will shift both detector AND panel emissions on those docs.
-  - **FVS-001 panel-direction misapplication**: ALL 4 panel families misapply the construct, in two opposite directions. Engine + Grok-panel apply strict session-wise reading and reject all single-turn docs. Claude / Gemini / GPT extend "iterative refinement" to within-document elaboration (multi-example single-thesis structure). Neither matches the library Identification text precisely; both miss Branch A's static-document coverage-imbalance criterion. Library_v5 fold-in of Branch A is the structural resolution.
-  - **Other 7 frames CONSTRUCT_CORRECT verdicts confirmed at panel level**: panel families converge on intended construct (FVS-009 vulnerability-coverage; FVS-002 polish-vs-substance; FVS-014 dominant-vs-balanced temporal anchoring with Claude-strict-vs-rest-permissive threshold latitude); disagreements reflect threshold latitude, not substrate-level criterion misapplication.
-
-- **FVS_007_001_SHIP_READINESS_v1.md disclosure draft voice fix (§2.4 + §3.4)**: existing engine `HONEST_LIMIT_DISCLOSURES` entries (FVS-002 / FVS-004 / FVS-010 / FVS-016 at `fvs_eval/v4/v4_2_engine.py:204-262`) follow a uniform second-clause structure ("Step 4 cross-family AC1 = X.XXX"). The 2026-04-27 v1 drafts substituted cross-corpus emission-rate language, creating apparent voice divergence. Updated drafts now lead with intra-rater AC1 -> Step 4 cross-family AC1 (FVS-007 = 0.42 moderate, FVS-001 = 0.62 moderate, per `library_v4_reliability.json`) -> panel-rationale construct decomposition -> cross-corpus emission rate as supplemental evidence -> operator guidance. Voice now parallels the existing template.
-
-- **FVS_007_001_SHIP_READINESS_v1.md §5 caveat #3 update**: "CLOSED 2026-04-27 by TP_RATIONALE_PATTERN_AUDIT_v1.md" extended to "EXTENDED 2026-04-28 by panel-rationale parallel audit (audit doc v1.1)" with three nuance points: (a) FVS-007 substrate confusion is NOT detector-only; (b) FVS-001 panel application is itself misapplied, in different direction from engine; (c) other 7 frames CONSTRUCT_CORRECT verdicts confirmed at panel level. Recommendation unchanged (disclosure now + library-fix at v5).
 
 ### Methodology + audit increments (2026-04-27)
 

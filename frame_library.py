@@ -104,6 +104,17 @@ FVS_NAMES: dict[str, str] = {
 # therefore never get a question via _add) can be paired with their
 # canonical teaching question for documentation, agent_guidance,
 # and frame_opportunities composition.
+#
+# TODO(operator-authorship): 8 of 20 entries lack a teaching question
+# (FVS-003, 004, 005, 006, 013, 018, 019, 020; all meta-side frames,
+# 3 of 8 are withdrawn from v1 publication: FVS-003, 004, 018, 019).
+# Authoring queue + per-entry construct-hint context lives in
+# OPERATOR_AUTHORING_QUEUE.md. Per the project's "no LLM drafting of
+# substantive content" discipline, teaching questions are operator-
+# authored. The harness L7 FAIL is the visible gate that holds until
+# the queue is closed; do not paper over it with placeholder questions.
+# See get_teaching_question() below: it returns None for unauthored
+# IDs and call sites must handle that path explicitly.
 TEACHING_QUESTIONS: dict[str, str] = {
     "FVS-001": (
         "What is the framing this analysis is amplifying, and what "

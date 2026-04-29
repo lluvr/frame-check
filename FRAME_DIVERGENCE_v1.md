@@ -1,8 +1,8 @@
 # Frame Divergence v1
 
-The category definition and sovereignty argument for frame divergence as a first-class operation in Frame Check. Part 1 of 4. Specifies what the category is, what it is not, why it compounds in the AGI era, why Frame Check owns it, and the non-negotiables any implementation (including V4.2 architecture choice) must honor.
+The category definition and sovereignty argument for frame divergence as a first-class operation in Frame Check. Specifies what the category is, what it is not, why it compounds in the AGI era, why Frame Check owns it, and the non-negotiables any implementation (including V4.2 architecture choice) must honor.
 
-**Status:** v1, Part 1 of 4. Part 2 (contract) shipped as FRAME_DIVERGENCE_CONTRACT_v1.md. Parts 3-4 (V4.2 integration, self-red-team and competitive map) pending.
+**Status:** v1 (this document) is the canonical Part 1 spec; `FRAME_DIVERGENCE_CONTRACT_v1.md` is the canonical Part 2 contract pinned at `c1.0` for backward compatibility. The originally-planned v1 Parts 3-4 (V4.2 integration, self-red-team and competitive map) were SUPERSEDED 2026-04-25 by `FRAME_DIVERGENCE_v2.md`, which absorbs v1's narrow definition into a layered architecture (L0-L3) plus a five-stage lifecycle and a §11 grounded-authorship retrofit. v2 is the active spec for the broader architecture; v1 c1.0 contract carries forward unchanged for callers binding the existing `divergence` block.
 **Author:** Lovro Lucic
 **Date:** 2026-04-23 (last revised 2026-04-23 evening for library_v3 ratification, Rec II enhance-existing alignment, V4.2-alpha status disclosure, and fresh-eyes polish)
 **MCP resource URI:** `frame-check://spec/frame-divergence/v1/part-1` (on the canonical Frame Check MCP scheme documented in MCP_SERVER.md; new path operationalization pending per Part 2 §8.5).

@@ -38,6 +38,21 @@ Sequence:
      because step 9 only checks METADATA Project-URLs, not
      embedded link surface in shipped content. Skip with
      --skip-content for offline runs or staged releases.
+ 11. Quality harness gate: drive the installed wheel via
+     scripts/mcp_quality_driver.py --wheel and verify the
+     harness's payload-content invariants (8 layers, 39 checks)
+     hold against the actual artifact about to be uploaded. Step
+     7's conformance driver covers JSON-RPC envelope shape; this
+     step covers payload semantics (FRAME_DIVERGENCE_CONTRACT_v1
+     c1.0 invariants, reproducibility, adversarial input
+     handling, real-corpus drive, frame_compare quality, render
+     enum, contentHash integrity). Allows known gaps named in
+     KNOWN_HARNESS_GAPS to fail without blocking lift; any
+     unexpected FAIL line surfaces here and stops the operator
+     before twine upload. Locks in the 38/39 baseline (D3
+     teaching_questions content gap is the named known gap,
+     parked for the 0.8.4 operator authoring sprint). Skip with
+     --skip-quality for offline runs or staging releases.
 
 If every step passes, prints the exact `twine upload` commands the
 operator would run for TestPyPI then PyPI, with explicit "operator
@@ -114,7 +129,25 @@ VAULT_DOC_PATTERNS = [
 ]
 
 
-_TOTAL_STEPS = 10
+_TOTAL_STEPS = 11
+
+# Harness FAIL substrings that are accepted as known gaps and do NOT
+# block lift. Each entry should name the operator-decision gating it
+# (parked sprint, deferred operator authoring, etc.) so a 3-year-out
+# reviewer can see WHY this exception exists. Adding a new entry is
+# an operator decision: a regression must either fix the underlying
+# defect, or be explicitly accepted as a known gap by adding here
+# with the gating reason.
+KNOWN_HARNESS_GAPS = (
+    # L7: divergence_rendering="teaching_questions" mode requires
+    # per-FVS authored `**Teaching question:**` content in the
+    # data/frame_library_v3/FVS-*.md bodies; rendering wiring is
+    # correct in mcp_server.py, the gap is library content. Parked
+    # for the 0.8.4 operator authoring sprint per
+    # `~/.claude/projects/-home-llucic-frame-check/memory/
+    # project_d3_teaching_questions_parked.md`.
+    "teaching_questions mode adds teaching_question per record",
+)
 
 
 def step(num: int, label: str) -> None:
@@ -395,14 +428,26 @@ def main() -> int:
                     text_blobs[n] = z.read(n).decode("utf-8", errors="ignore")
                 except Exception:
                     continue
+        # Patterns mirror the rewriter's exclusion policy in
+        # scripts/extract_public_repo.py. Both gate and rewriter use a
+        # negative-lookbehind to exclude the same four prefixes:
+        #   `@` (email addresses like curator@frame.clarethium.com)
+        #   word chars (concatenations like myframe.clarethium.com)
+        #   backtick (code-span text mentions like `frame.clarethium.com`)
+        #   `/` (already-absolute paths the rewriter visits separately)
+        # Without this alignment the gate would flag references the
+        # rewriter intentionally preserves (a doc that explains "the
+        # previous form was `frame.clarethium.com/...`" is text, not a
+        # live hyperlink, and gets a code span around it precisely so
+        # that the rewrite pass leaves it alone).
         bad_pats = (
             (
                 "lluvr/frame-check (private repo, 404 to public)",
-                re.compile(r"github\.com/lluvr/frame-check(?!-mcp)"),
+                re.compile(r"(?<![@\w`/])github\.com/lluvr/frame-check(?!-mcp)"),
             ),
             (
                 "frame.clarethium.com (production paused 2026-04-23)",
-                re.compile(r"\bframe\.clarethium\.com\b"),
+                re.compile(r"(?<![@\w`/])frame\.clarethium\.com\b"),
             ),
         )
         violations: list[tuple[str, str, int]] = []
@@ -425,6 +470,65 @@ def main() -> int:
                 "references are intentionally being staged for an upcoming change."
             )
         print(f"  {len(text_members)} markdown/text files clean")
+
+    # 11. Quality harness gate: drive the installed wheel via the
+    # quality driver and verify payload-content invariants. Catches
+    # regressions that step 7's conformance driver does not cover
+    # (the conformance driver checks JSON-RPC envelope shape; the
+    # quality driver checks the analytical fields the wheel actually
+    # returns). Known gaps are accepted via KNOWN_HARNESS_GAPS; any
+    # unexpected FAIL line stops the lift.
+    skip_quality = "--skip-quality" in sys.argv
+    step(11, "Quality harness (38/39 baseline; D3 teaching_questions known gap)")
+    if skip_quality:
+        print("  SKIPPED (--skip-quality)")
+    else:
+        quality_driver = REPO / "scripts" / "mcp_quality_driver.py"
+        if not quality_driver.exists():
+            return fail(f"quality driver not at {quality_driver}")
+        proc = subprocess.run(
+            [sys.executable, str(quality_driver), "--wheel"],
+            capture_output=True, text=True, env=env,
+        )
+        # Parse FAIL lines from harness output. Driver prints one
+        # PASS/FAIL line per check with the form:
+        #   [Lx] FAIL  <name>  -- <note>
+        # The leading bracket-tag plus the FAIL token disambiguate
+        # from prose that happens to contain the word "FAIL"; pattern
+        # is regex-anchored to "] FAIL  " (close-bracket, space, FAIL,
+        # two-spaces) which only the record() formatter produces.
+        fail_pat = re.compile(r"\] FAIL  ")
+        fail_lines = [
+            ln.strip() for ln in proc.stdout.splitlines()
+            if fail_pat.search(ln)
+        ]
+        unexpected = [
+            ln for ln in fail_lines
+            if not any(gap in ln for gap in KNOWN_HARNESS_GAPS)
+        ]
+        if unexpected:
+            print("  UNEXPECTED harness FAILs (not in known-gaps list):")
+            for ln in unexpected:
+                print(f"    {ln}")
+            print(proc.stdout[-2000:])
+            return fail(
+                f"{len(unexpected)} unexpected harness FAILs. "
+                "Either fix the regression, or add the FAIL substring "
+                "to KNOWN_HARNESS_GAPS in lift_dry_run.py with the "
+                "operator-decision gating that justifies the exception."
+            )
+        summary_match = re.search(
+            r"=== summary: (\d+)/(\d+) passed ===", proc.stdout,
+        )
+        if not summary_match:
+            print(proc.stdout[-2000:])
+            return fail("quality harness did not print summary line")
+        passed, total = summary_match.group(1), summary_match.group(2)
+        known = len(fail_lines)
+        print(
+            f"  {passed}/{total} passed "
+            f"({known} known gap{'s' if known != 1 else ''})"
+        )
 
     # All gates green.
     print("\n" + "=" * 60)

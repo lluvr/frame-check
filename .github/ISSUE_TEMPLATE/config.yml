@@ -1,0 +1,13 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Reviewer engagement for canon-promotion candidates
+    url: https://github.com/lluvr/frame-check/blob/master/REVIEWERS.md
+    about: |
+      External reviewers for Frame Vocabulary Standard canon promotions
+      or FVS-Eval measurement-construct review. See REVIEWERS.md for
+      scope, terms, and how to engage.
+  - name: Direct contact for press, partnership, or sensitive reports
+    url: mailto:hello@clarethium.com
+    about: |
+      Non-public-issue topics including security reports, trademark
+      questions, and partnership inquiries.

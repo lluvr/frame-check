@@ -1,10 +1,8 @@
 # MCP TypeScript port: decision log and implementation plan
 
-**Status:** decisions locked 2026-04-18. Implementation cleared to
-begin. This document started as a scoping proposal (five open
-questions, five trade-offs analysed) and has been revised into the
-decision record for the port. The analysis sections are preserved
-so a future reader can see the reasoning behind the commitments.
+**Status (updated 2026-04-28):** PARKED. Decisions locked 2026-04-18 with implementation cleared to begin; ten days later no TypeScript implementation has started, and the Python `frame-check-mcp` wheel on PyPI is the sole shipping MCP surface as of 0.8.2. Reactivation requires explicit operator decision based on adoption signal (per Option B trade-off analysis below: the TS port becomes worthwhile when JS-ecosystem MCP adoption justifies the multi-week parity engineering, OR when AI-assisted porting collapses the cost). Until reactivation, the locked decisions below are the standing design record; do not begin implementation without re-confirming the parking remains lifted.
+
+This document started as a scoping proposal (five open questions, five trade-offs analysed) and has been revised into the decision record for the port. The analysis sections are preserved so a future reader can see the reasoning behind the commitments.
 
 ## Locked decisions
 

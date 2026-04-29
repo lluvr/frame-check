@@ -1,0 +1,153 @@
+# Publish workflow: builds the frame-check-mcp wheel + sdist on every
+# tag push (vX.Y.Z), validates the artifact, and stages it for upload.
+#
+# THE UPLOAD STEPS BELOW ARE INTENTIONALLY COMMENTED OUT. The
+# operator's publish hold (per STRATEGY.md §14 and the 2026-04-23
+# directive in MCP_PACKAGE_DESIGN_v1.md) blocks any push to PyPI or
+# TestPyPI until explicitly lifted. To enable publishing:
+#
+#   1. Confirm V4.2 engine has reached Tier 2 completion per
+#      V4_2_GAP_INVENTORY_v1.md §5.
+#   2. Bump version in pyproject.toml from 0.8.0.dev0 to 0.8.0.
+#      Bump SERVER_VERSION in mcp_server.py to "0.8.0".
+#      Move CHANGELOG.md [Unreleased] to [0.8.0] with release date.
+#   3. Configure PyPI Trusted Publishing (PEP 740) for this repo:
+#      https://docs.pypi.org/trusted-publishers/
+#      OR set TWINE_USERNAME / TWINE_PASSWORD secrets the old way.
+#   4. Uncomment the publish-to-testpypi job below.
+#   5. Push tag: `git tag v0.8.0 && git push --tags`. The workflow
+#      builds, validates, and uploads to TestPyPI.
+#   6. Verify install from TestPyPI:
+#      `uvx --from frame-check-mcp==0.8.0 --index-url https://test.pypi.org/simple/ frame-check-mcp --version`
+#   7. Uncomment the publish-to-pypi job. Push the same tag again
+#      (or a new tag); the workflow uploads to real PyPI.
+#   8. Zenodo automatically DOIs the release if GitHub-Zenodo
+#      integration is enabled (one-time setting in repo settings).
+
+name: publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build wheel + sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history for git-sha baking
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Bake git SHA into pipeline_version.txt
+        run: |
+          git rev-parse --short HEAD > pipeline_version.txt
+          echo "Baked SHA: $(cat pipeline_version.txt)"
+
+      - name: Verify SERVER_VERSION and pyproject version are in sync
+        run: |
+          python - <<'PY'
+          import re, sys, tomllib
+          with open("pyproject.toml", "rb") as f:
+              pyver = tomllib.load(f)["project"]["version"]
+          text = open("mcp_server.py").read()
+          m = re.search(r'^SERVER_VERSION\s*=\s*"([^"]+)"', text, re.MULTILINE)
+          codever = m.group(1) if m else None
+          if pyver != codever:
+              print(f"::error::Version drift: pyproject.toml version={pyver!r}, "
+                    f"mcp_server.py SERVER_VERSION={codever!r}. Both must "
+                    f"bump together at the publish boundary.", file=sys.stderr)
+              sys.exit(1)
+          print(f"Versions in sync: {pyver}")
+          PY
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade build wheel setuptools
+
+      - name: Build wheel + sdist
+        run: python -m build
+
+      - name: Inspect wheel contents
+        run: |
+          python -c "
+          import zipfile, glob
+          wheel = glob.glob('dist/*.whl')[0]
+          z = zipfile.ZipFile(wheel)
+          files = z.namelist()
+          print(f'Wheel: {wheel}')
+          print(f'Total files: {len(files)}')
+          py_modules = [f for f in files if f.endswith('.py') and '/' not in f]
+          print(f'Top-level py modules: {len(py_modules)}')
+          pkg_files = [f for f in files if f.startswith('framecheck_mcp/')]
+          print(f'framecheck_mcp/ items: {len(pkg_files)}')
+          required = ['framecheck_mcp/data/frame_library/FVS-001_frame_amplification.md', 'framecheck_mcp/METHODOLOGY.md', 'framecheck_mcp/FRAME_DIVERGENCE_CONTRACT_v1.md']
+          missing = [r for r in required if r not in files]
+          if missing:
+              import sys
+              sys.exit(f'Missing required files: {missing}')
+          print('All required files present.')
+          "
+
+      - name: Smoke-test installed wheel
+        run: |
+          python -m venv /tmp/fc_smoke
+          /tmp/fc_smoke/bin/pip install --quiet dist/*.whl
+          /tmp/fc_smoke/bin/frame-check-mcp --version
+          # Test divergence path end-to-end
+          /tmp/fc_smoke/bin/python -c "
+          from mcp_server import build_epistemic_payload
+          p = build_epistemic_payload(
+              'Bitcoin gained adoption. Trends compound through 2030.',
+              include_divergence=True, domain_hint='finance',
+          )
+          assert p['provenance']['analysis_cost_usd'] == 0.0
+          assert p['divergence']['envelope']['catalog_version'] == 'library_v3'
+          assert len(p['divergence']['absent_frames']) > 0
+          print('Smoke test passed.')
+          "
+
+      - name: Upload artifacts to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+
+  # publish-to-testpypi:
+  #   name: Publish to TestPyPI
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   environment: testpypi
+  #   permissions:
+  #     id-token: write  # OIDC for Trusted Publishing
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: dist
+  #         path: dist/
+  #     - uses: pypa/gh-action-pypi-publish@release/v1
+  #       with:
+  #         repository-url: https://test.pypi.org/legacy/
+
+  # publish-to-pypi:
+  #   name: Publish to PyPI
+  #   needs: build
+  #   # Run only on tags that are not pre-release (no .dev / .rc / .a / .b suffix).
+  #   if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '.dev') && !contains(github.ref, 'rc') && !contains(github.ref, 'a') && !contains(github.ref, 'b')
+  #   needs: publish-to-testpypi
+  #   runs-on: ubuntu-latest
+  #   environment: pypi
+  #   permissions:
+  #     id-token: write  # OIDC for Trusted Publishing
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: dist
+  #         path: dist/
+  #     - uses: pypa/gh-action-pypi-publish@release/v1

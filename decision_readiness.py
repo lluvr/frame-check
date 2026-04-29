@@ -53,7 +53,20 @@ PROFILE_STATUS = "experimental"  # bumps to "validated" after Phase 2
 # (frame-check://). A test in test_decision_readiness.py pins the
 # agreement so the two cannot drift silently.
 LIBRARY_RESOURCE_SCHEME = "frame-check"
-LIBRARY_PUBLIC_URL_BASE = "https://frame.clarethium.com/corpus/library"
+# public_url points at the entry's canonical markdown source on the
+# public GitHub repository (lluvr/frame-check-mcp). GitHub is always
+# resolvable for end-users regardless of the hosted-production status
+# at frame.clarethium.com (paused 2026-04-23). The previous form
+# (https://frame.clarethium.com/corpus/library/FVS-XXX.html) returned
+# rendered HTML when production was up but is unreachable while
+# production is paused; the GitHub URL gives a citer a stable address
+# that does not change across hosting state. Per-entry slugs come
+# from frame_library_index.parse_entry_filenames() so the URL stays
+# accurate when entries are renamed without touching this constant.
+LIBRARY_PUBLIC_URL_BASE = (
+    "https://github.com/lluvr/frame-check-mcp"
+    "/blob/master/data/frame_library"
+)
 # Corpus entry URL base, parallel to LIBRARY_PUBLIC_URL_BASE.
 # Used by corpus_entry_ref to build public_url fields so consumers
 # can chain from cross-question findings to the browsable corpus
@@ -80,21 +93,35 @@ CORPUS_PUBLIC_URL_BASE = (
 #      findings) get titles for free without each having to wire
 #      their own INDEX.md parser.
 try:
-    from frame_library_index import parse_entry_titles as _parse_entry_titles
+    from frame_library_index import (
+        parse_entry_titles as _parse_entry_titles,
+        parse_entry_filenames as _parse_entry_filenames,
+    )
     _FRAME_TITLES_CACHE = _parse_entry_titles()
+    _FRAME_FILENAMES_CACHE = _parse_entry_filenames()
 except Exception:
     # frame_library_index is a sibling module at repo root; in
     # normal operation it always loads. The try/except is a defensive
     # fallback so a missing INDEX.md (or a clean checkout without
     # the frame_library tree) does not break decision_readiness
     # import. library_entry_ref falls back to the bare fvs_id when
-    # a title is missing, so the rest of the system still functions.
+    # a title is missing, and to a None public_url when no filename
+    # is known, so the rest of the system still functions.
     _FRAME_TITLES_CACHE = {}
+    _FRAME_FILENAMES_CACHE = {}
 
 
 def _frame_titles() -> dict:
     """Returns {fvs_id: title}. Eagerly populated at module import."""
     return _FRAME_TITLES_CACHE
+
+
+def _frame_filenames() -> dict:
+    """Returns {fvs_id: filename}. Eagerly populated at module import.
+    Filenames carry the entry's slug after the FVS-ID prefix; used to
+    construct stable GitHub URLs that do not require slug derivation
+    at the call site."""
+    return _FRAME_FILENAMES_CACHE
 
 
 def dimensions_affecting(fvs_id: str) -> list:
@@ -135,11 +162,16 @@ def library_entry_ref(fvs_id: str) -> dict:
     fvs_id when no title is available (INDEX.md missing, FVS-ID
     not in INDEX.md, etc.) so the field is always present."""
     titles = _frame_titles()
+    filenames = _frame_filenames()
+    fname = filenames.get(fvs_id)
+    public_url = (
+        f"{LIBRARY_PUBLIC_URL_BASE}/{fname}" if fname else None
+    )
     return {
         "fvs_id": fvs_id,
         "title": titles.get(fvs_id) or fvs_id,
         "library_resource_uri": f"{LIBRARY_RESOURCE_SCHEME}://library/{fvs_id}",
-        "public_url": f"{LIBRARY_PUBLIC_URL_BASE}/{fvs_id}.html",
+        "public_url": public_url,
     }
 
 

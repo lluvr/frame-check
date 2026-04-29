@@ -1,5 +1,7 @@
 # v3 Evidence Against DETECTOR_V2_PROMOTION Activation Criteria
 
+**HISTORICAL (updated 2026-04-28):** SUPERSEDED by the V4.2 LLM-judge architecture (per `ENGINE_TIER_RECOMMENDATIONS_v1.md` and the V4.2-first launch commitment, operator-approved 2026-04-23). The v3 promotion question was closed by the architectural transition to V4.2 before C1-C6 ratification; v3's macro-F1=0.215 below-threshold result is now the published-negative anchor that motivated the V4.2 transition. Read this document as the audit-trail evidence for the v3 promotion attempt; current detector ladder lives in `ENGINE_TIER_RECOMMENDATIONS_v1.md` and `fvs_eval/v4/RELIABILITY_STUDY.md`.
+
 **Date:** 2026-04-19.
 **Purpose:** compact mapping of Track A v3 detector work against each pre-registered activation criterion (C1-C6) in `DETECTOR_V2_PROMOTION.md §2`, so the curator can ratify or reject promotion without re-reading all the Track A reports.
 **Relationship to prior work:** this document does NOT constitute promotion. It surfaces evidence against already-pre-registered criteria and flags which are green, which fail, and which require a curator decision. Per DETECTOR_V2_PROMOTION anti-pattern #4 ("Do not promote v2 without ratified activation criteria"), promotion proceeds only after the curator locks the criteria in this document or their weaker/stronger variants.

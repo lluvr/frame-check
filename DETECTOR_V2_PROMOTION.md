@@ -1,20 +1,10 @@
 # Detector v2 promotion playbook
 
-**Purpose:** turn the current "v2 exists as a research artifact;
-nobody knows what to do with it" state into a pre-registered,
-executable path. Any future agent (human or AI) picking up this
-work should be able to read this single document and know
-precisely: what exists today, what must be true before v2 ships
-to production, what steps to execute when those conditions are
-met, what must not be touched, and how to roll back if promotion
-regresses anything.
+**HISTORICAL (updated 2026-04-28):** SUPERSEDED by the V4.2 LLM-judge architecture (per `ENGINE_TIER_RECOMMENDATIONS_v1.md` and the V4.2-first launch commitment, operator-approved 2026-04-23). The v2 rule-level promotion path described below is no longer the live ladder; v2 generalization-ceiling work was published as a pre-registered negative (F-2026-027 / F-2026-028 / F-2026-030) and the architectural transition to V4.2 closes the original v2 promotion question. Read this document as the audit-trail evidence for the v2/v3 promotion attempt; current detector ladder lives in `ENGINE_TIER_RECOMMENDATIONS_v1.md`, `fvs_eval/v4/RELIABILITY_STUDY.md`, and `V4_2_GAP_INVENTORY_v1.md`.
 
-**Status:** v0.1, drafted 2026-04-18 as a scoping artifact.
-Activation criteria (§2) are drafted, not ratified. The curator
-must lock or revise them before any promotion attempt. This
-document is itself pre-registered discipline: the cost of
-deciding criteria post-hoc is goodharting; the value of deciding
-them in advance is prevention.
+**Purpose (original):** turn the current "v2 exists as a research artifact; nobody knows what to do with it" state into a pre-registered, executable path. Any future agent (human or AI) picking up this work should be able to read this single document and know precisely: what exists today, what must be true before v2 ships to production, what steps to execute when those conditions are met, what must not be touched, and how to roll back if promotion regresses anything.
+
+**Status:** v0.1, drafted 2026-04-18 as a scoping artifact. Activation criteria (§2) are drafted, not ratified. Superseded 2026-04-23 by the V4.2 architectural transition before ratification.
 
 **Not a commitment to ship v2.** v1 continues to run in
 production and continues to be the citable baseline for every

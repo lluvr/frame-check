@@ -788,9 +788,44 @@ def temporal_orientation(text):
     present = len(sentences) - past - future
     total = max(len(sentences), 1)
 
-    past_pct = round(past / total * 100)
-    present_pct = round(present / total * 100)
-    future_pct = round(future / total * 100)
+    # Largest Remainder method on the percentage triad. Independent
+    # round() per bucket can produce sums of 99 or 101 on real
+    # documents (verified 2026-04-28 by mcp_quality_driver against
+    # worked_examples/ai-on-life-decisions and worked_examples/fomc-
+    # statement-march-2026). LR floors each bucket then distributes
+    # the residue (100 - sum_of_floors) one percentage point at a
+    # time to the buckets with the largest fractional parts. Result
+    # always sums to exactly 100. Residue is bounded by the math:
+    # three fractional parts each in [0, 1) sum to < 3, so residue
+    # in {0, 1, 2}. Tiebreaker on equal fractional parts is
+    # alphabetical on the bucket-name string ('future' < 'past' <
+    # 'present'), set by Python's stable sort on the (-fractional,
+    # name) tuple; the choice does not bias the substrate, only
+    # makes the output reproducible. Edge case: zero-sentence
+    # document (past = present = future = 0); skip the redistribution
+    # and return zero pcts so the residue does not get spuriously
+    # assigned to a bucket.
+    if past == 0 and present == 0 and future == 0:
+        past_pct = present_pct = future_pct = 0
+    else:
+        exact = {
+            "past": past / total * 100,
+            "present": present / total * 100,
+            "future": future / total * 100,
+        }
+        floored = {k: int(v) for k, v in exact.items()}
+        residue = 100 - sum(floored.values())
+        # Sort by fractional part descending, then lexical for ties.
+        order = sorted(
+            ("past", "present", "future"),
+            key=lambda k: (-(exact[k] - floored[k]), k),
+        )
+        result = dict(floored)
+        for i in range(residue):
+            result[order[i]] += 1
+        past_pct = result["past"]
+        present_pct = result["present"]
+        future_pct = result["future"]
     dominant = (
         "past" if past > future and past > present
         else "future" if future > past and future > present
