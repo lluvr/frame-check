@@ -31,6 +31,7 @@ keywords:
   - frame vocabulary standard
 license: Apache-2.0
 version: "1.0.0"
+doi: "10.5281/zenodo.19888849"
 date-released: "2026-04-28"
 references:
   - type: article
