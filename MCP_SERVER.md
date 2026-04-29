@@ -131,45 +131,43 @@ fields and resource additions, major for breaking schema changes.
 The current version is exposed by the `initialize` handshake and
 is also pinned in `mcp_server.py` as `SERVER_VERSION`.
 
+## Initialize handshake
+
+The `initialize` response carries the standard MCP fields plus a
+top-level `instructions` field (per the MCP protocol):
+
+- `protocolVersion`: the supported MCP protocol version.
+- `capabilities`: tools, resources, and prompts capabilities all advertised.
+- `serverInfo`: `name` ("frame-check") and `version` (matches `SERVER_VERSION`).
+- `instructions`: server-orientation prose for the agent. Names the use case (when to use Frame Check), the default invocation shape (`frame_check(document_text=<text>)` works zero-arg), and the four-prompt workflow surface (`frame_check_my_response`, `frame_check_this_ai_response`, `challenge_document`, `explain_framing`). MCP clients whose UI surfaces the InitializeResult can show the user a one-line answer to "what is this server"; agents reading the field get cross-tool orientation that the per-tool descriptions cannot carry.
+
 ## Release arc
 
 This section summarizes the canonical commitments so MCP-facing readers can orient on the current release posture. The repository tracks the full release plan and any revisions.
 
-**Current state (0.8.0 pre-release, internal).** `SERVER_VERSION =
-"0.8.0"` in `mcp_server.py`; `pyproject.toml` carries the PEP 440
-pre-release marker `0.8.0.dev0` so local wheel builds are clearly
-not the public release. `frame_check` + `frame_compare`, four
-sovereignty prompts, divergence block on by default
-(`include_divergence=true`; an explicit `false` returns the
-v0.7.x-shape response), FVS catalog pinned to library_v3 per
-FRAME_DIVERGENCE_CONTRACT_v1 c1.0 contract stability. V4.2 engine
-in beta per `V4_2_GAP_INVENTORY_v1.md §5`. Not on PyPI; install is
-by repo clone. Local wheel builds reproduce under `dist/` on
-`python -m build` and pass the must-include / must-exclude
-inventory; see `RELEASE_PREP_v1.md` for the lift sequence.
-
-**First public release: `0.8.0`.** V4.2-capable by default.
-`frame_check` output includes the `divergence` block when V4.2 data
-is available. The MCP surface exposes V4.2 via
-`agent_guidance.how_to_render_divergence` so the caller's agent runs
-V4.2 judgment with its own LLM. Zero Frame Check LLM cost per MCP
-call; vendor-independence by construction (the caller chooses the
-model). Tier 2 items (caching, rate limiting, observability)
-complete before launch.
+**Current state (live on PyPI).** `SERVER_VERSION` in
+`mcp_server.py` matches the released wheel reported on the MCP
+`initialize` handshake; the latest published wheel is on PyPI at
+[pypi.org/project/frame-check-mcp](https://pypi.org/project/frame-check-mcp/).
+`frame_check` + `frame_compare`, four sovereignty prompts,
+divergence block on by default (`include_divergence=true`; an
+explicit `false` returns the pre-divergence response shape), FVS
+catalog pinned to library_v3 per `FRAME_DIVERGENCE_CONTRACT_v1`
+c1.0 contract stability. The wheel runs the deterministic V1
+substrate detection (regex-based, zero LLM cost per query); V4.2
+LLM-judge is evaluation-only and not invoked server-side. The MCP
+surface exposes V4.2 via `agent_guidance.how_to_render_divergence`
+so the caller's agent runs V4.2 judgment with its own LLM if the
+caller chooses. Zero Frame Check LLM cost per MCP call; vendor
+independence by construction (the caller picks the model).
 
 **Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
 
 **Collapsed release.** An earlier plan for a `0.7.1` V1-only
 name-reservation release on PyPI was retired 2026-04-23 in favor of
-V4.2-first launch discipline. Publishing a V1-only release would
-have shipped the retired-in-v2 detection rules as public artifacts;
-the credibility asymmetry did not survive three-years-out review.
-Name-squat risk on `frame-check-mcp` is accepted as tail-risk.
-
-**Publish hold in force.** Operator directive 2026-04-23. No upload
-to PyPI or TestPyPI until explicitly lifted. Design work, src-layout
-refactor, local install validation, and wheel builds may proceed;
-any public upload is blocked.
+V4.2-first launch discipline. Name-squat risk on
+`frame-check-mcp` was accepted as tail-risk and did not
+materialize before the 0.8.0 lift on 2026-04-27.
 
 ## Tool surface
 
@@ -179,14 +177,26 @@ Two tools.
 
 | Parameter | Required | Type | Meaning |
 |---|---|---|---|
+**Agent-facing parameters** (advertised in `tools/list` schema; the agent decides whether to pass each):
+
+| Parameter | Required | Type | Meaning |
+|---|---|---|---|
 | `document_text` | yes | string (max 1,000,000 chars) | The document to analyze. English. Markdown accepted. |
-| `source_text` | no | string (max 2,000,000 chars) | Optional source material. When provided, unlocks Layer 4 source fidelity (digit-level match) and Layer 11 grounding decomposition with scope-regime classification. |
-| `prefer_contract_version` | no | integer (1 or 2) | Coverage contract version the client prefers. `1` (default): emit both v1 `coverage` and v2 `coverage_v2` (Phase 2 compatibility window; v1 deprecated 2026-04-21). `2`: emit only `coverage_v2` and omit v1. See "Coverage v1 and v2 shapes" below. |
-| `include_divergence` | no | boolean (default `true` at 0.8.0; was `false` at 0.7.x) | Frame divergence output per FRAME_DIVERGENCE_CONTRACT_v1 Part 2. When `true` (default), the response carries a top-level `divergence` block plus two `agent_guidance` additions (`how_to_render_divergence`, `absence_is_not_prescription`). Set explicitly to `false` to receive the v0.7.x-shape response with no divergence block. See "Divergence block" below. |
-| `domain_hint` | no | string (enum) | Only meaningful when `include_divergence=true`. One of: `finance`, `founder_decision`, `investment_research`, `product_announcement`, `policy`, `health_biomedical`, `tech_science`, `humanities`, `general`. Echoes to `envelope.domain_inferred`; field-level filtering is deferred to a future contract minor version. |
-| `divergence_rendering` | no | string (enum) | Only meaningful when `include_divergence=true`. One of: `list` (default), `completeness_check`, `teaching_questions`, `narrative`. Affects `AbsentFrameRecord` decoration only; the caller's agent model performs the rendering. |
-| `catalog_version_pin` | no | string | Only meaningful when `include_divergence=true`. Pins the FVS catalog used for absent-frame set difference. Currently only `library_v3` is supported (contract c1.0); unsupported pins are coerced with a limitation note in `envelope.limitations`. |
-| `user_context` | no | string (max 2000 chars) | The user's situation, role, or decision context in plain prose (e.g., "I'm a startup founder making a hire decision in healthcare AI"). When provided, `agent_guidance.how_to_render_divergence` is extended to instruct the caller's model to filter divergence relevance for this context. The MCP does NOT echo the value into the response (privacy posture: caller-side context never round-trips through the server); the caller's agent has it from its own call args. Discipline: relevance filtering, never prescription. |
+| `source_text` | no | string (max 2,000,000 chars) | Pass when the user has the source material the document was supposed to ground in. Unlocks Layer 4 source fidelity (digit-level match) and Layer 11 grounding decomposition with scope-regime classification. |
+| `include_divergence` | no | boolean (default `true`) | Frame divergence output per FRAME_DIVERGENCE_CONTRACT_v1 Part 2. **Default `true`; the agent does not need to pass this.** When `true` (default), the response carries a top-level `divergence` block plus two `agent_guidance` additions (`how_to_render_divergence`, `absence_is_not_prescription`). Set explicitly to `false` only for the legacy 0.7.x-shape response with no divergence block. See "Divergence block" below. |
+| `divergence_rendering` | no | string (enum) | One of: `list` (default), `completeness_check`, `teaching_questions`, `narrative`. Affects `AbsentFrameRecord` decoration only; the caller's agent model performs the rendering. |
+| `user_context` | no | string (max 2000 chars) | Pass when the user has stated their situation, role, or decision context in plain prose (e.g., "I'm a startup founder making a hire decision in healthcare AI"). When provided, `agent_guidance.how_to_render_divergence` is extended to instruct the caller's model to filter divergence relevance for this context. The MCP does NOT echo the value into the response (privacy posture: caller-side context never round-trips through the server). Discipline: relevance filtering, never prescription. |
+| `user_goal` | no | string (enum) | Pass when the user has named a goal: `decide`, `brainstorm`, `persuade`, `learn`, `audit`. When provided, `absent_frames` carry a `goal_relevance` dict and the absent_frames sort promotes goal-relevant entries within their signal_strength tier. Omit when the user has not named a goal; behavior matches `audit`. |
+| `compose_budget` | no | string (enum) | One of: `minimal`, `standard`, `full` (default). Bounds the substrate's output volume for tight working-memory budgets. `minimal` and `standard` compress `agent_guidance` to load-bearing prescriptions; `suggested_next_actions` survives at all tiers. |
+| `include_frame_opportunities` | no | boolean (default `false`) | Opt-in for up to 3 LLM-augmented document-specific questions. Cost bounded at ~0.001 USD per invocation (Gemini Flash). Falls back to empty list with `available=false` if `GEMINI_API_KEY` is not set. |
+
+**Developer-only parameters** (accepted by the dispatch layer for backward compatibility but NOT advertised in the agent-facing `tools/list` schema; an agent should not be making these decisions per call):
+
+| Parameter | Type | Meaning |
+|---|---|---|
+| `prefer_contract_version` | integer (1 or 2) | Coverage contract version the client prefers. `1` (default): emit both v1 `coverage` and v2 `coverage_v2` (Phase 2 compatibility window; v1 deprecated 2026-04-21). `2`: emit only `coverage_v2` and omit v1. See "Coverage v1 and v2 shapes" below. |
+| `domain_hint` | string (enum) | Hint about the document's domain. Currently echoes to `envelope.domain_inferred`; field-level filtering is deferred to a future contract minor version. Removed from the agent-facing schema 0.8.3 because the current implementation has no behavioral effect. |
+| `catalog_version_pin` | string | Pins the FVS catalog used for absent-frame set difference. Currently only `library_v3` is supported (contract c1.0); unsupported pins are coerced with a limitation note in `envelope.limitations`. Removed from the agent-facing schema 0.8.3 because the agent should not be choosing catalog versions per call. |
 
 When `source_text` is absent, you get structural framing analysis only.
 When present, you also get Layer 4 source fidelity and Layer 11
@@ -294,14 +304,13 @@ decision-readiness profile is measured. Profile output is currently labelled exp
 Resources gracefully degrade: clean checkouts without the validation
 tree advertise no corpus or aggregate resources rather than failing.
 
-## Divergence block (default at 0.8.0; was opt-in at 0.7.x)
+## Divergence block (default `include_divergence=true`)
 
 Per FRAME_DIVERGENCE_CONTRACT_v1 Part 2 c1.0, `frame_check` emits a
 top-level `divergence` block alongside `analysis` / `agent_guidance`
-/ `provenance`. At 0.8.0 the block fires by default; the
-`include_divergence=true` flag is no longer opt-in (callers who want
-the v0.7.x-shape response without divergence set the flag explicitly
-to `false`). Rec II enhance-existing: no separate tool; divergence is
+/ `provenance`. The block fires by default; callers who want the
+pre-divergence response shape set `include_divergence=false`
+explicitly. Rec II enhance-existing: no separate tool; divergence is
 an output-shape enhancement of `frame_check`. The MCP surface does
 not invoke any LLM for divergence; V4.2 judgment is delegated to the
 caller's agent model per the two added `agent_guidance` keys.
@@ -764,10 +773,78 @@ When the divergence block is emitted, `agent_guidance` gains two keys:
   and library resources per the requested `divergence_rendering`
   mode. Forbids prescriptive "missing frames you should consider"
   language (contract §4.5). Requires citation by `frame_id` and
-  `citation_uri`.
+  `library_url` (the GitHub markdown URL the user can click); the
+  `citation_uri` (frame-check://) is for MCP resource fetches, not
+  end-user citations.
 - `absence_is_not_prescription`: the §5.1 guarantee-5 language that
   divergence output never implies the user should have used the
   absent frames.
+
+## Clickable library URLs (`library_url` field)
+
+Every FVS reference in a `frame_check` or `frame_compare` response
+carries a `library_url` field pointing at the entry's markdown source
+on the public GitHub repository
+(`https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-XXX_slug.md`).
+The URL is always resolvable for end-users in MCP clients regardless
+of the hosted-production status; the previous form pointed at
+`frame.clarethium.com/corpus/library/...` which is paused while
+production is paused.
+
+The field appears on every site that names an FVS entry:
+
+- `analysis.frame_library_matches[].library_url`
+- `divergence.absent_frames[].library_url`
+- `divergence.absent_frames[].corpus_context.typical_co_fires[].library_url`
+- `divergence.absent_frames[].corpus_context.typical_co_absences[].library_url`
+- `decision_readiness` profile's per-dimension `library_entries[].public_url` (canon-graph reference shape; same URL form, different field name for legacy compatibility).
+
+The `agent_guidance.how_to_cite_frame_matches` text mandates
+rendering FVS references as markdown links: `[FVS-XXX Frame Title](library_url)`. End-users in MCP clients (Claude Desktop,
+Cursor) cannot click `frame-check://library/...` resource URIs
+because those are MCP-internal; the `library_url` gives them an
+HTTP link they can follow.
+
+The MCP `library_resource_uri` (frame-check://) is preserved
+alongside `library_url`; agents running entirely through MCP can
+chain into `resources/read` on the matching entry without a web
+fetch. Both fields point at the same logical entry; the agent
+uses `library_url` for end-user citations and `library_resource_uri`
+for in-conversation resource resolution.
+
+## Suggested next actions (`agent_guidance.suggested_next_actions`)
+
+Every `frame_check` response carries an `agent_guidance.suggested_next_actions` block: a list of 2-4 specific, structural-finding-anchored
+next-action entries the agent can surface to the user. The block
+exists so a Frame Check finding has a discoverable path forward
+(reprompts to send back to the source AI, library entries to read,
+named MCP prompts to invoke) instead of a static reading.
+
+Each entry has the shape:
+
+```json
+{
+  "kind": "reprompt | resource | prompt_followup",
+  "action_text": "human-readable action description",
+  "rationale": "one sentence on why this action is suggested for THIS call's findings",
+  "related_url": "library_url for resource kind, optional",
+  "related_fvs_id": "FVS-ID for resource kind, optional"
+}
+```
+
+Derivation rules (deterministic; same input produces same output, same order):
+
+- Position 1 (when `include_divergence=true`): a `resource` entry pointing at the highest-signal_strength absent_frame's library entry, with the clickable `library_url` embedded as a markdown link.
+- Position 2-3 (when conditions fire): up to two `reprompt` entries with ready-made follow-up questions for the source AI. Triggers: more than 50 percent unhedged numeric claims, or sourced sentence rate below 10 percent. Each carries the specific numbers from this call so the rationale grounds in this document's findings.
+- Final position: an always-included `prompt_followup` entry pointing at the `challenge_document` MCP prompt for the deeper multi-turn loop.
+
+The list is capped at 4 entries (more becomes noise). The block
+survives `compose_budget` compression at every tier so compact
+callers still get the discovery loop. The
+`agent_guidance.how_to_render_suggested_next_actions` key carries
+the rendering instruction (small explicit list at the end of the
+response, action_text rendered verbatim, embedded markdown links
+preserved).
 
 ## Composition discipline (insight-led, not measurement-walking)
 
@@ -1161,6 +1238,30 @@ identical `(document_text, source_text)` return bit-identical payloads
 except for `provenance.analysis_latency_ms` (wall-clock). No LLM is
 invoked; `provenance.analysis_cost_usd` is always `0.0`.
 
+## Production hosting status
+
+The provenance block carries `tool_url`, `methodology_paper`,
+`frame_library`, and `calibration_corpus` URLs that point at the
+canonical production site `frame.clarethium.com`. Production
+hosting was paused on 2026-04-23 with resume as the default
+trajectory; until resume, those URLs may not resolve. Two provenance
+fields disclose this state inline so an agent can distinguish "URL
+canonicalized but currently paused" from "URL malformed or wrong"
+without out-of-band knowledge:
+
+- `provenance.production_status`: `"paused"` or `"active"`. Single
+  source of truth; the constants in `mcp_server.py` flip together
+  on resume.
+- `provenance.production_status_note`: human-readable explanation
+  naming the pause date, the resume default, and the active
+  artifacts (GitHub repository, PyPI package).
+
+Active artifacts during the paused window: the public GitHub
+repository at `https://github.com/lluvr/frame-check-mcp` and the PyPI
+package `frame-check-mcp`. Citations should resolve against the
+versioned PyPI release (`server_version` field) or the canonical
+production URL (which becomes the load-bearing reference on resume).
+
 ## Citation
 
 The tool response includes a citation string in `provenance.citation`.
@@ -1169,7 +1270,7 @@ as Frame Check's, not as your own reading.
 
 ```
 Lucic, L. (YEAR). Frame Check: a research instrument for framing and
-verification in documents. (production paused)
+verification in documents. https://github.com/lluvr/frame-check-mcp
 ```
 
 ## License

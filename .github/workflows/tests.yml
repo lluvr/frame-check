@@ -1,0 +1,97 @@
+name: Tests
+
+# Runs the full Frame Check test suite on every push to master and on
+# pull requests. The existing runner is run_tests.py which wraps the
+# standalone-script test pattern documented in CONTRIBUTING.md. Rather
+# than migrate to pytest in one move, CI respects the existing pattern.
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+# Least-privilege token. Both jobs only check out code and run
+# tests; they do not push, comment, or touch other repo state.
+# Declaring read-only explicitly pins this even if the repo-level
+# default ever shifts back to write-all.
+permissions:
+  contents: read
+
+concurrency:
+  # A new push to the same branch cancels the previous run. Prevents
+  # CI queue buildup when a contributor pushes corrections quickly.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Production runs Python 3.12 (see Dockerfile FROM
+        # python:3.12-slim). build_corpus_site.py uses f-string
+        # features available only on 3.12+. Keeping the matrix at
+        # 3.12-only until 3.11 compatibility is revisited as a
+        # separate polish item.
+        python-version: ["3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # Several test files import pytest at module level (they
+          # use pytest fixtures even when the suite is run via
+          # run_tests.py). pytest is a dev-only dependency; pinned
+          # per the Dockerfile production image having it when the
+          # test layer is active.
+          pip install pytest
+
+      - name: Run test suite
+        run: python3 run_tests.py
+
+  pytest-smoke:
+    # Secondary job: direct pytest invocation. Some suites
+    # (test_circuit_breaker.py, test_phase1_load.py, test_construct_honesty_voice.py)
+    # are idiomatic pytest and run cleanly under direct invocation.
+    # Keeps the two invocation paths both verified.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run pytest (idiomatic suites)
+        run: |
+          python3 -m pytest -q \
+            test_circuit_breaker.py \
+            test_construct_honesty_voice.py \
+            test_framing_validation.py \
+            test_frame_library.py \
+            test_mcp_server.py

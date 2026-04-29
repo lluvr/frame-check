@@ -1,0 +1,74 @@
+name: DCO
+
+# Verifies every commit on a pull request carries a Signed-off-by
+# trailer per the Developer Certificate of Origin v1.1 (full text
+# in CONTRIBUTING.md). Mirrors the Linux kernel pattern: lower
+# friction than a CLA, same legal substrate of clean copyright
+# trail. A failing check here means a contributor needs to amend
+# or rebase with --signoff before merge.
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out PR commits
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify DCO sign-off on every commit
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          # Range: every commit unique to this PR's branch since
+          # divergence from the base ref. --no-merges so that merge
+          # commits (which inherit parent sign-offs) are not double-
+          # counted; the DCO contract is per-author-commit.
+          range="${BASE_SHA}..${HEAD_SHA}"
+          missing=()
+          # Read commits null-separated to handle any commit-message
+          # edge cases. Each line is "SHA\tmessage-first-line"; we
+          # walk by SHA and re-fetch the full message body.
+          while IFS=$'\t' read -r sha _; do
+            body=$(git log -n1 --pretty=%B "$sha")
+            if ! grep -qE '^Signed-off-by: .+ <.+@.+>' <<<"$body"; then
+              missing+=("$sha")
+            fi
+          done < <(git log --no-merges --pretty='%H%x09%s' "$range")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::The following commits are missing a Signed-off-by trailer:"
+            for sha in "${missing[@]}"; do
+              echo "  $sha"
+              git log -n1 --pretty='    %s%n    by %an <%ae>' "$sha"
+            done
+            echo
+            echo "Sign off existing commits with:"
+            echo "  git rebase --signoff ${BASE_SHA}"
+            echo "Or for a single commit:"
+            echo "  git commit --amend --signoff"
+            echo
+            echo "Then force-push the branch."
+            echo
+            echo "See CONTRIBUTING.md for the full DCO contract."
+            exit 1
+          fi
+          echo "All ${#missing[@]} commits in range carry DCO sign-off (zero missing)."

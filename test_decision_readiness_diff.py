@@ -233,7 +233,7 @@ def test_fired_pattern_gain_surfaces_in_diff():
             "fvs_id": "FVS-001",
             "title": "Frame Amplification",
             "library_resource_uri": "frame-check://library/FVS-001",
-            "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html",
+            "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md",
         },
     ]
     diff = compute_diff(src, xfm)
@@ -278,7 +278,7 @@ def test_fired_pattern_loss_surfaces_in_diff():
             "fvs_id": "FVS-007",
             "title": "Failure Framing",
             "library_resource_uri": "frame-check://library/FVS-007",
-            "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html",
+            "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-007_failure_framing.md",
         },
     ]
     xfm = _profile()
@@ -318,7 +318,7 @@ def test_fired_pattern_unchanged_does_not_register_movement():
         {
             "fvs_id": "FVS-001", "title": "Frame Amplification",
             "library_resource_uri": "frame-check://library/FVS-001",
-            "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html",
+            "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md",
         },
     ]
     xfm = _profile()
@@ -326,7 +326,7 @@ def test_fired_pattern_unchanged_does_not_register_movement():
         {
             "fvs_id": "FVS-001", "title": "Frame Amplification",
             "library_resource_uri": "frame-check://library/FVS-001",
-            "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html",
+            "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md",
         },
     ]
     diff = compute_diff(src, xfm)

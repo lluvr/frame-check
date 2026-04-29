@@ -609,6 +609,91 @@ class TestTemporalOrientation:
             f"future={result['future_pct']}"
         )
 
+    def test_distribution_sums_to_100_across_corpora(self):
+        """Largest Remainder method invariant: past_pct + present_pct +
+        future_pct must sum to exactly 100 for any non-empty document.
+        Pre-2026-04-28 used independent round() per bucket which
+        produced sums of 99 or 101 on real corpus documents; this test
+        guards against any regression to that pattern (or any other
+        rounding scheme that doesn't preserve the sum invariant).
+
+        Sentences must clear split_sentences's >30-char filter to count;
+        the cases below are long-form synthetic prose with varied tense
+        mixes that exercise the residue-distribution path. Each case
+        produces a non-degenerate (sentence_count >= 2) sentence list
+        so the residue is non-trivially in {0, 1, 2}.
+        """
+        # Each case: a markdown doc with at least 7 long sentences in
+        # varied tense mixes. The sentence-count + tense-distribution
+        # combinations are chosen to land on different fractional-part
+        # patterns, exercising residue=0, 1, and 2 paths.
+        cases = [
+            # Past-dominant historical narrative.
+            "## History\n\n"
+            "The founders started the company in nineteen ninety-eight from a garage.\n"
+            "Revenue grew rapidly during the early years of the dot-com boom.\n"
+            "The company went public in two thousand four after filing.\n"
+            "Several acquisitions followed over the next decade in the industry.\n"
+            "Profits reached record highs in two thousand twenty during the pandemic.\n"
+            "The CEO retired last year after a long and distinguished career.\n"
+            "Many employees stayed through the long arc of the company's life.\n",
+            # Future-dominant strategy doc.
+            "## Five Year Plan\n\n"
+            "We will launch the new platform across all markets in 2027.\n"
+            "Revenue will reach one billion dollars within the next three years.\n"
+            "The company will expand into Asia in the second half of next year.\n"
+            "Costs will decline as the manufacturing facility comes online soon.\n"
+            "Customers will benefit from the new features being developed currently.\n"
+            "Innovation will continue to drive long-term growth into the next decade.\n"
+            "Markets will reward the disciplined approach we plan to maintain.\n",
+            # Mixed past + present + future, biased toward present.
+            "## Mixed Document\n\n"
+            "The company achieved record revenue last quarter according to filings.\n"
+            "Operations continue to run smoothly across all major regions today.\n"
+            "Customer acquisition costs are declining steadily over time periods.\n"
+            "The product team will ship a major release in the third quarter.\n"
+            "Market share remains strong despite increased competitive pressure.\n"
+            "Engineering velocity is accelerating as the team grows in size.\n"
+            "Forward guidance suggests continued momentum into the next year.\n",
+            # Heavy mix to exercise residue distribution.
+            "## Variety\n\n"
+            "We grew the topline by twenty percent last year through new launches.\n"
+            "The team will continue to expand into adjacent verticals next season.\n"
+            "Customers report high satisfaction across all major surveys conducted.\n"
+            "Margins improved as cost discipline took hold in the second half.\n"
+            "Future product lines will leverage the same go-to-market motion.\n"
+            "Operations are stable and predictable across our global footprint.\n"
+            "Several risks remain on the horizon but we plan to address them.\n",
+        ]
+        for doc in cases:
+            result = temporal_orientation(doc)
+            total = (
+                result["past_pct"] + result["present_pct"]
+                + result["future_pct"]
+            )
+            assert total == 100, (
+                f"distribution must sum to exactly 100; got {total} "
+                f"for doc starting {doc[:60]!r}: past="
+                f"{result['past_pct']}, present={result['present_pct']}, "
+                f"future={result['future_pct']}"
+            )
+
+    def test_empty_document_returns_zero_pcts(self):
+        """Zero-sentence edge case: empty (or whitespace-only) input
+        must return all-zero pcts rather than spuriously assigning the
+        residue to a bucket. Pinning this explicitly because the LR
+        algorithm's residue-distribution loop would otherwise read from
+        a zero-floor / zero-fractional triad and assign the residue to
+        whichever bucket sorted first. Documents that fail
+        split_sentences's >30-char filter (very short prose, fragments)
+        also land here; the early-return guards them too.
+        """
+        for doc in ("", "   ", "\n\n\n", "Short. Tiny. Brief."):
+            result = temporal_orientation(doc)
+            assert result["past_pct"] == 0
+            assert result["present_pct"] == 0
+            assert result["future_pct"] == 0
+
 
 # ================================================================
 # GROUP 4: EPISTEMIC BASIS

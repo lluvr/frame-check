@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -23,6 +24,9 @@ WHEEL_TARGET = "/tmp/fc-target"
 SCRIPT = f"{WHEEL_TARGET}/mcp_server.py"
 
 results: list[tuple[str, bool, str]] = []
+
+
+_SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 
 
 def record(name: str, ok: bool, note: str = "") -> None:
@@ -62,16 +66,26 @@ def main() -> int:
 
     try:
         # 1. initialize handshake
+        # Version assertion: verify the field is a valid M.m.p semver.
+        # Pinning to a specific number ("0.8.0", "0.8.2") was the prior
+        # shape and required driver edits on every release; pinning is
+        # now lift_dry_run.py's job (pre-release) so this driver stays
+        # release-agnostic.
         resp = call("initialize", {"protocolVersion": "2024-11-05"})
+        info = resp["result"]["serverInfo"]
+        version_str = info.get("version", "")
+        version_ok = (
+            isinstance(version_str, str)
+            and bool(_SEMVER_RE.match(version_str))
+        )
         ok = (
             resp.get("result", {}).get("protocolVersion") == "2024-11-05"
-            and resp["result"]["serverInfo"]["name"] == "frame-check"
-            and resp["result"]["serverInfo"]["version"] == "0.8.2"
+            and info["name"] == "frame-check"
+            and version_ok
         )
         record("initialize handshake", ok,
                f"protocol={resp['result']['protocolVersion']} "
-               f"server={resp['result']['serverInfo']['name']}/"
-               f"{resp['result']['serverInfo']['version']}")
+               f"server={info['name']}/{version_str}")
 
         # 2. capabilities advertised
         caps = resp["result"]["capabilities"]

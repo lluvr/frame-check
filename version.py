@@ -4,9 +4,35 @@ Frame Check version constants.
 Two version axes:
 
   FRAME_CHECK_VERSION
-    Semantic version of the application as a whole. Bumps when a release
-    is cut. Lives in this file so it survives rebases. Read at startup
-    by telemetry.py and stamped into every event.
+    The Frame Check methodology brand version. Tied to the
+    FRAME_DIVERGENCE_CONTRACT_v1 c1.0 spec: bumps when the methodology
+    contract version bumps (c1.1 -> 1.1.0; c2.0 -> 2.0.0; etc.).
+    Stamped into telemetry events, CITATION.cff, and the MCP
+    provenance.frame_check_version field so an agent or academic
+    citation resolves against the methodology snapshot that produced
+    the analysis.
+
+    Decoupled from MCP wheel SERVER_VERSION (mcp_server.py): a wheel
+    patch (bug fix, perf improvement, schema-additive change) bumps
+    SERVER_VERSION without bumping the brand; a brand bump (rare,
+    happens on contract revisions) does not require re-cutting the
+    wheel.
+
+    Decoupled from pyproject [project] version: pyproject is the
+    packaging artifact version (per-release), independent of brand
+    semantic. A wheel can ship `frame-check-mcp 0.8.x` against
+    methodology brand `1.0.0`; the two strings answer different
+    questions.
+
+    Pre-2026-04-28 stayed at 0.1.0 across the dev arc; bumped to
+    1.0.0 on 2026-04-28 when FRAME_DIVERGENCE_CONTRACT_v1 c1.0 + FVS
+    library v3 + calibration corpus + worked-examples + methodology
+    paper + public PyPI lift + SECURITY v2 + DCO + leakage audit
+    closed the 1.0-discipline bar. Telemetry events carry a clean
+    discontinuity at this commit; longitudinal queries that span the
+    boundary should pivot on PIPELINE_VERSION (which always uniquely
+    identifies the running code) rather than treating
+    FRAME_CHECK_VERSION as continuous across the bump.
 
   PIPELINE_VERSION
     Short git commit SHA of the running code. Bumps on every commit.
@@ -48,7 +74,7 @@ import os
 import subprocess
 from pathlib import Path
 
-FRAME_CHECK_VERSION = "0.1.0"
+FRAME_CHECK_VERSION = "1.0.0"
 
 SCHEMA_VERSION = 1
 

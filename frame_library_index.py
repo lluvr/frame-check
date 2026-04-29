@@ -185,3 +185,41 @@ def parse_entry_titles() -> dict[str, str]:
         m.group(1): m.group(2).strip()
         for m in _INDEX_ROW_RE.finditer(text)
     }
+
+
+# Filename pattern: every entry in data/frame_library/ follows
+# FVS-XXX_snake_case_title.md (e.g., FVS-001_frame_amplification.md).
+# parse_entry_filenames() returns {FVS-XXX: filename} so callers that
+# need the canonical source-tree path (e.g., to build a clickable
+# GitHub URL pointing at the entry's markdown) can resolve the slug
+# without each carrying their own directory-scan logic.
+_ENTRY_FILENAME_RE = re.compile(r"^(FVS-\d{3})_.+\.md$")
+
+
+def parse_entry_filenames() -> dict[str, str]:
+    """Per-entry source filename from data/frame_library/.
+
+    Used by canon-graph reference shapes that need to construct a
+    URL pointing at the entry's markdown source (e.g., a GitHub blob
+    link an end-user can click). The filename carries the human-
+    readable slug after the FVS-ID prefix, which the
+    {FVS-ID -> title} map alone does not give us in a slugified form
+    suitable for a URL path.
+
+    Returns {FVS-XXX: filename} for every file in
+    data/frame_library/ that matches the canonical naming pattern.
+    Missing directory or empty listing returns an empty dict. Never
+    raises; callers should treat a missing entry as "no canonical
+    URL available" and fall back to the resource URI or bare fvs_id.
+    """
+    if not _LIBRARY_DIR.is_dir():
+        return {}
+    out: dict[str, str] = {}
+    try:
+        for fname in _LIBRARY_DIR.iterdir():
+            m = _ENTRY_FILENAME_RE.match(fname.name)
+            if m:
+                out[m.group(1)] = fname.name
+    except OSError:
+        return {}
+    return out

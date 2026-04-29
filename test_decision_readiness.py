@@ -98,13 +98,19 @@ def test_dimensions_carry_library_entries_citations():
                 f"{dim_name} ref URI/fvs_id mismatch: {ref!r}",
             )
             # Public URL: HTTP consumers (browser, citation tools)
-            # resolve here. Must be the canonical frame.clarethium
-            # library page so citations are stable.
+            # resolve here. Must be the canonical GitHub markdown URL
+            # for the entry so citations are stable. Pin the
+            # ID-presence invariant rather than the full filename so
+            # adding entries or renaming slugs does not break this
+            # test.
+            public_url = ref.get("public_url") or ""
             _check(
-                ref.get("public_url", "").startswith(
-                    "https://frame.clarethium.com/corpus/library/"
+                public_url.startswith(
+                    "https://github.com/lluvr/frame-check-mcp"
+                    "/blob/master/data/frame_library/"
                 )
-                and ref["public_url"].endswith(f"{ref['fvs_id']}.html"),
+                and f"{ref['fvs_id']}_" in public_url
+                and public_url.endswith(".md"),
                 f"{dim_name} ref missing/invalid public_url: {ref!r}",
             )
             # Title field: human-readable Name from INDEX.md so
@@ -288,7 +294,8 @@ def test_fired_library_entries_surfaces_fvs010_in_coverage():
         f"firing ref missing/wrong library_resource_uri: {fired!r}",
     )
     _check(
-        fired.get("public_url", "").endswith("FVS-010.html"),
+        "FVS-010_" in (fired.get("public_url") or "")
+        and (fired.get("public_url") or "").endswith(".md"),
         f"firing ref missing/wrong public_url: {fired!r}",
     )
     # FVS-010 is NOT in calibration/evidence/robustness/counterfactual

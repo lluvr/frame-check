@@ -25,6 +25,12 @@ from framing import (
     detect_coverage, temporal_orientation,
     detect_voice, detect_epistemic_basis,
 )
+from prompt_safety import (
+    PromptInjectionAttempt,
+    SAFETY_INSTRUCTION,
+    check_user_text_safe,
+    wrap_user_text,
+)
 from source_network import verify_claims_source_network
 
 
@@ -34,9 +40,25 @@ from source_network import verify_claims_source_network
 
 GENERATION_PROMPT = """Write a detailed, factual analysis of the following topic. Include specific statistics, numbers, dates, and data points where relevant. Structure your response with clear sections.
 
-Topic: {topic}
+{safety_instruction}
+
+Topic:
+{wrapped_topic}
 
 Write 300-500 words with specific, verifiable claims."""
+
+
+def _render_generation_prompt(topic: str) -> str:
+    """Render GENERATION_PROMPT with topic wrapped in V4.2 sentinels.
+
+    Caller MUST have already screened ``topic`` via
+    ``check_user_text_safe`` and propagated any
+    :class:`PromptInjectionAttempt` to its own caller.
+    """
+    return GENERATION_PROMPT.format(
+        safety_instruction=SAFETY_INSTRUCTION,
+        wrapped_topic=wrap_user_text(topic),
+    )
 
 
 # ================================================================
@@ -67,11 +89,16 @@ def generate_gemini(topic):
     (None, _empty_usage()) so callers can unpack uniformly.
     """
     try:
+        check_user_text_safe(topic)
+    except PromptInjectionAttempt:
+        return None, _empty_usage()
+
+    try:
         import google.genai as genai
         client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
         response = client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=GENERATION_PROMPT.format(topic=topic),
+            contents=_render_generation_prompt(topic),
             config={"temperature": 0.7, "max_output_tokens": 2048},
         )
         text = response.text if response.text else None
@@ -118,6 +145,11 @@ def generate_grok(topic):
     prompt_tokens / completion_tokens.
     """
     try:
+        check_user_text_safe(topic)
+    except PromptInjectionAttempt:
+        return None, _empty_usage()
+
+    try:
         from openai import OpenAI
         client = OpenAI(
             api_key=os.environ.get("XAI_API_KEY"),
@@ -125,7 +157,7 @@ def generate_grok(topic):
         )
         response = client.chat.completions.create(
             model="grok-4-1-fast",
-            messages=[{"role": "user", "content": GENERATION_PROMPT.format(topic=topic)}],
+            messages=[{"role": "user", "content": _render_generation_prompt(topic)}],
             max_completion_tokens=2048,
             temperature=0.7,
         )

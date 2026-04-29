@@ -35,6 +35,14 @@ import os
 from collections import Counter
 from typing import Any, Optional
 
+# library_entry_ref is the single source of truth for the canon-graph
+# reference shape. Importing here so typical_co_fires / typical_co_absences
+# can carry the same {library_resource_uri, library_url} pair as the
+# top-level frame_library_matches and absent_frames blocks; without this
+# the co-pattern entries were citation_uri-only and end-users in MCP
+# clients had no clickable link to follow.
+from decision_readiness import library_entry_ref as _library_entry_ref
+
 
 # Top-K cap on co-fire and co-absence lists. Three is a balance
 # between informativeness (the agent gets the dominant pattern) and
@@ -432,6 +440,7 @@ def get_frame_corpus_context(
                 "fvs_id": entry["fvs_id"],
                 "count": entry["count"],
                 "citation_uri": f"frame-check://library/{entry['fvs_id']}",
+                "library_url": _library_entry_ref(entry["fvs_id"]).get("public_url"),
             }
             for entry in frame_stats["typical_co_fires"]
         ],
@@ -440,6 +449,7 @@ def get_frame_corpus_context(
                 "fvs_id": entry["fvs_id"],
                 "count": entry["count"],
                 "citation_uri": f"frame-check://library/{entry['fvs_id']}",
+                "library_url": _library_entry_ref(entry["fvs_id"]).get("public_url"),
             }
             for entry in frame_stats["typical_co_absences"]
         ],

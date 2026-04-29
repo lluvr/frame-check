@@ -101,6 +101,13 @@ PYTEST_SUITES = [
     # MCP server hardening: Phase 5 + 0.8.0 publish-readiness audit
     "test_mcp_security_phase5.py",
     "test_mcp_adversarial.py",
+    # Prompt-injection guard for non-V4.2 LLM endpoints
+    # (framing_ai, reframe, comparison, consensus). Every endpoint
+    # must reject sentinel-bearing user content before any LLM client
+    # is constructed; the suite uses patched-client assertions to
+    # catch any future refactor that re-orders rejection past the
+    # network call.
+    "test_prompt_safety.py",
 ]
 
 REPO_ROOT = Path(__file__).resolve().parent

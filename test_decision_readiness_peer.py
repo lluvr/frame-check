@@ -210,7 +210,7 @@ def test_fired_pattern_only_one_peer_surfaces_in_comparison():
         {
             "fvs_id": "FVS-007", "title": "Failure Framing",
             "library_resource_uri": "frame-check://library/FVS-007",
-            "public_url": "https://frame.clarethium.com/corpus/library/FVS-007.html",
+            "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-007_failure_framing.md",
         },
     ]
     b = _profile()
@@ -252,7 +252,7 @@ def test_fired_patterns_in_both_peers_does_not_register_difference():
     fired_ref = {
         "fvs_id": "FVS-001", "title": "Frame Amplification",
         "library_resource_uri": "frame-check://library/FVS-001",
-        "public_url": "https://frame.clarethium.com/corpus/library/FVS-001.html",
+        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md",
     }
     a = _profile()
     a["dimensions"]["coverage"]["fired_library_entries"] = [fired_ref]

@@ -2,15 +2,17 @@ cff-version: 1.2.0
 message: >-
   If you use Frame Check in academic work, please cite it using the
   metadata below. The methodology paper and frame library are
-  separately citeable research artifacts; see corpus.clarethium.com.
+  separately citeable research artifacts; see the references block
+  for canonical URLs (the hosted corpus surface at
+  corpus.clarethium.com is currently paused).
 title: "Frame Check: a research instrument for framing and verification in documents"
 type: software
 authors:
   - family-names: Lucic
     given-names: Lovro
     website: "https://blog.clarethium.com"
-repository-code: "https://github.com/lluvr/frame-check"
-url: "https://frame.clarethium.com"
+repository-code: "https://github.com/lluvr/frame-check-mcp"
+url: "https://github.com/lluvr/frame-check-mcp"
 abstract: >-
   Frame Check is a structural framing analysis tool and public
   research program. It names which perspectives a document takes,
@@ -28,23 +30,25 @@ keywords:
   - source network verification
   - frame vocabulary standard
 license: Apache-2.0
-version: "0.8.0-pre"
-date-released: "2026-04-26"
+version: "1.0.0"
+date-released: "2026-04-28"
 references:
   - type: article
     title: "Frame Check Methodology"
     authors:
       - family-names: Lucic
         given-names: Lovro
-    url: "https://frame.clarethium.com/corpus/methodology/"
+    url: "https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md"
     license: CC-BY-4.0
     year: 2026
+    notes: "Bundled with the frame-check-mcp PyPI wheel as METHODOLOGY.md. The hosted corpus surface at https://frame.clarethium.com/corpus/methodology/ is paused while production is paused; the canonical text is the bundled file."
   - type: data
     title: "Frame Vocabulary Standard"
     authors:
       - family-names: Lucic
         given-names: Lovro
-    url: "https://frame.clarethium.com/corpus/library/"
+    url: "https://github.com/lluvr/frame-check-mcp/tree/master/data/frame_library"
     license: CC-BY-4.0
     version: "0.2.0"
     year: 2026
+    notes: "Bundled with the frame-check-mcp PyPI wheel as data/frame_library/. The hosted corpus surface at https://frame.clarethium.com/corpus/library/ is paused while production is paused; the canonical entries are the bundled markdown files."

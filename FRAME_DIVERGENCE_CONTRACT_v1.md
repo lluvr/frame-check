@@ -1,8 +1,8 @@
 # Frame Divergence v1, Part 2: Contract
 
-The interface contract for the `divergence` block inside `frame_check` output. Part 2 of 4. Binds interface, not implementation. Specifies the block shape, inputs that activate it, faithfulness guarantees specific to absence claims, provenance requirements, the MCP-vs-web capability regime, MCP resource URIs, error envelope, and versioning commitments.
+The interface contract for the `divergence` block inside `frame_check` output. Binds interface, not implementation. Specifies the block shape, inputs that activate it, faithfulness guarantees specific to absence claims, provenance requirements, the MCP-vs-web capability regime, MCP resource URIs, error envelope, and versioning commitments.
 
-**Status:** v1, Part 2 of 4. Contract version c1.0 (pre-adoption). Reflects operator-approved Rec II enhance-existing (no separate tool) and Rec I capability regime per ENGINE_TIER_RECOMMENDATIONS_v1.md.
+**Status:** v1 contract `c1.0` is canonical and shipping (PyPI `frame-check-mcp` `0.8.0` / `0.8.1` / `0.8.2`). The v1 c1.0 contract carries forward unchanged for backward compatibility under the broader v2 layered-architecture spec (`FRAME_DIVERGENCE_v2.md`, 2026-04-25). The originally-planned v1 Parts 3-4 were superseded by v2; this contract document remains the canonical Part 2 reference and the citation target for any caller binding to the existing `divergence` block. Reflects operator-approved Rec II enhance-existing (no separate tool) and Rec I capability regime per `ENGINE_TIER_RECOMMENDATIONS_v1.md`.
 **Author:** Lovro Lucic
 **Date:** 2026-04-23 (last revised 2026-04-23 evening for Rec II/I alignment and V4.2-alpha status disclosure)
 **Depends on:** FRAME_DIVERGENCE_v1.md (Part 1). Every claim here honors Part 1 §5 non-negotiables. If a claim here conflicts with Part 1, Part 1 wins and this document is updated.
@@ -31,7 +31,7 @@ The `divergence` block is present on a `frame_check` response when:
 - The caller requested divergence explicitly via an input flag (§3.1), AND
 - Raw material for composition exists (library resources reachable, detection evidence available).
 
-Surface defaults for `include_divergence`: MCP defaults `false` (explicit opt-in; prevents forcing caller's agent to run V4.2 composition unexpectedly); web defaults `false` pending web V4.2 server-side implementation (Rec IV Pillar 2).
+Surface defaults for `include_divergence`: MCP defaults `true` (the divergence block is the headline capability; see §3.1 for the launch decision); web defaults `false` pending web V4.2 server-side implementation (Rec IV Pillar 2).
 
 When absent, the `frame_check` response carries only the `analysis` block and `agent_guidance` (pre-existing fields). v1-contract consumers that ignore unknown fields absorb this as additive.
 
@@ -50,9 +50,9 @@ This document specifies the divergence-related inputs. Existing `frame_check` in
 
 ### 3.1 `include_divergence` (optional, boolean)
 
-Opt-in flag. When `true`, the divergence block is present in the response subject to §2.2 conditions. When `false` or absent, no divergence block. Surface defaults per Rec I:
-- **MCP:** default `false`. Consumer explicitly opts in. Returning divergence by default would force caller's agent to run V4.2 composition unexpectedly.
-- **Web:** default `false`. User clicks the "run divergence analysis" action on the results page; server-side V4.2 with rate limiting per Rec I.
+Default-on flag. When `true` (default), the divergence block is present in the response subject to §2.2 conditions. When `false` (explicit opt-out), no divergence block. Surface defaults as shipped in `frame-check-mcp` 0.8.0 onward:
+- **MCP:** default `true` (revised from the earlier draft `false`). Caller's agent already invokes its own LLM for downstream rendering; the divergence block adds caller-side V4.2 capability via `agent_guidance.how_to_render_divergence` without invoking any Frame Check LLM (zero per-call cost, vendor independence by construction). Callers that want the pre-divergence response shape pass `include_divergence=false`. The default flip from `false` to `true` happened at the 0.8.0 launch decision (commit `2e83fec` / `94ad5fe`); rationale: the V4.2-first launch commitment makes the divergence block the first-class surface, not an opt-in. The earlier `false` default in this contract draft is preserved in git history; the shipped wheel is the canonical reference and this section is its spec.
+- **Web:** default `true` rate-limited (rate-limit per IP per day per Rec I; consult web app `security.DailyFeatureLimit` for the active cap).
 
 ### 3.2 `domain_hint` (optional, enumerated string)
 
@@ -203,7 +203,7 @@ On MCP, `frame_check` returns:
 
 Frame Check's MCP server does not invoke an external LLM. The `analysis_cost_usd == 0.0` MCP contract holds. The caller's agent (Claude Desktop's Claude, Cursor's configured model, etc.) performs the V4.2 judge step using its own model and bears the LLM cost.
 
-MCP surface default for `include_divergence`: `false`. Caller opts in. No rate limit from Frame Check.
+MCP surface default for `include_divergence`: `true` per §3.1 (the divergence block is the headline capability; callers wanting the pre-divergence response shape pass `include_divergence=false` explicitly). No rate limit from Frame Check.
 
 ### 7.2 Web: server-side V4.2, rate-limited, cost-bounded
 
@@ -259,10 +259,10 @@ The `frame-check://` scheme itself is the established Frame Check MCP convention
 2. **Conflict audit (complete).** Completed 2026-04-23. No external conflict with `frame-check://`. Internal conflict with the incorrect `framecheck://` draft was caught and corrected before commit.
 3. **Document the new paths in MCP_SERVER.md.** Section "Frame Divergence spec" added in commit `25c28f0` listing the spec path patterns. Library/methodology/provenance versioned paths documentation remains pending.
 4. **Consistency sweep across Frame Check docs.** Existing docs use `frame-check://` consistently; this document and FRAME_DIVERGENCE_v1.md aligned in the same commit.
-5. **Announce the new paths when MCP publishing resumes.** Blocked on MCP publish hold.
-6. **Include path coverage in package metadata when PyPI publishing resumes.** Blocked on PyPI publish hold.
+5. **Announce the new paths.** Publish hold lifted 2026-04-27; `frame-check-mcp` 0.8.0/0.8.1/0.8.2 shipped on PyPI. Path-list announcement in MCP_SERVER.md is the announcement vehicle (the spec resource handlers ship with each release).
+6. **Include path coverage in package metadata.** Path coverage is wheel-resident (mcp_server.py resource handlers shipped per step 1); package-metadata path enumeration in pyproject.toml description is a future-extension polish item, not blocking.
 
-Steps 1-4 are complete or partially complete (spec-paths shipped; versioned library/methodology/provenance paths are additive future extensions). Steps 5-6 remain blocked on publishing holds.
+Steps 1-4 are complete or partially complete (spec-paths shipped; versioned library/methodology/provenance paths are additive future extensions). Steps 5-6 transitioned post-publish-hold-lift to ongoing maintenance items.
 
 ### 8.6 URI stability
 

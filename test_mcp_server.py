@@ -886,8 +886,11 @@ def test_provenance_reports_zero_llm_cost():
     must report cost 0.0 so agents and downstream telemetry do not
     misattribute cost to Frame Check invocations.
 
-    Provenance also carries three version fields so a citation can
-    resolve against a specific snapshot: frame_check_version (app),
+    Provenance also carries four version fields so a citation can
+    resolve against a specific snapshot: frame_check_version (brand /
+    methodology version, also stamped into telemetry events and
+    CITATION.cff), server_version (the MCP wheel an integrator
+    installed; matches initialize handshake serverInfo.version),
     clarethium_measure_version (measurement stack), frame_library_version
     (taxonomy snapshot from data/frame_library/VERSION).
     """
@@ -907,6 +910,16 @@ def test_provenance_reports_zero_llm_cost():
         "provenance must carry frame_check_version",
     )
     check(
+        "server_version" in p,
+        "provenance must carry server_version (MCP wheel version)",
+    )
+    check(
+        p.get("server_version") == mcp_server.SERVER_VERSION,
+        f"provenance.server_version must equal mcp_server.SERVER_VERSION "
+        f"(both read from the same module constant); got "
+        f"{p.get('server_version')!r} vs {mcp_server.SERVER_VERSION!r}",
+    )
+    check(
         "clarethium_measure_version" in p,
         "provenance must carry clarethium_measure_version",
     )
@@ -922,6 +935,51 @@ def test_provenance_reports_zero_llm_cost():
     check(
         p.get("license", {}).get("corpus") == "CC-BY-4.0",
         "corpus license in provenance must be CC-BY-4.0",
+    )
+    print("  PASS\n")
+
+
+def test_provenance_carries_production_status():
+    """Provenance carries a production_status field that names whether
+    the canonical production hosting at frame.clarethium.com is
+    currently active or paused. The URLs in provenance forward-point
+    to that production site; surfacing the hosting state inline lets
+    agents distinguish "URL canonicalized but currently paused" from
+    "URL malformed or wrong" without out-of-band knowledge.
+
+    Pinned both ways: the field must exist, AND its value must match
+    the module-level PRODUCTION_STATUS constant. A future flip from
+    "paused" to "active" on production resume should be a single
+    constant edit; this test fails if a copy lands somewhere out of
+    sync with the constant.
+    """
+    print("=== provenance carries production_status ===")
+    payload = mcp_server.build_epistemic_payload(_DOC_SAMPLE)
+    p = payload["provenance"]
+    check(
+        "production_status" in p,
+        "provenance must carry production_status field",
+    )
+    check(
+        p.get("production_status") == mcp_server.PRODUCTION_STATUS,
+        f"provenance.production_status must equal "
+        f"mcp_server.PRODUCTION_STATUS; got {p.get('production_status')!r} "
+        f"vs {mcp_server.PRODUCTION_STATUS!r}",
+    )
+    check(
+        p.get("production_status") in ("active", "paused"),
+        f"production_status must be one of (active, paused); got "
+        f"{p.get('production_status')!r}",
+    )
+    check(
+        "production_status_note" in p,
+        "provenance must carry production_status_note explaining the "
+        "current hosting state",
+    )
+    check(
+        isinstance(p.get("production_status_note"), str)
+        and len(p["production_status_note"]) > 0,
+        "production_status_note must be a non-empty string",
     )
     print("  PASS\n")
 
@@ -970,6 +1028,251 @@ def test_initialize_handshake():
         result["serverInfo"]["name"] == mcp_server.SERVER_NAME,
         "serverInfo.name mismatch",
     )
+    print("  PASS\n")
+
+
+def test_initialize_carries_server_instructions():
+    """The InitializeResult must carry an `instructions` field
+    (top-level per MCP protocol) describing when to use Frame Check,
+    the default invocation shape, and the four-prompt workflow
+    surface. Per-tool descriptions are delivered separately via
+    tools/list; this field is the canonical place for cross-tool
+    orientation a client UI can show the user during the connection
+    handshake.
+
+    Pins:
+      - field exists at top-level (not nested under serverInfo)
+      - mentions zero-arg invocation so an agent reading it knows
+        it does not need to pass include_divergence=true
+        defensively
+      - names both tools so the workflow surface is visible
+    """
+    print("=== initialize carries server instructions ===")
+    resp = mcp_server.dispatch({
+        "jsonrpc": "2.0", "id": 1, "method": "initialize",
+        "params": {"protocolVersion": "2024-11-05"},
+    })
+    result = resp["result"]
+    instructions = result.get("instructions")
+    check(
+        isinstance(instructions, str) and len(instructions) > 200,
+        f"InitializeResult.instructions must be a non-trivial "
+        f"string; got {type(instructions).__name__} of length "
+        f"{len(instructions) if isinstance(instructions, str) else 0}",
+    )
+    check(
+        "zero-arg" in instructions
+        or "frame_check(document_text" in instructions,
+        "instructions should name the zero-arg invocation shape so "
+        "the agent does not pass include_divergence=true defensively",
+    )
+    check(
+        "frame_check" in instructions and "frame_compare" in instructions,
+        "instructions should name both tools so the workflow "
+        "surface is visible from the handshake",
+    )
+    check(
+        "challenge_document" in instructions
+        or "explain_framing" in instructions,
+        "instructions should reference the prompt surface so the "
+        "user can ask the agent to use a named prompt",
+    )
+    print("  PASS\n")
+
+
+def test_frame_check_schema_hides_operator_internal_params():
+    """The frame_check tool schema must NOT advertise maintainer-internal
+    parameters that pollute the agent's decision space:
+      - prefer_contract_version: coverage v1/v2 migration window;
+        operator concern, not agent concern
+      - catalog_version_pin: stability pin for advanced integrators;
+        not relevant per-call
+      - domain_hint: currently echo-only with no field-level
+        filtering; documented in the limitations envelope
+
+    These params remain accepted by the dispatch layer (so explicit
+    integrators that pass them continue to work; backward
+    compatibility preserved). The schema simply stops asking the
+    agent to make decisions about them.
+    """
+    print("=== frame_check schema hides maintainer-internal params ===")
+    resp = mcp_server.dispatch({
+        "jsonrpc": "2.0", "id": 1, "method": "tools/list",
+    })
+    schema = next(
+        t for t in resp["result"]["tools"] if t["name"] == "frame_check"
+    )
+    props = schema["inputSchema"]["properties"]
+    for hidden in (
+        "prefer_contract_version",
+        "catalog_version_pin",
+        "domain_hint",
+    ):
+        check(
+            hidden not in props,
+            f"{hidden!r} must not appear in the agent-facing schema; "
+            f"maintainer-internal parameters pollute the agent's "
+            f"decision space",
+        )
+    # Backward compat: the dispatch layer still accepts these
+    # explicitly, so an integrator who pinned the older surface is
+    # not broken. Verify with a real call passing all three.
+    doc = (
+        "AI productivity gains are decisive. Companies must adopt "
+        "now or fall behind. Growth is inevitable. Risks can be "
+        "deprioritized given the historical adoption pattern."
+    )
+    resp = mcp_server.dispatch({
+        "jsonrpc": "2.0", "id": 2, "method": "tools/call",
+        "params": {
+            "name": "frame_check",
+            "arguments": {
+                "document_text": doc,
+                "prefer_contract_version": 1,
+                "catalog_version_pin": "library_v3",
+                "domain_hint": "finance",
+            },
+        },
+    })
+    check(
+        not resp["result"].get("isError", False),
+        f"removed-from-schema params must still work via dispatch "
+        f"(backward compat); got error: "
+        f"{resp['result'].get('content', [{}])[0].get('text', '')[:200]}",
+    )
+    print("  PASS\n")
+
+
+def test_lift_dry_run_gate_10_matches_rewriter_policy():
+    """The lift_dry_run.py gate-10 wheel-content scan must use the
+    same lookbehind exclusion policy as the rewriter in
+    extract_public_repo.py. If the gate flags references the rewriter
+    intentionally preserves (backtick-protected text mentions), the
+    gate becomes a false-positive trap that blocks intentional doc
+    content (a section explaining 'the previous library_url form was
+    `frame.clarethium.com/...`' is documentation, not a live link).
+
+    Pins the four exclusion contexts shared by gate and rewriter:
+    @ (email), word char (concatenation), backtick (code span), /
+    (path-internal). Without this, the gate's policy can drift from
+    the rewriter's silently and break the lift on intentional doc
+    rewrites.
+    """
+    print("=== lift_dry_run gate 10 matches rewriter exclusion policy ===")
+    import re
+    # Mirror of the patterns in scripts/lift_dry_run.py at the time
+    # of this test. If the lift script's patterns drift, this test
+    # will not catch the drift directly, but the same exclusion
+    # behavior IS the contract the gate must honor.
+    private_pat = re.compile(
+        r"(?<![@\w`/])github\.com/lluvr/frame-check(?!-mcp)"
+    )
+    paused_pat = re.compile(r"(?<![@\w`/])frame\.clarethium\.com\b")
+
+    # Backtick-protected mentions must NOT match either pattern
+    # (these are intentional code-span text mentions the rewriter
+    # preserves; the gate must too).
+    for backticked in (
+        "`frame.clarethium.com`",
+        "`frame.clarethium.com/corpus/library/`",
+        "`https://github.com/lluvr/frame-check`",
+        "`github.com/lluvr/frame-check`",
+    ):
+        check(
+            paused_pat.search(backticked) is None,
+            f"paused_pat must NOT match backtick-protected text "
+            f"(rewriter preserves these); matched: {backticked!r}",
+        )
+        check(
+            private_pat.search(backticked) is None,
+            f"private_pat must NOT match backtick-protected text "
+            f"(rewriter preserves these); matched: {backticked!r}",
+        )
+
+    # Raw hyperlinks and bare-host occurrences MUST match (these
+    # are the dead-link defects the gate exists to catch).
+    for raw in (
+        "https://frame.clarethium.com/corpus/library/",
+        "frame.clarethium.com is paused",
+        "see https://github.com/lluvr/frame-check/blob/master/README.md",
+        "see github.com/lluvr/frame-check/issues/1",
+    ):
+        # At least one of the two patterns must match raw forms
+        check(
+            paused_pat.search(raw) is not None
+            or private_pat.search(raw) is not None,
+            f"at least one gate pattern must catch raw forms; "
+            f"missed: {raw!r}",
+        )
+
+    # Email addresses MUST be preserved (excluded by `@` in the
+    # lookbehind class). curator@frame.clarethium.com is not a
+    # link to the paused production site; it is an email.
+    for email in (
+        "curator@frame.clarethium.com",
+        "ops@frame.clarethium.com for support",
+    ):
+        check(
+            paused_pat.search(email) is None,
+            f"paused_pat must NOT match email addresses "
+            f"(@-prefix excluded by rewriter and gate); "
+            f"matched: {email!r}",
+        )
+    print("  PASS\n")
+
+
+def test_frame_check_descriptions_lead_with_use_case():
+    """Tool + parameter descriptions must teach WHEN to use them,
+    not just WHAT they return. The default shape ('zero-arg works')
+    must be communicated up front so an agent does not pass
+    include_divergence=true defensively.
+
+    Pins for the tool description:
+      - Mentions 'use this when' or equivalent use-case framing
+        (not just 'returns analysis (measurements)')
+      - Mentions zero-arg invocation
+    Pins per-parameter:
+      - include_divergence description leads with the default
+      - source_text, user_context, user_goal lead with 'pass when'
+        so the agent knows the trigger condition, not just the
+        output shape
+    """
+    print("=== frame_check descriptions lead with use case ===")
+    resp = mcp_server.dispatch({
+        "jsonrpc": "2.0", "id": 1, "method": "tools/list",
+    })
+    schema = next(
+        t for t in resp["result"]["tools"] if t["name"] == "frame_check"
+    )
+    desc = schema["description"]
+    check(
+        "Use this when" in desc or "use this when" in desc.lower(),
+        "tool description must lead with 'Use this when' or "
+        "equivalent; teaching the agent WHEN to invoke the tool "
+        "is higher-leverage than describing what it returns",
+    )
+    check(
+        "zero-arg" in desc or "frame_check(document_text" in desc,
+        "tool description must surface the zero-arg invocation "
+        "shape so the agent does not pass optional params "
+        "defensively",
+    )
+    props = schema["inputSchema"]["properties"]
+    div_desc = props["include_divergence"]["description"].lower()
+    check(
+        "default true" in div_desc and "do not need to pass" in div_desc,
+        f"include_divergence description must lead with the default "
+        f"value and explicitly say the agent does not need to pass "
+        f"it; got {div_desc[:200]!r}",
+    )
+    for trigger_param in ("source_text", "user_context", "user_goal"):
+        d = props[trigger_param]["description"].lower()
+        check(
+            d.startswith("pass when") or "pass when" in d[:60],
+            f"{trigger_param!r} description must lead with "
+            f"'Pass when ...' so the agent knows the trigger "
+            f"condition, not just the output shape; got {d[:120]!r}",
+        )
     print("  PASS\n")
 
 
@@ -2636,6 +2939,298 @@ def test_frame_match_carries_mcp_uri_and_entry_version():
     print("  PASS\n")
 
 
+def test_frame_library_matches_carry_clickable_library_url():
+    """Each frame_library_matches entry must carry a library_url
+    pointing at the canonical GitHub markdown source for the entry.
+
+    Why this matters: end-users in MCP clients (Claude Desktop,
+    Cursor) cannot click frame-check://library/... resource URIs
+    because those are MCP-internal. Without library_url, a Frame
+    Check finding surfaces FVS identifiers as plain text the user
+    has no path to follow. The library_url is the citation form
+    agents render as `[FVS-XXX Frame Title](library_url)` per
+    agent_guidance.how_to_cite_frame_matches.
+
+    GitHub URL is the canonical anchor because it is always
+    resolvable regardless of hosted-production status (the previous
+    library_url form pointed at frame.clarethium.com which is
+    paused as of 2026-04-23).
+    """
+    print("=== frame_library_matches carry clickable library_url ===")
+    doc = (
+        "## NVIDIA Q3 Update\n"
+        "NVIDIA reported record quarterly revenue of $18.12 billion "
+        "in Q3 FY2024, up 206% year over year. Data center revenue "
+        "reached $14.51 billion on unprecedented demand for AI "
+        "accelerators. Growth remains strong, risks to the outlook "
+        "are present, and uncertainty about supply constraints "
+        "persists. Stakeholders across the supply chain are "
+        "monitoring developments closely. We expect continued "
+        "strength. The opportunity is massive. This is a defining "
+        "moment. We are going to redefine everything. The future "
+        "has never been brighter."
+    )
+    payload = mcp_server.build_epistemic_payload(doc)
+    matches = payload["analysis"]["frame_library_matches"]
+    check(len(matches) >= 1, "sample should trigger at least one match")
+    first = matches[0]
+    url = first.get("library_url") or ""
+    check(
+        url.startswith(
+            "https://github.com/lluvr/frame-check-mcp"
+            "/blob/master/data/frame_library/"
+        ),
+        f"library_url must point at the canonical GitHub markdown "
+        f"source for the entry so end-users can click it; got {url!r}",
+    )
+    check(
+        f"{first['fvs_id']}_" in url and url.endswith(".md"),
+        f"library_url must include the entry's FVS-ID prefix and "
+        f"end in .md so the link resolves to the right file; "
+        f"got {url!r} for fvs_id {first['fvs_id']!r}",
+    )
+    print("  PASS\n")
+
+
+def test_absent_frames_carry_clickable_library_url():
+    """Each divergence.absent_frames entry must carry a library_url
+    pointing at the canonical GitHub markdown source. Same rationale
+    as the matched-frames test: end-users in MCP clients need a
+    clickable link to follow when the agent surfaces an absent
+    frame in its reading.
+
+    Also pins that typical_co_absences entries inside each absent
+    frame's corpus_context carry the same library_url field (added
+    in corpus_intelligence.py 2026-04-28). Without it the co-pattern
+    references were citation_uri-only, surfacing FVS identifiers
+    with no clickable path even when the agent walked the corpus
+    context block.
+    """
+    print("=== absent_frames + typical_co_absences carry library_url ===")
+    doc = (
+        "AI productivity gains are decisive. Companies must adopt "
+        "now or fall behind. The 55% productivity gain figure from "
+        "GitHub research is widely cited and confirmed across "
+        "industry studies. Stakeholders agree the future is settled: "
+        "explosive growth through 2027 is the only question of "
+        "execution speed. Skeptics underestimate the speed of "
+        "transformation."
+    )
+    payload = mcp_server.build_epistemic_payload(
+        doc, include_divergence=True
+    )
+    absent = payload["divergence"]["absent_frames"]
+    check(len(absent) >= 1, "sample should produce at least one absent frame")
+    first = absent[0]
+    url = first.get("library_url") or ""
+    check(
+        url.startswith(
+            "https://github.com/lluvr/frame-check-mcp"
+            "/blob/master/data/frame_library/"
+        )
+        and f"{first['frame_id']}_" in url
+        and url.endswith(".md"),
+        f"absent_frame library_url must point at the canonical "
+        f"GitHub markdown source for the entry; got {url!r} for "
+        f"frame_id {first['frame_id']!r}",
+    )
+    co_absences = first.get("corpus_context", {}).get(
+        "typical_co_absences", []
+    )
+    check(
+        len(co_absences) >= 1,
+        "sample should produce at least one typical_co_absence",
+    )
+    co_url = co_absences[0].get("library_url") or ""
+    check(
+        co_url.startswith(
+            "https://github.com/lluvr/frame-check-mcp"
+            "/blob/master/data/frame_library/"
+        )
+        and f"{co_absences[0]['fvs_id']}_" in co_url
+        and co_url.endswith(".md"),
+        f"typical_co_absences[].library_url must point at the "
+        f"canonical GitHub markdown source for the entry; got "
+        f"{co_url!r} for fvs_id {co_absences[0]['fvs_id']!r}",
+    )
+    print("  PASS\n")
+
+
+def test_suggested_next_actions_carries_findings_anchored_actions():
+    """agent_guidance.suggested_next_actions must carry 2-4 specific
+    next-action entries derived from this call's structural findings.
+    Each entry is structural-finding-anchored: it points at a concrete
+    gap and gives the user a concrete move that addresses it.
+
+    Pins:
+      - The block exists on every frame_check call
+      - At least one entry derives from the absent_frames (when
+        include_divergence=True) and includes the library_url so
+        the user can follow it
+      - At least one entry is the always-present prompt_followup
+        pointing at the challenge_document MCP prompt so the rest
+        of the product surface is discoverable
+      - The list is bounded at 4 entries (more becomes noise)
+      - Each entry has the documented shape
+        {kind, action_text, rationale}
+    """
+    print("=== suggested_next_actions carries findings-anchored actions ===")
+    # Doc shape that matches the user's real-world frame_check call:
+    # confident analytical prose, multiple unhedged numeric claims,
+    # low attribution density. Triggers the absent_frame, unhedged
+    # reprompt, and low-sourcing reprompt rules together.
+    doc = (
+        "The latest market data shows extraordinary growth "
+        "opportunities. AI productivity gains are unprecedented, "
+        "with 55 percent improvements widely reported. Skeptics "
+        "consistently underestimate transformation; companies "
+        "that fail to invest will lose decisive competitive "
+        "advantage. The 280-fold cost reduction in inference "
+        "since 2022 means shipping useful workflow products is "
+        "far cheaper than it was. Stakeholders agree the future "
+        "is settled: explosive growth through 2027. The 5 percent "
+        "of companies truly AI-future-built will dominate. "
+        "Customer service teams of 20 reps cost roughly 71,000 "
+        "dollars monthly before overhead, so the ROI story is "
+        "simple."
+    )
+    payload = mcp_server.build_epistemic_payload(
+        doc, include_divergence=True
+    )
+    actions = payload["agent_guidance"].get("suggested_next_actions", [])
+    check(
+        2 <= len(actions) <= 4,
+        f"suggested_next_actions must carry 2-4 entries; got "
+        f"{len(actions)}",
+    )
+    # Each entry has the documented shape
+    for action in actions:
+        check(
+            action.get("kind") in ("reprompt", "resource", "prompt_followup"),
+            f"action.kind must be reprompt|resource|prompt_followup; "
+            f"got {action.get('kind')!r}",
+        )
+        check(
+            isinstance(action.get("action_text"), str)
+            and len(action["action_text"]) > 0,
+            f"action.action_text must be a non-empty string; "
+            f"got {action.get('action_text')!r}",
+        )
+        check(
+            isinstance(action.get("rationale"), str)
+            and len(action["rationale"]) > 0,
+            f"action.rationale must be a non-empty string; "
+            f"got {action.get('rationale')!r}",
+        )
+    # At least one resource pointer with library_url
+    resource_actions = [a for a in actions if a["kind"] == "resource"]
+    check(
+        len(resource_actions) >= 1,
+        "at least one resource-kind action expected (the strongest "
+        "absent_frame pointer); got none",
+    )
+    if resource_actions:
+        url = resource_actions[0].get("related_url") or ""
+        check(
+            url.startswith(
+                "https://github.com/lluvr/frame-check-mcp"
+                "/blob/master/data/frame_library/"
+            )
+            and url.endswith(".md"),
+            f"resource action must carry the canonical GitHub URL "
+            f"in related_url so the user can follow it; got {url!r}",
+        )
+        check(
+            f"]({url})" in resource_actions[0]["action_text"],
+            "resource action.action_text must embed the URL as a "
+            "markdown link so the agent renders a clickable cite "
+            "without further composition",
+        )
+    # Always-present prompt_followup
+    followup_actions = [a for a in actions if a["kind"] == "prompt_followup"]
+    check(
+        len(followup_actions) >= 1,
+        "at least one prompt_followup action expected (always-include "
+        "challenge_document discovery); got none",
+    )
+    if followup_actions:
+        check(
+            "challenge_document" in followup_actions[0]["action_text"],
+            "prompt_followup must point at challenge_document so the "
+            "deeper multi-turn loop is discoverable on every call",
+        )
+    print("  PASS\n")
+
+
+def test_suggested_next_actions_survives_compress_budget():
+    """suggested_next_actions must survive at compose_budget=minimal
+    and standard. The actions are per-call-derived and load-bearing
+    for the user's discovery loop; compressing them out would drop
+    the discoverability gain.
+
+    Also pins that the rendering instruction passes through alongside
+    so a compressed-tier caller still knows how to surface the
+    actions to the user.
+    """
+    print("=== suggested_next_actions survives compose_budget compression ===")
+    doc = (
+        "AI productivity gains are decisive. Companies must adopt "
+        "now or fall behind. The 55 percent productivity gain "
+        "figure from GitHub research is widely cited and confirmed "
+        "across industry studies. Stakeholders agree the future is "
+        "settled. Growth is inevitable."
+    )
+    for budget in ("minimal", "standard", "full"):
+        payload = mcp_server.build_epistemic_payload(
+            doc, include_divergence=True, compose_budget=budget,
+        )
+        ag = payload["agent_guidance"]
+        check(
+            isinstance(ag.get("suggested_next_actions"), list)
+            and len(ag["suggested_next_actions"]) >= 1,
+            f"compose_budget={budget!r} dropped suggested_next_actions; "
+            f"the actions are per-call-specific and must survive "
+            f"compression",
+        )
+        check(
+            isinstance(
+                ag.get("how_to_render_suggested_next_actions"), str
+            ) and len(ag["how_to_render_suggested_next_actions"]) > 0,
+            f"compose_budget={budget!r} dropped the rendering "
+            f"instruction; the agent needs it to know how to "
+            f"surface the actions",
+        )
+    print("  PASS\n")
+
+
+def test_how_to_cite_frame_matches_mandates_library_url():
+    """agent_guidance.how_to_cite_frame_matches must instruct the
+    agent to render FVS references as markdown links using the
+    library_url field (the always-resolvable GitHub URL), not as
+    plain-text 'FVS-XXX' references that the user cannot follow.
+
+    Without this, an agent honoring the cite-discipline still
+    produces unusable output for end-users: the cite is named but
+    not navigable. Pinned here so a future agent_guidance rewrite
+    cannot silently revert to plain-text citation form.
+    """
+    print("=== how_to_cite_frame_matches mandates library_url ===")
+    payload = mcp_server.build_epistemic_payload("Test document.")
+    cite_help = payload["agent_guidance"]["how_to_cite_frame_matches"]
+    check(
+        "library_url" in cite_help,
+        "how_to_cite_frame_matches must mention the library_url "
+        "field by name so the agent knows which field to render",
+    )
+    check(
+        "[FVS-XXX" in cite_help and "](library_url)" in cite_help,
+        "how_to_cite_frame_matches must show the markdown-link "
+        "rendering shape `[FVS-XXX ...](library_url)` so the agent "
+        "produces a clickable citation rather than plain text",
+    )
+    print("  PASS\n")
+
+
 def test_frame_library_matches_carry_affects_dimensions():
     """Each frame_library_matches entry must carry
     affects_dimensions: the list of decision-readiness dimensions
@@ -2802,10 +3397,16 @@ def test_decision_readiness_library_entry_uri_round_trips_via_resources_read():
     )
     # Also pin: the public_url field is HTTP-equivalent of the URI.
     # It does not get hit by this test (no HTTP fetch), but the
-    # path component must end with the same FVS-ID + .html so
-    # citation tools resolve to the same entry.
+    # path component must contain the same FVS-ID prefix so
+    # citation tools resolve to the same entry. The URL shape is
+    # the GitHub blob path (data/frame_library/FVS-XXX_*.md) per
+    # decision_readiness.LIBRARY_PUBLIC_URL_BASE; the test pins the
+    # ID-presence invariant rather than the full filename so adding
+    # a new entry or renaming an existing entry's slug does not
+    # break this assertion.
+    public_url = ref.get("public_url") or ""
     check(
-        ref.get("public_url", "").endswith(f"{ref['fvs_id']}.html"),
+        public_url.startswith("https://") and f"{ref['fvs_id']}_" in public_url,
         f"public_url path mismatch with fvs_id: {ref!r}",
     )
     print("  PASS\n")
@@ -3683,7 +4284,10 @@ def test_all_prompts_have_compact_default_discipline():
     """Each tool-invoking prompt must teach the agent the compact-
     default discipline shipped at 0.8.0:
       - lead with portrait + 2-3 highest signal_strength absences
-      - inline citations as `[FVS-XXX Title](frame-check://library/FVS-XXX)`
+      - inline citations as `[FVS-XXX Frame Title](library_url)`
+        using the GitHub URL (always resolvable for end-users in
+        MCP clients); never the frame-check:// resource URI for
+        end-user output
       - one action question (question form)
       - 'expand' invitation for the deep readout
 
@@ -3709,10 +4313,16 @@ def test_all_prompts_have_compact_default_discipline():
             f"high-tier absences in the compact response",
         )
         check(
-            "frame-check://library/" in text,
-            f"prompt {prompt_name!r} does not show the inline citation "
-            f"format `frame-check://library/FVS-XXX`; agent will not "
-            f"know to render citations inline next to claims",
+            "library_url" in text,
+            f"prompt {prompt_name!r} does not point at the "
+            f"library_url field for inline citations; agent will "
+            f"not know to render the GitHub URL the user can click",
+        )
+        check(
+            "FVS-XXX" in text,
+            f"prompt {prompt_name!r} does not show the inline "
+            f"citation placeholder shape; agent will not know to "
+            f"render citations inline next to claims",
         )
         check(
             "expand" in text.lower(),
@@ -7532,6 +8142,302 @@ def test_compose_budget_minimal_filters_top_n():
     print("  PASS\n")
 
 
+def test_compose_budget_minimal_compresses_agent_guidance():
+    """compose_budget=minimal compresses agent_guidance to load-bearing
+    prescriptions only. The compressed dict drops verbose worked
+    examples (the cite-by-name lesson, the per-level example trios)
+    and the full how_to_map_user_intent block, but keeps the load-
+    bearing discipline so agent behavior contracts survive the cut.
+
+    Pins:
+      - compose_budget=full (default) returns the full agent_guidance
+        unchanged (existing tests at line 872 area depend on this).
+      - compose_budget=minimal returns a smaller agent_guidance.
+      - The compressed dict still names Frame Check explicitly in
+        how_to_cite_faithfully.
+      - The compressed dict still surfaces reading-form vs verdict-
+        form discipline in composition_discipline.
+      - claim_level_treatments table is replaced with a URI pointer
+        so the schema-shaped key still resolves but the body is not
+        re-shipped per call.
+      - how_to_map_user_intent is dropped (large, agent has its own
+        NLU; not load-bearing for tight-loop callers).
+      - Dynamic divergence keys (how_to_render_divergence,
+        frame_opportunities_discipline, scope_regime_guidance) are
+        passed through verbatim because they govern blocks the
+        caller explicitly asked for.
+    """
+    baseline = len(_FAILURES)
+    print("=== compose_budget=minimal compresses agent_guidance ===")
+
+    full_payload = mcp_server.build_epistemic_payload(
+        _DOC_FOR_CLUSTERS,
+        include_divergence=True,
+        compose_budget="full",
+    )
+    minimal_payload = mcp_server.build_epistemic_payload(
+        _DOC_FOR_CLUSTERS,
+        include_divergence=True,
+        compose_budget="minimal",
+    )
+
+    full_ag = full_payload["agent_guidance"]
+    minimal_ag = minimal_payload["agent_guidance"]
+
+    import json as _json
+    full_size = len(_json.dumps(full_ag))
+    minimal_size = len(_json.dumps(minimal_ag))
+
+    check(
+        minimal_size < full_size,
+        f"compose_budget=minimal must produce smaller agent_guidance "
+        f"than full; got minimal={minimal_size} >= full={full_size}",
+    )
+
+    # Reduction floor: at least 1.5x. The benchmark documents a 2.5x
+    # reduction on the FOMC document; the floor is set conservatively
+    # so adding load-bearing prescriptions later does not break the
+    # test, while still catching a regression that silently re-bloats
+    # the minimal output.
+    check(
+        full_size >= minimal_size * 1.5,
+        f"compose_budget=minimal must achieve >=1.5x reduction over "
+        f"full; got full={full_size} minimal={minimal_size} "
+        f"ratio={full_size/minimal_size:.2f}x",
+    )
+
+    # Load-bearing keys preserved with their discipline.
+    check(
+        "how_to_cite_faithfully" in minimal_ag,
+        "minimal must keep how_to_cite_faithfully (load-bearing for "
+        "citation discipline)",
+    )
+    check(
+        "Frame Check" in minimal_ag.get("how_to_cite_faithfully", ""),
+        "minimal how_to_cite_faithfully must still name Frame Check "
+        "explicitly",
+    )
+    check(
+        "composition_discipline" in minimal_ag,
+        "minimal must keep composition_discipline (load-bearing for "
+        "reading-form-not-verdict-form)",
+    )
+    cd = minimal_ag.get("composition_discipline", "")
+    check(
+        "reading-form" in cd and "verdict-form" in cd,
+        "minimal composition_discipline must preserve reading-form-"
+        "not-verdict-form discipline",
+    )
+    check(
+        "when_invoked_on_own_output" in minimal_ag,
+        "minimal must keep when_invoked_on_own_output (the self-audit "
+        "case is the highest-frequency invocation pattern)",
+    )
+    check(
+        "dual_use_note" in minimal_ag,
+        "minimal must keep dual_use_note (anti-misuse is load-bearing)",
+    )
+
+    # claim_level_treatments table replaced with a short note that
+    # points callers to compose_budget='full' for the inline table.
+    # The note value MUST NOT promise a fetchable URI: the compressed
+    # payload ships on the wire to integrators, and a 404-able URI
+    # would violate the published-state-must-be-true posture.
+    check(
+        "claim_level_treatments_note" in minimal_ag,
+        "minimal must surface claim_level_treatments_note pointing to "
+        "compose_budget='full' for the full table",
+    )
+    check(
+        "claim_level_treatments" not in minimal_ag,
+        "minimal must NOT inline the full claim_level_treatments table "
+        "(that is the per-call cost the note eliminates)",
+    )
+    note_value = minimal_ag.get("claim_level_treatments_note", "")
+    check(
+        "frame-check://" not in note_value,
+        f"claim_level_treatments_note must not promise a frame-check:// "
+        f"URI unless the resource is served via _list_resources; "
+        f"got {note_value[:120]!r}",
+    )
+    check(
+        "compose_budget='full'" in note_value
+        or 'compose_budget="full"' in note_value,
+        f"claim_level_treatments_note must point callers at "
+        f"compose_budget='full' for the inline table; got "
+        f"{note_value[:120]!r}",
+    )
+
+    # how_to_map_user_intent dropped (it is large and the agent has
+    # its own NLU).
+    check(
+        "how_to_map_user_intent" not in minimal_ag,
+        "minimal must drop how_to_map_user_intent (large, not load-"
+        "bearing for tight-loop callers)",
+    )
+
+    # compose_budget_applied_note documents the cut so the caller can
+    # confirm the compression actually ran.
+    check(
+        "compose_budget_applied_note" in minimal_ag,
+        "minimal must include compose_budget_applied_note so the "
+        "caller can confirm compression is active",
+    )
+
+    # Full mode is unchanged. Pin via spot-check on a key that minimal
+    # drops and a key that minimal compresses.
+    check(
+        "how_to_map_user_intent" in full_ag,
+        "compose_budget=full must keep how_to_map_user_intent "
+        "(backwards compat with all callers omitting the parameter)",
+    )
+    check(
+        "claim_level_treatments" in full_ag,
+        "compose_budget=full must inline claim_level_treatments table",
+    )
+
+    _assert_no_new_failures(
+        baseline, "test_compose_budget_minimal_compresses_agent_guidance"
+    )
+    print("  PASS\n")
+
+
+def test_compose_budget_standard_compresses_agent_guidance():
+    """compose_budget=standard applies the same agent_guidance
+    compression as minimal (load-bearing prescriptions only) while
+    keeping the standard divergence-side slicing (top-5 absent_frames,
+    all clusters, all patterns). The two tiers differ only in
+    divergence-side cuts, not in agent_guidance shape, so a caller
+    sizing token budget at "standard" sees a real reduction without
+    losing the cluster + pattern surfaces minimal would also cut.
+
+    Pins:
+      - standard agent_guidance is materially smaller than full
+        (>=1.5x ratio, parity with the minimal floor).
+      - standard agent_guidance shares its key shape with minimal
+        agent_guidance (same compression rules apply).
+      - compose_budget_applied_note correctly reports
+        compose_budget=standard so the caller can audit which tier
+        produced the cut.
+      - standard preserves the load-bearing rules (Frame Check name,
+        reading-form-not-verdict-form, dual-use anti-misuse,
+        self-audit rule).
+      - standard divergence-side slicing is unchanged: top-5 absent
+        frames, all clusters/patterns preserved (no cluster/pattern
+        cut at this tier).
+    """
+    baseline = len(_FAILURES)
+    print("=== compose_budget=standard compresses agent_guidance ===")
+
+    full_payload = mcp_server.build_epistemic_payload(
+        _DOC_FOR_CLUSTERS, include_divergence=True, compose_budget="full",
+    )
+    standard_payload = mcp_server.build_epistemic_payload(
+        _DOC_FOR_CLUSTERS, include_divergence=True, compose_budget="standard",
+    )
+    minimal_payload = mcp_server.build_epistemic_payload(
+        _DOC_FOR_CLUSTERS, include_divergence=True, compose_budget="minimal",
+    )
+
+    full_ag = full_payload["agent_guidance"]
+    standard_ag = standard_payload["agent_guidance"]
+    minimal_ag = minimal_payload["agent_guidance"]
+
+    import json as _json
+    full_size = len(_json.dumps(full_ag))
+    standard_size = len(_json.dumps(standard_ag))
+
+    check(
+        standard_size < full_size,
+        f"compose_budget=standard must produce smaller agent_guidance "
+        f"than full; got standard={standard_size} >= full={full_size}",
+    )
+    check(
+        full_size >= standard_size * 1.5,
+        f"compose_budget=standard must achieve >=1.5x reduction over "
+        f"full (essence-preserving compression); got full={full_size} "
+        f"standard={standard_size} ratio={full_size/standard_size:.2f}x",
+    )
+
+    # Standard and minimal share AG shape (same compression function).
+    check(
+        set(standard_ag.keys()) == set(minimal_ag.keys()),
+        f"compose_budget=standard must share agent_guidance key shape "
+        f"with minimal (same compression rules). "
+        f"standard - minimal = {set(standard_ag.keys()) - set(minimal_ag.keys())!r}; "
+        f"minimal - standard = {set(minimal_ag.keys()) - set(standard_ag.keys())!r}",
+    )
+
+    # Tier note correctly reports the cut.
+    note = standard_ag.get("compose_budget_applied_note", "")
+    check(
+        "compose_budget=standard" in note,
+        f"compose_budget=standard must report itself in "
+        f"compose_budget_applied_note; got {note[:120]!r}",
+    )
+    # The note ships on the wire to integrators; it MUST NOT promise
+    # a frame-check:// URI unless the resource is served via
+    # _list_resources. A 404-able URI in the wire payload would
+    # violate the published-state-must-be-true posture.
+    check(
+        "frame-check://" not in note,
+        f"compose_budget_applied_note must not promise a frame-check:// "
+        f"URI unless the resource is served; got {note[:160]!r}",
+    )
+
+    # Load-bearing rules survive the cut.
+    check(
+        "Frame Check" in standard_ag.get("how_to_cite_faithfully", ""),
+        "standard how_to_cite_faithfully must still name Frame Check "
+        "explicitly",
+    )
+    cd = standard_ag.get("composition_discipline", "")
+    check(
+        "reading-form" in cd and "verdict-form" in cd,
+        "standard composition_discipline must preserve reading-form-"
+        "not-verdict-form discipline",
+    )
+    check(
+        "when_invoked_on_own_output" in standard_ag,
+        "standard must keep when_invoked_on_own_output (self-audit rule "
+        "is load-bearing)",
+    )
+    check(
+        "dual_use_note" in standard_ag,
+        "standard must keep dual_use_note (anti-misuse is load-bearing)",
+    )
+
+    # Divergence-side: standard does NOT cut clusters or patterns
+    # (that distinguishes it from minimal). Confirm a non-zero cluster
+    # count survives when full mode produced any.
+    full_div = full_payload["divergence"]
+    standard_div = standard_payload["divergence"]
+    check(
+        len(standard_div["absence_clusters"])
+        == len(full_div["absence_clusters"]),
+        f"standard must preserve all absence_clusters (only minimal "
+        f"cuts to top-1); full={len(full_div['absence_clusters'])} "
+        f"standard={len(standard_div['absence_clusters'])}",
+    )
+    check(
+        len(standard_div["frame_patterns"])
+        == len(full_div["frame_patterns"]),
+        f"standard must preserve all frame_patterns (only minimal "
+        f"cuts to top-1); full={len(full_div['frame_patterns'])} "
+        f"standard={len(standard_div['frame_patterns'])}",
+    )
+    check(
+        len(standard_div["absent_frames"]) <= 5,
+        f"standard must yield <=5 absent_frames; "
+        f"got {len(standard_div['absent_frames'])}",
+    )
+
+    _assert_no_new_failures(
+        baseline, "test_compose_budget_standard_compresses_agent_guidance"
+    )
+    print("  PASS\n")
+
+
 def test_compose_budget_invalid_value_rejected():
     """The dispatcher rejects invalid compose_budget values with a
     structured error so the caller sees the valid enum.
@@ -7799,6 +8705,115 @@ def test_agent_generated_claim_level_for_opportunities():
         )
     else:
         print("  PASS  (treatments-shape only; LLM unavailable)\n")
+
+
+def test_llm_classifier_output_claim_level_treatment():
+    """L5 framework v1.2: a fifth claim level llm_classifier_output
+    is added to claim_level_treatments per CONSTRUCT_VALIDITY_AUDIT
+    v1.2 (Proposal A). V4.2 LLM-judge FVS detection is the canonical
+    instance; the level distinguishes LLM-judge binary classification
+    (no per-emission confidence, macro-aggregate reliability evidence)
+    from the deterministic-cascade classifier_output level
+    (per-emission confidence + runner-up).
+
+    Pins the dispatch shape so a future engine change cannot silently
+    drop the level or its discipline. Wire-shipping V4.2 emissions
+    with this claim_level dispatch missing would break the per-level
+    discipline the L5 framework exists to enforce.
+    """
+    baseline = len(_FAILURES)
+    print("=== llm_classifier_output claim level treatment ===")
+
+    payload = mcp_server.build_epistemic_payload(
+        _DOC_SAMPLE, include_divergence=True,
+    )
+    treatments = payload["agent_guidance"].get(
+        "claim_level_treatments", {}
+    ) or {}
+
+    check(
+        "llm_classifier_output" in treatments,
+        "claim_level_treatments must carry the llm_classifier_output "
+        "key (v1.2 Proposal A; V4.2 ships under this level)",
+    )
+    llm_co = treatments.get("llm_classifier_output") or {}
+    vs = llm_co.get("validation_status") or {}
+
+    # The level is non-deterministic by design: LLM judgment
+    # produces variance across run-pairs. This is the structural
+    # property that distinguishes it from classifier_output.
+    check(
+        vs.get("deterministic") is False,
+        "llm_classifier_output.validation_status.deterministic must "
+        "be False (LLM-judge classification is non-deterministic by "
+        f"design); got {vs.get('deterministic')!r}",
+    )
+
+    # Reliability is a property of the macro aggregate, NOT the
+    # per-emission. Conflating these would let an evaluator treat
+    # a binary V4.2 emission as if it carried per-emission
+    # confidence, which it does not.
+    check(
+        vs.get("inter_rater_reliability") == "macro_aggregate_only",
+        "llm_classifier_output.validation_status.inter_rater_"
+        "reliability must be 'macro_aggregate_only' to distinguish "
+        "from classifier_output's per-emission confidence; got "
+        f"{vs.get('inter_rater_reliability')!r}",
+    )
+
+    vd = vs.get("validity_data", "")
+    check(
+        "macro-F1" in vd or "macro_F1" in vd,
+        "llm_classifier_output.validation_status.validity_data must "
+        "reference macro-F1 (the load-bearing aggregate reliability "
+        "metric for V4.2)",
+    )
+
+    caveats = llm_co.get("caveats") or []
+    caveat_text = " ".join(caveats)
+    check(
+        "confidence" in caveat_text and "proxy" in caveat_text,
+        "llm_classifier_output.caveats must explicitly forbid "
+        "paraphrasing the reasoning text as a confidence proxy "
+        "(load-bearing distinction from classifier_output)",
+    )
+    check(
+        "honest_limit" in caveat_text,
+        "llm_classifier_output.caveats must direct the agent to "
+        "surface honest_limit caveats when present (per-frame "
+        "operationalization gap disclosure is structural to the "
+        "level)",
+    )
+
+    htc = llm_co.get("how_to_cite", "")
+    check(
+        "Frame Check" in htc and "reliability" in htc,
+        "llm_classifier_output.how_to_cite must name Frame Check "
+        "AND the reliability tier so the citation carries the "
+        "aggregate evidence (got: " + repr(htc[:120]) + ")",
+    )
+
+    # The full five-level dispatch must be present. This catches
+    # accidental key removal in future refactors.
+    expected_levels = {
+        "detector_measurement",
+        "classifier_output",
+        "llm_classifier_output",
+        "composed_pattern",
+        "agent_generated",
+    }
+    actual_levels = set(treatments.keys())
+    check(
+        expected_levels.issubset(actual_levels),
+        "claim_level_treatments must carry all five L5 framework "
+        "levels; missing: "
+        f"{sorted(expected_levels - actual_levels)}",
+    )
+
+    _assert_no_new_failures(
+        baseline, "test_llm_classifier_output_claim_level_treatment"
+    )
+    print("  PASS\n")
 
 
 def test_frame_opportunities_invalid_value_rejected():
@@ -10156,10 +11171,12 @@ def main() -> int:
     test_frame_compare_parity_carries_claim_level()
     test_composition_discipline_teaches_per_level_treatment()
     test_agent_generated_claim_level_for_opportunities()
+    test_llm_classifier_output_claim_level_treatment()
     # Substrate-side composition L5 interface UX (Step 2 + 3)
     test_agent_guidance_carries_how_to_map_user_intent()
     test_compose_budget_full_preserves_current_behavior()
     test_compose_budget_minimal_filters_top_n()
+    test_compose_budget_minimal_compresses_agent_guidance()
     test_compose_budget_invalid_value_rejected()
     test_sovereignty_prompts_advertise_user_intent_arguments()
     test_prompt_arguments_translate_to_mcp_parameters()

@@ -6,7 +6,7 @@ individual outliers may be sampling noise rather than signal.
 Aggregate findings become inference-grade only when N grows
 substantially across genres and questions.
 
-- **Computed at:** 2026-04-28T05:55:34.372929+00:00
+- **Computed at:** 2026-04-28T14:52:17.614319+00:00
 - **Corpus state hash:** `7a6e2f294c9e` (SHA-256 prefix; identifies the exact corpus revision)
 - **Corpus entries:** 10 (10 with profile.json, 2 with paired_with metadata, 8 with peer_group metadata)
 
