@@ -25,6 +25,7 @@ from framing import (
     detect_coverage, temporal_orientation,
     detect_voice, detect_epistemic_basis,
 )
+from frame_library import suggest_frames
 from prompt_safety import (
     PromptInjectionAttempt,
     SAFETY_INSTRUCTION,
@@ -150,11 +151,10 @@ def generate_grok(topic):
         return None, _empty_usage()
 
     try:
-        from openai import OpenAI
-        client = OpenAI(
-            api_key=os.environ.get("XAI_API_KEY"),
-            base_url="https://api.x.ai/v1",
-        )
+        from llm_client import xai_openai_client
+        client = xai_openai_client()
+        if client is None:
+            return None, _empty_usage()
         response = client.chat.completions.create(
             model="grok-4-1-fast",
             messages=[{"role": "user", "content": _render_generation_prompt(topic)}],
@@ -213,8 +213,21 @@ def generate_responses(topic):
                 text, _usage = future.result()
                 if text:
                     results[model] = text
-            except Exception:
-                pass
+            except Exception as e:
+                # Tolerated by design: per-model generation failures
+                # MUST NOT block the rest of the cross-model pool.
+                # The user-facing comparison path proceeds with
+                # whichever models succeeded; an empty result for
+                # this model is treated as "this provider was
+                # unavailable for this run." Log to stderr so the
+                # operator can investigate without breaking the
+                # JSON-RPC channel on stdout.
+                import sys
+                print(
+                    f"[comparison.generate_with_models] "
+                    f"{model} failed: {type(e).__name__}: {e}",
+                    file=sys.stderr,
+                )
 
     return results
 
@@ -275,8 +288,21 @@ def generate_stability_check(topic, responses) -> tuple[dict, float]:
                         "changed_count": len(changed_gen1),
                         "total": len(nums1),
                     }
-            except Exception:
-                pass
+            except Exception as e:
+                # Tolerated by design: per-model regeneration
+                # failures MUST NOT block the rest of the stability
+                # pool. results omits this model_name (caller sees
+                # which models succeeded); total_cost_usd reflects
+                # only the regenerations that completed. Log to
+                # stderr for maintainer-side debugging without breaking
+                # the JSON-RPC channel on stdout.
+                import sys
+                print(
+                    f"[comparison.compute_number_stability] "
+                    f"{model_name} regeneration failed: "
+                    f"{type(e).__name__}: {e}",
+                    file=sys.stderr,
+                )
 
     return results, total_cost_usd
 
@@ -424,6 +450,13 @@ def stability_from_regenerations(regenerations):
         try:
             ca = analyze_claims(r["text"])
         except Exception:
+            # Tolerated by design: per-regeneration claim-analysis
+            # failures fall back to an empty claim set so the
+            # stability loop can continue. A regeneration with no
+            # claims contributes zero numbers to the stability
+            # accounting; the corresponding cell shows up as
+            # "no measurable claims" rather than crashing the
+            # whole stability computation.
             ca = {"claims": [], "claims_by_type": {}}
         per_regen_claims.append(ca)
 
@@ -784,6 +817,17 @@ def analyze_model(model_name, text, sn_max_claims=15):
     temp = temporal_orientation(text)
     voice = detect_voice(text)
     epist = detect_epistemic_basis(text)
+    # V1 detector firings on this document. Same call site shape as
+    # /api/profile and as MCP build_epistemic_payload (frame_check)
+    # so the cross-surface signal stays uniform: programmatic
+    # consumers reading /api/compare-stream's model_analyzed event
+    # for either model see the same frame_library_matches[] shape
+    # they would see on /api/profile for a single document. Without
+    # this call, the per-model SSE payload had no FVS structural
+    # match field at all -- same bug class as the four-month
+    # /api/profile gap that commit e13284e closed; the gap on the
+    # compare-path was discovered by the 2026-04-30 alignment audit.
+    frame_suggestions = suggest_frames(cov, voice, temp, epist, text=text)
 
     sn = []
     if ca.get("claims"):
@@ -791,8 +835,22 @@ def analyze_model(model_name, text, sn_max_claims=15):
             sn = verify_claims_source_network(
                 ca["claims"], doc_text=text, max_claims=sn_max_claims,
             )
-        except Exception:
-            pass
+        except Exception as e:
+            # Tolerated by design: source-network verification is
+            # best-effort enrichment. A network failure, provider
+            # quota exhaustion, or transient-API error must NOT
+            # break the structural analysis path; sn stays empty
+            # and the caller surfaces the structural measurements
+            # without verification annotations. Log to stderr so
+            # the operator can investigate without breaking the
+            # JSON-RPC channel on stdout.
+            import sys
+            print(
+                f"[comparison.analyze_model] "
+                f"source-network verification failed for "
+                f"{model_name}: {type(e).__name__}: {e}",
+                file=sys.stderr,
+            )
 
     return {
         "text": text,
@@ -812,6 +870,74 @@ def analyze_model(model_name, text, sn_max_claims=15):
         "source_verified": sum(1 for r in sn if r.verdict in ("verified", "close")),
         "source_contradicted": sum(1 for r in sn if r.verdict == "contradicted"),
         "source_total": len(sn),
+        # Per-contradiction surface so the compare UI can name what
+        # contradicted what. Pre-fix the response carried only the
+        # count ("1 contradicted out of 2") with no provider attribution
+        # and an empty verified_providers list, leaving the reader
+        # asking the obvious follow-up "contradicted by whom?". Each
+        # entry names the document value and the source value plus
+        # the source provider so the reader can verify the disagreement
+        # rather than take the count on faith.
+        "contradicted_details": [
+            {
+                "document_value": r.decomposition.raw_value if r.decomposition else None,
+                "claim_subject": r.decomposition.subject if r.decomposition else None,
+                # source_name fallback: r.best_source is set by the
+                # SN orchestrator only when at least one source
+                # returned 'exact' or 'close', i.e. when the claim
+                # was VERIFIED. For purely-contradicted claims the
+                # field is empty. Round-3 follow-up audit found
+                # contradicted_details[].source_name was always ""
+                # in practice. The fallback walks the per-claim
+                # source_results to find the contradicting source
+                # by name, which is the field a reader actually
+                # wants ("contradicted by SEC EDGAR"). Empty string
+                # only when no contradicted source carries a name,
+                # which should be unreachable but matches pre-fix
+                # behavior on edge cases.
+                "source_name": r.best_source or next(
+                    (sr.source_name for sr in (r.source_results or [])
+                     if sr.match_type == "contradicted"),
+                    "",
+                ),
+                "source_value": next(
+                    (sr.source_value for sr in (r.source_results or [])
+                     if sr.match_type == "contradicted"),
+                    None,
+                ),
+            }
+            for r in sn if r.verdict == "contradicted"
+        ],
+        # FVS structural matches per the V1 detector substrate.
+        # Per-match shape mirrors /api/profile.framing.frame_library_matches[]
+        # (8 fields: fvs_id / name / signal / question / definition /
+        # url / v4_2_verdict / pattern_kind) so a programmatic
+        # consumer reading either web JSON surface uses one
+        # vocabulary. v4_2_verdict is always None on the compare
+        # path because V4.2 LLM-judge cross-reference does not
+        # run on /api/compare-stream by design (compare is
+        # structural-only, no LLM in the framing layer); the field
+        # is emitted as None for shape parity with /api/profile so
+        # consumers branching on the field have a documented null
+        # state instead of a missing key. pattern_kind defaults to
+        # "present_detected" defensively for the same reason as
+        # /api/profile and frame_check (frame_library.py:310 sets
+        # it on every emitted suggestion today, but the
+        # canned-suggestion shape used by some test callers omits
+        # it; the get-with-default keeps those callers compatible).
+        "frame_library_matches": [
+            {
+                "fvs_id": s.get("fvs_id"),
+                "name": s.get("name"),
+                "signal": s.get("signal"),
+                "question": s.get("question"),
+                "definition": s.get("definition"),
+                "url": s.get("url"),
+                "v4_2_verdict": None,
+                "pattern_kind": s.get("pattern_kind", "present_detected"),
+            }
+            for s in (frame_suggestions or [])
+        ],
         # Raw SourceNetworkResult list for the corpus telemetry
         # builder. The existing compare-stream serializer omits
         # this field via serialize_model_for_stream's truncation
@@ -965,6 +1091,27 @@ def build_cross_model_comparison(models):
         "framing_comparison": None,
         "structural_framing_diff": structural_diff,
         "structural_framing_cards": structural_cards,
+        # framing_differences: canonical name matching MCP
+        # frame_compare's analysis.comparison.framing_differences
+        # field. Carries the full _build_structural_framing_data
+        # return dict (headline + cards + unique_omissions +
+        # shared_blind_note + prose) so a programmatic consumer
+        # reading either web JSON (SSE comparison event payload
+        # OR saved comparison JSON loaded from
+        # /saved-compare/<hash>) and MCP frame_compare uses one
+        # vocabulary. The structural_framing_diff and
+        # structural_framing_cards siblings remain for backward-
+        # compat with already-deployed clients (HTML template at
+        # templates/compare.html reads structural_framing_cards;
+        # already-saved JSON files written before 2026-04-30 do
+        # not carry framing_differences at all and the load path
+        # tolerates the missing key via dict.get). Discovered as
+        # a saved-JSON alias gap in the post-audit polish pass:
+        # the SSE-payload alias landed first; this propagates
+        # the same alias to the saved-JSON storage layer so the
+        # canonical name is reachable from every export surface,
+        # not just the live SSE stream.
+        "framing_differences": framing_data,
         "agreed_numbers": sorted(
             agreed_numbers,
             key=lambda x: float(x) if x.replace(".", "").isdigit() else 0,
@@ -1310,8 +1457,22 @@ def compare_responses(responses):
             name = futures[future]
             try:
                 models[name] = future.result()
-            except Exception:
-                pass
+            except Exception as e:
+                # Tolerated by design: per-model analyze_model
+                # failures MUST NOT block the cross-model comparison.
+                # The downstream `if len(models) < 2: return None`
+                # check enforces the comparison contract: at least
+                # two models must analyze successfully or the
+                # comparison is skipped at the caller. Log to stderr
+                # so the operator can investigate without breaking
+                # the JSON-RPC channel on stdout.
+                import sys
+                print(
+                    f"[comparison.compare_responses] "
+                    f"analyze_model failed for {name}: "
+                    f"{type(e).__name__}: {e}",
+                    file=sys.stderr,
+                )
 
     if len(models) < 2:
         return None

@@ -4,7 +4,7 @@ slug: four-llms-on-bitcoin-retirement-2026
 author: Lovro Lucic
 published: 2026-04-18
 source_document_url: https://github.com/lluvr/frame-check-mcp/tree/master/data/worked_examples/four-llms-on-bitcoin-retirement-2026
-source_document_title: Claude Haiku 4.5, GPT-5, Grok 4.1 Fast Reasoning, Gemini 2.5 Flash — responses to a Bitcoin retirement prompt
+source_document_title: Claude Haiku 4.5, GPT-5, Grok 4.1 Fast Reasoning, Gemini 2.5 Flash; responses to a Bitcoin retirement prompt
 source_document_author: AI-generated (four distinct models, 2026-04-18 run)
 source_document_type: multi-model LLM responses to a life-decision prompt
 frames_detected: [FVS-008, FVS-001, FVS-015, FVS-007, FVS-012]
@@ -52,6 +52,8 @@ Per-model structural signature, from the deterministic detectors:
 | Grok    | advisory      | risks, trends                       | causes, stakeholders, uncertainty          | 7%      | FVS-001, FVS-015        |
 | Gemini  | prescriptive  | risks, stakeholders, trends, uncertainty | causes                                     | 0%      | FVS-012                 |
 
+> **Note on detection state.** This worked example was published 2026-04-18 against v1 substrate detection. The v1 deterministic rules for FVS-001 Frame Amplification, FVS-008 Growth Frame, and FVS-015 Efficiency Frame were retired the same day per `data/frame_library/INDEX.md` (validation evidence showed they fired on cases they should not flag). The frame concepts stand as library entries; current-generation detection (V4.2 LLM-judge) replaces the v1 rules for these three. The per-model table above and the "five distinct entries" tally below preserve the publish-time analysis the walkthrough was built on; the teaching points about each frame remain valid because they describe frame concepts, not detector firings.
+
 A few observations the table does not carry:
 
 - **Stakeholders absent from three of four responses.** Only Gemini
@@ -76,7 +78,7 @@ A few observations the table does not carry:
 The frame-library matcher flags five distinct entries across the
 four responses:
 
-- [FVS-008 Growth Frame](/corpus/library/FVS-008.html) — Claude
+- [FVS-008 Growth Frame](/corpus/library/FVS-008.html), Claude
   only. Triggered by high density of growth-framed vocabulary
   ("retirement savings," "long-term returns," "proven track record,"
   "compounding"). Claude's recommendation is against Bitcoin as
@@ -86,20 +88,20 @@ four responses:
   entry carries: "What would a risk analyst say about this same
   data?"
 
-- [FVS-001 Frame Amplification](/corpus/library/FVS-001.html) — three
+- [FVS-001 Frame Amplification](/corpus/library/FVS-001.html), three
   of four responses. Triggered by the pattern of the model extending
   the frame it opened with (if it opens with "here's why Bitcoin is
   risky," everything that follows amplifies that). The library entry
   asks whether increasing detail is evidence of quality or evidence
   that the analysis is locked in one frame.
 
-- [FVS-015 Efficiency Frame](/corpus/library/FVS-015.html) — GPT-5
+- [FVS-015 Efficiency Frame](/corpus/library/FVS-015.html), GPT-5
   and Grok. Triggered by optimisation vocabulary (allocation
   percentages, rebalancing, portfolio efficiency). The teaching
   question: "Is efficiency the right lens here, or has it been
   applied by default?"
 
-- [FVS-007 Failure Framing (absent)](/corpus/library/FVS-007.html) —
+- [FVS-007 Failure Framing (absent)](/corpus/library/FVS-007.html),
   Claude only. The detector flags this when a document asserts a
   recommendation without addressing what would have to be true for
   the recommendation to be wrong. The question: "What would have
@@ -107,7 +109,7 @@ four responses:
   the only one to trigger this, which is a detector artefact worth
   naming: see "What the method missed" below.
 
-- [FVS-012 Uncertainty Frame](/corpus/library/FVS-012.html) —
+- [FVS-012 Uncertainty Frame](/corpus/library/FVS-012.html),
   Gemini only. Triggered because Gemini addresses uncertainty
   substantively; the detector reads this as the uncertainty frame
   being the active shape.
@@ -148,8 +150,8 @@ Three honest limits surfaced by this analysis specifically:
   Claude's substantive recommendation is against Bitcoin as a core
   retirement holding. The detector triggered FVS-008 not because
   Claude is promoting Bitcoin (it is not) but because Claude's
-  reasoning runs through retirement-growth vocabulary — index funds,
-  401(k)s, proven returns. The frame is the lens used to reason,
+  reasoning runs through retirement-growth vocabulary (index funds,
+  401(k)s, proven returns). The frame is the lens used to reason,
   not the verdict reached. A reader should read this as "Claude
   evaluated Bitcoin from within the conventional long-term-growth
   frame," not as "Claude is pushing Bitcoin."
@@ -182,8 +184,8 @@ and hands the reader the information they need to not inherit a
 frame by default.
 
 The pattern generalises. Any question that invites a prescriptive
-answer — life decisions, policy, career, investment, relationships
-— will produce LLM responses with different framing signatures. An
+answer (life decisions, policy, career, investment, relationships)
+will produce LLM responses with different framing signatures. An
 agent that runs `frame_check` on its own response, or on another
 AI's response the user shares, surfaces those signatures at the
 moment the reader is deciding what to do with them.

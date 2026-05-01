@@ -280,7 +280,26 @@ def suggest_frames(
     if total_sentences < 5:
         return suggestions
 
-    def _add(fvs_id, name, signal, question):
+    def _add(fvs_id, name, signal, question, pattern_kind="present_detected"):
+        # `pattern_kind` encodes the V1-detector emission convention as a
+        # structured enum field. Five values correspond to the five suffix
+        # conventions historically encoded in `name`:
+        #   "present_detected"  positive present-pattern detection
+        #                       (FVS-002, FVS-008, FVS-009, FVS-010,
+        #                        FVS-011, FVS-012, FVS-015, FVS-016 sites)
+        #   "absence_detected"  absence-pattern detection (FVS-007 site)
+        #   "present_past"      directional past-anchored present
+        #                       (FVS-014 past site)
+        #   "present_future"    directional future-anchored present
+        #                       (FVS-014 future site)
+        # The legacy suffix in `name` is preserved for backward compat with
+        # operator-facing UI rendering at `V4_2_GAP_INVENTORY_v1.md:194`
+        # (the chip-renderer that distinguishes "(active)" vs "(absent)")
+        # and with hand-authored test fixtures at
+        # `test_decision_readiness.py:407, 1095` that pin the literal
+        # "Failure Framing (absent)" name shape. Future cleanup that
+        # strips the suffix is a separate decision; this change is purely
+        # additive at the wire surface.
         suggestions.append({
             "fvs_id": fvs_id,
             "name": name,
@@ -288,6 +307,7 @@ def suggest_frames(
             "question": question,
             "definition": _DEFINITIONS.get(fvs_id, ""),
             "url": f"/corpus/library/{fvs_id}.html",
+            "pattern_kind": pattern_kind,
         })
 
     # ── Growth Frame (FVS-008) ──
@@ -367,6 +387,7 @@ def suggest_frames(
                 "FVS-007", "Failure Framing (absent)",
                 "No risk or uncertainty coverage, high unsupported assertion rate",
                 "What would have to be true for this analysis to be wrong?",
+                pattern_kind="absence_detected",
             )
 
     # ── Efficiency Frame (FVS-015) ──
@@ -445,12 +466,14 @@ def suggest_frames(
             "FVS-014", "Temporal Anchoring (past)",
             f"Past-oriented language in {past_pct}% of sentences",
             "What has changed since this data was current? Is the document presenting historical data as if it were the present?",
+            pattern_kind="present_past",
         )
     elif future_pct >= 60:
         _add(
             "FVS-014", "Temporal Anchoring (future)",
             f"Future-oriented language in {future_pct}% of sentences",
             "What is the historical base rate for projections like these? How accurate have similar forecasts been?",
+            pattern_kind="present_future",
         )
 
     # ── Authority by Citation (FVS-016) ──

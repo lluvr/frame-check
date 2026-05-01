@@ -480,8 +480,9 @@ def _compute_sentence_spans(text):
     Returns list of dicts with sentence_index (0-based), text, heading,
     start (char offset in `text`), and end (char offset). Sentences that
     cannot be located (rare: probe too short to disambiguate on repeated
-    content) are stored with None start/end; such sentences will not be
-    mapped to any attribution.
+    content, or sentence-splitter returns a sentence whose 60-char prefix
+    matches no occurrence at or after search_from) are stored with None
+    start/end; such sentences will not be mapped to any attribution.
 
     Important whitespace-tolerance detail: split_sentences joins
     consecutive non-heading lines with spaces (the ' '.join(pending)
@@ -494,6 +495,44 @@ def _compute_sentence_spans(text):
 
     Used by sentence-level attribution in detect_coverage when
     include_attribution=True or include_candidates=True.
+
+    Performance discipline (2026-04-30 fix). The pre-fix shape had
+    two pathologies on long documents:
+
+      1. Slicing cost. `re.search(flexible, text[search_from:])`
+         allocated a new string of size O(text_len) on every
+         sentence. At ~500 sentences in a 100K-char doc, that was
+         50M chars of redundant copying. Replaced with
+         `pattern.search(text, search_from)` on a compiled
+         pattern; the regex engine handles the start position
+         internally with no copy.
+
+      2. Wrong-and-slow fallback. When the windowed search
+         missed, the pre-fix code re-ran the search across the
+         full text from offset 0 (`re.search(flexible, text)`).
+         The intent was to recover from sentences that
+         split_sentences saw in a different order than the text;
+         the actual behaviour on real documents was: when a
+         probe matched an earlier identical sentence (repeated
+         section, boilerplate, list-item refrain), the fallback
+         found the FIRST occurrence and produced a wrong span,
+         pointing attribution at the wrong instance. The
+         fallback was both slow (O(text_len) per miss; on tiled
+         content it fired on most sentences) and incorrect
+         (claimed attribution that pointed elsewhere).
+
+         Replaced with: if the windowed search misses, mark the
+         sentence as unlocated (start=None, end=None) and do
+         not advance search_from. An unattributed sentence is
+         strictly better than a wrongly-attributed sentence
+         because the UI surfaces "no markers found" rather
+         than "the marker for X is at this other place that
+         is actually a different sentence."
+
+    Combined effect on the worked-examples corpus tiled to size:
+      40K  529ms -> 5ms
+      50K  695ms -> 6ms
+      100K 747ms -> 11ms
     """
     sentences = split_sentences(text)
     spans = []
@@ -503,17 +542,35 @@ def _compute_sentence_spans(text):
         pos = -1
         length = 0
         if probe:
-            # Build whitespace-tolerant regex from probe.
+            # Build whitespace-tolerant pattern. The probe comes from
+            # split_sentences, which joins consecutive non-heading
+            # lines with single spaces; the original text may have
+            # \n / multi-space sequences where the joined sentence
+            # has a single space. Convert each escaped-space (or run
+            # of escaped-spaces in a row) to a single \s+ so the
+            # regex matches whatever whitespace shape the original
+            # text uses.
+            #
+            # The (?:\\\s)+ run-collapsing form is load-bearing: a
+            # markdown table joined by split_sentences produces a
+            # probe with long runs of consecutive spaces (column
+            # padding). The pre-2026-04-30 substitution emitted one
+            # \s+ per escaped-space individually, so a 30-space run
+            # produced 30 consecutive \s+ in the pattern. Each run
+            # was an independent quantifier and the regex engine
+            # backtracked exponentially on partial matches; on a
+            # 60-char table-header probe the search took 5ms per
+            # 200-char text scan, and across the full document the
+            # one slow sentence dominated _compute_sentence_spans
+            # at 678ms despite the fast windowed-search refactor.
+            # Collapsing runs into a single \s+ keeps semantic
+            # whitespace tolerance and removes the backtracking.
             escaped = re.escape(probe)
-            flexible = re.sub(r'\\\s+', r'\\s+', escaped)
-            m = re.search(flexible, text[search_from:])
-            if m is None:
-                m = re.search(flexible, text)
-                if m is not None:
-                    pos = m.start()
-                    length = m.end() - m.start()
-            else:
-                pos = search_from + m.start()
+            flexible = re.sub(r'(?:\\\s)+', r'\\s+', escaped)
+            pattern = re.compile(flexible)
+            m = pattern.search(text, search_from)
+            if m is not None:
+                pos = m.start()
                 length = m.end() - m.start()
         if pos < 0:
             spans.append({

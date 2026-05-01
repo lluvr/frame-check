@@ -10,6 +10,7 @@ type: software
 authors:
   - family-names: Lucic
     given-names: Lovro
+    orcid: "https://orcid.org/0009-0008-9976-6933"
     website: "https://blog.clarethium.com"
 repository-code: "https://github.com/lluvr/frame-check-mcp"
 url: "https://github.com/lluvr/frame-check-mcp"
@@ -39,6 +40,7 @@ references:
     authors:
       - family-names: Lucic
         given-names: Lovro
+        orcid: "https://orcid.org/0009-0008-9976-6933"
     url: "https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md"
     license: CC-BY-4.0
     year: 2026
@@ -48,6 +50,7 @@ references:
     authors:
       - family-names: Lucic
         given-names: Lovro
+        orcid: "https://orcid.org/0009-0008-9976-6933"
     url: "https://github.com/lluvr/frame-check-mcp/tree/master/data/frame_library"
     license: CC-BY-4.0
     version: "0.2.0"

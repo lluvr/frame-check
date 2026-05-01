@@ -15,9 +15,22 @@ endpoints so the four together close the security audit's "guard
 extension" scope.
 """
 
+import importlib.util
 from unittest import mock
 
 import pytest
+
+# Discipline: `framing_ai`, `reframe`, and `consensus` are web-side
+# wrappers (not in the wheel-bundled subset; not extracted to the
+# public mirror per `scripts/_release_lib/extract.py`). The four
+# pre-LLM-injection guard classes that exercise those modules each
+# carry a module-presence skip so the suite ships publicly with
+# the prompt_safety primitives + comparison guard tests
+# running and the web-only guard tests skipping cleanly. On the
+# upstream tree all three modules are present and every class runs.
+_FRAMING_AI_AVAILABLE = importlib.util.find_spec("framing_ai") is not None
+_REFRAME_AVAILABLE = importlib.util.find_spec("reframe") is not None
+_CONSENSUS_AVAILABLE = importlib.util.find_spec("consensus") is not None
 
 import prompt_safety
 from prompt_safety import (
@@ -92,6 +105,10 @@ class TestPromptSafetyPrimitives:
 # ── framing_ai ──────────────────────────────────────────────────────
 
 
+@pytest.mark.skipif(
+    not _FRAMING_AI_AVAILABLE,
+    reason="framing_ai is upstream/web-only; absent on the public mirror",
+)
 class TestFramingAiGuard:
     def test_injected_doc_rejected_pre_llm(self, monkeypatch):
         """``generate_framing_interpretation`` must reject a document
@@ -127,6 +144,10 @@ class TestFramingAiGuard:
 # ── reframe ─────────────────────────────────────────────────────────
 
 
+@pytest.mark.skipif(
+    not _REFRAME_AVAILABLE,
+    reason="reframe is upstream/web-only; absent on the public mirror",
+)
 class TestReframeGuard:
     def test_injected_doc_rejected_pre_llm(self, monkeypatch):
         import reframe
@@ -223,6 +244,10 @@ class TestComparisonGuard:
 # ── consensus ───────────────────────────────────────────────────────
 
 
+@pytest.mark.skipif(
+    not _CONSENSUS_AVAILABLE,
+    reason="consensus is upstream/web-only; absent on the public mirror",
+)
 class TestConsensusGuard:
     def test_injected_subject_skips_question(self):
         import consensus

@@ -372,9 +372,9 @@ This extension pattern is the load-bearing architectural commitment that makes `
 - V4.2 ship plan: fvs_eval/v4/V4_2_SHIP_PLAN.md.
 - V4.2 gap audit: V4_2_GAP_INVENTORY_v1.md (27-gap inventory, Tier 1A construct-honesty fix shipped 2026-04-23).
 - MCP server implementation: MCP_SERVER.md.
-- MCP contract v2 proposal (shapes 1.0.0 release): [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/MCP_CONTRACT_V2_PROPOSAL.md).
-- MCP package design (release arc): [MCP_PACKAGE_DESIGN_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/MCP_PACKAGE_DESIGN_v1.md) §7.
+- MCP contract v2 proposal (shapes 1.0.0 release): [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md).
+- MCP package design (release arc): [MCP_PACKAGE_DESIGN_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/MCP_PACKAGE_DESIGN_v1.md) §7.
 - FVS library: `data/frame_library/` entries FVS-001 through FVS-020 (library_v3 current per commit `9abeb3d`; FVS-012/016/018 revised, FVS-010 kept, FVS-020 retired from detection).
 - Methodology: `METHODOLOGY.md` (bundled).
 - Audit infrastructure: [VALIDATION_PROGRAM.md](https://github.com/lluvr/frame-check-mcp/blob/master/VALIDATION_PROGRAM.md).
-- Confidence-field resolution (Path C, `confidence_level` removed): commit `928a447`; historical context in [V4_CONFIDENCE_INVERSION_IMPACT_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/V4_CONFIDENCE_INVERSION_IMPACT_v1.md).
+- Confidence-field resolution (Path C, `confidence_level` removed): commit `928a447`; historical context in [V4_CONFIDENCE_INVERSION_IMPACT_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/V4_CONFIDENCE_INVERSION_IMPACT_v1.md).

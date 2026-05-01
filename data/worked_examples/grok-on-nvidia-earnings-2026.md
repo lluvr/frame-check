@@ -125,6 +125,8 @@ to carry into the writeup.
 Four frames from the Frame Vocabulary Standard flagged by the
 library matcher:
 
+> **Note on detection state.** This worked example reflects v1 substrate detection at publish time. The v1 deterministic rules for FVS-001 Frame Amplification and FVS-008 Growth Frame were retired 2026-04-18 per `data/frame_library/INDEX.md` (validation evidence showed they fired on cases they should not flag); the frame concepts stand as library entries and the teaching points below remain valid because they describe frame concepts, not detector firings. Current-generation detection (V4.2 LLM-judge) replaces the v1 rules for these two; the "four frames flagged" tally above and the "Four frame matches" framing below preserve the publish-time analysis the walkthrough was built on.
+
 - [FVS-008 Growth Frame](/corpus/library/FVS-008.html). The
   document reasons within growth vocabulary (record, reached a
   record, surging, up 265 percent, tipping point). The library

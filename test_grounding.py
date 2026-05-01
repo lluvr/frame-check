@@ -6,6 +6,8 @@ the app.py display pipeline, and the framing.framing_portrait() integration.
 Does NOT test detection accuracy (that is covered by the upstream test suite).
 """
 
+import importlib.util
+
 import pytest
 from clarethium_measure import measure, grounding_decomposition
 
@@ -587,7 +589,17 @@ class TestPilotFalseCleanRegression:
 
 class TestTelemetryRegimeEmission:
     """Verify the Tier A telemetry event carries projection_regime so
-    longitudinal observatory queries can segment on signal reliability."""
+    longitudinal observatory queries can segment on signal reliability.
+
+    `tier_a_event` is upstream-only operator telemetry; the public
+    mirror skips the class via `pytest.importorskip` rather than
+    ImportError-failing the whole suite when the module is absent.
+    """
+
+    pytestmark = pytest.mark.skipif(
+        importlib.util.find_spec("tier_a_event") is None,
+        reason="tier_a_event is upstream-only telemetry; not present on the public mirror",
+    )
 
     def test_grounding_fields_include_regime(self):
         from tier_a_event import _grounding_fields

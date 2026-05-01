@@ -161,7 +161,7 @@ so the caller's agent runs V4.2 judgment with its own LLM if the
 caller chooses. Zero Frame Check LLM cost per MCP call; vendor
 independence by construction (the caller picks the model).
 
-**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
+**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
 
 **Collapsed release.** An earlier plan for a `0.7.1` V1-only
 name-reservation release on PyPI was retired 2026-04-23 in favor of
@@ -219,6 +219,60 @@ deltas, and a structured framing-differences narrative with per-dimension
 reader implications. The agent_guidance block explicitly tells the
 caller not to treat the comparison as a ranking; Frame Check names
 what differs, not which is better.
+
+## Web JSON parity (programmatic alternative)
+
+Both tools have HTTP/JSON equivalents on the hosted web service at
+`frame.clarethium.com` (currently paused; see "Release arc" above for
+the publish-hold pattern). A programmatic consumer that has chosen
+HTTP over MCP can reach the same deterministic substrate via:
+
+- `frame_check`  ↔  `POST /api/profile` (returns analysis-only JSON
+  matching the MCP `analysis.*` shape; pinned by
+  `test_web_mcp_parity::test_frame_library_matches_parity` and
+  `::test_voice_classification_parity` and four other parametrized
+  parity tests over the calibration corpus)
+- `frame_compare`  ↔  `GET /api/compare-stream` (Server-Sent Events;
+  `model_analyzed` event payload's `frame_library_matches[]`
+  matches `frame_compare`'s `analysis.documents.<label>.
+  frame_library_matches[]`; `comparison.framing_differences` matches
+  `frame_compare`'s `analysis.comparison.framing_differences`
+  byte-for-byte; pinned by
+  `test_web_mcp_parity::test_compare_stream_frame_library_matches_parity`
+  and `::test_compare_stream_framing_differences_parity`)
+
+Per-match shape on both surfaces shares 8 fields (`fvs_id`, `name`,
+`signal`, `question`, `definition`, `url`, `v4_2_verdict`,
+`pattern_kind`); the schema-subset invariant test
+(`test_frame_library_matches_schema_subset_profile` /
+`_compare_stream`) catches drift at PR time so a future MCP-side
+field addition that does not propagate to web fails CI immediately.
+
+**Intentional asymmetries** (not bugs, documented in
+`NEXT_STEPS.md` "Per-match field allowlist" subsection):
+
+- MCP-only fields per match: `library_url` (named differently from
+  web's `url`; points at the public-repo markdown source),
+  `library_resource_uri` (`frame-check://` URI scheme is MCP-protocol-
+  only), `library_entry_version`, `teaching_question` (named
+  differently from web's `question`), `status`, `adjacent_frames`,
+  `affects_dimensions`, `claim_level`. All encode resource URIs,
+  canon-graph machinery, or per-level construct treatments that
+  would be construct-misleading on web.
+
+- MCP-only top-level analyzers: `genre_classifier`, `frame_deepening`
+  (temporal_scope / stakeholder_map / falsification_conditions),
+  `absence_clusters`, `frame_opportunities` (opt-in LLM-augmented).
+  Held back from web pending per-classifier expert validation per
+  `NEXT_STEPS.md` "Substrate-side composition: web exposure".
+
+- MCP-only knobs: `compose_budget`, `divergence_rendering`,
+  `domain_hint`. Agent-shaped affordances with no web parallel.
+
+A consumer that needs the rich agent-guidance / divergence /
+absence-clusters surface should pick MCP. A consumer that only
+needs the substrate-level structural signals (FVS firings,
+voice / coverage / temporal / epistemic) can pick either.
 
 ## Resource surface
 
@@ -1229,7 +1283,7 @@ The v2 contract carries the construct through structure AND through serializatio
 
 Epistemic / claims / voice / temporal Phase A+B fields are additive; no migration window needed.
 
-See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
+See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
 
 ## Determinism
 
