@@ -1,0 +1,364 @@
+[
+  {
+    "absence_cluster_dimensions": [
+      "calibration"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders",
+      "trends",
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": "narrative",
+    "label": "adversarial/balanced_macroeconomic_outlook",
+    "missing_perspectives": [],
+    "path": "data/adversarial_fixtures/balanced_macroeconomic_outlook/document.md",
+    "present_fvs": [
+      "FVS-010",
+      "FVS-011"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 615
+  },
+  {
+    "absence_cluster_dimensions": [
+      "calibration"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "risks",
+      "stakeholders",
+      "trends"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": null,
+    "label": "adversarial/coverage_via_noncanonical_vocabulary",
+    "missing_perspectives": [
+      "causes",
+      "uncertainty"
+    ],
+    "path": "data/adversarial_fixtures/coverage_via_noncanonical_vocabulary/document.md",
+    "present_fvs": [
+      "FVS-011"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 561
+  },
+  {
+    "absence_cluster_dimensions": [
+      "coverage"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "trends",
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": null,
+    "label": "adversarial/cross_domain_stakeholder",
+    "missing_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders"
+    ],
+    "path": "data/adversarial_fixtures/cross_domain_stakeholder/document.md",
+    "present_fvs": [
+      "FVS-012"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 337
+  },
+  {
+    "absence_cluster_dimensions": [],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "trends",
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": null,
+    "label": "adversarial/epistemic_via_paraphrased_sourcing",
+    "missing_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders"
+    ],
+    "path": "data/adversarial_fixtures/epistemic_via_paraphrased_sourcing/document.md",
+    "present_fvs": [
+      "FVS-012"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 653
+  },
+  {
+    "absence_cluster_dimensions": [],
+    "absent_pattern_fvs": [
+      "FVS-007"
+    ],
+    "addressed_perspectives": [],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": "instruction",
+    "label": "adversarial/instruction_without_troubleshooting",
+    "missing_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders",
+      "trends",
+      "uncertainty"
+    ],
+    "path": "data/adversarial_fixtures/instruction_without_troubleshooting/document.md",
+    "present_fvs": [],
+    "voice_classification": "prescriptive",
+    "word_count": 246
+  },
+  {
+    "absence_cluster_dimensions": [
+      "calibration"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "risks",
+      "stakeholders",
+      "trends"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": "recommendation",
+    "label": "adversarial/sales_pitch_as_analysis",
+    "missing_perspectives": [
+      "causes",
+      "uncertainty"
+    ],
+    "path": "data/adversarial_fixtures/sales_pitch_as_analysis/document.md",
+    "present_fvs": [
+      "FVS-011"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 323
+  },
+  {
+    "absence_cluster_dimensions": [],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": null,
+    "label": "adversarial/voice_residual_analytical",
+    "missing_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders",
+      "trends"
+    ],
+    "path": "data/adversarial_fixtures/voice_residual_analytical/document.md",
+    "present_fvs": [
+      "FVS-012"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 336
+  },
+  {
+    "absence_cluster_dimensions": [
+      "counterfactual"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders",
+      "trends",
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": "narrative",
+    "label": "worked/ai-on-life-decisions-startup-2026",
+    "missing_perspectives": [],
+    "path": "data/worked_examples/ai-on-life-decisions-startup-2026.md",
+    "present_fvs": [
+      "FVS-010",
+      "FVS-011",
+      "FVS-012"
+    ],
+    "voice_classification": "advisory",
+    "word_count": 1545
+  },
+  {
+    "absence_cluster_dimensions": [
+      "coverage"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders",
+      "trends",
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": "advocacy",
+    "label": "worked/divergence-on-claude-bitcoin-retirement-2026",
+    "missing_perspectives": [],
+    "path": "data/worked_examples/divergence-on-claude-bitcoin-retirement-2026.md",
+    "present_fvs": [
+      "FVS-009",
+      "FVS-010",
+      "FVS-011",
+      "FVS-012"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 2132
+  },
+  {
+    "absence_cluster_dimensions": [
+      "coverage"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders",
+      "trends",
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": null,
+    "label": "worked/fomc-statement-march-2026",
+    "missing_perspectives": [],
+    "path": "data/worked_examples/fomc-statement-march-2026.md",
+    "present_fvs": [
+      "FVS-009",
+      "FVS-010",
+      "FVS-011",
+      "FVS-012"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 1282
+  },
+  {
+    "absence_cluster_dimensions": [
+      "coverage"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders",
+      "trends",
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": "recommendation",
+    "label": "worked/four-llms-on-bitcoin-retirement-2026",
+    "missing_perspectives": [],
+    "path": "data/worked_examples/four-llms-on-bitcoin-retirement-2026.md",
+    "present_fvs": [
+      "FVS-009",
+      "FVS-011",
+      "FVS-012"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 1636
+  },
+  {
+    "absence_cluster_dimensions": [
+      "calibration"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders",
+      "trends",
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": null,
+    "label": "worked/grok-on-nvidia-earnings-2026",
+    "missing_perspectives": [],
+    "path": "data/worked_examples/grok-on-nvidia-earnings-2026.md",
+    "present_fvs": [
+      "FVS-010"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 2172
+  },
+  {
+    "absence_cluster_dimensions": [
+      "calibration"
+    ],
+    "absent_pattern_fvs": [],
+    "addressed_perspectives": [
+      "causes",
+      "risks",
+      "stakeholders",
+      "trends",
+      "uncertainty"
+    ],
+    "frame_deepening_fires": [
+      "temporal_scope",
+      "stakeholder_map",
+      "falsification_conditions"
+    ],
+    "genre_classification": null,
+    "label": "worked/the-intelligence-age-altman-2024",
+    "missing_perspectives": [],
+    "path": "data/worked_examples/the-intelligence-age-altman-2024.md",
+    "present_fvs": [
+      "FVS-009",
+      "FVS-010"
+    ],
+    "voice_classification": "analytical",
+    "word_count": 1382
+  }
+]

@@ -1,0 +1,110 @@
+[
+  {
+    "output_uuid": "aace0c1c-5891-46d5-991c-5bb2acc6c513",
+    "case_id": "c_case_01_acquire_vs_build",
+    "treatment": "single_frame",
+    "timestamp": "2026-04-28T04:04:51Z",
+    "prompt_tokens": 790,
+    "completion_tokens": 1990,
+    "cost": 0.002148
+  },
+  {
+    "output_uuid": "154fc0d7-455d-47de-9d85-eb2c0460a677",
+    "case_id": "c_case_01_acquire_vs_build",
+    "treatment": "adversarial_chain",
+    "timestamp": "2026-04-28T04:05:47Z",
+    "prompt_tokens": 22862,
+    "completion_tokens": 7685,
+    "cost": 0.012257400000000002
+  },
+  {
+    "output_uuid": "1a68dff5-57fa-42f5-8c13-16ff643eda48",
+    "case_id": "c_case_02_external_hire_vs_promote",
+    "treatment": "single_frame",
+    "timestamp": "2026-04-28T04:05:57Z",
+    "prompt_tokens": 793,
+    "completion_tokens": 1409,
+    "cost": 0.0015676000000000002
+  },
+  {
+    "output_uuid": "4398cc8c-cdf0-4fc8-acc5-4afe505a65f3",
+    "case_id": "c_case_02_external_hire_vs_promote",
+    "treatment": "adversarial_chain",
+    "timestamp": "2026-04-28T04:06:52Z",
+    "prompt_tokens": 21745,
+    "completion_tokens": 7413,
+    "cost": 0.011762
+  },
+  {
+    "output_uuid": "40dbaae5-bd59-426a-b001-1554ce621156",
+    "case_id": "c_case_03_sunset_legacy_product",
+    "treatment": "single_frame",
+    "timestamp": "2026-04-28T04:07:07Z",
+    "prompt_tokens": 789,
+    "completion_tokens": 1827,
+    "cost": 0.0019848
+  },
+  {
+    "output_uuid": "d6ce3f2c-159c-42fd-960d-783d96e4a28f",
+    "case_id": "c_case_03_sunset_legacy_product",
+    "treatment": "adversarial_chain",
+    "timestamp": "2026-04-28T04:07:49Z",
+    "prompt_tokens": 18263,
+    "completion_tokens": 5781,
+    "cost": 0.0094336
+  },
+  {
+    "output_uuid": "6db5b1df-4ed3-46f1-908f-9d152c64ad3a",
+    "case_id": "c_case_04_eu_vs_asia_expansion",
+    "treatment": "single_frame",
+    "timestamp": "2026-04-28T04:08:03Z",
+    "prompt_tokens": 834,
+    "completion_tokens": 2000,
+    "cost": 0.0021668
+  },
+  {
+    "output_uuid": "75f9768b-e8d9-4d2d-8151-91f34d10b1d8",
+    "case_id": "c_case_04_eu_vs_asia_expansion",
+    "treatment": "adversarial_chain",
+    "timestamp": "2026-04-28T04:09:14Z",
+    "prompt_tokens": 26738,
+    "completion_tokens": 8626,
+    "cost": 0.013973600000000001
+  },
+  {
+    "output_uuid": "6768fbc3-9c1d-4996-952d-4bff7254fd1f",
+    "case_id": "c_case_05_platform_integration",
+    "treatment": "single_frame",
+    "timestamp": "2026-04-28T04:09:27Z",
+    "prompt_tokens": 761,
+    "completion_tokens": 1865,
+    "cost": 0.0020172
+  },
+  {
+    "output_uuid": "605072b4-7f0d-4214-a78c-0a5b8c90f0b0",
+    "case_id": "c_case_05_platform_integration",
+    "treatment": "adversarial_chain",
+    "timestamp": "2026-04-28T04:10:32Z",
+    "prompt_tokens": 23001,
+    "completion_tokens": 7459,
+    "cost": 0.012059199999999999
+  },
+  {
+    "output_uuid": "0a7fd2f2-ab98-4e08-adf1-a2c0cfa97d83",
+    "case_id": "c_case_06_remote_only_policy",
+    "treatment": "single_frame",
+    "timestamp": "2026-04-28T04:10:48Z",
+    "prompt_tokens": 781,
+    "completion_tokens": 2000,
+    "cost": 0.0021562
+  },
+  {
+    "output_uuid": "d07e8913-ea80-4013-86d9-55b99b1e682d",
+    "case_id": "c_case_06_remote_only_policy",
+    "treatment": "adversarial_chain",
+    "timestamp": "2026-04-28T04:12:17Z",
+    "prompt_tokens": 24744,
+    "completion_tokens": 8052,
+    "cost": 0.013000800000000002
+  }
+]

@@ -100,7 +100,7 @@ Honest limits and anticipated adversarial readings are catalogued in
     pip install -r requirements.txt
     python3 run_tests.py
 
-26 test files, ~30 seconds end-to-end. Includes 40+ adversarial dispatcher test functions in `test_mcp_adversarial.py` (parametrized into more tests at collection time) plus the V4.2 engine + classifier coverage.
+25 test files, ~30 seconds end-to-end. Includes 40+ adversarial dispatcher test functions in `test_mcp_adversarial.py` (parametrized into more tests at collection time) plus the V4.2 engine + classifier coverage.
 
 ## License
 

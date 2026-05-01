@@ -1,0 +1,79 @@
+### 1. Stakeholders Identified
+The key stakeholders are groups or roles directly affected by the decision on Product Classic's future. These include internal roles, customer segments, and external influencers:
+
+- **CFO and Finance Team**: Oversee financial performance and margins.
+- **CRO and Sales/Marketing Team**: Manage customer relationships and revenue growth.
+- **Engineering Team (6 full-time on Classic, remaining 16 on Modern)**: Handle product development and maintenance.
+- **Customer Support Team**: Deal with tickets and user issues.
+- **Enterprise Customers (400, high ARPU, 5+ year contracts, infrastructure-dependent)**: Large organizations reliant on deep integrations.
+- **Mid-Market Customers (350, mid ARPU, moderate stickiness, workflow dependencies)**: Growing businesses with some customization needs.
+- **SMB Customers (200, low ARPU, low stickiness, basic feature users)**: Small businesses using core functionalities.
+- **Long-Tail and Education Customers (250, very low ARPU, influential in academic/developer communities)**: Non-profits, educators, and niche users with social/media reach.
+- **Industry Analysts and Broader Market**: Watch SoftwareCo's moves for signals on product strategy and reliability.
+
+### 2. Interests of Each Stakeholder
+Interests are analyzed across the three options, focusing on gains (benefits) and losses (costs) in revenue, operations, relationships, and risks. Option A (sunset with phased migration) prioritizes efficiency; Option B (maintenance mode) maintains status quo; Option C (feature consolidation) invests for parity.
+
+- **CFO and Finance Team**:
+  - Option A: Gains $3.5M annual cost savings (redirected engineers boost Modern margins); loses potential short-term revenue disruption from migrations. Overall, high net benefit for margin recovery (current Classic margin implied low, trending down).
+  - Option B: Neutral—sustains $9M revenue but ongoing $3.5M costs erode margins; no growth upside.
+  - Option C: Costs 4 engineer-quarters (~$500K+ in labor) for 20% feature migration; gains long-term revenue retention but delays savings.
+
+- **CRO and Sales/Marketing Team**:
+  - Option A: Risks customer churn (e.g., 20-30% of 1,200 could defect during 18-month sunset, hitting $1.8-2.7M revenue); gains focused sales on Modern (25% YoY growth accelerates).
+  - Option B: Maintains stable relationships with 950 long-term customers; loses opportunity to upsell Modern features.
+  - Option C: Benefits from smoother transitions (80% features already compatible), preserving high-ARPU enterprise ties; minimal churn risk but requires sales effort to migrate.
+
+- **Engineering Team**:
+  - Option A: Frees 6 engineers (30% capacity boost for Modern roadmap, enabling faster innovation); avoids ongoing Classic maintenance burden.
+  - Option B: Locks 6 engineers in low-value maintenance (no new features, high ticket support at 1.8x Modern rate); opportunity cost of stalled Modern growth.
+  - Option C: Demands 4 extra quarters from Modern team for legacy features; delays other priorities but reduces long-term dual-product strain.
+
+- **Customer Support Team**:
+  - Option A: Reduces ticket volume post-migration (Modern has lower per-customer rate); initial spike from 1,200 migrations strains resources.
+  - Option B: Continues high 1.8x ticket load from Classic's aging base, increasing burnout and costs.
+  - Option C: Lowers tickets over time via parity, but short-term effort to assist customizations.
+
+- **Enterprise Customers**:
+  - Option A: Bears high migration costs (infrastructure rewiring for 20% legacy features); risks operational downtime, potential contract cancellations (high stickiness but $ high ARPU loss if 10% churn = ~$3M revenue hit).
+  - Option B: Gains stability for 5+ year dependencies; no disruption but stuck on declining product.
+  - Option C: Minimal disruption with full feature parity; retains value without forced changes.
+
+- **Mid-Market Customers**:
+  - Option A: Faces moderate workflow migration hassles; some (20-40%) may churn due to dependencies, losing ~$1-2M revenue.
+  - Option B: Maintains moderate stickiness; gradual decline as features lag.
+  - Option C: Benefits from replicated workflows; high retention potential.
+
+- **SMB Customers**:
+  - Option A: Low disruption (basic features already in Modern); easy switch but low ARPU means minimal revenue impact if 50% churn.
+  - Option B: Continues low-cost access; no urgency to change.
+  - Option C: Seamless for basics; improves experience without effort.
+
+- **Long-Tail and Education Customers**:
+  - Option A: High social/relational costs (disruption to academic workflows, potential backlash in developer communities); low ARPU but amplified brand damage via social media/influencer networks.
+  - Option B: Preserves access for niche/educational use; sustains goodwill.
+  - Option C: Enables continued use via Modern; avoids exclusion.
+
+- **Industry Analysts and Broader Market**:
+  - Option A: Views sunset as strategic maturity (frees resources for growth); risks perception of unreliability if churn is public.
+  - Option B: Signals stagnation (8% YoY decline continues).
+  - Option C: Positions SoftwareCo as customer-focused innovator; positive for market confidence.
+
+### 3. Power Dynamics
+- **High Agency (Decision-Makers)**: CFO and executive team hold primary power, controlling the framing and final call (e.g., CFO's margin focus drives Option A push). Engineering leads have input on feasibility (e.g., 4 engineer-quarters estimate), but CRO/sales have secondary influence via revenue projections.
+- **Moderate Agency (Internal Teams)**: CRO can advocate for customer impacts if consulted, potentially shifting to Option C. Engineering team influences via capacity trade-offs (e.g., redirecting 6 engineers). Customer support has limited voice but can highlight ticket burdens.
+- **Low/No Agency (Acted Upon)**: All customer segments are passive recipients—enterprise/mid-market can negotiate contracts or churn (some leverage via size), but SMB/long-tail lack power and may exit quietly. Analysts exert indirect influence through public reports, amplifying brand risks without direct say.
+- Overall Dynamics: Internal finance/engineering skew power toward cost-cutting (Options A/B), while customer-facing roles (CRO/support) could balance if elevated. Customers' "power" is reactive (churn or advocacy), especially long-tail's social influence.
+
+### 4. Whose Perspective is Represented in the Current Framing, Whose is Absent
+- **Represented**: Primarily the CFO's financial perspective (margin recovery, $3.5M costs vs. $9M revenue, engineering capacity as a pure efficiency play), aligned with engineering's operational burden (6/22 engineers tied down). This frames the decision as "obvious" for Option A, emphasizing data-driven cost savings and Modern's growth (70% revenue, 25% YoY).
+- **Absent**: CRO's customer-relationship view (e.g., churn risks to 950 long-term contracts, segment-specific dependencies). Long-tail/education customers are entirely excluded, ignoring their low-ARPU but high social/brand costs (e.g., developer community backlash). Mid-market/SMB nuances (workflow vs. basic needs) are overlooked, as is support team's ticket strain. Analysts' market perception is unaddressed, focusing only on internal metrics.
+
+### 5. What the Decision-Maker Should Consider Before Committing
+Before finalizing (likely leaning Option A), evaluate:
+- **Churn Modeling**: Quantify segment-specific retention rates—e.g., pilot migrations with 10% of enterprise customers to test 20% feature gaps; project revenue loss (e.g., 25% overall churn = $2.25M hit) against $3.5M savings.
+- **Customer Consultation**: Engage CRO early for surveys/interviews with 100+ customers across segments, especially long-tail (e.g., academic feedback) to gauge resistance and mitigate brand risk.
+- **Hybrid Feasibility**: Assess Option C's ROI—4 engineer-quarters cost vs. retained $9M revenue; compare to Option A's 18-month disruption timeline.
+- **Risk Mitigation**: Develop support plans (e.g., dedicated migration teams, incentives for Modern switches) and monitor analyst reactions via pre-announcement briefings.
+- **Long-Term Equity**: Weigh exclusion of low-ARPU groups—e.g., offer free Modern tiers for education to preserve social capital, avoiding reputational damage that could slow Modern's 25% growth.
+- **Inclusive Framing**: Broaden input by involving CRO/support in modeling; reframe beyond margins to balanced scorecard (revenue + relationships + innovation capacity) for defensible choice.
