@@ -34,7 +34,7 @@ on:
 
 jobs:
   build:
-    name: Build wheel + sdist
+    name: Build wheel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -71,8 +71,20 @@ jobs:
       - name: Install build tooling
         run: python -m pip install --upgrade build wheel setuptools
 
-      - name: Build wheel + sdist
-        run: python -m build
+      - name: Build wheel
+        # `python -m build` (no flag) builds sdist first then wheel
+        # inside the sdist tree. The sdist build path fails on
+        # `package directory 'framecheck_mcp/data' does not exist`
+        # because setuptools' find_packages discovers
+        # framecheck_mcp.data / .calibration / .validation as
+        # subpackages but the sdist build context loses the
+        # `_StagedBuildPy` data-staging step that runs as part of
+        # `build_py`. The wheel is the PyPI artifact (sdist is
+        # nice-to-have but not required for `pip install`); building
+        # wheel-only keeps the publish job green and matches the
+        # orchestrator's `lift_dry_run` step 2 which also uses
+        # `python -m build --wheel`.
+        run: python -m build --wheel
 
       - name: Inspect wheel contents
         run: |
