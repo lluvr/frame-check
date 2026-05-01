@@ -1,0 +1,33 @@
+{
+  "absence_cluster_dimension_fires": {
+    "calibration": 5,
+    "counterfactual": 1,
+    "coverage": 4
+  },
+  "coverage_perspective_addressed": {
+    "causes": 7,
+    "risks": 9,
+    "stakeholders": 9,
+    "trends": 11,
+    "uncertainty": 10
+  },
+  "genre_distribution": {
+    "(abstain)": 7,
+    "advocacy": 1,
+    "instruction": 1,
+    "narrative": 2,
+    "recommendation": 2
+  },
+  "n_documents": 13,
+  "per_fvs_fires": {
+    "FVS-009": 4,
+    "FVS-010": 6,
+    "FVS-011": 7,
+    "FVS-012": 7
+  },
+  "voice_distribution": {
+    "advisory": 1,
+    "analytical": 11,
+    "prescriptive": 1
+  }
+}

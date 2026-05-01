@@ -117,7 +117,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 2, Grok 2, GPT-5 4.
 1. NVIDIA fiscal-2024 analysis (EXP-094, HI-061). Identified frame-amplified document; counter-frame rewrite preserved data points but reframed as risk evidence; demonstrated that sophistication of the original analysis did not equal completeness. Material additions a strategic reader would want.
 2. Branch B (pre-commit intervention) operational concept. The "write your own analysis first before consulting AI" pattern is in active use as the primary preventive against frame amplification. Concept is shipped via methodology and outreach materials (FVS_001_OUTREACH_EMAIL_SHORT_v1.md); quantified outcomes pending.
 
-**Lived-experience anchor.** Authored 2026-04-26 per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
+**Lived-experience anchor.** Authored 2026-04-26 per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
 
 Late March 2026, approximately one month before the v2 architectural work landed. A four-hour continuous session with Claude as primary interlocutor (ChatGPT secondary), building proposals for new app projects with all proposals coupling tightly to the curator's existing measurement, evaluation, and vault-experiment work. Claude converged hard on the curator's existing context across the full session: whatever new direction the curator probed, Claude pattern-matched the response back to the curator's known repertoire and built proposals adjacent to it. The frame held for four hours.
 

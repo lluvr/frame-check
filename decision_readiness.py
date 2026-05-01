@@ -590,7 +590,9 @@ def _evidence_dimension(sn: dict, framing: dict) -> dict:
     """
     checked = sn.get("checked") or 0
     verified = sn.get("verified") or 0
-    sourced_pct = (framing.get("epistemic") or {}).get("sourced_pct")
+    epistemic = framing.get("epistemic") or {}
+    sourced_pct = epistemic.get("sourced_pct")
+    numeric_sentences = epistemic.get("numeric_sentences") or 0
 
     verification_ratio = (verified / checked) if checked > 0 else None
     providers = sn.get("verified_providers") or []
@@ -609,7 +611,25 @@ def _evidence_dimension(sn: dict, framing: dict) -> dict:
                 f"{verified} of {checked} numerical claims source-verified."
             )
     elif sourced_pct is not None:
-        parts.append("No numerical claims to verify against sources.")
+        # Distinguish "document carries no numerical claims" from
+        # "numerical claims exist but the source network attempted
+        # zero verifications" (the dominant pipx-installed case
+        # where API keys are absent). Collapsing these two into
+        # "No numerical claims to verify" inverts the actual signal
+        # for any agent reading evidence.signal_text. Phrasing
+        # parallels the verified branch ("X of Y numerical claims
+        # source-verified") so an agent walking the dimensions
+        # reads consistent grammar across success and zero-attempt
+        # paths.
+        if numeric_sentences > 0:
+            parts.append(
+                f"0 of {numeric_sentences} numerical claim"
+                f"{'s' if numeric_sentences != 1 else ''} "
+                f"source-verified (source network attempted "
+                f"no verifications)."
+            )
+        else:
+            parts.append("No numerical claims to verify against sources.")
     else:
         parts.append("No evidence-backing data.")
 

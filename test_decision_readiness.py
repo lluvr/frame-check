@@ -813,18 +813,21 @@ def test_library_resource_scheme_matches_mcp_server():
     _sys.path.insert(0, str(repo_root))
     try:
         from decision_readiness import LIBRARY_RESOURCE_SCHEME as dr_scheme
-        # Read the MCP server's RESOURCE_SCHEME without importing
-        # the whole module (importing mcp_server.py runs server
-        # init code we do not want at test time). Source-grep is
-        # the lightweight pin.
-        mcp_src = (repo_root / "mcp_server.py").read_text(encoding="utf-8")
+        # Read the MCP server's RESOURCE_SCHEME source. Since the
+        # Step 2 decomposition (2026-04-29), the constant lives in
+        # mcp_resources.py rather than mcp_server.py; mcp_server
+        # imports it back via the re-export pattern. Source-grep
+        # remains the lightweight pin (avoids importing the whole
+        # module which would run import-time side effects in the
+        # test environment).
+        mcp_src = (repo_root / "mcp_resources.py").read_text(encoding="utf-8")
     finally:
         _sys.path.pop(0)
 
     import re as _re
     m = _re.search(r'RESOURCE_SCHEME\s*=\s*["\']([^"\']+)["\']', mcp_src)
     _check(m is not None,
-           "could not locate RESOURCE_SCHEME assignment in mcp_server.py")
+           "could not locate RESOURCE_SCHEME assignment in mcp_resources.py")
     mcp_scheme = m.group(1)
     _check(
         dr_scheme == mcp_scheme,
@@ -1131,6 +1134,14 @@ def test_aggregate_outlier_counts_by_llm_emits_sorted_keys():
     print("=== aggregate_outlier_counts_by_llm emits sorted keys ===")
     import sys, pathlib
     harness_path = pathlib.Path(__file__).parent / "validation" / "decision_readiness"
+    if not (harness_path / "aggregate_corpus_findings.py").exists():
+        # The harness is upstream-only: `validation/decision_readiness/`
+        # Python files are excluded from the public extract per
+        # `setup.py::_should_skip` (maintainer-side analysis tooling, not
+        # a runtime resource of the wheel). Skip cleanly on the public
+        # mirror rather than ImportError-failing the suite.
+        print(f"  SKIP (harness {harness_path}/aggregate_corpus_findings.py not present; upstream-only module)\n")
+        return
     sys.path.insert(0, str(harness_path))
     try:
         import aggregate_corpus_findings as acf

@@ -86,7 +86,10 @@ def test_provenance_engine_identity_is_consistent_with_web_fallback():
     branches on framing_engine sees identical values across the two
     surfaces when Layer A is in effect.
     """
-    import framing_sdk
+    framing_sdk = pytest.importorskip(
+        "framing_sdk",
+        reason="framing_sdk is the web-side fallback wrapper; absent on the public mirror",
+    )
     payload = mcp_server.build_epistemic_payload(_DOC_SAMPLE)
     web_fallback = framing_sdk._build_fallback_response("llm_unavailable")
     assert (

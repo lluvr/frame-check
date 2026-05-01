@@ -2175,10 +2175,17 @@ def test_aggregate_resource_omitted_when_absent():
     _AGGREGATE_RESULTS_DIR at an empty temp directory."""
     print("=== resources/list omits aggregate when absent ===")
     import tempfile
-    original_dir = mcp_server._AGGREGATE_RESULTS_DIR
+    # Since the Step 2 decomposition (2026-04-29) the path constant
+    # and the reader function live in mcp_resources rather than
+    # mcp_server; patch the actual owner so the function reads the
+    # patched value. Patching mcp_server's import-time copy would be
+    # a no-op because the function resolves the constant via its
+    # own module's namespace.
+    import mcp_resources
+    original_dir = mcp_resources._AGGREGATE_RESULTS_DIR
     try:
         with tempfile.TemporaryDirectory() as tmp:
-            mcp_server._AGGREGATE_RESULTS_DIR = tmp
+            mcp_resources._AGGREGATE_RESULTS_DIR = tmp
             check(
                 mcp_server._find_latest_aggregate() is None,
                 "test invariant: empty dir should yield None from "
@@ -2195,7 +2202,7 @@ def test_aggregate_resource_omitted_when_absent():
                 f"{[u for u in uris if 'aggregate' in u]}",
             )
     finally:
-        mcp_server._AGGREGATE_RESULTS_DIR = original_dir
+        mcp_resources._AGGREGATE_RESULTS_DIR = original_dir
     print("  PASS\n")
 
 
@@ -2801,13 +2808,20 @@ def test_aggregate_resource_read_when_absent_is_filenotfound():
     touching the live data."""
     print("=== resources/read aggregate when absent fails cleanly ===")
     # Save and replace via the dispatch with monkeypatch wouldn't
-    # work cross-thread; do an attribute swap and restore.
-    original_dir = mcp_server._AGGREGATE_RESULTS_DIR
+    # work cross-thread; do an attribute swap and restore. Since the
+    # Step 2 decomposition (2026-04-29) the path constant and the
+    # _find_latest_aggregate function live in mcp_resources rather
+    # than mcp_server; patch the actual owner so the function reads
+    # the patched value (patching mcp_server's import-time copy
+    # would be a no-op because the function resolves the constant
+    # via its own module's namespace, not mcp_server's).
+    import mcp_resources
+    original_dir = mcp_resources._AGGREGATE_RESULTS_DIR
     try:
         # Point at a directory with no results subdirs
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:
-            mcp_server._AGGREGATE_RESULTS_DIR = tmp
+            mcp_resources._AGGREGATE_RESULTS_DIR = tmp
             check(
                 mcp_server._find_latest_aggregate() is None,
                 "test invariant: empty dir should yield None",
@@ -2827,7 +2841,7 @@ def test_aggregate_resource_read_when_absent_is_filenotfound():
                 f"got {resp['error']!r}",
             )
     finally:
-        mcp_server._AGGREGATE_RESULTS_DIR = original_dir
+        mcp_resources._AGGREGATE_RESULTS_DIR = original_dir
     print("  PASS\n")
 
 
@@ -3496,14 +3510,26 @@ def test_frame_match_carries_adjacent_frames():
         # profile and the aggregate library_entries_per_dimension).
         # Both are built from decision_readiness.library_entry_ref so
         # divergence here would mean someone bypassed the helper.
+        # URL pattern follows decision_readiness.LIBRARY_PUBLIC_URL_BASE,
+        # which switched from frame.clarethium.com/corpus/library to
+        # github.com/lluvr/frame-check-mcp/blob/master/data/frame_library
+        # when production paused 2026-04-23 (Path A.1 decision): GitHub
+        # is always resolvable for end-users regardless of hosted-
+        # production status, and per-entry filenames stay accurate
+        # under entry rename via parse_entry_filenames().
+        public_url_prefix = (
+            "https://github.com/lluvr/frame-check-mcp/blob/master"
+            "/data/frame_library/"
+        )
         check(
             first_adj.get("public_url", "").startswith(
-                "https://frame.clarethium.com/corpus/library/FVS-"
+                f"{public_url_prefix}{first_adj['fvs_id']}_"
             )
-            and first_adj["public_url"].endswith(
-                f"{first_adj['fvs_id']}.html"
-            ),
-            f"adjacent_frames entries must carry public_url; "
+            and first_adj["public_url"].endswith(".md"),
+            f"adjacent_frames entries must carry public_url pointing "
+            f"at the GitHub-hosted FVS markdown for the entry's "
+            f"fvs_id (expected prefix "
+            f"{public_url_prefix}{first_adj['fvs_id']}_..., suffix .md); "
             f"got {first_adj.get('public_url')!r}",
         )
         check(
@@ -9319,11 +9345,14 @@ def test_pattern_segmented_prevalence_carries_low_n_warning():
     baseline = len(_FAILURES)
     print("=== pattern segmented prevalence carries low_n_warning ===")
     from corpus_intelligence import count_corpus_pattern_matches
+    _corpus_root = Path(__file__).resolve().parent / "validation" / "decision_readiness"
+    _corpus_dir = str(_corpus_root / "corpus")
+    _results_dir = str(_corpus_root / "results")
     # Advocacy genre has 1 corpus doc; low_n_warning must be True.
     match = count_corpus_pattern_matches(
         {"genre": "advocacy", "frames_absent_all": ["FVS-017"]},
-        "/home/llucic/frame-check/validation/decision_readiness/corpus",
-        "/home/llucic/frame-check/validation/decision_readiness/results",
+        _corpus_dir,
+        _results_dir,
     )
     if match is None:
         print("  SKIP  (corpus unavailable)\n")
@@ -9339,8 +9368,8 @@ def test_pattern_segmented_prevalence_carries_low_n_warning():
             "genre": "recommendation",
             "frames_present_all": ["FVS-007"],
         },
-        "/home/llucic/frame-check/validation/decision_readiness/corpus",
-        "/home/llucic/frame-check/validation/decision_readiness/results",
+        _corpus_dir,
+        _results_dir,
     )
     if match_rec is not None:
         check(

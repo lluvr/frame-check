@@ -81,7 +81,7 @@ Honest limits and anticipated adversarial readings are catalogued in
 
 - `METHODOLOGY.md`: full methodology paper (v0.2 draft)
 - `MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
-- `MCP_CLIENT_CONFORMANCE_v1.md`: 32/32 conformance round-trips against the installed wheel
+- `docs/internal/MCP_CLIENT_CONFORMANCE_v1.md`: 32/32 conformance round-trips against the installed wheel
 - `FRAME_DIVERGENCE_v1.md` and `FRAME_DIVERGENCE_v2.md`: divergence architecture
 - `data/frame_library/`: 20-entry FVS catalog with worked examples
 - `ANTICIPATED_CRITIQUES.md`: self-enumerated adversarial readings
@@ -92,8 +92,7 @@ Honest limits and anticipated adversarial readings are catalogued in
     pip install -r requirements.txt
     python3 run_tests.py
 
-49 test suites, ~3 minutes. Includes 63 adversarial dispatcher tests
-in `test_mcp_adversarial.py` plus the V4.2 engine + classifier coverage.
+26 test files, ~30 seconds end-to-end. Includes 40+ adversarial dispatcher test functions in `test_mcp_adversarial.py` (parametrized into more tests at collection time) plus the V4.2 engine + classifier coverage.
 
 ## License
 
@@ -111,8 +110,8 @@ discipline.
 
 Sign-off-by-DCO required per `CONTRIBUTING.md`. Governance per
 `GOVERNANCE.md` (BDFL model with named forcing functions for
-canon-promotion decisions). External reviewer engagement per
-`REVIEWERS.md`.
+canon-promotion decisions). External rater engagement per
+`RATERS.md`.
 
 ## Issues
 

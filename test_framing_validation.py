@@ -901,3 +901,120 @@ class TestSplitSentencesParagraphJoining:
         assert any("Data center" in s for s in sentences)
         assert any("Gaming" in s for s in sentences)
         assert any("exceeded" in s for s in sentences)
+
+
+class TestComputeSentenceSpansPerformance:
+    """Performance pins for _compute_sentence_spans (framing.py:477).
+
+    The function locates each sentence from split_sentences inside
+    the original text using a whitespace-tolerant regex. Pre-2026-04-30
+    the implementation had two pathologies that combined to produce
+    O(n_sentences * text_length) wall-clock on long documents and
+    catastrophic backtracking on documents containing markdown tables.
+    Both are fixed; the tests below pin the fix so the slow shape
+    cannot return without surfacing.
+    """
+
+    def test_markdown_table_does_not_trigger_catastrophic_backtracking(self):
+        """A markdown table joined into a single sentence by
+        split_sentences must not trigger catastrophic regex
+        backtracking. The probe (first 60 chars of the table) has
+        long runs of consecutive spaces (column padding); the
+        whitespace-tolerant pattern construction must collapse
+        those runs into a single \\s+ rather than emitting one
+        \\s+ per escaped-space, which created N independent
+        quantifiers and exponential backtracking.
+
+        Empirical regression: at the 30K-cap doc-size sweep the
+        sole table-bearing sentence in the worked-examples corpus
+        took 678ms to locate, dominating the 700ms total; this
+        test pins the fix at <50ms per call (200x headroom over
+        the regression).
+        """
+        from framing import _compute_sentence_spans
+        import time
+
+        # Markdown table that mirrors the worked-examples corpus
+        # shape: column-padded cells joined by | separators. The
+        # padding produces 20+ consecutive spaces in the joined
+        # sentence which is the catastrophic-backtracking trigger.
+        text = (
+            "## Per-model signature\n"
+            "\n"
+            "| Model   | Voice         | Covers                              |"
+            " Missing                                    | Sourced |\n"
+            "| ------- | ------------- | ----------------------------------- |"
+            " ------------------------------------------ | ------- |\n"
+            "| Claude  | prescriptive  | causes                              |"
+            " risks, stakeholders, trends, uncertainty   | 0%      |\n"
+            "| GPT-5   | prescriptive  | risks, trends                       |"
+            " causes, stakeholders, uncertainty          | 0%      |\n"
+        )
+
+        # Warm so first-call regex compile cost does not skew.
+        _compute_sentence_spans(text)
+
+        t0 = time.perf_counter()
+        for _ in range(5):
+            _compute_sentence_spans(text)
+        per_call_ms = (time.perf_counter() - t0) * 200  # avg of 5 in ms
+
+        assert per_call_ms < 50, (
+            f"_compute_sentence_spans on a markdown-table document "
+            f"took {per_call_ms:.1f}ms per call (regression budget: "
+            f"50ms). Pre-fix the same case took 678ms; the "
+            f"run-collapse fix in the whitespace-tolerant pattern "
+            f"construction must hold for this not to recur."
+        )
+
+    def test_long_document_scales_under_substrate_budget(self):
+        """The function must complete in well under the 100ms
+        budget the substrate analyzers as a whole share. The test
+        measures at 30_000 chars (above the current production cap
+        of MAX_DOC_CHARS=20_000) so it surfaces regressions that
+        appear above the cap before they appear at the cap. Two
+        rationales for measuring above the cap rather than at it:
+
+        1. Headroom check. The cap can move (it has moved twice in
+           a week: 10K -> 30K -> 20K). A test that measures only
+           at the current cap silently loses headroom every time
+           the cap drops.
+
+        2. F-1 unblocked the substrate to handle ~500K chars
+           cleanly. Pinning at 30K confirms the F-1 fix holds
+           well above the operating point. Pre-F-1, this case
+           took 692ms; post-fix, ~2ms.
+
+        Regression budget: 50ms (25x headroom). Above that,
+        _compute_sentence_spans is eating too much of the 15-second
+        analyzer-timeout envelope and F-1 has regressed.
+        """
+        from framing import _compute_sentence_spans
+        import pathlib
+        import time
+
+        worked = sorted(pathlib.Path(__file__).parent.glob(
+            "data/worked_examples/*.md"
+        ))
+        parts = [
+            p.read_text() for p in worked
+            if not p.name.startswith("_") and p.name != "README.md"
+        ]
+        if not parts:
+            # Nothing to test in this environment; skip silently.
+            return
+        natural = "\n\n---\n\n".join(parts)
+        text = natural[:30_000]
+
+        # Warm
+        _compute_sentence_spans(text)
+
+        t0 = time.perf_counter()
+        for _ in range(3):
+            _compute_sentence_spans(text)
+        per_call_ms = (time.perf_counter() - t0) * 1000 / 3
+
+        assert per_call_ms < 50, (
+            f"_compute_sentence_spans at 30K natural prose took "
+            f"{per_call_ms:.1f}ms per call (regression budget: 50ms)."
+        )

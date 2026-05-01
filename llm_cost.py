@@ -141,6 +141,45 @@ def extract_grok_usage(response):
     return int(input_t or 0), int(output_t or 0)
 
 
+def extract_proxy_cost_usd(response):
+    """Read cost_in_usd_ticks from a LiteLLM-proxy response, if present.
+
+    LiteLLM proxies set `cost_in_usd_ticks` on the OpenAI-compatible
+    response.usage object as an integer count of nano-dollars
+    (1 tick = 1e-9 USD). The proxy's value is the actual billing
+    amount the proxy will charge the master provider key, which is
+    more accurate than frame-check's local pricing table because it
+    captures price changes the table has not picked up.
+
+    Returns the cost in USD when the field is present, or None when
+    the response is from a direct provider (no proxy in front), the
+    response has no usage object, or the field is absent. Callers
+    treat None as "fall back to local pricing table".
+
+    Lives in llm_cost so the conversion logic stays co-located with
+    the rest of the cost-extraction primitives.
+    """
+    usage_obj = getattr(response, "usage", None)
+    if usage_obj is None:
+        return None
+    # LiteLLM may attach the field directly on usage or under a
+    # provider-specific subfield; check both shapes.
+    ticks = getattr(usage_obj, "cost_in_usd_ticks", None)
+    if ticks is None:
+        # Some shapes pack it as a dict the SDK exposes via __dict__
+        # but not as direct attributes; tolerate both.
+        try:
+            ticks = (usage_obj.__dict__ or {}).get("cost_in_usd_ticks")
+        except Exception:
+            ticks = None
+    if ticks is None:
+        return None
+    try:
+        return float(ticks) / 1e9
+    except (TypeError, ValueError):
+        return None
+
+
 # ================================================================
 # High-level: measure from a response, with fallback
 # ================================================================
@@ -184,6 +223,21 @@ def measure(provider, model, response, fallback_cost_usd=0.0):
                 "input_tokens": 0,
                 "output_tokens": 0,
                 "cost_usd": float(fallback_cost_usd),
+            }
+
+        # Prefer the proxy-reported cost when it is present. The
+        # LiteLLM proxy in front of frame-check (when configured)
+        # returns cost_in_usd_ticks on usage; that value reflects
+        # the actual billing the proxy will pass to the master
+        # provider key, which is more accurate than frame-check's
+        # local pricing table whenever provider pricing has changed
+        # since the table was last calibrated. Round-3 audit F29.
+        proxy_cost = extract_proxy_cost_usd(response)
+        if proxy_cost is not None and proxy_cost > 0:
+            return {
+                "input_tokens": input_t,
+                "output_tokens": output_t,
+                "cost_usd": proxy_cost,
             }
 
         cost = compute_cost_usd(provider, model, input_t, output_t)

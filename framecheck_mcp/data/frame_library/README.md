@@ -52,7 +52,7 @@ library_v2 (earlier variant) as historical comparisons.
 
 ## Drift-prevention tests
 
-Two structural tests in [test_v4_2_discipline_boundary.py](https://github.com/lluvr/frame-check-mcp/blob/master/test_v4_2_discipline_boundary.py) enforce
+Two structural tests in test_v4_2_discipline_boundary.py enforce
 the discipline:
 
 - `test_v4_2_labeling_prompt_only_uses_identification_sections`: catches
@@ -85,7 +85,7 @@ These tests are part of the canonical runner (`python3 run_tests.py`).
    for what "passing" means and for the full-sweep TODO).
 4. If the edit touches any other section, no LLM-behavior check is required.
 5. Run `python3 ../../run_tests.py` to confirm the discipline-boundary
-   tests in [test_v4_2_discipline_boundary.py](https://github.com/lluvr/frame-check-mcp/blob/master/test_v4_2_discipline_boundary.py) still pass; in
+   tests in test_v4_2_discipline_boundary.py still pass; in
    particular the engine-emit disclosure test catches drift between this
    directory's entries and the engine's reliability artifact.
 6. If the edit changes which library variant is engine-canonical,

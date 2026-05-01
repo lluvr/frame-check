@@ -686,3 +686,186 @@ Revenue grew 10% this quarter. Costs remained stable.
         assert len(ids) == 0, (
             f"Short document should produce no suggestions, got {ids}"
         )
+
+
+class TestPatternKindField:
+    """Pin the pattern_kind enum field on V1-detector emissions.
+
+    Verifies that suggest_frames emits a structured pattern_kind field
+    on every entry, with values matching the suffix convention in
+    name. Five emission shapes are tested:
+
+      - "present_detected" for positive present-pattern fires (the
+        most common shape; covers both `(active)`-suffixed and
+        bare-name historical conventions).
+      - "absence_detected" for V1 absence-pattern fires (FVS-007 only
+        in the current catalog).
+      - "present_past" / "present_future" for FVS-014 directional
+        sub-categorization.
+
+    See `SCHEMA_SPLIT_PROPOSAL_v1.md` for the rationale and the full
+    convention enumeration. The legacy suffix in `name` is preserved
+    for backward compat; tests that pin the suffix shape (e.g.
+    `test_decision_readiness.py:407`) continue to pass.
+    """
+
+    def _present_detected_inputs(self):
+        # FVS-009 Risk Frame fires when risks covered with density > 5,
+        # uncertainty covered, voice analytical. The result is name
+        # "Risk Frame (active)" with pattern_kind "present_detected".
+        cov = _coverage(
+            covered={"risks", "uncertainty"},
+            missing={"causes", "stakeholders", "trends"},
+            densities={"risks": 6.0, "uncertainty": 4.0},
+        )
+        return cov, _voice("analytical"), _temporal(), _epistemic(50)
+
+    def _absence_detected_inputs(self):
+        # FVS-007 absence-detector fires when both risks and uncertainty
+        # missing AND sourced_pct < 40 (so unhedged > 60). The result is
+        # name "Failure Framing (absent)" with pattern_kind
+        # "absence_detected".
+        cov = _coverage(
+            covered={"causes", "stakeholders", "trends"},
+            missing={"risks", "uncertainty"},
+        )
+        return cov, _voice("analytical"), _temporal(), _epistemic(20)
+
+    def _present_past_inputs(self):
+        # FVS-014 (past) fires when past_pct >= 70.
+        cov = _coverage(
+            covered={"causes", "trends"},
+            missing={"risks", "stakeholders", "uncertainty"},
+        )
+        v = _voice("analytical")
+        t = {"past_pct": 75, "present_pct": 20, "future_pct": 5,
+             "dominant": "past"}
+        return cov, v, t, _epistemic(50)
+
+    def _present_future_inputs(self):
+        # FVS-014 (future) fires when past_pct < 70 AND future_pct >= 60.
+        cov = _coverage(
+            covered={"causes", "trends"},
+            missing={"risks", "stakeholders", "uncertainty"},
+        )
+        v = _voice("analytical")
+        t = {"past_pct": 5, "present_pct": 30, "future_pct": 65,
+             "dominant": "future"}
+        return cov, v, t, _epistemic(50)
+
+    def test_pattern_kind_field_present_on_every_entry(self):
+        # Every emitted entry carries the pattern_kind field. Empty-
+        # corpus pathological case is covered separately by
+        # TestEndToEndShortDocument; this test exercises a normal-N case.
+        cov, voice, temp, epist = self._present_detected_inputs()
+        results = suggest_frames(cov, voice, temp, epist, text=None)
+        assert len(results) > 0, "expected at least one match for the test inputs"
+        for r in results:
+            assert "pattern_kind" in r, (
+                f"every frame_library_matches entry must carry pattern_kind; "
+                f"got {r!r}"
+            )
+            assert r["pattern_kind"] in {
+                "present_detected", "absence_detected",
+                "present_past", "present_future",
+            }, (
+                f"pattern_kind must be one of the four enum values; "
+                f"got {r['pattern_kind']!r}"
+            )
+
+    def test_present_detected_on_active_suffixed_entries(self):
+        cov, voice, temp, epist = self._present_detected_inputs()
+        results = suggest_frames(cov, voice, temp, epist, text=None)
+        fvs_009 = next((r for r in results if r["fvs_id"] == "FVS-009"), None)
+        assert fvs_009 is not None, (
+            f"FVS-009 should fire on the present-detected inputs; got "
+            f"{[r['fvs_id'] for r in results]}"
+        )
+        assert fvs_009["pattern_kind"] == "present_detected", (
+            f"FVS-009 (active) must carry pattern_kind=present_detected; "
+            f"got {fvs_009['pattern_kind']!r}"
+        )
+        assert "(active)" in fvs_009["name"], (
+            f"legacy (active) suffix in name preserved for UI compat; "
+            f"got {fvs_009['name']!r}"
+        )
+
+    def test_absence_detected_on_FVS_007_absent_fire(self):
+        cov, voice, temp, epist = self._absence_detected_inputs()
+        results = suggest_frames(cov, voice, temp, epist, text=None)
+        fvs_007 = next((r for r in results if r["fvs_id"] == "FVS-007"), None)
+        assert fvs_007 is not None, (
+            f"FVS-007 absence-detector should fire on these inputs; got "
+            f"{[r['fvs_id'] for r in results]}"
+        )
+        assert fvs_007["pattern_kind"] == "absence_detected", (
+            f"FVS-007 absence-fire must carry pattern_kind=absence_detected; "
+            f"got {fvs_007['pattern_kind']!r}"
+        )
+        assert "(absent)" in fvs_007["name"], (
+            f"legacy (absent) suffix in name preserved for UI compat and "
+            f"for hand-authored test fixtures at "
+            f"test_decision_readiness.py:407, 1095; got {fvs_007['name']!r}"
+        )
+
+    def test_present_past_on_FVS_014_past_fire(self):
+        cov, voice, temp, epist = self._present_past_inputs()
+        results = suggest_frames(cov, voice, temp, epist, text=None)
+        fvs_014 = next((r for r in results if r["fvs_id"] == "FVS-014"), None)
+        assert fvs_014 is not None, (
+            f"FVS-014 should fire on past-dominant inputs; got "
+            f"{[r['fvs_id'] for r in results]}"
+        )
+        assert fvs_014["pattern_kind"] == "present_past", (
+            f"FVS-014 past-fire must carry pattern_kind=present_past; "
+            f"got {fvs_014['pattern_kind']!r}"
+        )
+        assert "(past)" in fvs_014["name"], (
+            f"legacy (past) suffix in name preserved; got {fvs_014['name']!r}"
+        )
+
+    def test_present_future_on_FVS_014_future_fire(self):
+        cov, voice, temp, epist = self._present_future_inputs()
+        results = suggest_frames(cov, voice, temp, epist, text=None)
+        fvs_014 = next((r for r in results if r["fvs_id"] == "FVS-014"), None)
+        assert fvs_014 is not None, (
+            f"FVS-014 should fire on future-dominant inputs; got "
+            f"{[r['fvs_id'] for r in results]}"
+        )
+        assert fvs_014["pattern_kind"] == "present_future", (
+            f"FVS-014 future-fire must carry pattern_kind=present_future; "
+            f"got {fvs_014['pattern_kind']!r}"
+        )
+        assert "(future)" in fvs_014["name"], (
+            f"legacy (future) suffix in name preserved; "
+            f"got {fvs_014['name']!r}"
+        )
+
+    def test_present_detected_on_bare_name_entries(self):
+        # FVS-002 fires bare-name "Fluency-Quality Illusion" (no suffix)
+        # on promotional voice + low sourced_pct. The bare-name historical
+        # convention should still carry pattern_kind=present_detected.
+        cov = _coverage(
+            covered={"trends"},
+            missing={"causes", "risks", "stakeholders", "uncertainty"},
+        )
+        results = suggest_frames(
+            cov, _voice("promotional"), _temporal(), _epistemic(15),
+            text=None,
+        )
+        fvs_002 = next((r for r in results if r["fvs_id"] == "FVS-002"), None)
+        assert fvs_002 is not None, (
+            f"FVS-002 should fire on promotional voice + low sourced_pct; "
+            f"got {[r['fvs_id'] for r in results]}"
+        )
+        assert fvs_002["pattern_kind"] == "present_detected", (
+            f"FVS-002 bare-name (no suffix) must carry pattern_kind="
+            f"present_detected to merge with the (active) convention; "
+            f"got {fvs_002['pattern_kind']!r}"
+        )
+        # The bare-name convention has no parenthetical; verify the entry
+        # does not carry one.
+        assert "(" not in fvs_002["name"], (
+            f"FVS-002 carries no parenthetical suffix by historical "
+            f"convention; got {fvs_002['name']!r}"
+        )

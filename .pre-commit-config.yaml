@@ -1,0 +1,34 @@
+repos:
+  - repo: local
+    hooks:
+      - id: no-em-dashes
+        name: No em-dashes (writing-rule discipline)
+        description: >-
+          Reject prose em-dashes (U+2014) and en-dashes (U+2013) per
+          feedback_em_dashes.md. Six load-bearing instances are
+          allowlisted in scripts/check_no_em_dashes.py (regex character
+          classes that match em/en-dashes in user text, and the
+          em-dash-scanning grep pattern in CONTRIBUTING.md itself).
+        entry: python3 scripts/check_no_em_dashes.py
+        language: system
+        types: [text]
+        # Run only on the files actually changed in the commit.
+        # Pre-commit passes the staged file list as positional args.
+        require_serial: true
+
+      - id: gitleaks
+        name: Block committed secrets
+        description: >-
+          Scan staged content for API keys and high-entropy secrets
+          before they enter git history. Catches the four provider keys
+          Frame Check uses (FRED, Alpha Vantage, Wolfram, Brave) plus
+          GitHub PATs, AWS keys, GCP API keys, generic high-entropy
+          patterns. Custom rules in `.gitleaks.toml` extend the gitleaks
+          default ruleset with provider-specific patterns and an
+          allowlist for placeholder values in `.env.example`. See
+          `LEAKAGE_AUDIT_v1.md` for the 2026-04-29 incident that
+          prompted this hook.
+        entry: gitleaks git --staged --config .gitleaks.toml --redact --verbose --no-banner
+        language: system
+        pass_filenames: false
+        require_serial: true

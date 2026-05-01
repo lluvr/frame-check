@@ -22,6 +22,7 @@ import threading
 import time
 import urllib.request
 import urllib.parse
+import urllib.error
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from typing import Optional
@@ -1061,6 +1062,142 @@ _HEADERS = {"User-Agent": "FrameCheck/0.1 (claim-verification; contact@clarethiu
 _TIMEOUT = 5
 
 
+# ================================================================
+# External-provider health tracking
+# ================================================================
+#
+# Source Network calls out to ~10 external APIs (Brave, CoinGecko,
+# Wikipedia, FRED, Alpha Vantage, World Bank, REST Countries,
+# Wolfram, SEC EDGAR, Github) on every analysis with extractable
+# claims. Pre-2026-04-30 the only signal that a provider was
+# degraded was stderr log lines from _fetch_json; an operator had
+# to grep `fly logs` to learn that CoinGecko had been 429-ing all
+# afternoon. Verifications silently degraded.
+#
+# This tracker maintains an in-memory rolling-window error count
+# per provider so /health can surface a structured snapshot.
+# Window is 1 hour; older errors fall off. Thread-safe via a
+# single lock. Memory-bounded by the number of providers (small)
+# and the window length (~3600 entries per provider in the worst
+# case of one error per second). Process-local: matches the
+# existing telemetry patterns and does not need cross-machine
+# aggregation for the operator-grep use case.
+
+class _ProviderHealth:
+    """In-memory rolling-window counter of provider errors.
+
+    record_error(provider, error_kind) appends a timestamp.
+    snapshot() returns a dict keyed by provider with the counts
+    inside the window. trim() removes entries older than the
+    window; called lazily on each record/snapshot to keep the
+    structure bounded without a background thread.
+    """
+
+    def __init__(self, window_seconds: int = 3600):
+        self._window_seconds = window_seconds
+        self._lock = threading.Lock()
+        # provider -> list of (timestamp, error_kind)
+        self._events: dict = {}
+
+    def record_error(self, provider: str, error_kind: str) -> None:
+        if not provider:
+            provider = "unknown"
+        now = time.time()
+        with self._lock:
+            self._events.setdefault(provider, []).append((now, error_kind))
+            self._trim_locked(now)
+
+    def _trim_locked(self, now: float) -> None:
+        cutoff = now - self._window_seconds
+        for provider, events in list(self._events.items()):
+            kept = [e for e in events if e[0] >= cutoff]
+            if kept:
+                self._events[provider] = kept
+            else:
+                del self._events[provider]
+
+    def snapshot(self) -> dict:
+        """Return per-provider error stats for the current window.
+
+        Shape:
+          {
+            "window_seconds": int,
+            "providers": {
+              "<provider>": {
+                "total": int,
+                "rate_limited": int,   # 429 / quota errors
+                "last_error_age_s": int,
+              },
+              ...
+            }
+          }
+
+        Empty providers dict means no errors in the window. The
+        rate_limited count is broken out because 429 is the
+        actionable signal: the operator can correlate with
+        per-provider quota documentation and decide whether to
+        rotate keys, switch providers, or accept the degradation.
+        """
+        now = time.time()
+        with self._lock:
+            self._trim_locked(now)
+            providers_out = {}
+            for provider, events in self._events.items():
+                if not events:
+                    continue
+                total = len(events)
+                rate_limited = sum(1 for _, kind in events if kind == "rate_limited")
+                last_ts = max(ts for ts, _ in events)
+                providers_out[provider] = {
+                    "total": total,
+                    "rate_limited": rate_limited,
+                    "last_error_age_s": int(now - last_ts),
+                }
+            return {
+                "window_seconds": self._window_seconds,
+                "providers": providers_out,
+            }
+
+    def reset(self) -> None:
+        """Clear all tracked events. Used by tests."""
+        with self._lock:
+            self._events.clear()
+
+
+provider_health = _ProviderHealth()
+
+
+def _provider_from_url(url: str) -> str:
+    """Map a URL to a provider label. Best-effort: hostname-based
+    string matching. Unknown hosts return the bare hostname."""
+    try:
+        host = urllib.parse.urlparse(url).hostname or "unknown"
+    except Exception:
+        return "unknown"
+    host = host.lower()
+    if "brave" in host:
+        return "brave"
+    if "coingecko" in host:
+        return "coingecko"
+    if "wikipedia" in host:
+        return "wikipedia"
+    if "stlouisfed" in host or "fred" in host:
+        return "fred"
+    if "alphavantage" in host:
+        return "alpha_vantage"
+    if "worldbank" in host:
+        return "world_bank"
+    if "restcountries" in host:
+        return "rest_countries"
+    if "wolframalpha" in host:
+        return "wolfram"
+    if "sec.gov" in host:
+        return "sec_edgar"
+    if "github" in host:
+        return "github"
+    return host
+
+
 def _fetch_json(url):
     """Fetch JSON from a URL with timeout and error handling.
 
@@ -1068,6 +1205,13 @@ def _fetch_json(url):
     Logs network/parse errors to stderr so a systematic source
     outage (FRED 403, World Bank timeout, etc.) is visible in
     `fly logs` instead of silently producing empty results.
+
+    Records errors against the provider_health tracker so /health
+    can surface per-provider degradation without grepping logs.
+    Rate-limit responses (429) are tagged as rate_limited
+    specifically because 429 is the actionable operator signal:
+    correlate with per-provider quota, decide whether to rotate
+    keys / switch providers / accept the degradation.
     """
     try:
         req = urllib.request.Request(url, headers=_HEADERS)
@@ -1075,6 +1219,23 @@ def _fetch_json(url):
         return json.loads(resp.read())
     except Exception as exc:
         import sys
+        provider = _provider_from_url(url)
+        kind = "other"
+        # urllib HTTPError carries the status code; treat 429
+        # specifically as rate_limited so the operator can
+        # distinguish "we are over quota" from "the provider is
+        # down" without parsing free-form error strings.
+        if isinstance(exc, urllib.error.HTTPError):
+            try:
+                if exc.code == 429:
+                    kind = "rate_limited"
+                elif exc.code in (403, 401):
+                    kind = "auth"
+                elif 500 <= exc.code < 600:
+                    kind = "server_error"
+            except Exception:
+                pass
+        provider_health.record_error(provider, kind)
         # Truncate URL to avoid leaking API keys in query params
         safe_url = url.split("?")[0] if "?" in url else url
         sys.stderr.write(
@@ -3228,8 +3389,23 @@ def verify_claims_source_network(
             idx = futures[future]
             try:
                 indexed_results[idx] = future.result()
-            except Exception:
-                pass
+            except Exception as e:
+                # Tolerated by design: per-claim verification
+                # failures MUST NOT block the rest of the claim
+                # pool. The "Return in original order" loop below
+                # only emits results for indices that resolved;
+                # claims that failed simply do not appear in the
+                # downstream verification list and the caller sees
+                # the verified subset. Log to stderr so the
+                # operator can investigate without breaking the
+                # JSON-RPC channel on stdout.
+                import sys
+                print(
+                    f"[source_network.verify_claims] "
+                    f"per-claim verification failed at idx {idx}: "
+                    f"{type(e).__name__}: {e}",
+                    file=sys.stderr,
+                )
 
     # Return in original order
     for i in range(len(claim_list)):
@@ -3289,7 +3465,22 @@ def verify_claims_source_network(
                             r.confidence_dimensions = decompose_confidence(
                                 r.source_results
                             )
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        # Tolerated by design: Brave Search fallback
+                        # is best-effort enrichment for claims the
+                        # primary providers could not verify. A Brave
+                        # API failure leaves the claim's verdict as
+                        # whatever the primary providers established
+                        # (typically "unverifiable"); the existing
+                        # source_results stay intact. Log to stderr
+                        # so the operator can investigate without
+                        # breaking the JSON-RPC channel on stdout.
+                        import sys
+                        print(
+                            f"[source_network.verify_claims] "
+                            f"Brave fallback failed at idx {idx}: "
+                            f"{type(e).__name__}: {e}",
+                            file=sys.stderr,
+                        )
 
     return results

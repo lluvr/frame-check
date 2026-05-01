@@ -108,6 +108,100 @@ PYTEST_SUITES = [
     # catch any future refactor that re-orders rejection past the
     # network call.
     "test_prompt_safety.py",
+    # Observatory scheduler default-safe gate (2026-04-30 polarity
+    # inversion). Pin the boot-time refusal so a future refactor
+    # cannot quietly re-introduce the default-on shape that fired
+    # external API calls on every fresh deploy.
+    "test_observatory_gate.py",
+    # Web JSON / api/profile vs MCP frame_check parity. Catches
+    # plumbing dropouts (the field-omitted-from-JSON class), schema
+    # drift (a field renamed on one surface but not the other), and
+    # detector divergence (a future refactor that changes analyzer
+    # args on one surface but not the other). Parametrized over
+    # every adversarial + in-cap worked-example document.
+    "test_web_mcp_parity.py",
+    # Source Network external-provider health visibility (F-5,
+    # 2026-04-30). Pins URL -> provider mapping, rolling-window
+    # trim, 429 sub-count classification, and the /health
+    # surface that operators (and external monitoring) read to
+    # detect silent verification degradation without grepping
+    # fly logs.
+    "test_source_network_health.py",
+    # SERVER_VERSION coherence (mcp_server.py:121 must match
+    # pyproject.toml [project] version with .dev0 suffix
+    # stripped). The orchestrator's lift_dry_run gate catches
+    # mismatches AT RELEASE TIME via the wheel smoke-test, but a
+    # drift introduced between releases stays invisible until the
+    # next cut. Pinning at PR time so the upstream tree stays
+    # coherent and operators running `python3 mcp_server.py
+    # --version` from a clone see the version that will ship.
+    "test_version_coherence.py",
+    # detector_empirics harness helpers (maintainer-side, not
+    # deploy-risk; placed last in the list to reflect that). The
+    # end-to-end harness run is operator-on-demand (slow: subprocess
+    # MCP per document); these unit tests exercise the helpers
+    # (`_frame_deepening_fires`, `_aggregate`, `_markdown_report`)
+    # with synthetic payloads so a regression is caught at PR time
+    # instead of when the operator next runs the harness and finds
+    # the report malformed. Registered here (rather than left to
+    # plain pytest discovery) because CI uses `python3 run_tests.py`
+    # as the primary invocation path; an unregistered file would
+    # only run via the pytest-smoke secondary job's explicit list.
+    "test_detector_empirics.py",
+    # Bitcoin/gold stress-test regression scaffold (2026-04-30).
+    # Locks the observed `build_epistemic_payload` and
+    # `build_compare_payload` output on a real advocacy document
+    # plus a deliberately-asymmetric counter-document so subsequent
+    # detector / renderer changes produce a visible diff. Pins
+    # several construct-honesty boundaries already documented in
+    # data/adversarial_fixtures/: numbered-argument essay
+    # classifies as instruction (candidate new fixture, NOT
+    # covered by sales_pitch_as_analysis); quantitative risk
+    # vocabulary under-detected by coverage regex (related to
+    # coverage_via_noncanonical_vocabulary; correct fix is
+    # caveat propagation in framing_headline, not regex
+    # expansion); analytical voice as cascade residual at high
+    # confidence (deliberate design per voice_residual_analytical).
+    # The truth-in-labelling assertion on evidence.signal_text
+    # was the first delta closed by the same-day decision_readiness
+    # _evidence_dimension fix; this regression asserts the
+    # corrected text and pins it against future regressions.
+    "test_regression_bitcoin_gold_2026_04_30.py",
+    # MCP tool-surface boundary: frame_check + frame_compare
+    # make zero outbound socket.connect calls. Pins the agent-
+    # server architectural separation (server = deterministic
+    # structural analysis; agent = adaptive work including
+    # external source fetching). A future refactor that re-couples
+    # I/O into the substrate path (e.g., adds verify_via_brave
+    # inside a detector) fails this pin at PR time. Same pattern
+    # as the existing V4.2 LLM-judge delegation already documented
+    # in MCP_SERVER.md; this test extends from LLM-only to
+    # all-network-I/O.
+    "test_mcp_server_no_outbound_http.py",
+
+    # Public-extract inventory discipline. Three structural-pin
+    # tests catch the bug class that put the public mirror's CI
+    # on a red badge for ~3 days post-v0.8.3 (15 test files in
+    # INCLUDE_FILES whose target modules were operator-only).
+    # Tests: every test in INCLUDE_FILES has its top-level local
+    # imports resolvable on the public surface; every name in
+    # pyproject.toml py-modules has a source file at repo root;
+    # every suite declared in SUITES / PYTEST_SUITES exists at
+    # repo root. <100ms total; pure source-grep / AST walk.
+    "test_public_extract_inventory.py",
+
+    # llm_client.xai_endpoint resolution + helpers. llm_client is
+    # the single source of truth for "where do we send Grok
+    # requests?" for 8 importing modules across the codebase
+    # (consensus.py, framing_ai.py, comparison.py, framing_sdk.py,
+    # reframe.py, pipeline.py, fvs_eval/v4/v4_2_engine.py, app.py).
+    # Pins the four resolution branches (proxy / proxy-degrades-
+    # to-direct / direct / unconfigured) plus the empty-string and
+    # whitespace-only env edge cases that would otherwise produce
+    # silently-401-ing clients on misconfigured deploys. A
+    # regression here would silently mis-route every xAI call
+    # across the surface.
+    "test_llm_client.py",
 ]
 
 REPO_ROOT = Path(__file__).resolve().parent
@@ -226,11 +320,22 @@ def main():
 
     def _run_and_record(suite_name: str, pytest_mode: bool) -> bool:
         """Run one suite and append to results. Returns False if the
-        suite failed AND --bail is set (signals the caller to stop)."""
+        suite failed AND --bail is set (signals the caller to stop).
+
+        A missing file (not present at REPO_ROOT) is a structural skip,
+        not a failure: this happens by design on the public mirror
+        where `run_tests.py` ships verbatim from upstream but several
+        SUITES entries reference upstream-only test files. The skip is
+        printed for visibility and excluded from the results list so
+        `len(SUITES) - len(results)` resolves to the real skipped count
+        in the summary footer; folding missing files into `results`
+        with `(name, False, 0.0)` (the prior shape) inflated the
+        failed count and rendered the public-mirror CI badge red on
+        a structurally clean run.
+        """
         path = REPO_ROOT / suite_name
         if not path.exists():
             print(f"  SKIP   {suite_name}  (missing)")
-            results.append((suite_name, False, 0.0))
             return True
         success, elapsed, output = run_suite(
             suite_name, args.quiet, args.timeout, pytest_mode=pytest_mode,

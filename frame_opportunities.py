@@ -204,12 +204,26 @@ def _generate_one_opportunity(
             contents=prompt,
         )
     except Exception:
+        # Tolerated by design: frame-opportunity generation is
+        # opt-in (include_frame_opportunities=true) LLM-augmented
+        # composition. Any provider failure (auth, quota, timeout,
+        # malformed response) returns None so the deterministic
+        # substrate path proceeds with empty opportunities and the
+        # caller-visible `available=false` flag in the divergence
+        # block envelope. A failure here MUST NOT break the
+        # deterministic frame_check response.
         return None
 
     generated = ""
     try:
         generated = (response.text or "").strip()
     except Exception:
+        # Tolerated by design: response.text access can raise on
+        # safety-filter or finish-reason edge cases. Return None
+        # to signal "no opportunity generated" so the caller
+        # surfaces the deterministic substrate output without
+        # opportunities. Same contract as the API-call exception
+        # handler above.
         return None
     if not generated:
         return None
