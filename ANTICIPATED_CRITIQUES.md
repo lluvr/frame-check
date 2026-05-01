@@ -1,6 +1,6 @@
 # Anticipated Critiques
 
-**Status:** v1, 2026-04-21. Consolidates the adversarial readings surfaced across `STRESS_TEST_ASSESSMENT_v1.md`, `PUBLISH_READINESS_ASSESSMENT_v1.md`, `CONSTRUCT_HONESTY_AUDIT_v1.md`, `CORRESPONDENCE_STUDY_v1.md §5`, `THRESHOLD_SENSITIVITY_v1.md §3`, and `METHODOLOGY.md`. Written so a reviewer landing cold sees the project's own enumeration of what it expects to be attacked on, and the project's prepared defenses, rather than having to excavate them across twelve documents.
+**Status:** v1, 2026-04-21. Consolidates the adversarial readings surfaced across STRESS_TEST_ASSESSMENT_v1.md, PUBLISH_READINESS_ASSESSMENT_v1.md, CONSTRUCT_HONESTY_AUDIT_v1.md, `CORRESPONDENCE_STUDY_v1.md §5`, `THRESHOLD_SENSITIVITY_v1.md §3`, and `METHODOLOGY.md`. Written so a reviewer landing cold sees the project's own enumeration of what it expects to be attacked on, and the project's prepared defenses, rather than having to excavate them across twelve documents.
 
 **Audience.** Peer reviewers, skeptical practitioners, adversarial readers, future curators. A reviewer's job is easier when the project has already named the attacks; a curator's job is easier when the defense surface is one page rather than distributed.
 
@@ -52,7 +52,7 @@
 
 ### C1.5 "AI-coder correspondence study is circular."
 
-**Attack.** `CORRESPONDENCE_STUDY_v1.md` used two AI coders from the same model family, with the rubric author also being the pattern author. Correlated errors + author-rubric overlap means the 50%/78% correspondence rates are inflated by construction.
+**Attack.** CORRESPONDENCE_STUDY_v1.md used two AI coders from the same model family, with the rubric author also being the pattern author. Correlated errors + author-rubric overlap means the 50%/78% correspondence rates are inflated by construction.
 
 **Response.** Named in `CORRESPONDENCE_STUDY_v1.md §5` (`What this study does NOT establish`) and in `DR-12` of `SESSION_STATE.md §3`. The study is framed explicitly as "AI-coder correspondence pilot," not "validated reader-correspondence measurement." The mitigation: human-coder replication (`E-1` per `PUBLISH_READINESS_ASSESSMENT_v1.md §3.2`) at 2-3 grad student coders, $200-400 budget. Until executed, this attack lands on any claim that cites the rates as validation rather than pilot. `[OPEN]`
 
@@ -84,7 +84,7 @@
 
 **Attack.** `FVS_COACTIVATION_REPORT.md §6` shows more than half the library is inert on the test corpus. The "citable vocabulary" claim rests on 9 active entries; the other 11 are conceptual placeholders at best.
 
-**Response.** Named with specific taxonomy at `DETECTION_RULE_AUDIT_v1.md`: 3 entries are intentional-no-rule (metaframes / interaction-only patterns that text-alone cannot detect); 6 have missing rules that were proposed but reverted due to canon conflicts (INDEX.md classifies them meta-side-n/a); 2 have thresholds exceeding any corpus document's reach. The inertness is diagnosed, not hidden. A decision surface exists (reclassify meta-side, expand corpus, deprecate) and is flagged at `PUBLISH_READINESS_ASSESSMENT_v1.md §2.10 CAN-2` as curator-strategic.
+**Response.** Named with specific taxonomy at DETECTION_RULE_AUDIT_v1.md: 3 entries are intentional-no-rule (metaframes / interaction-only patterns that text-alone cannot detect); 6 have missing rules that were proposed but reverted due to canon conflicts (INDEX.md classifies them meta-side-n/a); 2 have thresholds exceeding any corpus document's reach. The inertness is diagnosed, not hidden. A decision surface exists (reclassify meta-side, expand corpus, deprecate) and is flagged at `PUBLISH_READINESS_ASSESSMENT_v1.md §2.10 CAN-2` as curator-strategic.
 
 **Where it lands.** The attack correctly names a fragility: if the 9 active entries fail to promote and the 11 inert entries are not resolved, the library's citable-vocabulary claim collapses to a small set. The defense is that the diagnosis is public and the decision surface is named; the attack is that diagnosis alone is not progress.
 
@@ -114,7 +114,7 @@
 
 ### C3.2 "MCP contract is aspirational; zero agent frameworks have adopted."
 
-**Attack.** The "MCP-first distribution" thesis per `STRATEGY.md` depends on agent framework adoption. Zero adopters exist. The contract is designed; the market has not responded.
+**Attack.** The "MCP-first distribution" thesis per STRATEGY.md depends on agent framework adoption. Zero adopters exist. The contract is designed; the market has not responded.
 
 **Response.** True. `STRESS_TEST_ASSESSMENT_v1.md §3` names it as load-bearing empirical question #3. The project ships the contract on the thesis that an agent framework will encounter structural-framing-analysis as a capability worth integrating. Specific outreach (`D-1` per `PUBLISH_READINESS_ASSESSMENT_v1.md §3.2`) to framework authors is Zone 3. The contract itself is designed to minimize friction for adopters (MCP resources addressable by stable URI; `how_to_serialize` instructs agents on faithful restatement; `provenance.analysis_timestamp_utc` makes citations reproducible), but design alone does not produce adoption. `[OPEN]`
 
@@ -122,7 +122,7 @@
 
 ### C3.3 "Sovereignty and canon-play framings are internal conviction."
 
-**Attack.** The "sovereignty instrument" and "canon play" language in `STRATEGY.md` and memory notes is internal strategic framing. External academic reviewers read "sovereignty instrument" differently than the project's internal meaning. Some internal strategic language does not travel.
+**Attack.** The "sovereignty instrument" and "canon play" language in STRATEGY.md and memory notes is internal strategic framing. External academic reviewers read "sovereignty instrument" differently than the project's internal meaning. Some internal strategic language does not travel.
 
 **Response.** Correct. `STRESS_TEST_ASSESSMENT_v1.md §2.10` names this explicitly. The public-facing surface (`frame.clarethium.com`, README.md, methodology paper outline) uses external-audience-calibrated language ("structural framing analysis tool," "public research program," "construct-honest detection"). The strategic-internal language lives in STRATEGY.md and SESSION_STATE.md where its audience is self and future-self. An external reviewer who reads the internal-strategic language and interprets it at face value is reading an internal document; the obligation is to be coherent across registers, not to flatten the internal register.
 
@@ -132,9 +132,9 @@
 
 ### C4.1 "Observatory has run-pause-run-pause cadence."
 
-**Attack.** `OBSERVATORY_STATE.md` v1.3 documents that Tier B stopped, resumed, stopped again, resumed. A longitudinal data moat with undocumented operational gaps is not a citation-grade corpus.
+**Attack.** OBSERVATORY_STATE.md v1.3 documents that Tier B stopped, resumed, stopped again, resumed. A longitudinal data moat with undocumented operational gaps is not a citation-grade corpus.
 
-**Response.** Fully acknowledged. The diagnostic document (`OBSERVATORY_STATE.md`) is the evidence; no artifact cites observatory continuity without the reliability caveat. Four strategic options (A repair / B retire / C reframe-Tier-A-as-primary / D hybrid) are named with trade-offs; curator + operator decision pending. `DATA_MOAT.md v2` will revise the moat claim based on which option ships.
+**Response.** Fully acknowledged. The diagnostic document (OBSERVATORY_STATE.md) is the evidence; no artifact cites observatory continuity without the reliability caveat. Four strategic options (A repair / B retire / C reframe-Tier-A-as-primary / D hybrid) are named with trade-offs; curator + operator decision pending. `DATA_MOAT.md v2` will revise the moat claim based on which option ships.
 
 **Where it lands.** The "longitudinal moat" claim in `DATA_MOAT.md §1-§2` carries a reliability caveat now and will either be validated (Option A repair + diagnosis) or reframed (Options C / D). Until one path ships, citations to the observatory as a compounding asset should be qualified.
 
@@ -154,7 +154,7 @@
 
 **Attack.** The site is public and accepts user text submissions. A ToS surface is legally customary and, in some jurisdictions, near-required for a free public service.
 
-**Response.** Privacy page (`/privacy`) exists and names the data-handling contract. A ToS skeleton is drafted at `TERMS_OF_SERVICE_DRAFT.md` (2026-04-21, pending curator ratification); if ratified, it ships at `/terms` with a parallel route. The decision to ship or not to ship is curator-scope.
+**Response.** Privacy page (`/privacy`) exists and names the data-handling contract. A ToS skeleton is drafted at TERMS_OF_SERVICE_DRAFT.md (2026-04-21, pending curator ratification); if ratified, it ships at `/terms` with a parallel route. The decision to ship or not to ship is curator-scope.
 
 **Where it lands.** The attack lands on the public-surface gap until the skeleton is either ratified or explicitly retired with a curator decision recorded.
 
@@ -204,7 +204,7 @@
 
 ## 8. Honest limits of this document
 
-- **This document is itself a self-audit.** The critiques below are the ones the project sees; an external reviewer reading the full repo would surface different (and likely sharper) ones. The v1.0 → v1.3 progression of `CONSTRUCT_HONESTY_AUDIT_v1.md` is evidence that self-audits miss surfaces; the pattern generalizes.
+- **This document is itself a self-audit.** The critiques below are the ones the project sees; an external reviewer reading the full repo would surface different (and likely sharper) ones. The v1.0 → v1.3 progression of CONSTRUCT_HONESTY_AUDIT_v1.md is evidence that self-audits miss surfaces; the pattern generalizes.
 - **The defenses cite the project's own documents.** That is appropriate where the defense is about how the project positions a claim; it is circular where the defense is about whether the claim holds. `[OPEN]` flags mark the places where the defense depends on external work not yet executed.
 - **Jurisdiction-specific and domain-specific critiques are missing.** A reviewer specific to (e.g.) legal tech, medical AI, or financial advisory would produce critiques this document does not enumerate. Frame Check is domain-neutral by design; the critiques above are domain-neutral too.
 - **Framing of the research program evolves.** A critique-response pair that is appropriate at v0.3.1 methodology may not hold at v1.0 if the research program reframes. This document should re-run at each methodology version bump.
@@ -213,11 +213,11 @@
 
 ## 9. Cross-references
 
-- `STRESS_TEST_ASSESSMENT_v1.md` §1.1 through §2.10: the original multi-perspective stress test that surfaced most critiques above.
-- `PUBLISH_READINESS_ASSESSMENT_v1.md` §2.1 through §2.12: the publish-readiness multi-audience audit.
-- `CONSTRUCT_HONESTY_AUDIT_v1.md` §1 through §6: the specific voice-signal audit.
-- `CORRESPONDENCE_STUDY_v1.md` §5: what the AI-coder study does not establish.
-- `THRESHOLD_SENSITIVITY_v1.md` §3: what the threshold study does not establish.
+- STRESS_TEST_ASSESSMENT_v1.md §1.1 through §2.10: the original multi-perspective stress test that surfaced most critiques above.
+- PUBLISH_READINESS_ASSESSMENT_v1.md §2.1 through §2.12: the publish-readiness multi-audience audit.
+- CONSTRUCT_HONESTY_AUDIT_v1.md §1 through §6: the specific voice-signal audit.
+- CORRESPONDENCE_STUDY_v1.md §5: what the AI-coder study does not establish.
+- THRESHOLD_SENSITIVITY_v1.md §3: what the threshold study does not establish.
 - `METHODOLOGY.md` §1.3, §1.3.1, §6 honest-limits: evidence discipline definitions.
 - `fvs_eval/validation_study/REPORT_V3_TRACK_A.md`: Track A F1=0.36 result published in full.
 - `fvs_eval/reader_aid_study/DESIGN_v1.1.md`: Track B pre-registration.

@@ -321,7 +321,7 @@ This document version (v1) and contract version (c1.0) evolve independently. Par
 
 ### 10.6 Tracking first dependent adopter
 
-First dependent adopter status is recorded in a separate adoption-log document when established (proposed: `FRAME_DIVERGENCE_ADOPTION_LOG.md`). Until that log contains a first entry, this contract is pre-adoption and §10.2 applies. The adoption log is also the audit trail for the predictions in Part 1 §7 (P2: agent framework integration within 12 months of MCP publish resumption).
+First dependent adopter status is recorded in a separate adoption-log document when established (proposed: FRAME_DIVERGENCE_ADOPTION_LOG.md). Until that log contains a first entry, this contract is pre-adoption and §10.2 applies. The adoption log is also the audit trail for the predictions in Part 1 §7 (P2: agent framework integration within 12 months of MCP publish resumption).
 
 ### 10.7 MCP package release arc
 

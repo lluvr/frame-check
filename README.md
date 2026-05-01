@@ -1,5 +1,11 @@
 # Frame Check
 
+[![PyPI](https://img.shields.io/pypi/v/frame-check-mcp.svg)](https://pypi.org/project/frame-check-mcp/)
+[![Python](https://img.shields.io/pypi/pyversions/frame-check-mcp.svg)](https://pypi.org/project/frame-check-mcp/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19888849.svg)](https://doi.org/10.5281/zenodo.19888849)
+[![Tests](https://github.com/lluvr/frame-check-mcp/actions/workflows/tests.yml/badge.svg)](https://github.com/lluvr/frame-check-mcp/actions/workflows/tests.yml)
+
 See what any document does not show you.
 
 Frame Check is a structural framing analysis tool. It names which

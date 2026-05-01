@@ -118,7 +118,7 @@ these is in scope.
   has financial impact on the deploy.
 - **User-text handling** (`app.py`, `comparison.py`, `framing_ai.py`,
   MCP server). The privacy page commits to a specific contract
-  (`/privacy` and `DATA_MOAT.md` §3-§6); a leak of that contract
+  (`/privacy` and DATA_MOAT.md §3-§6); a leak of that contract
   is in scope. AI-interpretation flows send excerpts to
   third-party LLMs; user-facing documentation names this
   explicitly.
