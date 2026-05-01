@@ -178,6 +178,29 @@ def _generate_one_opportunity(
     if not fvs_id or not title:
         return None
 
+    # PII redaction at the LLM-call boundary.
+    #
+    # frame_opportunities is the MCP-only LLM call path: it transmits a
+    # 2,000-char excerpt of the document to Gemini for opt-in opportunity
+    # generation. The web app's /profile path redacts PII at intake (so
+    # every downstream LLM call sees redacted text), but the MCP server
+    # is a separate published artifact (frame-check-mcp on PyPI) that
+    # users invoke locally with their own Gemini key. The intake-side
+    # redaction does not flow through the MCP entry point.
+    #
+    # Mirrors the privacy promise: "PII patterns the intake scanner
+    # detects (email, SSN, phone, payment card, API credential) are
+    # replaced with category placeholders BEFORE any LLM call." Even
+    # in MCP mode where the user owns the Gemini key, the redactor
+    # ensures the user's own credentials/PII embedded in their
+    # documents don't get echoed into a third-party LLM context.
+    # Round-8 follow-up audit (2026-05-01) closed this gap.
+    try:
+        from security import redact_pii_in_text
+        document_text = redact_pii_in_text(document_text)
+    except ImportError:
+        pass  # standalone fvs_eval invocation without security module
+
     excerpt = document_text[:_DOC_EXCERPT_CHARS]
     if len(document_text) > _DOC_EXCERPT_CHARS:
         excerpt += "..."

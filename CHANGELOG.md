@@ -8,6 +8,8 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 
 ## [Unreleased]
 
+## [0.8.5] - 2026-05-01
+
 ### Security and privacy
 
 - F16: nonce-based CSP for inline scripts (defense in depth). The previous CSP allowed `'unsafe-inline'` for script-src, which means a future template addition that forgets Jinja2 autoescape on a user-controlled field would result in XSS even with the existing security posture. Nonce-based CSP gives the browser a second filter: even if escape fails, an attacker-injected `<script>` block lacks the per-request nonce attribute and the browser refuses to execute it. Closes the final F-list deferred item. (`1648577`, with scope clarification at `1822ee3`: nonce protects inline `<script>` blocks; inline event handlers like `onclick=` / `onsubmit=` and `javascript:` URIs are governed by `'unsafe-inline'` or `'unsafe-hashes'` separately from script-src nonce.)

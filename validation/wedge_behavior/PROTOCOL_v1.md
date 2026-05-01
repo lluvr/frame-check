@@ -89,7 +89,7 @@ A NEGATIVE result is publishable. Evidence discipline (METHODOLOGY §1.3) requir
 - Pre-registered: items 1, 2, 3 binary outcomes per response, AC1 per item, decision-rule pass/fail.
 - Descriptive: items 4, 5 binary outcomes; per-document narrative ratings; paired qualitative comparison (one paragraph per pair).
 - Robustness: re-run rubric with the operator as sole rater; report whether sole-rater AC1 differs from three-rater AC1 (Bland-Altman-style framing).
-- Outputs: a single results document `RESULTS_v1.md` in this directory, with the 10 paired responses linked or inlined.
+- Outputs: a single results document RESULTS_v1.md in this directory, with the 10 paired responses linked or inlined.
 
 The analysis is registered AS THE PROTOCOL. No additional comparisons after the data is collected; if anything new is wanted, it ships as protocol v2.
 
