@@ -20,7 +20,7 @@ The prompt, word for word:
 > start a fintech startup. What do you think?
 
 This is a life question. Not a research request, not a fact query,
-not a creative task — a person asking an AI for an opinion on a
+not a creative task: a person asking an AI for an opinion on a
 major career move. The kind of conversation LLM assistants have
 millions of times a day.
 
@@ -61,46 +61,36 @@ signature from the deterministic detectors:
   would make the advice wrong* (uncertainty).
 
 - **Temporal orientation: present 98%.** The response lives in
-  the present tense — "fintech carries extra complexity," "your
-  edge matters," "you need to validate." Almost no past grounding
+  the present tense ("fintech carries extra complexity," "your
+  edge matters," "you need to validate"). Almost no past grounding
   (what has worked for comparable founders) and almost no
   explicit future projection. Present-as-description: this is the
   register that reads as authoritative.
 
 - **Sourcing: 0% attributed.** The response makes specific
   factual claims ("fintech carries extra complexity on top of
-  usual startup risks," "most startups fail," "12–18 months of
+  usual startup risks," "most startups fail," "12-18 months of
   runway is typical") and cites nothing. Ten extracted claims,
   zero hedged. The model states projections as facts.
 
+> **Note on detection state.** This worked example was published 2026-04-18 against v1 substrate detection. The v1 deterministic rules for FVS-001 Frame Amplification and FVS-008 Growth Frame were retired the same day per `data/frame_library/INDEX.md` (validation evidence showed they fired on cases they should not flag, per `fvs_eval/validation_study/RULE_AUDIT.md` §2.1). The frame concepts stand as library entries; current-generation detection (V4.2 LLM-judge) replaces the v1 rules. The bullets above (voice, coverage, temporal, sourcing) preserve the publish-time analysis: those measurements still hold byte-for-byte against the response under the current substrate. The detection-side and absence-side surfaces below have been restructured to reflect post-retirement state; the teaching points describe what the response *does* (frame concepts), not what a particular detector layer flags.
+
 ### Frame detections
 
-The frame-library matcher flags one entry:
+Under the current substrate (frame_library version 0.2.0), the frame-library matcher fires zero present-frames on this response. The saved snapshot in `data/worked_examples/ai-on-life-decisions-startup-2026/data.json` captures the publish-time state when FVS-001 Frame Amplification fired before its v1 rule retirement.
 
-- [FVS-001 Frame Amplification](/corpus/library/FVS-001.html).
-  The pattern the entry names: a document that establishes a
-  framing in its opening and then extends that framing through
-  escalating detail, treating the frame as settled rather than
-  arguable. GPT-5's response opens with "A quick framework to
-  decide" and then populates the framework with specific
-  questions (unique edge, runway, customer validation, moat,
-  regulatory approach, cofounder, contract constraints). Every
-  subsequent section amplifies the framework-as-the-right-way-
-  to-decide. The user did not ask for a framework. The LLM
-  produced one and then used it to shape the rest of the
-  conversation. The library entry's teaching question is exactly
-  right here: "Is the increasing detail evidence of quality, or
-  evidence that the analysis is locked in one frame?"
+The divergence block surfaces 19 absent frames. The high-signal absences (the structural reading the absence-side analysis surfaces):
 
-The frame-library matcher does not flag FVS-008 (Growth Frame)
-here despite the response being strongly growth-framed ("it can
-be a great move," "edge," "moat," "runway"), because the matcher's
-density thresholds did not meet the growth-frame criterion on
-this particular response. A reader looking at the text will
-recognise the growth frame is active even though the detector
-did not surface it. That discrepancy is a known limit of the
-keyword-based detector and is discussed under "What the method
-missed" below.
+- [FVS-017 False Balance](/corpus/library/FVS-017.html) (high signal, stable).
+- [FVS-009 Risk Frame](/corpus/library/FVS-009.html) (high signal, stable).
+- [FVS-001 Frame Amplification](/corpus/library/FVS-001.html) (high signal, stable). The frame concept stands; the v1 PRESENT-detector retired (see Note on detection state above). The absence-side surface still flags the frame because the substrate measures structural coverage of the frame's vocabulary; whether the response IS amplifying a frame is the reader judgment the v1 detector previously attempted and the V4.2 LLM-judge will attempt next.
+- [FVS-014 Temporal Anchoring](/corpus/library/FVS-014.html) (high signal, stable).
+
+The teaching point preserved from the publish-time analysis (the structural reading does not depend on the v1 detector firing; it describes what the response does):
+
+GPT-5's response opens with "A quick framework to decide" and then populates the framework with specific questions (unique edge, runway, customer validation, moat, regulatory approach, cofounder, contract constraints). Every subsequent section amplifies the framework-as-the-right-way-to-decide. The user did not ask for a framework. The LLM produced one and then used it to shape the rest of the conversation. The library entry's teaching question is exactly right here: "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?"
+
+A reader looking at the text will also recognise the response is growth-framed at the reading level (FVS-008 territory: "it can be a great move," "edge," "moat," "runway"). The v1 FVS-008 detector retired same-day as FVS-001; the frame concept stands but no v1 rule fires here today. The "What the method missed" section below carries the broader scope-limit reading.
 
 ## What is visible in the response that the measurements point at
 
@@ -112,9 +102,9 @@ response that the measurements point at:
   asked what the model thinks. The model produced a "quick
   framework" with six named criteria. Whatever answer the user
   reaches will be an answer to the model's checklist, not
-  necessarily to their own question. This is what FVS-001
-  surfaces: the model's opening frame becomes the shape of the
-  subsequent conversation.
+  necessarily to their own question. This is what the FVS-001
+  frame describes structurally: the model's opening frame
+  becomes the shape of the subsequent conversation.
 
 - **Uncertainty is not part of the frame.** The single
   uncertainty mention (density 1.2) is a passing "if the market
@@ -128,7 +118,7 @@ response that the measurements point at:
   1,000 words is high, and the response names categories: your
   cofounder, your dependents, your employer (regarding employment
   agreements). But all the stakeholders are *the user's adjacent
-  people*, not *the people the user's decision affects* — the
+  people*, not *the people the user's decision affects*: the
   customers the startup would serve, the competing startups, the
   incumbents. "Stakeholders" in Frame Check's taxonomy is meant
   broader than "people close to the decision-maker." The
@@ -137,15 +127,11 @@ response that the measurements point at:
 
 ## What the method missed
 
-- **Density threshold and the Growth Frame that did not trigger.**
+- **v1 detector retirement scope.** The 2026-04-18 retirement of the FVS-001 / FVS-008 / FVS-015 v1 rules (per `INDEX.md`) means the frame-library matcher fires zero present-frames here today. Pre-retirement (saved snapshot), FVS-001 fired. The frame concepts stand as library entries; the V4.2 LLM-judge replaces the v1 rules. The evidence discipline this exemplifies: detection layers evolve when validation evidence shows they fail design intent; frame concepts are stable; absence-side analysis remains a reliable surface independent of which detector layer is active.
+
+- **Density threshold and the Growth Frame that did not trigger (historical reading; FVS-008 v1 also retired).**
   GPT-5's response is growth-framed at the reading level (edge,
-  moat, runway, great move) without triggering FVS-008 at the
-  detector level. The frame-library matcher's threshold for
-  Growth Frame is calibrated across a training set of longer,
-  more explicitly promotional documents; on a prescriptive
-  career-advice response with mixed register, the threshold does
-  not fire. A reader should read this as "the detector's single
-  match is a conservative floor; other frames may apply."
+  moat, runway, great move). At publish time the matcher's threshold for Growth Frame did not fire on this prescriptive career-advice response with mixed register; the FVS-008 v1 rule has since been retired alongside FVS-001. A reader should read this as "the detector's match (or non-match) is a conservative floor; other frames may apply, and current-generation detection will re-examine these via V4.2 LLM-judge."
 
 - **Semantic vs structural.** The detector flagged stakeholders
   as covered because the response uses stakeholder vocabulary at
@@ -169,7 +155,7 @@ A person asking an AI assistant about a major life decision is
 the single most common AI conversation shape. Millions of these
 happen per day. The answers are typically prescriptive,
 unsourced, framework-imposing, and confident. Frame Check does
-not say these answers are *wrong* — they are often useful. Frame
+not say these answers are *wrong*; they are often useful. Frame
 Check says what structural frame the answer is putting on the
 question, so the reader can see the frame and decide whether to
 inherit it.
@@ -181,7 +167,7 @@ AI gave you a framework you did not request; the framework covers
 two of five analytical perspectives; the uncertainty about
 whether this advice applies to you is not in the response; the
 sourcing is zero; the frame pattern detected is
-Frame-Amplification." The reader, seeing those surface signals,
+Frame Amplification (the structural reading the response exhibits; the v1 detector that automated this at publish time was retired same-day per the Note above, the frame concept and reading remain valid)." The reader, seeing those surface signals,
 can decide what to do with them.
 
 The usage pattern this worked example is meant to enable: a user
