@@ -47,7 +47,7 @@ import pytest
 
 os.environ.setdefault("GEMINI_API_KEY", "test-dummy-key")
 
-REPO = Path(__file__).resolve().parent
+REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
 import mcp_server  # noqa: E402

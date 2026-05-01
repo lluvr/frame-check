@@ -50,7 +50,7 @@ from pathlib import Path
 
 import pytest
 
-REPO_ROOT = Path(__file__).resolve().parent
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # `scripts/_release_lib/extract.py` is upstream-only by design (it lives
 # in `EXCLUDE_PATHS` in itself; the public mirror does not ship the
@@ -246,9 +246,15 @@ def test_every_shipped_test_imports_resolve_on_public_mirror():
     py_modules = _read_pyproject_py_modules()
     resolvable = _public_resolvable_modules(py_modules, dirs)
 
+    # Tests in INCLUDE_FILES can live at root ("test_X.py") or under
+    # `tests/` ("tests/test_X.py") per the 0.8.5 organization. Both
+    # shapes are supported; the existence check uses the path
+    # verbatim against REPO_ROOT.
     test_files = [
         REPO_ROOT / f for f in files
-        if f.startswith("test_") and f.endswith(".py")
+        if f.endswith(".py") and (
+            f.startswith("test_") or f.startswith("tests/test_")
+        )
     ]
 
     failures: list[str] = []
@@ -344,7 +350,11 @@ def test_every_test_in_run_tests_py_suites_exists_or_is_documented_skip():
 
     missing: list[str] = []
     for suite in suites:
-        if not (REPO_ROOT / suite).exists():
+        # Tests can live at REPO_ROOT/<suite> (legacy / public-mirror
+        # back-compat) or REPO_ROOT/tests/<suite> (the 0.8.5+ canonical
+        # location). Both shapes are accepted; the check is "exists
+        # somewhere we'd find it" not "exists at exactly this path".
+        if not (REPO_ROOT / suite).exists() and not (REPO_ROOT / "tests" / suite).exists():
             missing.append(suite)
     assert not missing, (
         f"{len(missing)} run_tests.py-declared test file(s) missing "

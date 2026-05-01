@@ -42,8 +42,9 @@ Findings tracked:
               expansion (regex expansion would over-fire on existing
               fixtures). Cross-tool confirmed: frame_compare against
               gold-counter shows risks omitted only on bitcoin-thesis.
-              Headline-caveat improvement lives in framing.py, blocked
-              by other-agent stash.
+              Any future improvement is operator-authoring scope: the
+              under-detection on domain vocabulary is the documented
+              design boundary, not a bug to fix.
   F6 (truth-in-labelling): evidence.signal_text read "No numerical
               claims to verify against sources" when checked == 0
               even with 17 numeric sentences (CLOSED 2026-04-30 by
@@ -56,7 +57,7 @@ import sys
 
 import mcp_server  # type: ignore  # pylint: disable=import-error
 
-REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FOMC_PATH = os.path.join(
     REPO_ROOT, "data", "worked_examples", "fomc-statement-march-2026.md"
 )

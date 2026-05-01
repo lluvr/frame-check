@@ -809,7 +809,7 @@ def test_library_resource_scheme_matches_mcp_server():
     print("=== canon-graph URI scheme: profile <-> MCP server agreement ===")
     import sys as _sys
     from pathlib import Path as _Path
-    repo_root = _Path(__file__).resolve().parent
+    repo_root = _Path(__file__).resolve().parent.parent
     _sys.path.insert(0, str(repo_root))
     try:
         from decision_readiness import LIBRARY_RESOURCE_SCHEME as dr_scheme
@@ -1133,7 +1133,7 @@ def test_aggregate_outlier_counts_by_llm_emits_sorted_keys():
     """
     print("=== aggregate_outlier_counts_by_llm emits sorted keys ===")
     import sys, pathlib
-    harness_path = pathlib.Path(__file__).parent / "validation" / "decision_readiness"
+    harness_path = pathlib.Path(__file__).parent.parent / "validation" / "decision_readiness"
     if not (harness_path / "aggregate_corpus_findings.py").exists():
         # The harness is upstream-only: `validation/decision_readiness/`
         # Python files are excluded from the public extract per

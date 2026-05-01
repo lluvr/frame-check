@@ -34,7 +34,7 @@ from pathlib import Path
 
 os.environ.setdefault("GEMINI_API_KEY", "test-dummy-key")
 
-REPO_ROOT = Path(__file__).resolve().parent
+REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 import mcp_server
@@ -9345,7 +9345,7 @@ def test_pattern_segmented_prevalence_carries_low_n_warning():
     baseline = len(_FAILURES)
     print("=== pattern segmented prevalence carries low_n_warning ===")
     from corpus_intelligence import count_corpus_pattern_matches
-    _corpus_root = Path(__file__).resolve().parent / "validation" / "decision_readiness"
+    _corpus_root = Path(__file__).resolve().parent.parent / "validation" / "decision_readiness"
     _corpus_dir = str(_corpus_root / "corpus")
     _results_dir = str(_corpus_root / "results")
     # Advocacy genre has 1 corpus doc; low_n_warning must be True.

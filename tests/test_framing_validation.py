@@ -993,7 +993,7 @@ class TestComputeSentenceSpansPerformance:
         import pathlib
         import time
 
-        worked = sorted(pathlib.Path(__file__).parent.glob(
+        worked = sorted(pathlib.Path(__file__).parent.parent.glob(
             "data/worked_examples/*.md"
         ))
         parts = [

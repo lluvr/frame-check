@@ -100,6 +100,6 @@ jobs:
           # primitives the file exercises are still pinned via
           # test_framing_validation.py and the frame-library suite).
           python3 -m pytest -q \
-            test_framing_validation.py \
-            test_frame_library.py \
-            test_mcp_server.py
+            tests/test_framing_validation.py \
+            tests/test_frame_library.py \
+            tests/test_mcp_server.py

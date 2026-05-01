@@ -31,7 +31,7 @@ from unittest.mock import patch
 
 import pytest
 
-REPO = Path(__file__).resolve().parent
+REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
 import mcp_server  # noqa: E402

@@ -50,7 +50,7 @@ from pathlib import Path
 from unittest import mock
 
 
-REPO = Path(__file__).resolve().parent
+REPO = Path(__file__).resolve().parent.parent
 
 
 def _read_fixture(slug: str) -> str:

@@ -208,7 +208,8 @@ REPO_ROOT = Path(__file__).resolve().parent
 
 
 def run_suite(name: str, quiet: bool, timeout_seconds: int,
-              pytest_mode: bool = False) -> tuple:
+              pytest_mode: bool = False,
+              suite_path: "Path | None" = None) -> tuple:
     """Run one test suite. Returns (success, elapsed_seconds, output).
 
     A timeout protects against a hung test (deadlock, infinite loop,
@@ -247,14 +248,32 @@ def run_suite(name: str, quiet: bool, timeout_seconds: int,
     # the leak was cents_spent accumulating across dev test runs
     # visible via /health. Per-suite tmp path closes the gap.
     suite_env["CIRCUIT_BREAKER_PATH"] = str(Path(suite_tmp) / "circuit_breaker.json")
+    # Tests live under `tests/` per the 0.8.5 organization. When run
+    # via legacy `python3 tests/test_X.py` invocation (the standalone-
+    # script pattern), the test file's directory is `tests/`, not the
+    # repo root, so bare imports against root-level modules
+    # (`from clarethium_measure import measure`) fail with
+    # ModuleNotFoundError unless the repo root is on PYTHONPATH.
+    # `tests/conftest.py` covers the pytest invocation path; this
+    # PYTHONPATH override covers the legacy-script path. Both
+    # invocations now resolve root-level modules consistently.
+    existing_pythonpath = suite_env.get("PYTHONPATH", "")
+    suite_env["PYTHONPATH"] = (
+        str(REPO_ROOT) + (os.pathsep + existing_pythonpath if existing_pythonpath else "")
+    )
     # Pytest-mode invocation: `python3 -m pytest <file> -q`. Legacy
     # mode: `python3 <file>` (the file is a standalone script with an
     # `if __name__ == "__main__"` runner). Both return 0 on success,
     # non-zero on failure, which is what run_suite checks.
+    # Resolve the path to invoke. `suite_path` is the resolved Path
+    # from the caller (handles both root-level and tests/-located
+    # files). Fall back to bare `name` for backward compatibility
+    # with any external caller that does not pass suite_path.
+    invoke_path = str(suite_path) if suite_path is not None else name
     if pytest_mode:
-        cmd = [sys.executable, "-m", "pytest", name, "-q", "--no-header"]
+        cmd = [sys.executable, "-m", "pytest", invoke_path, "-q", "--no-header"]
     else:
-        cmd = [sys.executable, name]
+        cmd = [sys.executable, invoke_path]
     try:
         try:
             proc = subprocess.run(
@@ -333,12 +352,24 @@ def main():
         failed count and rendered the public-mirror CI badge red on
         a structurally clean run.
         """
+        # Tests live under `tests/` per the repo organization that
+        # landed alongside this comment. The path resolution here uses
+        # the historical bare-name lookup at REPO_ROOT for backward
+        # compatibility (so any test ever-located at root still
+        # resolves via the structural-skip path), then falls back to
+        # `REPO_ROOT / "tests" / suite_name` for the canonical
+        # location. Two-step lookup keeps the missing-file SKIP
+        # discipline working across the move and any future operator
+        # who reverts a test back to root.
         path = REPO_ROOT / suite_name
+        if not path.exists():
+            path = REPO_ROOT / "tests" / suite_name
         if not path.exists():
             print(f"  SKIP   {suite_name}  (missing)")
             return True
         success, elapsed, output = run_suite(
             suite_name, args.quiet, args.timeout, pytest_mode=pytest_mode,
+            suite_path=path,
         )
         status = "PASS" if success else "FAIL"
         mode_tag = " [pytest]" if pytest_mode else ""
