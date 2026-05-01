@@ -87,11 +87,13 @@ Honest limits and anticipated adversarial readings are catalogued in
 
 - `METHODOLOGY.md`: full methodology paper (v0.2 draft)
 - `MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
-- `docs/internal/MCP_CLIENT_CONFORMANCE_v1.md`: 32/32 conformance round-trips against the installed wheel
-- `FRAME_DIVERGENCE_v1.md` and `FRAME_DIVERGENCE_v2.md`: divergence architecture
-- `data/frame_library/`: 20-entry FVS catalog with worked examples
+- `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
+- `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (4 entries)
+- `FRAME_DIVERGENCE_v1.md` (Part 1: definition) + `FRAME_DIVERGENCE_CONTRACT_v1.md` (Part 2: interface contract, c1.0 shipping) + `FRAME_DIVERGENCE_v2.md` (broader architecture, supersedes v1 Parts 3-4)
 - `ANTICIPATED_CRITIQUES.md`: self-enumerated adversarial readings
 - `VALIDATION_PROGRAM.md`: observational + formal validation plans
+- `docs/internal/MCP_CLIENT_CONFORMANCE_v1.md`: 32/32 conformance round-trips against the installed wheel
+- `docs/internal/`: maintainer-internal supporting documents (audit deliverables, methodology paper outlines, archived design proposals) shipped publicly under evidence discipline
 
 ## Running tests
 
