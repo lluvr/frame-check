@@ -15,21 +15,28 @@ For **who** decides and **when** a contribution becomes canon, see
 ## Repository layout
 
 ```
-frame-check/
-├── data/frame_library/          # FVS markdown entries + INDEX + VERSION
-├── corpus_site/                 # Generated static site (do not edit by hand)
-├── templates/ static/           # Live web surface
+frame-check-mcp/
+├── data/frame_library/          # 20-entry FVS markdown catalog + INDEX + VERSION
+├── data/worked_examples/        # 4 published worked examples (multi-LLM comparisons)
+├── data/transmissions/          # Frame divergence transmissions (research artifacts)
 ├── calibration/                 # Calibration corpus + results
-├── *.py                         # App and measurement code
-├── test_*.py                    # Tests
-├── mcp_server.py                # MCP protocol server
-└── build_corpus_site.py         # Corpus site builder
+├── validation/                  # Decision-readiness validation runs
+├── docs/internal/               # Maintainer-internal supporting documents (audit deliverables, design proposals)
+├── framecheck_mcp/              # Wheel-bundle data carrier (data/calibration/validation copies populated at build time)
+├── scripts/                     # Build + release infrastructure (extract, lift, orchestrator libs)
+├── *.py                         # MCP server, framing detectors, claim analysis (flat-modules wheel layout)
+├── test_*.py                    # Tests (flat at root next to source per the wheel-modules convention)
+└── mcp_server.py                # MCP protocol server entry point
 ```
 
-The live web surface (`app.py`, `templates/`, `static/`) is Flask +
-Jinja. The corpus surface (`corpus_site/`) is a static build of the
-markdown in `data/frame_library/` plus the methodology paper. Run
-`python3 build_corpus_site.py` to regenerate after any library change.
+The flat-modules layout at root is the wheel-bundle convention named in
+`pyproject.toml [tool.setuptools] py-modules`: each *.py at root ships
+as a top-level import on the installed wheel. The `framecheck_mcp/`
+package exists as the data-carrier subdirectory (wheel installs the
+data files under `framecheck_mcp/data/...` so MCP server code resolves
+them via `_DATA_ROOT` lookup). The 1.0.0 release will migrate to a
+src-layout package per `framecheck_mcp/__init__.py` docstring;
+0.8.x preserves the flat layout for stability.
 
 ---
 
@@ -38,7 +45,7 @@ markdown in `data/frame_library/` plus the methodology paper. Run
 1. **Read `data/frame_library/INDEX.md`.** It is the source of truth
    for which frames exist, their stability status, and the promotion
    criteria. All other surfaces derive from it.
-2. **Read STRATEGY.md §6 Durable Decisions.** Contributions that
+2. **Read `STRATEGY.md` §6 Durable Decisions.** Contributions that
    require overturning a durable decision need an explicit proposal,
    not a silent PR.
 3. **Run the full test suite before opening a PR:**
@@ -346,7 +353,7 @@ project owner: a clean provenance trail for every line of code.
 
 ## What a contribution cannot do without an RFC
 
-- Overturn a durable decision from STRATEGY.md §6.
+- Overturn a durable decision from `STRATEGY.md` §6.
 - Change the meaning of an existing FVS ID (create a new ID instead).
 - Retire a `canon` entry (retirement is a separate governance path).
 - Introduce a hosted MCP server or any surface that sends document
