@@ -45,7 +45,7 @@ src-layout package per `framecheck_mcp/__init__.py` docstring;
 1. **Read `data/frame_library/INDEX.md`.** It is the source of truth
    for which frames exist, their stability status, and the promotion
    criteria. All other surfaces derive from it.
-2. **Read STRATEGY.md §6 Durable Decisions.** Contributions that
+2. **Read `STRATEGY.md` §6 Durable Decisions.** Contributions that
    require overturning a durable decision need an explicit proposal,
    not a silent PR.
 3. **Run the full test suite before opening a PR:**
@@ -353,7 +353,7 @@ project owner: a clean provenance trail for every line of code.
 
 ## What a contribution cannot do without an RFC
 
-- Overturn a durable decision from STRATEGY.md §6.
+- Overturn a durable decision from `STRATEGY.md` §6.
 - Change the meaning of an existing FVS ID (create a new ID instead).
 - Retire a `canon` entry (retirement is a separate governance path).
 - Introduce a hosted MCP server or any surface that sends document
@@ -371,8 +371,8 @@ decision (see `GOVERNANCE.md`) is required before code can land.
 - **Strategic alignment:** STRATEGY.md is the canonical direction
   document. PRs that conflict with it will stall.
 - **Reviewing frames for canon promotion:** a different role from
-  contributing via PR. See `REVIEWERS.md` at repo root for the open
-  invitation, terms, deliverable shape, and how to engage. Reviewers
+  contributing via PR. See `docs/RATERS.md` for the open
+  invitation, terms, deliverable shape, and how to engage. Raters
   evaluate existing library entries against the five promotion
   criteria; contributors (this document) add or modify library
   entries, detection rules, calibration data, or MCP tools.
