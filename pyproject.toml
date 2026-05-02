@@ -51,7 +51,7 @@ Repository = "https://github.com/lluvr/frame-check-mcp"
 Issues = "https://github.com/lluvr/frame-check-mcp/issues"
 Changelog = "https://github.com/lluvr/frame-check-mcp/blob/master/CHANGELOG.md"
 Security = "https://github.com/lluvr/frame-check-mcp/blob/master/SECURITY.md"
-Methodology = "https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md"
+Methodology = "https://github.com/lluvr/frame-check-mcp/blob/master/docs/METHODOLOGY.md"
 "Frame Library" = "https://github.com/lluvr/frame-check-mcp/tree/master/data/frame_library"
 
 [project.scripts]
