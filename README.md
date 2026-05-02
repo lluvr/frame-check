@@ -85,7 +85,7 @@ Honest limits and anticipated adversarial readings are catalogued in
 
 ## Documentation
 
-- `docs/METHODOLOGY.md`: full methodology paper (v0.2 draft)
+- `METHODOLOGY.md`: full methodology paper (v0.2 draft)
 - `docs/MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
 - `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
 - `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (4 entries)
