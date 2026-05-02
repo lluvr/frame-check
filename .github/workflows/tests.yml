@@ -18,6 +18,15 @@ on:
 permissions:
   contents: read
 
+# Opt into Node.js 24 for the JavaScript-based actions (checkout,
+# setup-python). GitHub forces this default on June 2nd, 2026; opting
+# in early removes the deprecation warning from every CI log and
+# verifies the actions still work under the newer runtime now,
+# rather than at the deadline. Action versions (@v4 / @v5) stay the
+# same; only the underlying Node runtime changes.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   # A new push to the same branch cancels the previous run. Prevents
   # CI queue buildup when a contributor pushes corrections quickly.
