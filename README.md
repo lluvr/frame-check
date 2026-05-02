@@ -99,10 +99,14 @@ Honest limits and anticipated adversarial readings are catalogued in
 
 ## Running tests
 
-    pip install -r requirements.txt
+    pip install -e .[test]
     python3 run_tests.py
 
-25 test files, ~30 seconds end-to-end. Includes 40+ adversarial dispatcher test functions in `test_mcp_adversarial.py` (parametrized into more tests at collection time) plus the V4.2 engine + classifier coverage.
+Or directly via pytest:
+
+    python3 -m pytest -q
+
+25 test files, ~30 seconds end-to-end. Includes 40+ adversarial dispatcher test functions in `tests/test_mcp_adversarial.py` (parametrized into more tests at collection time) plus the V4.2 engine + classifier coverage.
 
 ## License
 
@@ -121,7 +125,7 @@ discipline.
 Sign-off-by-DCO required per `CONTRIBUTING.md`. Governance per
 `GOVERNANCE.md` (BDFL model with named forcing functions for
 canon-promotion decisions). External rater engagement per
-`RATERS.md`.
+`docs/RATERS.md`.
 
 ## Issues
 
