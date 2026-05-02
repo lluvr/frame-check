@@ -109,3 +109,23 @@ framecheck_mcp = [
     "validation/decision_readiness/corpus/**/*",
     "pipeline_version.txt",
 ]
+
+[tool.pytest.ini_options]
+# Replaces the legacy pytest.ini; PEP 518 location keeps all build /
+# test config in pyproject.toml. The two registered settings:
+#
+#   markers: documents the @pytest.mark.timeout custom marker so
+#     pytest does not emit PytestUnknownMarkWarning. The marker is
+#     a no-op unless pytest-timeout is installed; the registration
+#     prevents the warning regardless.
+#
+#   filterwarnings = default: keep the standard filter permissive so
+#     test suites that surface real construct-honesty signals (e.g.
+#     clarethium_measure UserWarning on non-markdown inputs) stay
+#     visible. Suppressing warnings would hide real measurement gaps.
+markers = [
+    "timeout: soft timeout hint (enforced only when pytest-timeout plugin is installed)",
+]
+filterwarnings = [
+    "default",
+]
