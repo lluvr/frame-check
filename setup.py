@@ -49,14 +49,20 @@ from setuptools.command.build_py import build_py
 # finds them in the installed wheel layout.
 _DATA_CARRIERS = [
     # (source-path-relative-to-repo-root, destination-path-relative-to-pkg)
+    # The .md files moved to docs/ at v0.8.6 to clean up the public-mirror
+    # root surface (10 substantive docs lifted out of root). The destination
+    # paths inside the wheel package stay flat at framecheck_mcp/<NAME>.md
+    # so mcp_resources.py runtime path resolution (frame-check://methodology,
+    # frame-check://spec/frame-divergence/v1/part-1, etc.) keeps working
+    # against the wheel layout it has always seen.
     ("data", "data"),
     ("calibration", "calibration"),
     ("validation", "validation"),
-    ("METHODOLOGY.md", "METHODOLOGY.md"),
-    ("MCP_SERVER.md", "MCP_SERVER.md"),
-    ("FRAME_DIVERGENCE_v1.md", "FRAME_DIVERGENCE_v1.md"),
-    ("FRAME_DIVERGENCE_CONTRACT_v1.md", "FRAME_DIVERGENCE_CONTRACT_v1.md"),
-    ("V4_2_GAP_INVENTORY_v1.md", "V4_2_GAP_INVENTORY_v1.md"),
+    ("docs/METHODOLOGY.md", "METHODOLOGY.md"),
+    ("docs/MCP_SERVER.md", "MCP_SERVER.md"),
+    ("docs/FRAME_DIVERGENCE_v1.md", "FRAME_DIVERGENCE_v1.md"),
+    ("docs/FRAME_DIVERGENCE_CONTRACT_v1.md", "FRAME_DIVERGENCE_CONTRACT_v1.md"),
+    ("docs/V4_2_GAP_INVENTORY_v1.md", "V4_2_GAP_INVENTORY_v1.md"),
     ("pipeline_version.txt", "pipeline_version.txt"),
 ]
 
@@ -81,7 +87,7 @@ def _should_skip(rel_dir: str, name: str) -> bool:
     if name in ("circuit_breaker.json", "frame_check_observatory_state.json"):
         return True
 
-    # data/ — research-snapshot and research-fork subdirectories that
+    # data/: research-snapshot and research-fork subdirectories that
     # are not runtime resources. RELEASE_PREP_v1.md Section 3.
     if rel_dir == "data":
         if name in (
@@ -97,7 +103,7 @@ def _should_skip(rel_dir: str, name: str) -> bool:
         if fnmatch.fnmatch(name, "frame_library_*_abl*"):
             return True
 
-    # data/frame_library/ — maintainer-internal canon-development audits
+    # data/frame_library/: maintainer-internal canon-development audits
     # and the reviewer-recruitment dossiers. AI-authored audits
     # (AUDIT_*, ADJACENCY_*, DETECTION_RULE_*) are research-internal;
     # the promotions/ subtree is reviewer-engagement material.
@@ -112,7 +118,7 @@ def _should_skip(rel_dir: str, name: str) -> bool:
         if fnmatch.fnmatch(name, "DETECTION_RULE_*.md"):
             return True
 
-    # data/worked_examples/ — scaffolding (template + internal review)
+    # data/worked_examples/: scaffolding (template + internal review)
     # follows the build_corpus_site.py convention: leading-underscore
     # files are not rendered as entries. See LEAKAGE_AUDIT_v1.md
     # Findings 2 and 7.
@@ -120,14 +126,14 @@ def _should_skip(rel_dir: str, name: str) -> bool:
         if name.startswith("_") and name.endswith(".md"):
             return True
 
-    # validation/decision_readiness/ — operator CLI scripts. Only the
+    # validation/decision_readiness/: operator CLI scripts. Only the
     # data subdirectories (results/, corpus/) are runtime resources for
     # the MCP server. See LEAKAGE_AUDIT_v1.md Finding 16.
     if rel_dir == "validation/decision_readiness":
         if name.endswith(".py"):
             return True
 
-    # validation/decision_readiness/results/{date}-{hash}/ — drop the
+    # validation/decision_readiness/results/{date}-{hash}/: drop the
     # cross_check.{json,md} files. Their `aggregate_source` /
     # "Aggregate file:" fields contain the producer's absolute path
     # (operator dev machine) and the files are not consumed by
@@ -143,7 +149,7 @@ def _should_skip(rel_dir: str, name: str) -> bool:
         if name in ("cross_check.json", "cross_check.md"):
             return True
 
-    # calibration/ — operator CLI scripts. Only results/ ships.
+    # calibration/: operator CLI scripts. Only results/ ships.
     if rel_dir == "calibration":
         if name.endswith(".py"):
             return True

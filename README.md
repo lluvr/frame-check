@@ -34,7 +34,7 @@ Claude Desktop, add to `claude_desktop_config.json`:
     }
 
 Restart the client. Then in any conversation: "Can you frame-check
-this document?" Full install + verification details in `MCP_SERVER.md`.
+this document?" Full install + verification details in `docs/MCP_SERVER.md`.
 
 ## What it does
 
@@ -81,17 +81,19 @@ pre-registered) tests whether this surfacing actually helps a reader
 see framing they would otherwise miss.
 
 Honest limits and anticipated adversarial readings are catalogued in
-`ANTICIPATED_CRITIQUES.md`.
+`docs/ANTICIPATED_CRITIQUES.md`.
 
 ## Documentation
 
-- `METHODOLOGY.md`: full methodology paper (v0.2 draft)
-- `MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
+- `docs/METHODOLOGY.md`: full methodology paper (v0.2 draft)
+- `docs/MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
 - `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
 - `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (4 entries)
-- `FRAME_DIVERGENCE_v1.md` (Part 1: definition) + `FRAME_DIVERGENCE_CONTRACT_v1.md` (Part 2: interface contract, c1.0 shipping) + `FRAME_DIVERGENCE_v2.md` (broader architecture, supersedes v1 Parts 3-4)
-- `ANTICIPATED_CRITIQUES.md`: self-enumerated adversarial readings
-- `VALIDATION_PROGRAM.md`: observational + formal validation plans
+- `docs/FRAME_DIVERGENCE_v1.md` (Part 1: definition) + `docs/FRAME_DIVERGENCE_CONTRACT_v1.md` (Part 2: interface contract, c1.0 shipping) + `docs/FRAME_DIVERGENCE_v2.md` (broader architecture, supersedes v1 Parts 3-4)
+- `docs/ANTICIPATED_CRITIQUES.md`: self-enumerated adversarial readings
+- `docs/VALIDATION_PROGRAM.md`: observational + formal validation plans
+- `docs/V4_2_GAP_INVENTORY_v1.md`: self-disclosed engine gap inventory + remediation plan
+- `docs/RATERS.md`: rater protocol for the validation program
 - `docs/internal/MCP_CLIENT_CONFORMANCE_v1.md`: 32/32 conformance round-trips against the installed wheel
 - `docs/internal/`: maintainer-internal supporting documents (audit deliverables, methodology paper outlines, archived design proposals) shipped publicly under evidence discipline
 
