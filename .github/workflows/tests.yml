@@ -87,7 +87,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
+          pip install pytest pytest-cov
 
       - name: Run pytest (idiomatic suites)
         run: |
@@ -101,7 +101,17 @@ jobs:
           # which is web-only and absent on the public mirror; the
           # primitives the file exercises are still pinned via
           # test_framing_validation.py and the frame-library suite).
+          # --cov=. produces a coverage report against every Python
+          # module exercised by the three suites. --cov-report=term
+          # prints a line-coverage summary in the CI log so a
+          # reviewer can read it without clicking into the run.
+          # No external service (codecov.io etc.) is wired here:
+          # the report lives in the workflow log and the discipline
+          # is to keep the percentage stable or rising. A future
+          # operator who wants a public badge can wire codecov-action
+          # in a follow-up; the in-log report is the floor.
           python3 -m pytest -q \
+            --cov=. --cov-report=term \
             tests/test_framing_validation.py \
             tests/test_frame_library.py \
             tests/test_mcp_server.py
