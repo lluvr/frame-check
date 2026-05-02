@@ -1,0 +1,53 @@
+name: CodeQL
+
+# GitHub-provided static security analysis. Runs on every push to
+# master, every PR against master, and a weekly cron so the analyzed
+# version stays fresh against rule updates that GitHub publishes.
+# Findings appear under the repository Security tab; PR-time findings
+# block merge if the rule is severity-elevated. Zero secrets, zero
+# write permissions: this workflow only reads the source tree.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    # Weekly Monday 13:00 UTC. Picks up GitHub-published rule updates
+    # without waiting for the next push to master. Day chosen so a
+    # finding lands at the start of the work week, not over weekends.
+    - cron: '0 13 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (Python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          # default + security-and-quality query suites. Default
+          # covers the high-precision security rules; security-
+          # and-quality adds the broader maintainability + style
+          # rules that compound code health over time.
+          queries: security-and-quality
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:python"
