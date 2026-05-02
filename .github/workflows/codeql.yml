@@ -23,6 +23,11 @@ permissions:
   security-events: write
   actions: read
 
+# Opt into Node.js 24 for JavaScript-based actions; see tests.yml
+# for the rationale (June 2nd, 2026 forced default).
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
