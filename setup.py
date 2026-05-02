@@ -58,7 +58,12 @@ _DATA_CARRIERS = [
     ("data", "data"),
     ("calibration", "calibration"),
     ("validation", "validation"),
-    ("docs/METHODOLOGY.md", "METHODOLOGY.md"),
+    # METHODOLOGY.md stays at root (the most-cited public document; the
+    # v0.8.5 wheel METADATA's `Methodology` Project-URL points at the
+    # root path, so moving it would break that link on every adopter's
+    # PyPI page until the next cut). Other substantive docs moved to
+    # docs/ at v0.8.6 per the public-mirror root cleanup.
+    ("METHODOLOGY.md", "METHODOLOGY.md"),
     ("docs/MCP_SERVER.md", "MCP_SERVER.md"),
     ("docs/FRAME_DIVERGENCE_v1.md", "FRAME_DIVERGENCE_v1.md"),
     ("docs/FRAME_DIVERGENCE_CONTRACT_v1.md", "FRAME_DIVERGENCE_CONTRACT_v1.md"),
