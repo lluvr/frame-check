@@ -13,6 +13,14 @@ perspectives a document takes, which it omits, and how it positions
 the reader. Numerical claims are cross-checked against authoritative
 sources where coverage exists.
 
+## Project home
+
+Frame Check is part of [Clarethium](https://clarethium.com).
+
+- Web app (drop a document, get the structural reading): [frame.clarethium.com](https://frame.clarethium.com)
+- Background and methodology: [blog.clarethium.com/frame-check](https://blog.clarethium.com/frame-check)
+- Validation evidence (corpus, labels, scripts, three pre-registered reports): [blog.clarethium.com/receipts/frame-check](https://blog.clarethium.com/receipts/frame-check)
+
 ## Quickstart (MCP server)
 
 The PyPI package `frame-check-mcp` is the Model Context Protocol
