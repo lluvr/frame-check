@@ -97,6 +97,15 @@ Honest limits and anticipated adversarial readings are catalogued in
 - `docs/internal/MCP_CLIENT_CONFORMANCE_v1.md`: 32/32 conformance round-trips against the installed wheel
 - `docs/internal/`: maintainer-internal supporting documents (audit deliverables, methodology paper outlines, archived design proposals) shipped publicly under evidence discipline
 
+## Companions
+
+Frame Check is part of the Clarethium reference artifact family:
+
+- **[Touchstone](https://github.com/Clarethium/touchstone)**: the public Standard plus reference Python implementation that formalizes the structural measurement methodology Frame Check applies. Both descend from the same Clarethium measurement substrate.
+- **[Lodestone](https://github.com/Clarethium/lodestone)**: the canonical operator methodology for working with AI systems. The first-person practice that pairs with Touchstone's third-person measurement.
+- **Whetstone**: craft sharpening. Currently at [`clarethium-app`](https://github.com/Clarethium/clarethium-app); rename to `whetstone` is planned.
+- **[cma](https://github.com/Clarethium/cma)**: executable compound-practice loop, terminal-side companion to Lodestone.
+
 ## Running tests
 
     pip install -e .[test]
@@ -129,4 +138,4 @@ canon-promotion decisions). External rater engagement per
 
 ## Issues
 
-https://github.com/lluvr/frame-check-mcp/issues
+https://github.com/Clarethium/frame-check-mcp/issues
