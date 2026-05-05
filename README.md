@@ -15,11 +15,12 @@ sources where coverage exists.
 
 ## Project home
 
-Frame Check is part of [Clarethium](https://clarethium.com).
+Frame Check is part of [Clarethium](https://clarethium.com), an applied vehicle built on the [Touchstone](https://github.com/Clarethium/touchstone) substrate. Touchstone defines eleven measurement layers for AI output profiling; Frame Check applies that substrate to structural framing analysis with a Frame Vocabulary Standard layered on top.
 
 - Web app (drop a document, get the structural reading): [frame.clarethium.com](https://frame.clarethium.com)
 - Background and methodology: [blog.clarethium.com/frame-check](https://blog.clarethium.com/frame-check)
 - Validation evidence (corpus, labels, scripts, three pre-registered reports): [blog.clarethium.com/receipts/frame-check](https://blog.clarethium.com/receipts/frame-check)
+- The Touchstone substrate: [github.com/Clarethium/touchstone](https://github.com/Clarethium/touchstone)
 
 ## Quickstart (MCP server)
 
