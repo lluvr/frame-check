@@ -99,11 +99,10 @@ Honest limits and anticipated adversarial readings are catalogued in
 
 ## Companions
 
-Frame Check is part of the Clarethium reference artifact family:
+Frame Check is part of the Clarethium open reference artifact family:
 
 - **[Touchstone](https://github.com/Clarethium/touchstone)**: the public Standard plus reference Python implementation that formalizes the structural measurement methodology Frame Check applies. Both descend from the same Clarethium measurement substrate.
 - **[Lodestone](https://github.com/Clarethium/lodestone)**: the canonical operator methodology for working with AI systems. The first-person practice that pairs with Touchstone's third-person measurement.
-- **Whetstone**: craft sharpening. Currently at [`clarethium-app`](https://github.com/Clarethium/clarethium-app); rename to `whetstone` is planned.
 - **[cma](https://github.com/Clarethium/cma)**: executable compound-practice loop, terminal-side companion to Lodestone.
 
 ## Running tests
