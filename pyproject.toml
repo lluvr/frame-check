@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "frame-check-mcp"
-version = "0.8.9"
+version = "0.8.10"
 description = "Frame Check MCP server: deterministic structural framing analysis for AI-generated documents, with default-on frame-divergence block per FRAME_DIVERGENCE_CONTRACT_v1 c1.0. MCP surface delegates V4.2 judgment to the caller's agent model; zero Frame Check LLM cost per query."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -105,6 +105,7 @@ framecheck_mcp = [
     "MCP_SERVER.md",
     "FRAME_DIVERGENCE_v1.md",
     "FRAME_DIVERGENCE_CONTRACT_v1.md",
+    "V4_2_GAP_INVENTORY_v1.md",
     "calibration/results/**/*",
     "validation/decision_readiness/results/**/*",
     "validation/decision_readiness/corpus/**/*",

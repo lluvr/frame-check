@@ -16,7 +16,7 @@ Currently all 20 entries are `draft` on the canon trajectory. Four are `withdraw
 
 ## Parallel directory: v2 §11 grounded-authorship retrofit
 
-A v2 §11 grounded-authorship retrofit shipped 2026-04-25 in a parallel directory at `../frame_library_v3/`. That directory carries the FVS entries (FVS-001 through FVS-019; FVS-020 retained at v1 form) with v2 §11 grounded-authorship sections appended (eight fields per entry: authorship dated, context of testing, failure record, success record, lived-experience anchor, applicability metadata, empirical track record, plus internal-operational friction-cost estimate). Lived-experience anchors are uniformly held "Open" with entry-specific criteria pending curator authorship per the maintainer-side anchor-authorship methodology.
+A v2 §11 grounded-authorship retrofit shipped 2026-04-25 in a parallel directory at `../frame_library_v3/`. That directory carries the FVS entries (FVS-001 through FVS-019; FVS-020 retained at v1 form) with v2 §11 grounded-authorship sections appended (eight fields per entry: authorship dated, context of testing, failure record, success record, lived-experience anchor, applicability metadata, empirical track record, plus internal-operational friction-cost estimate). Lived-experience anchors are uniformly held "Open" with entry-specific criteria pending curator authorship per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
 
 The two directories serve different layers of catalog discipline:
 

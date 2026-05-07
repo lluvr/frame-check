@@ -1,11 +1,13 @@
 # Publish workflow: builds the frame-check-mcp wheel + sdist on every
 # tag push (vX.Y.Z), validates the artifact, and stages it for upload.
 #
-# THE UPLOAD STEPS BELOW ARE INTENTIONALLY COMMENTED OUT. An
-# maintainer-side publish hold blocks any push to PyPI or TestPyPI
-# until explicitly lifted. To enable publishing:
+# THE UPLOAD STEPS BELOW ARE INTENTIONALLY COMMENTED OUT. The
+# operator's publish hold (per STRATEGY.md §14 and the 2026-04-23
+# directive in MCP_PACKAGE_DESIGN_v1.md) blocks any push to PyPI or
+# TestPyPI until explicitly lifted. To enable publishing:
 #
-#   1. Confirm V4.2 engine has reached Tier 2 completion.
+#   1. Confirm V4.2 engine has reached Tier 2 completion per
+#      V4_2_GAP_INVENTORY_v1.md §5.
 #   2. Bump version in pyproject.toml from 0.8.0.dev0 to 0.8.0.
 #      Bump SERVER_VERSION in mcp_server.py to "0.8.0".
 #      Move CHANGELOG.md [Unreleased] to [0.8.0] with release date.

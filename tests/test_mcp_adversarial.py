@@ -180,13 +180,8 @@ def test_A5_internal_exception_message_is_sanitized():
     message that imitates a leaked filesystem path + secret."""
     from unittest.mock import patch
 
-    # Adversarial fixture intentionally imitates a leaked filesystem
-    # path + secret. The path is fictional ("/home/example-user/...")
-    # so the test fixture itself is not a leakage surface; the boundary
-    # under test is the sanitizer that strips home-paths and secrets
-    # from error responses regardless of the specific path values.
     sensitive = (
-        "ERROR at /home/example-user/example-project/secret.py:42 -- "
+        "ERROR at /home/llucic/frame-check/secret.py:42 -- "
         "GEMINI_API_KEY=sk-test-LEAK-ME-PLZ-9999 raised in handler"
     )
 
@@ -198,7 +193,7 @@ def test_A5_internal_exception_message_is_sanitized():
     text = resp["result"]["content"][0]["text"]
     assert resp["result"]["isError"] is True
     assert "sk-test-LEAK-ME-PLZ-9999" not in text
-    assert "/home/example-user" not in text
+    assert "/home/llucic" not in text
     assert "RuntimeError" not in text
     parsed = json.loads(text)
     assert parsed["error"] == "frame_check_internal_error"
@@ -761,8 +756,8 @@ def test_F6_log_message_escapes_control_chars_for_operator_safety():
     their terminal hijacked. CR/LF/TAB are preserved because they
     are legitimate in multi-line log messages.
 
-    Closes a deferred terminal-escape residual from the pre-publish
-    audit campaign."""
+    Closes the deferred residual flagged in REMEDIATION_LOG_v1.md
+    section K and MCP_CLIENT_CONFORMANCE_v1.md."""
     hostile = "URI=\x1b[31mEVIL\x07\x00alert"
     sanitized = mcp_server._sanitize_log_message(hostile)
     # Escape sequences must be replaced with \xNN form.

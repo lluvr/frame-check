@@ -1,10 +1,11 @@
 """Prompt-injection mitigation for non-V4.2 LLM endpoints.
 
-Centralizes the sentinel-wrap-and-reject pattern maintainer-side
-V4.2 work defines as Tier 1B: any document containing the
+Centralizes the sentinel-wrap-and-reject pattern that
+``fvs_eval/v4/v4_2_engine.py`` defines as Tier 1B of
+``V4_2_GAP_INVENTORY_v1.md`` (the rule: any document containing the
 engine's ``<user_document>`` or ``</user_document>`` sentinel
 substrings is rejected before any LLM call, because the substring
-would break the prompt's data/instruction isolation.
+would break the prompt's data/instruction isolation).
 
 This module is **self-contained**. It does NOT import from
 ``fvs_eval.v4.v4_2_engine`` because that package is not part of the

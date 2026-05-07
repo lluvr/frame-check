@@ -62,7 +62,7 @@ Usage
     python3 scripts/detector_empirics.py --out /tmp/empirics_smoke
         # Override output directory.
 
-    python3 scripts/detector_empirics.py --bin "$(which frame-check-mcp)"
+    python3 scripts/detector_empirics.py --bin /home/llucic/.local/bin/frame-check-mcp
         # Override mcp_server invocation. Default: dev-tree
         # `python3 mcp_server.py` so changes-in-progress are measured.
 

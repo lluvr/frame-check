@@ -148,8 +148,9 @@ KNOWN_HARNESS_GAPS = (
     # per-FVS authored `**Teaching question:**` content in the
     # data/frame_library_v3/FVS-*.md bodies; rendering wiring is
     # correct in mcp_server.py, the gap is library content. Parked
-    # for the 0.8.4 operator authoring sprint (maintainer-side
-    # rationale tracked privately).
+    # for the 0.8.4 operator authoring sprint per
+    # `~/.claude/projects/-home-llucic-frame-check/memory/
+    # project_d3_teaching_questions_parked.md`.
     "teaching_questions mode adds teaching_question per record",
 )
 

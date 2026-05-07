@@ -8,6 +8,23 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 
 ## [Unreleased]
 
+## [0.8.10] - 2026-05-07
+
+### CITATION.cff: revert top-level `version` to brand-version axis
+
+- `CITATION.cff` top-level `version` reverted `"0.8.9"` → `"1.0.0"` and `date-released` `"2026-05-07"` → `"2026-04-28"`. Two prior commits (the 0.8.8 cut's citation-fix commit and the post-0.8.9 dev-tree cleanup) had bumped CITATION.cff toward the wheel-version axis, treating it as if it tracked the PyPI release. It does not. Per `version.py` two-axes discipline, `CITATION.cff` top-level `version` is the methodology brand-version axis (`FRAME_CHECK_VERSION = "1.0.0"`, set 2026-04-28 when `FRAME_DIVERGENCE_CONTRACT_v1` c1.0 closed the 1.0-discipline bar). It bumps on contract revisions, not wheel patches. A wheel can ship `frame-check-mcp 0.8.x` against methodology brand `1.0.0`; the two strings answer different questions.
+- Adopter impact: minimal. The Zenodo concept-DOI (`10.5281/zenodo.19888849`) auto-resolves to the latest version-DOI regardless of the `version` field, so machine citations always landed correctly. The drift was confined to the GitHub-rendered citation tab + paper bibliographies that read `CITATION.cff` directly. With this release, those resolve back to the methodology snapshot the version stamp claims.
+- Pinned by `tests/test_version_coherence.py::test_citation_cff_top_level_version_matches_brand`. The coherence test had been failing on master since the 0.8.8 citation-fix commit shipped; this revert restores it.
+
+### Production resume: flip `PRODUCTION_STATUS` from "paused" to "active"
+
+- `mcp_compose.py:135` `PRODUCTION_STATUS` flipped `"paused"` → `"active"`. Production hosting at `frame.clarethium.com` was paused 2026-04-23 via `fly scale count 0 -a fabrication-profiler`; the Fly app was redeployed and scaled back to 1 at some point before 2026-05-07 but the in-tree constant + supporting documentation were never updated. Live verification before the flip: `frame.clarethium.com/health` returns real JSON with today's date + db ok + circuit_breaker not tripped; `fabrication-profiler.fly.dev/health` returns the same payload (same machine); `/api/profile` routes to live JSON validation; the four corpus URLs (`/`, `/corpus/methodology/`, `/corpus/library/`, `/corpus/calibration/`) all return HTTP 200. Production is genuinely active.
+- `PRODUCTION_STATUS_NOTE` rewritten to describe the active state and name the always-resolvable mirrors (GitHub repo + PyPI package) that remain stable across any future hosting transition. The constant + note are the single source of truth in `mcp_compose.py`; every MCP response carries the updated state via `provenance.production_status` + `provenance.production_status_note`.
+- `docs/MCP_SERVER.md` (canonical, restaged into wheel as `framecheck_mcp/MCP_SERVER.md`): three sections updated. The "Web JSON parity" pointer now states the surface is live (was: "currently paused"). The "Clickable library URLs" section explains the GitHub form is preferred because it survives any future hosting transition (was: "paused while production is paused"). The "Production hosting status" section describes the live posture and the active/paused field semantics (was: paused-window-specific framing).
+- `README.md` line 7: dropped the "(paused 2026-04-23 pending operator authorization to resume)" parenthetical from the live web surface line.
+- Tests: `tests/test_mcp_server.py::test_provenance_carries_production_status` was already written to accept either value (asserts equality with `mcp_server.PRODUCTION_STATUS` and membership in `("active", "paused")`); single-constant flip discipline preserved. No test changes needed.
+- Unaffected: `Tier B observatory` remains parked per Option D ratification (`OBSERVATORY_DISABLED=true` in production secrets); FVS frame card "Tier B paused" footnotes accurately reflect that. The `METHODOLOGY.md` "v2 production integration paused pending curator decision on INDEX.md schema updates" line is unrelated to hosting and accurately reflects the v2 library-track state.
+
 ## [0.8.9] - 2026-05-07
 
 ### Wheel content: strip 399 broken `lluvr/frame-check` links from bundled docs

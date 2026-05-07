@@ -944,9 +944,9 @@ def suggest_frames(
         #   "present_future"    directional future-anchored present
         #                       (FVS-014 future site)
         # The legacy suffix in `name` is preserved for backward compat with
-        # operator-facing UI rendering (the chip-renderer that
-        # distinguishes "(active)" vs "(absent)") and with hand-
-        # authored test fixtures at
+        # operator-facing UI rendering at `V4_2_GAP_INVENTORY_v1.md:194`
+        # (the chip-renderer that distinguishes "(active)" vs "(absent)")
+        # and with hand-authored test fixtures at
         # `test_decision_readiness.py:407, 1095` that pin the literal
         # "Failure Framing (absent)" name shape. Future cleanup that
         # strips the suffix is a separate decision; this change is purely

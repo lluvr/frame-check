@@ -30,9 +30,9 @@ keywords:
   - source network verification
   - frame vocabulary standard
 license: Apache-2.0
-version: "0.8.8"
+version: "1.0.0"
 doi: "10.5281/zenodo.19888849"
-date-released: "2026-05-07"
+date-released: "2026-04-28"
 references:
   - type: article
     title: "Frame Check Methodology"

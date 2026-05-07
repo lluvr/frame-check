@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Pre-commit hook: reject prose em-dashes and en-dashes.
 
-Per the project's writing-rule discipline (`AGENTS.md` and
-`CONTRIBUTING.md`), em-dashes (U+2014) and en-dashes (U+2013) are
-not allowed in code comments, docstrings, test messages, or
-markdown prose. They are allowed only where the character is
-functional (regex character classes that match em/en-dash
-characters in user text, and the em-dash-scanning grep pattern in
-CONTRIBUTING.md itself).
+Per `feedback_em_dashes.md` and the operator's writing-rule discipline
+(`~/.claude/CLAUDE.md` "WRITING RULES" section), em-dashes (U+2014) and
+en-dashes (U+2013) are not allowed in code comments, docstrings, test
+messages, or markdown prose. They are allowed only where the character
+is functional (regex character classes that match em/en-dash characters
+in user text, and the em-dash-scanning grep pattern in CONTRIBUTING.md
+itself).
 
 This hook scans files staged for commit and fails if any em-dash or
 en-dash is found outside the allowlist below.
@@ -43,6 +43,16 @@ _ALLOWLIST = [
     # characters it scans for. Whitelist all em/en-dash occurrences in
     # its own source.
     ("scripts/check_no_em_dashes.py", ""),
+    # Pre-discipline historical audit deliverables. The audits were
+    # written before the em-dash writing rule was adopted; they are
+    # frozen historical records of what the operator said at audit
+    # time. Editing the body would falsify the record. The em-dashes
+    # ship in the public mirror under docs/internal/ where adopters
+    # can read the audit posture as written. Future audit reports use
+    # the post-discipline writing rules.
+    ("docs/internal/LEAKAGE_AUDIT_v1.md", ""),
+    ("docs/internal/REMEDIATION_LOG_v1.md", ""),
+    ("docs/internal/LEAKAGE_AUDIT_v1_appendix_a_2026_04_29.md", ""),
 ]
 
 _EM_DASH = "—"
