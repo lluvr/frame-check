@@ -118,7 +118,7 @@ SERVER_NAME = "frame-check"
 # test_server_version_bumped_for_decision_readiness_capability;
 # adding suffixes here would break that pin and the handshake
 # parser shape downstream consumers may rely on.
-SERVER_VERSION = "0.8.9"
+SERVER_VERSION = "0.8.10"
 
 # ── Logging ────────────────────────────────────────────────────────
 #
@@ -555,11 +555,11 @@ def _tool_error(message: str) -> dict:
 
 
 # Sanitized user-facing messages for unexpected tool-layer failures.
-# Attacker-hardened error wrappers: stable error codes let MCP
-# clients program against the failure modes without parsing
-# exception text; sanitized messages prevent leak of internal state,
-# stack traces, or user document content via exception message
-# interpolation.
+# Phase 5 item 7-MCP (attacker-hardened error wrappers) per
+# V4_2_GAP_INVENTORY_v1.md. Stable error codes let MCP clients
+# program against the failure modes without parsing exception text;
+# sanitized messages prevent leak of internal state, stack traces,
+# or user document content via exception message interpolation.
 _MCP_TOOL_ERROR_MESSAGES = {
     "frame_check_internal_error": (
         "Frame Check analysis could not complete. The server logged the "

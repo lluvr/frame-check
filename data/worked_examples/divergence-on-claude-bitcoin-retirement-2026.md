@@ -79,8 +79,8 @@ fields:
 - `envelope`: a `FaithfulnessEnvelope` with `spec_version`
   (`FRAME_DIVERGENCE_v1_c1.0`), `catalog_version` (`library_v3`),
   `surface` (`mcp`), `v4_2_execution` (`caller_side`,
-  `caller_model`), `v4_2_engine_status` (`beta`),
-  `domain_inferred` (`finance` for
+  `caller_model`), `v4_2_engine_status` (`beta` per
+  `V4_2_GAP_INVENTORY_v1.md §5`), `domain_inferred` (`finance` for
   this invocation), `provisional_count`, `faithfulness_note`, and
   `limitations`.
 
@@ -313,7 +313,8 @@ with `provenance.analysis_latency_ms` stripped so the file is
 byte-stable across reruns. `provenance.analysis_cost_usd == 0.0`
 holds under divergence because the MCP surface delegates V4.2
 judgment to the caller; the envelope's `v4_2_engine_status` is
-`beta` at the moment this was run (2026-04-24). The caller-side composition above is mine (one
+`beta` per `V4_2_GAP_INVENTORY_v1.md §5` at the moment this was
+run (2026-04-24). The caller-side composition above is mine (one
 caller's model); a different caller's model run against the same
 block would produce a different composition in the same contract-
 valid shape.

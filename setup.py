@@ -5,11 +5,12 @@ exists ONLY to register a custom build_py command that copies
 repo-root data into framecheck_mcp/ at build time.
 
 Why we need this. The repo carries data files at root (data/,
-calibration/, validation/, METHODOLOGY.md, plus the divergence
-spec docs and pipeline_version.txt). The web app and corpus-site
-build scripts read those paths directly from the repo root. The
-MCP wheel needs them bundled INSIDE the framecheck_mcp/ package so
-a pip-installed user gets the data alongside the code.
+calibration/, validation/, METHODOLOGY.md, FRAME_DIVERGENCE_v1.md,
+FRAME_DIVERGENCE_CONTRACT_v1.md, V4_2_GAP_INVENTORY_v1.md,
+pipeline_version.txt). The web app, fvs_eval/ scripts, and
+build_corpus_site.py all read those paths directly from the repo
+root. The MCP wheel needs them bundled INSIDE the framecheck_mcp/
+package so a pip-installed user gets the data alongside the code.
 
 The original approach (Unix symlinks at framecheck_mcp/data ->
 ../data, etc.) works on Linux and macOS but breaks on Windows
@@ -22,14 +23,16 @@ Local dev workflow is unchanged: data continues to live at repo root.
 This shim only fires during `python -m build` (or `pip install .`
 which invokes the build backend).
 
-Staging-time exclusion. The copy applies a per-directory filter
-that excludes maintainer-internal items (internal audits, dev CLI
-scripts, scaffolding templates, leak-bearing cross_check artifacts,
-promotion dossiers, research ablation forks). Without this filter
-the wheel ships research artifacts and maintainer-internal documents
-that have no runtime use to MCP consumers; making the filter the
-gate at staging time means the must-exclude inventory is enforced
-by code rather than by manual inspection.
+Staging-time exclusion. The copy applies a per-directory filter that
+mirrors RELEASE_PREP_v1.md Section 3 (must-exclude inventory) plus
+the maintainer-internal items identified in LEAKAGE_AUDIT_v1.md
+(internal AI-authored audits, dev CLI scripts, scaffolding
+templates, leak-bearing cross_check artifacts, promotion dossiers,
+research ablation forks). Without this filter the wheel ships
+research artifacts and maintainer-internal documents that have no
+runtime use to MCP consumers; making the filter the gate at staging
+time means the must-exclude inventory is enforced by code rather
+than by manual inspection.
 """
 from __future__ import annotations
 
@@ -64,10 +67,7 @@ _DATA_CARRIERS = [
     ("docs/MCP_SERVER.md", "MCP_SERVER.md"),
     ("docs/FRAME_DIVERGENCE_v1.md", "FRAME_DIVERGENCE_v1.md"),
     ("docs/FRAME_DIVERGENCE_CONTRACT_v1.md", "FRAME_DIVERGENCE_CONTRACT_v1.md"),
-    # An additional maintainer-internal construct-honesty audit was
-    # bundled in 0.8.x wheels and has since been removed from the
-    # public surface. Existing 0.8.x PyPI wheels remain frozen with
-    # the bundled copy until a yank-and-republish decision lands.
+    ("docs/V4_2_GAP_INVENTORY_v1.md", "V4_2_GAP_INVENTORY_v1.md"),
     ("pipeline_version.txt", "pipeline_version.txt"),
 ]
 
@@ -77,7 +77,8 @@ def _should_skip(rel_dir: str, name: str) -> bool:
     directory whose path relative to the repo root is `rel_dir`.
 
     Returns True to exclude (file or subdirectory). The exclusion list
-    enforces the maintainer-internal item taxonomy at staging time.
+    is the staging-time enforcement of RELEASE_PREP_v1.md Section 3
+    plus the maintainer-internal items named in LEAKAGE_AUDIT_v1.md.
 
     `rel_dir` is POSIX-separated (forward-slash) for portability.
     """
@@ -92,7 +93,7 @@ def _should_skip(rel_dir: str, name: str) -> bool:
         return True
 
     # data/: research-snapshot and research-fork subdirectories that
-    # are not runtime resources.
+    # are not runtime resources. RELEASE_PREP_v1.md Section 3.
     if rel_dir == "data":
         if name in (
             "adversarial_fixtures",
@@ -111,6 +112,7 @@ def _should_skip(rel_dir: str, name: str) -> bool:
     # and the reviewer-recruitment dossiers. AI-authored audits
     # (AUDIT_*, ADJACENCY_*, DETECTION_RULE_*) are research-internal;
     # the promotions/ subtree is reviewer-engagement material.
+    # See LEAKAGE_AUDIT_v1.md Findings 3, 13, 15.
     if rel_dir == "data/frame_library":
         if name == "promotions":
             return True
@@ -123,14 +125,15 @@ def _should_skip(rel_dir: str, name: str) -> bool:
 
     # data/worked_examples/: scaffolding (template + internal review)
     # follows the build_corpus_site.py convention: leading-underscore
-    # files are not rendered as entries.
+    # files are not rendered as entries. See LEAKAGE_AUDIT_v1.md
+    # Findings 2 and 7.
     if rel_dir == "data/worked_examples":
         if name.startswith("_") and name.endswith(".md"):
             return True
 
     # validation/decision_readiness/: operator CLI scripts. Only the
     # data subdirectories (results/, corpus/) are runtime resources for
-    # the MCP server.
+    # the MCP server. See LEAKAGE_AUDIT_v1.md Finding 16.
     if rel_dir == "validation/decision_readiness":
         if name.endswith(".py"):
             return True
@@ -139,7 +142,8 @@ def _should_skip(rel_dir: str, name: str) -> bool:
     # cross_check.{json,md} files. Their `aggregate_source` /
     # "Aggregate file:" fields contain the producer's absolute path
     # (operator dev machine) and the files are not consumed by
-    # mcp_server.py. aggregate.{json,md} remain.
+    # mcp_server.py. aggregate.{json,md} remain. See
+    # LEAKAGE_AUDIT_v1.md Finding 1.
     parts = rel_dir.split("/")
     if (
         len(parts) == 4
@@ -175,8 +179,8 @@ def _stage_package_data() -> None:
     inspects the package tree. Idempotent: existing destinations are
     replaced. Missing sources are skipped (e.g., pipeline_version.txt
     may not exist locally if it has not been baked yet). Per-directory
-    exclusions enforce the maintainer-internal item taxonomy; see
-    _should_skip.
+    exclusions enforce RELEASE_PREP_v1.md Section 3 + the LEAKAGE_AUDIT
+    findings; see _should_skip.
     """
     repo_root = os.path.dirname(os.path.abspath(__file__))
     pkg_root = os.path.join(repo_root, "framecheck_mcp")

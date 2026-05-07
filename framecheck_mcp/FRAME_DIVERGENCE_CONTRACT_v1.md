@@ -2,12 +2,12 @@
 
 The interface contract for the `divergence` block inside `frame_check` output. Binds interface, not implementation. Specifies the block shape, inputs that activate it, faithfulness guarantees specific to absence claims, provenance requirements, the MCP-vs-web capability regime, MCP resource URIs, error envelope, and versioning commitments.
 
-**Status:** v1 contract `c1.0` is canonical and shipping (PyPI `frame-check-mcp` `0.8.0` / `0.8.1` / `0.8.2`). The v1 c1.0 contract carries forward unchanged for backward compatibility under the broader v2 layered-architecture spec (`FRAME_DIVERGENCE_v2.md`, 2026-04-25). The originally-planned v1 Parts 3-4 were superseded by v2; this contract document remains the canonical Part 2 reference and the citation target for any caller binding to the existing `divergence` block. Reflects operator-approved Rec II enhance-existing (no separate tool) and Rec I capability regime per `the operator-approved engine-tier recommendations`.
+**Status:** v1 contract `c1.0` is canonical and shipping (PyPI `frame-check-mcp` `0.8.0` / `0.8.1` / `0.8.2`). The v1 c1.0 contract carries forward unchanged for backward compatibility under the broader v2 layered-architecture spec (`FRAME_DIVERGENCE_v2.md`, 2026-04-25). The originally-planned v1 Parts 3-4 were superseded by v2; this contract document remains the canonical Part 2 reference and the citation target for any caller binding to the existing `divergence` block. Reflects operator-approved Rec II enhance-existing (no separate tool) and Rec I capability regime per `ENGINE_TIER_RECOMMENDATIONS_v1.md`.
 **Author:** Lovro Lucic
 **Date:** 2026-04-23 (last revised 2026-04-23 evening for Rec II/I alignment and V4.2-alpha status disclosure)
 **Depends on:** FRAME_DIVERGENCE_v1.md (Part 1). Every claim here honors Part 1 §5 non-negotiables. If a claim here conflicts with Part 1, Part 1 wins and this document is updated.
 **Citation format:** Lucic, L. (2026). *Frame Divergence v1, Part 2: Contract.* Frame Check. MCP resource URI: `frame-check://spec/frame-divergence/v1/part-2`; HTTP URL pending production resumption.
-**Companion docs:** maintainer-side engine-tier strategy, MCP package design, model-panel pinning, V4.2 decision-options data, and V4.2-alpha gap audit.
+**Companion docs:** ENGINE_TIER_RECOMMENDATIONS_v1.md (Rec I-VI operator-approved 2026-04-23 afternoon), ENGINE_TIER_STRATEGY_v1.md (three-tier options analysis), MCP_PACKAGE_DESIGN_v1.md §7 (0.7.1/0.8.0/1.0.0 release arc), fvs_eval/v4/MODEL_PANEL.md (panel pinning), fvs_eval/v4/V4_2_DECISION_OPTIONS.md (cost-performance data), V4_2_GAP_INVENTORY_v1.md (V4.2-alpha gap audit).
 
 ---
 
@@ -115,7 +115,7 @@ Required:
 - `v4_2_execution`: object describing where and how the V4.2 judge step ran.
   - On web: `{"location": "server_side", "tier": "single_validator_v4_2_latest", "architecture": "single_family_single_judge", "vendor": "xai/grok-4-1-fast-non-reasoning", "model_version": "<served>", "fallback_triggered": <bool>, "fallback_reason": <str|null>}`.
   - On MCP: `{"location": "caller_side", "tier": "caller_model", "note": "V4.2 judge step delegated to caller's agent model per Rec I. Frame Check's MCP server does not invoke an external LLM. See agent_guidance.how_to_render_divergence for composition instructions."}`.
-- `v4_2_engine_status`: enum `alpha` | `beta` | `production_candidate` | `production` per the V4.2 engine status note (maintainer-side). Current value: `beta` (reached 2026-04-23 late-evening after Tier 1A/1B/1C/1D all shipped). Carries a pointer to the gap inventory so consumers see the full status disclosure.
+- `v4_2_engine_status`: enum `alpha` | `beta` | `production_candidate` | `production` per V4_2_GAP_INVENTORY_v1.md §5. Current value: `beta` (reached 2026-04-23 late-evening after Tier 1A/1B/1C/1D all shipped). Carries a pointer to the gap inventory so consumers see the full status disclosure.
 - `domain_inferred`: actual domain used for filtering. May differ from `domain_hint` if hint was incompatible with document features; discrepancy flagged.
 - `provisional_count`: number of absent-frame records flagged provisional. Lets consumers surface a caveat without parsing every record.
 - `faithfulness_note`: canonical disclosure string, non-prescriptive. For v1 c1.0: `"Absent frames are named from the FVS catalog as not detected in the supplied document. Domain relevance is the tool's best judgment. Whether any absent frame is useful is the thinker's call. This is not a list of frames that should have been used."`
@@ -153,7 +153,7 @@ After library_v3 ratification (commit `9abeb3d`, 2026-04-23): FVS-012/016/018 re
 
 ### 5.4 Calibration honesty
 
-Per Part 1 §5.1.3, no inverted-precision field ships. V4.1's `confidence_level` was removed entirely (Path C, commit `928a447`). V4.2's per-entry reliability carries two distinct constructs per the V4.2 Tier 1A construct-honesty fix fix: `library_v3_consensus_ac1` (library-entry-level, from FRAME_RELIABILITY_V3) and `detector_intra_rater_ac1` (V4.2 single-family Grok 4.1 fast, populated from the Tier 1D measurement artifact per commit `8353187`, mean 0.941 across 19 emitted frames). The `reliability_signal` field on absent-frame records is scoped narrowly to web responses where valid calibration exists; omitted by default.
+Per Part 1 §5.1.3, no inverted-precision field ships. V4.1's `confidence_level` was removed entirely (Path C, commit `928a447`). V4.2's per-entry reliability carries two distinct constructs per V4_2_GAP_INVENTORY_v1.md Tier 1A fix: `library_v3_consensus_ac1` (library-entry-level, from FRAME_RELIABILITY_V3) and `detector_intra_rater_ac1` (V4.2 single-family Grok 4.1 fast, populated from the Tier 1D measurement artifact per commit `8353187`, mean 0.941 across 19 emitted frames). The `reliability_signal` field on absent-frame records is scoped narrowly to web responses where valid calibration exists; omitted by default.
 
 ### 5.5 No fabrication beyond catalog
 
@@ -167,7 +167,7 @@ Every `divergence` block response carries provenance sufficient for the consumer
 
 Per `envelope.v4_2_execution` in §4.3. Key invariant: the envelope always reports where the V4.2 judge ran (server-side on web; caller-side on MCP). This is the load-bearing disclosure that distinguishes the two surfaces.
 
-On web, the envelope carries model version (e.g., `xai/grok-4-1-fast-non-reasoning-2026-03`), architecture tier, and fallback state. V4.2 server-side status tracks the V4.2 engine status note (maintainer-side) labels (`beta` currently, reached 2026-04-23 late-evening after all four Tier 1 items shipped; upgrades to `production_candidate` after Tier 2, `production` after Tiers 3-4).
+On web, the envelope carries model version (e.g., `xai/grok-4-1-fast-non-reasoning-2026-03`), architecture tier, and fallback state. V4.2 server-side status tracks `V4_2_GAP_INVENTORY_v1.md` §5 labels (`beta` currently, reached 2026-04-23 late-evening after all four Tier 1 items shipped; upgrades to `production_candidate` after Tier 2, `production` after Tiers 3-4).
 
 On MCP, the envelope explicitly notes the caller-side execution model. Caller's agent is responsible for naming its own model in its downstream report; Frame Check cannot observe caller's model choice and does not claim to. Vendor-independence per Part 1 §5.2.1 is automatically preserved on MCP because the caller chooses the model.
 
@@ -181,7 +181,7 @@ In `envelope.spec_version` (`FRAME_DIVERGENCE_v1_c1.0` for this contract).
 
 ### 6.4 V4.2 engine status
 
-In `envelope.v4_2_engine_status`. Current value: `beta` (reached 2026-04-23 late-evening after Tier 1A/1B/1C/1D all shipped). Consumers see the engine's production-readiness state at invocation time. Points at the V4.2 gap inventory (maintainer-side) for the full gap audit (28 gaps across seven layers as of 2026-04-23 late-evening).
+In `envelope.v4_2_engine_status`. Current value: `beta` (reached 2026-04-23 late-evening after Tier 1A/1B/1C/1D all shipped). Consumers see the engine's production-readiness state at invocation time. Points at V4_2_GAP_INVENTORY_v1.md for the full gap audit (28 gaps across seven layers as of 2026-04-23 late-evening).
 
 ### 6.5 Invocation context
 
@@ -217,7 +217,7 @@ Both surfaces honor the contract specified in §§3-6 of this document. The `div
 
 ### 7.4 Strategic value
 
-The capability-per-channel split is the resolution to the "how to publish V4 without being a cost bottleneck" question that motivated the operator's engine-tier strategy review. Three properties compound:
+The capability-per-channel split is the resolution to the "how to publish V4 without being a cost bottleneck" question that motivated ENGINE_TIER_STRATEGY_v1. Three properties compound:
 
 1. **Cost bottleneck dissolves.** MCP delegates LLM work to caller (zero FC cost); web runs V4.2 behind rate limits within budget. Neither surface exposes Frame Check to scaling risk.
 2. **Vendor independence is automatic on MCP.** Caller chooses their model; Frame Check makes no vendor commitment on MCP. Web commits to Grok-4.1 Fast as current single-validator with MODEL_PANEL re-validation trigger protocol as the drift-management mechanism.
@@ -248,7 +248,7 @@ Notation: resources listed below that already exist in mcp_server.py are marked 
 
 ### 8.4 Provenance resources (new)
 
-- `frame-check://provenance/engine/{version}` -> engine version manifest (tier, architecture, vendor(s), model version(s), engine status label, validation records).
+- `frame-check://provenance/engine/{version}` -> engine version manifest (tier, architecture, vendor(s), model version(s), V4_2_GAP_INVENTORY status label, validation records).
 - `frame-check://provenance/catalog/{version}` -> catalog version manifest (library version, per-entry version map, ratification references).
 
 ### 8.5 Necessary steps to operationalize the new paths
@@ -325,7 +325,7 @@ First dependent adopter status is recorded in a separate adoption-log document w
 
 ### 10.7 MCP package release arc
 
-Per Rec III, this contract lands on PyPI in MCP package release 0.8.0 (divergence-capable, additive to v1 frame_check shape). 0.7.1 ships before contract lands (name reservation, V1-only). 1.0.0 ships after adopting the MCP contract v2 proposal's construct-carrying shape for `frame_check` output (API freeze). Spec resource handlers in mcp_server.py (§8.1) landed additively on the 0.7.1 track (no version bump); 0.8.0 adds the `divergence` block itself.
+Per Rec III, this contract lands on PyPI in MCP package release 0.8.0 (divergence-capable, additive to v1 frame_check shape). 0.7.1 ships before contract lands (name reservation, V1-only). 1.0.0 ships after adopting MCP_CONTRACT_V2_PROPOSAL's construct-carrying shape for `frame_check` output (API freeze). Spec resource handlers in mcp_server.py (§8.1) landed additively on the 0.7.1 track (no version bump); 0.8.0 adds the `divergence` block itself.
 
 ## 11. What Part 2 does not specify
 
@@ -364,17 +364,17 @@ This extension pattern is the load-bearing architectural commitment that makes `
 ## 13. References
 
 - Part 1 of this spec: FRAME_DIVERGENCE_v1.md (category definition and non-negotiables).
-- Six operator-approved recommendations cover the V4.2 capability regime, enhance-existing decision, staged release plan, publication ordering, production resume, and V4.2 architecture (maintainer-side reference).
-- Three-tier options analysis (maintainer-side reference).
-- Model panel pinning and re-validation policy: the model-panel spec (maintainer-side).
-- V4.2 Options A/B/C cost-performance data: the V4.2 decision-options analysis (maintainer-side).
+- Six operator-approved recommendations: ENGINE_TIER_RECOMMENDATIONS_v1.md (Rec I capability regime, Rec II enhance-existing, Rec III staged release, Rec IV publication ordering, Rec V production resume, Rec VI V4.2 architecture).
+- Three-tier options analysis: ENGINE_TIER_STRATEGY_v1.md.
+- Model panel pinning and re-validation policy: fvs_eval/v4/MODEL_PANEL.md.
+- V4.2 Options A/B/C cost-performance data: fvs_eval/v4/V4_2_DECISION_OPTIONS.md.
 - V4.2 engine: fvs_eval/v4/v4_2_engine.py.
 - V4.2 ship plan: fvs_eval/v4/V4_2_SHIP_PLAN.md.
-- V4.2 gap audit: the V4.2 gap inventory (maintainer-side; Tier 1A construct-honesty fix shipped 2026-04-23).
+- V4.2 gap audit: V4_2_GAP_INVENTORY_v1.md (27-gap inventory, Tier 1A construct-honesty fix shipped 2026-04-23).
 - MCP server implementation: MCP_SERVER.md.
-- MCP contract v2 proposal (shapes 1.0.0 release): the MCP contract v2 proposal (maintainer-side).
-- MCP package design (release arc): the maintainer-side MCP package design §7.
+- MCP contract v2 proposal (shapes 1.0.0 release): [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md).
+- MCP package design (release arc): [MCP_PACKAGE_DESIGN_v1.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_PACKAGE_DESIGN_v1.md) §7.
 - FVS library: `data/frame_library/` entries FVS-001 through FVS-020 (library_v3 current per commit `9abeb3d`; FVS-012/016/018 revised, FVS-010 kept, FVS-020 retired from detection).
 - Methodology: `METHODOLOGY.md` (bundled).
 - Audit infrastructure: VALIDATION_PROGRAM.md.
-- Confidence-field resolution (Path C, `confidence_level` removed): commit `928a447`; historical context in the V4 confidence-inversion impact analysis (maintainer-side).md (maintainer-side reference).
+- Confidence-field resolution (Path C, `confidence_level` removed): commit `928a447`; historical context in [V4_CONFIDENCE_INVERSION_IMPACT_v1.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/V4_CONFIDENCE_INVERSION_IMPACT_v1.md).

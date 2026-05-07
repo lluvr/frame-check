@@ -161,7 +161,7 @@ so the caller's agent runs V4.2 judgment with its own LLM if the
 caller chooses. Zero Frame Check LLM cost per MCP call; vendor
 independence by construction (the caller picks the model).
 
-**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in the MCP contract v2 proposal (maintainer-side). Breaking change from v1; the canonical first stable release that papers cite.
+**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
 
 **Collapsed release.** An earlier plan for a `0.7.1` V1-only
 name-reservation release on PyPI was retired 2026-04-23 in favor of
@@ -221,8 +221,7 @@ what differs, not which is better.
 ## Web JSON parity (programmatic alternative)
 
 Both tools have HTTP/JSON equivalents on the hosted web service at
-`frame.clarethium.com` (currently paused; see "Release arc" above for
-the publish-hold pattern). A programmatic consumer that has chosen
+`frame.clarethium.com`. A programmatic consumer that has chosen
 HTTP over MCP can reach the same deterministic substrate via:
 
 - `frame_check`  ↔  `POST /api/profile` (returns analysis-only JSON
@@ -467,7 +466,7 @@ quick triage.
             "note": "V4.2 judge step delegated to caller's agent model per Rec I. Frame Check's MCP server does not invoke an external LLM."
         },
         "v4_2_engine_status": "beta",
-        "v4_2_engine_status_reference": "ANTICIPATED_CRITIQUES.md and METHODOLOGY.md document engine tier status and Tier 2-4 known gaps.",
+        "v4_2_engine_status_reference": "V4_2_GAP_INVENTORY_v1.md §5 for full status disclosure and remaining Tier 2-4 gaps.",
         "domain_inferred": "unfiltered",
         "provisional_count": 0,
         "tier_counts": {"high": 4, "medium": 5, "low": 8},
@@ -891,9 +890,9 @@ carries a `library_url` field pointing at the entry's markdown source
 on the public GitHub repository
 (`https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-XXX_slug.md`).
 The URL is always resolvable for end-users in MCP clients regardless
-of the hosted-production status; the previous form pointed at
-`frame.clarethium.com/corpus/library/...` which is paused while
-production is paused.
+of the hosted-production status. The earlier form pointed at
+`frame.clarethium.com/corpus/library/...`; the GitHub URL is preferred
+because it survives any future hosting transition without rewrites.
 
 The field appears on every site that names an FVS entry:
 
@@ -1333,7 +1332,7 @@ The v2 contract carries the construct through structure AND through serializatio
 
 Epistemic / claims / voice / temporal Phase A+B fields are additive; no migration window needed.
 
-See the MCP contract v2 proposal (maintainer-side) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
+See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
 
 ## Determinism
 
@@ -1347,24 +1346,25 @@ invoked; `provenance.analysis_cost_usd` is always `0.0`.
 The provenance block carries `tool_url`, `methodology_paper`,
 `frame_library`, and `calibration_corpus` URLs that point at the
 canonical production site `frame.clarethium.com`. Production
-hosting was paused on 2026-04-23 with resume as the default
-trajectory; until resume, those URLs may not resolve. Two provenance
-fields disclose this state inline so an agent can distinguish "URL
-canonicalized but currently paused" from "URL malformed or wrong"
-without out-of-band knowledge:
+hosting is active. Two provenance fields surface the state inline
+so an agent can distinguish "URL canonicalized and live" from "URL
+malformed or wrong" without out-of-band knowledge, and so a future
+maintenance pause is communicable without protocol changes:
 
-- `provenance.production_status`: `"paused"` or `"active"`. Single
-  source of truth; the constants in `mcp_server.py` flip together
-  on resume.
+- `provenance.production_status`: `"active"` or `"paused"`. Single
+  source of truth; the constants in `mcp_compose.py` flip together
+  on a hosting transition.
 - `provenance.production_status_note`: human-readable explanation
-  naming the pause date, the resume default, and the active
-  artifacts (GitHub repository, PyPI package).
+  describing the current hosting state and naming the always-resolvable
+  mirrors (GitHub repository, PyPI package) that remain stable across
+  any transition.
 
-Active artifacts during the paused window: the public GitHub
-repository at `https://github.com/Clarethium/frame-check-mcp` and the PyPI
-package `frame-check-mcp`. Citations should resolve against the
-versioned PyPI release (`server_version` field) or the canonical
-production URL (which becomes the load-bearing reference on resume).
+Always-resolvable mirrors: the public GitHub repository at
+`https://github.com/Clarethium/frame-check-mcp` and the PyPI
+package `frame-check-mcp`. Citations resolve against the versioned
+PyPI release (`server_version` field), the brand version
+(`frame_check_version` field, decoupled from the wheel), or the
+canonical production URL.
 
 ## Citation
 
