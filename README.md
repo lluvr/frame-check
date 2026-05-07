@@ -115,10 +115,9 @@ examples). The full inventory:
 - `docs/FRAME_DIVERGENCE_v1.md` (Part 1: definition) + `docs/FRAME_DIVERGENCE_CONTRACT_v1.md` (Part 2: interface contract, c1.0 shipping) + `docs/FRAME_DIVERGENCE_v2.md` (broader architecture, supersedes v1 Parts 3-4)
 - `docs/ANTICIPATED_CRITIQUES.md`: self-enumerated adversarial readings
 - `docs/VALIDATION_PROGRAM.md`: observational + formal validation plans
-- `docs/V4_2_GAP_INVENTORY_v1.md`: self-disclosed engine gap inventory + remediation plan
 - `docs/RATERS.md`: rater protocol for the validation program
-- `docs/internal/MCP_CLIENT_CONFORMANCE_v1.md`: 32/32 conformance round-trips against the installed wheel
-- `docs/internal/`: maintainer-internal supporting documents (audit deliverables, methodology paper outlines, archived design proposals) shipped publicly under evidence discipline
+
+Maintainer-side audit deliverables (engine gap inventories, leakage audits, conformance verdicts, methodology paper outlines, design proposals) are maintained privately and surfaced at release-note level when load-bearing for an adopter. The public-canon discipline keeps the discoverable surface tight; private artifacts are not advertised by name on the public surface.
 
 ## Running tests
 

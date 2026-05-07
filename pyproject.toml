@@ -105,7 +105,6 @@ framecheck_mcp = [
     "MCP_SERVER.md",
     "FRAME_DIVERGENCE_v1.md",
     "FRAME_DIVERGENCE_CONTRACT_v1.md",
-    "V4_2_GAP_INVENTORY_v1.md",
     "calibration/results/**/*",
     "validation/decision_readiness/results/**/*",
     "validation/decision_readiness/corpus/**/*",
