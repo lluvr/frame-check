@@ -227,12 +227,11 @@ def _build_provenance(
         # from the site.
         "clarethium_measure_version": CLARETHIUM_VERSION,
         "frame_library_version": _resources_mod._FRAME_LIBRARY_VERSION,
-        # Engine identity (Phase 5 item 8-MCP per V4_2_GAP_INVENTORY_v1.md
-        # gap #22). MCP surface runs only the deterministic Layer A stack
-        # server-side (regex detectors + clarethium_measure verification).
-        # The V4.2 LLM-judge step is delegated to the caller's agent per
-        # FRAME_DIVERGENCE_CONTRACT_v1 §7 "caller_side V4.2" regime; see
-        # docs/internal/ENGINE_TIER_RECOMMENDATIONS_v1.md Rec I.
+        # Engine identity. The MCP surface runs only the
+        # deterministic Layer A stack server-side (regex detectors +
+        # clarethium_measure verification). The V4.2 LLM-judge step
+        # is delegated to the caller's agent per
+        # FRAME_DIVERGENCE_CONTRACT_v1 §7 "caller_side V4.2" regime.
         # Saved-analysis readers branch on framing_engine == "layer_a"
         # for the MCP-produced server-side block, same as the web
         # surface uses for its Layer A fallback path. engine_version is
@@ -1625,8 +1624,8 @@ def _build_divergence_block(
         },
         "v4_2_engine_status": engine_status,
         "v4_2_engine_status_reference": (
-            "V4_2_GAP_INVENTORY_v1.md §5 for full status "
-            "disclosure and remaining Tier 2-4 gaps."
+            "ANTICIPATED_CRITIQUES.md and METHODOLOGY.md document "
+            "engine tier status and Tier 2-4 known gaps."
         ),
         "domain_inferred": domain_inferred,
         "provisional_count": provisional_count,
@@ -2693,11 +2692,8 @@ def build_epistemic_payload(
                 # (directional sub-categorization of FVS-014 only).
                 # The legacy suffix in `name` is preserved for
                 # backward compat with operator-facing UI rendering
-                # at V4_2_GAP_INVENTORY_v1.md and with hand-authored
-                # test fixtures; the enum is the load-bearing wire
-                # field for new agent consumers. See
-                # SCHEMA_SPLIT_PROPOSAL_v1.md for the full
-                # convention enumeration and the rationale.
+                # and with hand-authored test fixtures; the enum is
+                # the load-bearing wire field for new agent consumers.
                 "pattern_kind": f.get(
                     "pattern_kind", "present_detected"
                 ),
@@ -3277,7 +3273,7 @@ def build_epistemic_payload(
             domain_hint=domain_hint,
             rendering=divergence_rendering,
             catalog_version_pin=catalog_version_pin,
-            engine_status="beta",  # per V4_2_GAP_INVENTORY §5 after Tier 1 complete
+            engine_status="beta",  # post Tier-1 stabilization
             cov_missing=cov_missing_for_signal,
             user_context_present=bool(user_context),
             document_genre=document_genre,

@@ -1,5 +1,5 @@
-"""Phase 5 tests for mcp_server.py security hardening (items 7-MCP,
-8-MCP per V4_2_GAP_INVENTORY_v1.md).
+"""Phase 5 tests for mcp_server.py security hardening
+(provenance engine identity, attacker-hardened error responses).
 
 Two concerns:
 

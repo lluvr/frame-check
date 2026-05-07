@@ -761,8 +761,8 @@ def test_F6_log_message_escapes_control_chars_for_operator_safety():
     their terminal hijacked. CR/LF/TAB are preserved because they
     are legitimate in multi-line log messages.
 
-    Closes the deferred residual flagged in REMEDIATION_LOG_v1.md
-    section K and MCP_CLIENT_CONFORMANCE_v1.md."""
+    Closes a deferred terminal-escape residual from the pre-publish
+    audit campaign."""
     hostile = "URI=\x1b[31mEVIL\x07\x00alert"
     sanitized = mcp_server._sanitize_log_message(hostile)
     # Escape sequences must be replaced with \xNN form.
