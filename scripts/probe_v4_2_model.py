@@ -1,7 +1,7 @@
 """V4.2 model probe CLI: detect silent vendor-side model drift.
 
-Problem addressed (Phase 2 item 14 per V4_2_GAP_INVENTORY_v1.md):
-the V4.2 engine's reliability metadata (LIBRARY_RELIABILITY
+Problem addressed: the V4.2 engine's reliability metadata
+(LIBRARY_RELIABILITY
 cross-family AC1 and grok_intra_rater_ac1.json intra-rater AC1) was
 measured on a specific snapshot of grok-4-1-fast-non-reasoning. If
 xAI updates the model weights behind that label without changing the
@@ -14,7 +14,7 @@ Design choices (from stress-testing the original hash-probe-at-startup
 proposal):
 
 1. Verdict-pattern comparison, not hash comparison. Temp=0 has ~0.10
-   sampling variance on V4.2 per V4_2_GAP_INVENTORY_v1.md gap #11;
+   sampling variance on V4.2 (measured on the calibration set);
    strict hash match would fire false positives on normal noise.
 
 2. Scheduled via cron / GitHub Actions / Fly cron, not serving-path.
@@ -157,7 +157,7 @@ def cmd_baseline(args: argparse.Namespace) -> int:
             "per_doc_flip_threshold": PER_DOC_FLIP_THRESHOLD,
             "aggregate_flip_threshold": AGGREGATE_FLIP_THRESHOLD,
             "threshold_rationale": (
-                "Per V4_2_GAP_INVENTORY_v1.md gap #11, temp=0 single-family "
+                "Measured on the calibration set: temp=0 single-family "
                 "sampling variance is ~2 of 19 frames per doc. Per-doc "
                 "threshold is STRICTLY GREATER THAN 2; aggregate threshold "
                 "is STRICTLY GREATER THAN 2 * n_docs."

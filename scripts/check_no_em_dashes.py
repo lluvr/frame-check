@@ -43,16 +43,6 @@ _ALLOWLIST = [
     # characters it scans for. Whitelist all em/en-dash occurrences in
     # its own source.
     ("scripts/check_no_em_dashes.py", ""),
-    # Pre-discipline historical audit deliverables. The audits were
-    # written before the em-dash writing rule was adopted; they are
-    # frozen historical records of what the operator said at audit
-    # time. Editing the body would falsify the record. The em-dashes
-    # ship in the public mirror under docs/internal/ where adopters
-    # can read the audit posture as written. Future audit reports use
-    # the post-discipline writing rules.
-    ("docs/internal/LEAKAGE_AUDIT_v1.md", ""),
-    ("docs/internal/REMEDIATION_LOG_v1.md", ""),
-    ("docs/internal/LEAKAGE_AUDIT_v1_appendix_a_2026_04_29.md", ""),
 ]
 
 _EM_DASH = "—"

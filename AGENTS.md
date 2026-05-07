@@ -121,7 +121,10 @@ rather than the document name or content category.
 ## Pointers for further reading
 
 - `README.md`: what Frame Check is and how to use it.
-- `docs/METHODOLOGY.md`: v0.2 methodology paper (canonical).
+- `METHODOLOGY.md` (at repo root): v0.2 methodology paper
+  (canonical). Lives at root rather than under `docs/` because
+  the published wheel's `Methodology` Project-URL pins the root
+  path; moving it would 404 the link.
 - `docs/FRAME_DIVERGENCE_v1.md` + `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`:
   the c1.0 interface contract; load-bearing for callers.
 - `CONTRIBUTING.md`: PR flow, sign-off, style.

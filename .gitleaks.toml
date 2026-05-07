@@ -97,17 +97,26 @@ regex = '''.+'''
 path = '''(?i)(^docs/internal/|^|/)([A-Z_]*INVENTORY|[A-Z_]*AUDIT|[A-Z_]*VERDICT|[A-Z_]*REMEDIATION_LOG|[A-Z_]*OUTREACH|[A-Z_]*PROMOTION|ENGINE_TIER_[A-Z_]+|METHODOLOGY_PAPER_[A-Z0-9_]+|METHODOLOGY_V[0-9]+_CANDIDATES_[A-Z0-9_]*|TRACK_[A-Z]_INFORMAL_STUDY_[A-Z0-9_]*|EXTRACT_POLICY|PUBLICATION_STATE_v[0-9]+|RELEASE_PREP_v[0-9]+|verify_publication_state)(_v[0-9]+)?\.(md|sh|py)$'''
 
 # Operator workspace paths. Never commit absolute paths into the
-# operator's home directory or vault, regardless of file type.
+# operator's home directory, regardless of file type. The pattern
+# is broad on purpose: any /home/<user>/<subdir> shape is suspicious
+# in committed content. Legitimate cases (path examples in docs,
+# fictional fixtures, the leak detector itself) are in the allowlist.
 [[rules]]
 id = "operator-home-path"
-description = "Absolute path into the operator's home directory"
-regex = '''(?i)/home/[a-z0-9._-]+/(frame-check|cma|secrets-vault|clarethium-vault|\.claude|kynerium|sparr-app|vaurith)\b'''
+description = "Absolute path into a user's home directory"
+regex = '''(?i)/home/[a-z][a-z0-9._-]*/[a-z.][a-z0-9._-]*'''
 [rules.allowlist]
 # Allow the wheel-content scanner in scripts/_release_lib/lift.py to
-# encode the leak-detection pattern itself ("if /home/<user> in
-# content: fail"). Allow adversarial test fixtures that intentionally
-# imitate leaked paths using the fictional /home/example-user/.
-regexes = ['''/home/example-user''', '''/home/<user>''', '''/home/llucic" in content''']
+# encode the leak-detection pattern itself. Allow adversarial test
+# fixtures that intentionally imitate leaked paths using the
+# fictional /home/example-user/ namespace. Allow generic
+# placeholders used in documentation (/home/<user>, /home/USER).
+regexes = [
+  '''/home/example-user''',
+  '''/home/<user>''',
+  '''/home/USER''',
+  '''/home/\$USER''',
+]
 
 # References to the operator's secrets vault by component name.
 # "secrets-vault" or "clarethium-vault" anywhere in committed text

@@ -68,12 +68,8 @@ CLASS_A_FILES = [
     # Root-level docs
     "FRAME_DIVERGENCE_v2.md",
     "METHODOLOGY.md",
-    "REVIEWERS.md",
     "GOVERNANCE.md",
     "CONTRIBUTING.md",
-    "ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md",
-    "SESSION_STATE.md",
-    "FVS_001_OUTREACH_EMAIL_SHORT_v1.md",
     # fvs_eval/ tracked artifacts (study reports, design notes,
     # measurement scripts, raw-data JSON the catalog points to)
     "fvs_eval/v4/RELIABILITY_STUDY.md",

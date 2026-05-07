@@ -1,4 +1,4 @@
-"""Conformance driver for D3.
+"""MCP client conformance driver.
 
 Drives the installed `frame-check-mcp` wheel as an MCP client would
 (subprocess + stdio + JSON-RPC line-delimited frames) and reports
@@ -7,8 +7,7 @@ every primitive's pass/fail status with one-line summaries.
 Run from any cwd; the wheel is loaded from /tmp/fc-target via
 PYTHONPATH and the entry script is /tmp/fc-target/mcp_server.py.
 
-Output: structured report to stdout. Captured into
-MCP_CLIENT_CONFORMANCE_v1.md as the D3 deliverable evidence.
+Output: structured report to stdout.
 """
 from __future__ import annotations
 
