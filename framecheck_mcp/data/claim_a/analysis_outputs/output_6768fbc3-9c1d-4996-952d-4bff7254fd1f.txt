@@ -1,0 +1,58 @@
+### 1. Stakeholders Identified
+The key stakeholders in this decision are:
+- **ContentCo's Leadership and Employees**: Includes the COO and broader team responsible for product development, sales, and operations.
+- **ContentCo's Customers (Creators)**: Primarily independent creators with 10K-1M followers who rely on ContentCo's platform for content management.
+- **ContentCo's Shareholders/Investors**: Owners or funders of the $25M ARR business, focused on growth and valuation.
+- **DominantPlatform**: The dominant player controlling 60% of the distribution channel via its app store.
+- **Alternative Platforms**: The two top competitors to DominantPlatform, which offer smaller but growing distribution channels.
+- **ContentCo's Existing Non-DominantPlatform Customers**: The 55% of users acquired directly or via small alternatives, who value multi-platform flexibility.
+
+### 2. Interests of Each Stakeholder
+#### ContentCo's Leadership and Employees
+- **Deep Integration**: Gain short-term revenue boost from promoted placement and data access, potentially accelerating customer acquisition by 20-30% in the first 18 months (based on 45% current sourcing). However, lose strategic autonomy due to UI approvals and 24-month commitment, risking team morale from reduced innovation freedom and long-term dependency (industry data shows 70% of similar partners become locked in within 36 months).
+- **Shallow Integration**: Maintains multi-platform optionality, allowing parallel development on alternatives without exclusivity penalties. Preserves employee agency in product decisions but forgoes immediate visibility, potentially slowing growth to 10-15% in DominantPlatform-sourced customers.
+- **Refuse Integration**: Bears upfront costs of diversification (e.g., 50% drop in DominantPlatform customers within 12 months, equating to ~$5.6M ARR risk at current 45% split), but gains long-term resilience, enabling employees to focus on direct acquisition innovations without DominantPlatform oversight.
+
+#### ContentCo's Customers (Creators)
+- **Deep Integration**: Benefit from easier discovery via "Featured" placement, improving access for 10K-1M follower creators. However, face risks from exclusivity limiting ContentCo's features on alternatives, potentially reducing tool interoperability and forcing creators into DominantPlatform ecosystems, which could stifle their multi-platform strategies.
+- **Shallow Integration**: Retains flexibility for creators to use ContentCo across platforms without exclusivity lock-in, supporting their need for agnostic tools. No direct benefits like promoted access, so discovery remains organic, possibly delaying adoption for new users.
+- **Refuse Integration**: Experiences short-term acquisition friction (50% drop in DominantPlatform-sourced users), but long-term gains from a more independent ContentCo, fostering diverse ecosystem options and reducing creator dependency on DominantPlatform's 60% channel dominance.
+
+#### ContentCo's Shareholders/Investors
+- **Deep Integration**: Secure near-term ARR growth (e.g., offsetting the $4M revenue share cost with higher LTV from data-driven analytics), appealing for valuation multiples. But incur $4M direct cost over 24 months plus dependency risk, potentially devaluing the company if market power consolidation erodes competitive positioning (70% partner dependency rate).
+- **Shallow Integration**: Avoids $4M revenue share and exclusivity traps, preserving optionality for diversified growth. Trades off immediate upside, with potential 10-20% slower ARR expansion, but builds defensible moat against DominantPlatform's dominance.
+- **Refuse Integration**: Faces immediate ARR hit (~$5.6M from customer loss), pressuring short-term returns. Offers upside in long-term independence, potentially increasing valuation through reduced platform risk and access to emerging alternative channels.
+
+#### DominantPlatform
+- **Deep Integration**: Gains $4M in revenue share, exclusivity to block ContentCo from alternatives (consolidating its 60% market power), and control over UI changes to align with its ecosystem. Reinforces dependency, as seen in 70% of historical partners.
+- **Shallow Integration**: Limited to standard 10% share on existing volume, with no exclusivity or data leverage, allowing ContentCo to compete via alternatives and erode DominantPlatform's channel dominance.
+- **Refuse Integration**: Loses potential $4M share and integration control, facing customer acquisition challenges for its ecosystem as ContentCo diversifies, indirectly weakening its 60% grip.
+
+#### Alternative Platforms
+- **Deep Integration**: Harmed by 24-month exclusivity, blocking ContentCo's deep features and stunting their growth as distribution channels. Reduces competitive pressure on DominantPlatform but limits ecosystem diversity.
+- **Shallow Integration**: Benefits from ContentCo's ability to build parallel integrations, potentially increasing their user base by 10-20% through shared creator tools without exclusivity barriers.
+- **Refuse Integration**: Gains most from ContentCo's diversification push, accelerating alternative channel adoption and challenging DominantPlatform's 60% dominance over 12-24 months.
+
+#### ContentCo's Existing Non-DominantPlatform Customers
+- **Deep Integration**: Risks platform fragmentation, as exclusivity and UI controls may prioritize DominantPlatform users, reducing feature parity and forcing these 55% of customers to adapt to a less flexible ContentCo.
+- **Shallow Integration**: Maintains status quo flexibility, ensuring their direct/alternative-sourced workflows remain supported without DominantPlatform biases.
+- **Refuse Integration**: Benefits from strengthened direct acquisition focus, enhancing tailored support for non-DominantPlatform users and reducing overall ecosystem lock-in.
+
+### 3. Power Dynamics
+- **DominantPlatform holds primary agency**: As the 60% channel owner, it dictates terms (e.g., revenue share hikes, exclusivity, UI vetoes), acting upon ContentCo by leveraging distribution leverage. Historical patterns show it uses covenants to entrench power, with 70% of partners becoming dependent.
+- **ContentCo is largely acted upon**: With 45% of customers from DominantPlatform, it has limited bargaining power; refusing risks a 50% customer drop, while accepting cedes control (e.g., 24-month commitment). Shallow integration offers partial agency by preserving multi-platform builds, but deep integration amplifies passivity.
+- **Alternative Platforms have reactive power**: They lack immediate leverage but can gain from ContentCo's refusal or shallow path, indirectly challenging DominantPlatform through ecosystem diversification.
+- **Customers and Shareholders have indirect influence**: Creators can switch tools if exclusivity harms flexibility, pressuring ContentCo; investors exert agency via board decisions but are constrained by ARR growth needs.
+- Overall, the dynamics favor DominantPlatform's consolidation, with ContentCo's choice determining whether it reinforces or resists this imbalance.
+
+### 4. Whose Perspective Is Represented in the Current Framing, Whose Is Absent
+- **Represented: DominantPlatform's and ContentCo Leadership's Short-Term Growth Perspective**: The COO's "necessity" frame treats deep integration as default, fixating on capturing the "60 percent distribution" via minor negotiations. This echoes DominantPlatform's market power narrative, prioritizing immediate ARR (e.g., promoted placement) over costs like $4M share or dependency risks.
+- **Absent: Customers', Alternative Platforms', and Long-Term Shareholder Perspectives**: Creators' need for multi-platform optionality is ignored, as is the risk of ecosystem lock-in stifling their independence. Alternative platforms' role in diversification is sidelined, framing the decision as DominantPlatform-centric rather than ecosystem-wide. Shareholders' interest in sustainable valuation (vs. short-term capture) is excluded, overlooking the 70% dependency trap and $5.6M refusal cost as a diversification investment.
+
+### 5. What the Decision-Maker Should Consider Before Committing
+Before committing to deep integration (or any option), the decision-maker should:
+- **Quantify Long-Term Costs vs. Short-Term Gains**: Model scenarios beyond the $4M revenue share, including a 20-30% dependency risk premium (based on 70% industry rate), potential $5-7M ARR loss from exclusivity-blocked alternatives, and customer churn if UI controls degrade user experience for the 55% non-DominantPlatform base.
+- **Assess Diversification Feasibility**: Evaluate the 50% customer drop from refusal against direct acquisition ROI (e.g., CAC benchmarks for creators) and alternative platform growth trajectories, targeting a 20-30% shift to non-DominantPlatform sources within 24 months to mitigate risks.
+- **Incorporate Excluded Voices**: Solicit creator feedback on exclusivity impacts (e.g., via surveys) and consult alternative platforms on integration timelines. Engage investors for a valuation sensitivity analysis, weighing deep integration's 15-20% ARR boost against a 10-15% discount for platform dependency.
+- **Test Power Imbalances**: Negotiate beyond "minor terms" by proposing reduced exclusivity (e.g., 12 months) or revenue share caps tied to performance, while preparing a shallow integration prototype to demonstrate multi-platform viability.
+- **Align with Broader Strategy**: Reframe from "capturing 60%" to "building 100% optionality," stress-testing against antitrust trends (e.g., scrutiny of DominantPlatform's covenants) and ContentCo's core value as an independent tool for creators. Commit only after a 3-6 month pilot of shallow/refusal paths to validate assumptions.

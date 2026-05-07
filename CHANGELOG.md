@@ -10,13 +10,15 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 
 ## [0.8.8] - 2026-05-07
 
-### Critical fix: bundle missing top-level modules
+### Critical fix: bundle `manifest.py` in wheel
 
-- 0.8.6 and 0.8.7 shipped without `manifest.py`, `annotator.py`, and `security.py`. All three are imported by wheel-bundled modules (`mcp_compose.py` imports `manifest` for the analysis-manifest provenance receipt; `comparison.py` imports `annotator`; `frame_opportunities.py` imports `security`). Adopters running the `frame_check` or `frame_compare` MCP tools on those releases hit `ModuleNotFoundError: No module named 'manifest'` (and would hit `annotator` / `security` errors on the comparison and frame-opportunities code paths). Local pytest passed because pytest runs from the source-tree CWD where the missing modules are still on the import path; only the conformance driver, which imports against an installed wheel, caught it (29/32 round-trips on 0.8.7, three failures all `ModuleNotFoundError`).
+- 0.8.6 and 0.8.7 shipped without `manifest.py`. `mcp_compose.py` imports `manifest` unconditionally (added in commit `e6bacd1`, 2026-05-03, "Analysis manifest: provenance receipt on every Frame Check result"); the `frame_check` and `frame_compare` MCP tools both reach this import. Adopters running either tool on 0.8.6 or 0.8.7 hit `ModuleNotFoundError: No module named 'manifest'`. Local pytest passed because pytest runs from the source-tree CWD where `manifest.py` is on the import path; only the conformance driver, which imports against an installed wheel via fresh venv, caught it (29/32 round-trips on 0.8.7, three failures all `ModuleNotFoundError`).
 
-- Root cause: `mcp_compose.py` started importing `manifest` in commit `e6bacd1` (2026-05-03, "Analysis manifest: provenance receipt on every Frame Check result"), but `pyproject.toml [tool.setuptools] py-modules` was not updated to include `manifest`, `annotator`, or `security`. The wheel bundles only modules listed there. 0.8.6 and 0.8.7 inherited the silent omission. 0.8.8 adds all three to `py-modules`; conformance driver now passes 32/32 against the new wheel.
+- Root cause: `pyproject.toml [tool.setuptools] py-modules` was not updated when `mcp_compose.py` started importing `manifest`. The wheel bundles only modules listed there. The extract pipeline (`scripts/_release_lib/extract.py INCLUDE_FILES`) had the same omission. 0.8.8 adds `manifest` to both lists; conformance driver passes 32/32 against the new wheel.
 
-- Bundle verification: `frame_check_mcp-0.8.8-py3-none-any.whl` ships 28 top-level `.py` modules (was 25); `manifest.py`, `annotator.py`, and `security.py` are present in the wheel listing. `pip install frame-check-mcp==0.8.8` followed by `from mcp_server import build_epistemic_payload; build_epistemic_payload(...)` returns a valid payload (no ModuleNotFoundError).
+- `annotator.py` and `security.py` (web-app-side) are intentionally not bundled and not added to either list. The lazy imports of those modules inside `comparison.py` and `frame_opportunities.py` are wrapped in `try / except ImportError` and silently skip when the modules aren't present, matching the documented public/private boundary.
+
+- Bundle verification: `frame_check_mcp-0.8.8-py3-none-any.whl` ships 26 top-level `.py` modules (was 25); `manifest.py` is present in the wheel listing. `pip install frame-check-mcp==0.8.8` followed by `from mcp_server import build_epistemic_payload; build_epistemic_payload(...)` returns a valid payload.
 
 ### Process: pytest-against-source insufficient as a release gate
 

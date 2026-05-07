@@ -1,0 +1,75 @@
+### 1. Stakeholders Identified
+The key stakeholders in BuildSoft's work policy decision include the following named groups or roles, based on the company's structure, operations, and context:
+
+- **Existing Employees (120 in offices, 72 fully remote)**: Divided into office-based staff (60% of total, primarily in SF HQ and Austin hub) and fully remote staff (40%, spread across 18 US states and 3 countries).
+- **Senior Hires and Prospective Candidates**: Recent (last 12 months) and potential senior engineering talent, representing 65% who prefer remote, 25% hybrid, and 10% office.
+- **Engineering Teams**: Core productive units, often remote-heavy, comprising the engineering-focused majority of the 180-person workforce.
+- **Cross-Functional Teams**: Groups involving non-engineering roles (e.g., product, sales, operations) that rely on collaboration, affected by metrics like Slack response times and decision velocity.
+- **HR and Leadership (e.g., HR Director and executives)**: Decision-makers overseeing policy renewal, talent acquisition, and brand strategy.
+- **Office Landlords and Vendors**: Entities tied to the SF HQ ($2.4M/year lease) and Austin hub ($800K/year lease), with renewal implications.
+- **Competitors and Talent Market**: Indirect stakeholders including the 3 remote-only competitors and 2 hybrid ones, influencing BuildSoft's hiring funnel (70% of senior candidates filter for remote) and 40% offer loss rate.
+- **Relocated Employees**: Subset of existing office-based staff who moved cities specifically for the hybrid policy in 2022.
+
+### 2. Interests of Each Stakeholder
+Each stakeholder's gains and losses are analyzed across the three options: A (permanent remote-only), B (maintain hybrid with 2-day office expectation), and C (office-default with limited remote). Interests focus on concrete impacts like costs, productivity, lifestyle, and retention.
+
+- **Existing Employees (120 in offices, 72 fully remote)**:
+  - Option A: Fully remote staff gain flexibility and work-life balance (no commuting, sustained 12% higher engineering productivity); office-based staff lose in-person social ties and face disruption if they relocated for hybrid (e.g., potential resentment or relocation costs). Overall, 40% remote cohort benefits most, while 60% office cohort bears adaptation costs.
+  - Option B: Maintains status quo, benefiting relocated employees who expect hybrid (preserves lifestyle investments like city moves); remote staff gain minimal change but may resent unmonitored low attendance (current 1.4 days/week). Hybrid-preferring 25% of seniors thrive, but enforcement could increase stress for low-attenders.
+  - Option C: Office-based staff gain stronger collaboration (18% better metrics) and cultural alignment; remote and relocated staff lose heavily (forced commutes or relocations, clashing with 65% senior preference for remote, risking turnover).
+
+- **Senior Hires and Prospective Candidates**:
+  - Option A: 65% remote-preferring candidates gain access and retention (aligns with 70% hiring funnel filter, reducing 40% loss to remote competitors); 10% office-preferring lose appeal.
+  - Option B: Benefits 25% hybrid-preferring (moderate appeal in competitive market); remote-preferring may still filter out due to office expectation, sustaining 40% offer losses.
+  - Option C: 10% office-preferring gain, but 65% remote-preferring face barriers (worsens hiring funnel, amplifying losses to 3 remote-only competitors).
+
+- **Engineering Teams**:
+  - Option A: Gain sustained 12% higher productivity (story points) in remote-heavy setups; minimal collaboration losses if tooling improves.
+  - Option B: Mixed—current low attendance (1.4 days) supports productivity but risks hybrid enforcement reducing remote efficiency.
+  - Option C: Lose productivity edge (shift to office could drop story points by 12%, as remote-heavy teams underperform in velocity but excel in output).
+
+- **Cross-Functional Teams**:
+  - Option A: Bear 18% worse collaboration (slower Slack responses, decision velocity); costs include time lost to remote tooling gaps, potentially delaying projects.
+  - Option B: Current 18% deficit persists with low attendance, but 2-day expectation could marginally improve velocity without full remote shift.
+  - Option C: Gain 18% better metrics through in-person interactions, enhancing non-engineering integration with engineers.
+
+- **HR and Leadership**:
+  - Option A: Gain talent edge (competes with 3 remote rivals, cuts 40% offer losses) but lose $3.4M/year office costs (frees budget for hiring); risk brand dilution of "in-person engineering culture."
+  - Option B: Balances talent (appeals to 25% hybrid seniors) and costs (renews leases at $3.4M); maintains brand but faces enforcement challenges with 1.4-day attendance.
+  - Option C: Reinforces brand identity but incurs $3.4M costs and talent risks (70% candidate filter-out, higher churn among remote staff).
+
+- **Office Landlords and Vendors**:
+  - Option A: Lose revenue (no lease renewals, saving BuildSoft $3.4M/year); vendors face contract cancellations.
+  - Option B: Gain ongoing $3.4M (HQ renewal at $2.6M, Austin at $800K); stable vendor ties.
+  - Option C: Gain maximized (full utilization justifies $3.4M); potential for lease expansions.
+
+- **Competitors and Talent Market**:
+  - Option A: Lose competitive edge for BuildSoft (aligns with 3 remote-only peers, reducing 40% poaching); market shifts toward remote norms.
+  - Option B: Maintains status quo (matches 2 hybrid competitors but trails remote ones in senior hires).
+  - Option C: Benefits competitors (BuildSoft's office focus amplifies 70% candidate filtering to remote-first firms, increasing 40% offer losses).
+
+- **Relocated Employees**:
+  - Option A: Lose most (moved for hybrid, now face full remote irrelevance of relocation, possible financial hits like selling homes in wrong cities).
+  - Option B: Gain stability (policy renewal honors their 2022 moves).
+  - Option C: Mixed—gain in-person culture but lose if remote elements vanish, forcing further adjustments.
+
+### 3. Power Dynamics
+- **High Agency Stakeholders**: HR Director and leadership hold primary decision power (e.g., policy renewal authority, budget control over $3.4M leases). They can act on talent data (hiring funnel) and metrics (productivity, collaboration), shaping outcomes. Senior hires exert indirect power through market leverage (70% filtering, 40% offer losses), forcing reactive changes to compete with remote-first rivals.
+- **Low Agency Stakeholders (Acted Upon)**: Existing employees, especially relocated and remote staff, have limited influence— they react to policy (e.g., attendance enforcement or relocations) without veto power, risking turnover if needs are ignored. Engineering and cross-functional teams are acted upon via metrics; their productivity/velocity data informs but doesn't dictate decisions. Landlords/vendors have contractual leverage (e.g., SF lease ends in 8 months) but no internal sway. Competitors operate externally, influencing via talent poaching but without direct input.
+
+Power imbalances favor leadership's current "talent-first" frame, potentially overriding employee expectations or collaboration data.
+
+### 4. Whose Perspective is Represented in the Current Framing, Whose is Absent
+- **Represented Perspectives**: The HR Director's "competitive talent demands remote" frame prominently features prospective senior candidates (65% remote preference, 70% hiring filter, 40% loss to competitors) and cost savings ($3.4M office expenses). This aligns with leadership's strategic priorities, treating collaboration deficits as solvable via "tooling" and brand identity as adaptable by "marketing."
+- **Absent Perspectives**: Existing employees' lifestyle expectations are excluded, particularly relocated staff who moved cities for hybrid (no mention of their disruption risks under remote-only). Cross-functional teams' collaboration needs (18% worse metrics) are downplayed as non-constraining, ignoring velocity impacts on non-engineering roles. Engineering teams' productivity gains are acknowledged but not weighed against broader team dynamics. Office-based staff (60% of workforce) and the 10% office-preferring seniors lack voice, as does the brand's historical "in-person engineering culture" beyond superficial adaptation. Landlords' renewal pressures and competitors' indirect influence are factual but not framed as stakeholder costs.
+
+This framing skews toward future talent acquisition, marginalizing current employee retention and operational trade-offs.
+
+### 5. What the Decision-Maker Should Consider Before Committing
+Before finalizing any option, the decision-maker (e.g., leadership/HR) should conduct targeted assessments to address gaps in the current frame:
+
+- **Employee Impact Surveys and Retention Modeling**: Poll relocated employees (subset of 60% office-based) on tolerance for shifts (A or C), quantifying turnover risk (e.g., 20-30% churn among hybrid-dependent staff). Model retention for all 180 employees, factoring 40% remote staff's satisfaction vs. office cohort's collaboration preferences.
+  
+- **Collaboration and Productivity Trade-Off Analysis**: Validate 12% engineering productivity gain vs. 18% cross-functional velocity loss with pilot tests (e.g., 3-month remote-only trial in one team). Invest in tooling (budget $200K-500K) to test if deficits are mitigable, avoiding over-reliance on "we'll figure it out."
+
+- **Talent Market Deep Dive**: Benchmark against all 5 competitors (not just remote ones), surveying 70

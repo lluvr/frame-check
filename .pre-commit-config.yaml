@@ -16,6 +16,28 @@ repos:
         # Pre-commit passes the staged file list as positional args.
         require_serial: true
 
+      - id: check-wheel-imports
+        name: Wheel-bundle import discipline
+        description: >-
+          Reject commits that introduce a top-level unconditional
+          import (any nesting depth, not in a try / except that
+          catches ImportError or a superclass) from a wheel-bundled
+          module to a source-tree top-level module that is NOT in
+          pyproject.toml [tool.setuptools] py-modules. Without this
+          gate, the wheel ships with a missing dependency and
+          `frame_check` / `frame_compare` tools fail at runtime with
+          ModuleNotFoundError on a fresh install. 0.8.6 and 0.8.7
+          shipped this way (mcp_compose.py started importing
+          `manifest`; py-modules was not updated). Caught two
+          releases later by the conformance driver. This gate fires
+          on every commit so the bug class cannot recur.
+        entry: python3 scripts/check_wheel_imports.py
+        language: system
+        # Run only when a Python file or pyproject.toml changes.
+        files: '\.(py|toml)$'
+        pass_filenames: false
+        require_serial: true
+
       - id: gitleaks
         name: Block committed secrets
         description: >-

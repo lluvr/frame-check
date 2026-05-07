@@ -1,0 +1,18 @@
+Decision: Whether to acquire SmallCo for $40M or build their core capability (real-time fraud detection ML pipeline) internally for an estimated $15M and 18 months.
+
+Context: PaymentLab is a $200M-revenue payments processor expanding into fraud detection. SmallCo is a 35-person fraud-detection ML company with $8M ARR, growing 40 percent year-over-year, profitable. SmallCo's technology is genuinely differentiated (their false-positive rate is 0.04 percent vs industry 0.15 percent). The acquisition would bring 35 engineers, 12 patents, and a customer base of 80 mid-market merchants.
+
+Build alternative: PaymentLab's existing ML team (8 engineers) estimates $15M and 18 months to reach SmallCo's current capability level. The estimate has been peer-reviewed by two outside ML advisors who flagged the timeline as optimistic; the advisors estimate 24-30 months to genuinely match SmallCo's false-positive performance. PaymentLab's team has not built fraud-specific ML before.
+
+Acquisition specifics:
+- $40M total: $25M cash, $15M earnout over 36 months tied to integration milestones.
+- All 35 SmallCo engineers offered 4-year retention packages.
+- SmallCo founder commits to 24-month integration period.
+- Existing SmallCo customers expected to retain through transition.
+- Deal closes in 60 days if pursued.
+
+PaymentLab's runway: 28 months at current burn. The $40M acquisition would compress runway to 14 months unless additional funding is raised. PaymentLab's last round was 9 months ago.
+
+Stakes: $40M plus 24 months of executive bandwidth on integration vs $15M plus 18-30 months of internal team focus. The acquisition is irreversible (cannot return SmallCo if integration fails); the build is reversible (can pause or pivot). The 18-month timeline matters: a competitor announced a fraud-detection roadmap 6 months ago.
+
+Current framing: PaymentLab's CEO is reading this through a "buy vs build, time-to-market dominates" frame; the competitor's announcement is being treated as a forcing function. The integration risk and runway compression are mentally categorized as "manageable execution challenges" rather than as load-bearing constraints. The 60-day close pressure is being treated as deal urgency rather than as a deal-structure signal.

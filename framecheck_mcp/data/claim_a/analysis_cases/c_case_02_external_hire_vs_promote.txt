@@ -1,0 +1,22 @@
+Decision: Whether to hire Sarah Chen as VP Marketing (external candidate with 12 years at major SaaS companies, currently VP Marketing at a direct competitor; expected total comp ~$250K) or promote Marcus Rivera as VP Marketing (internal Director of Marketing, 4 years at company, has led major campaigns successfully but has not held VP-level role).
+
+Context: BuildCo is a Series B SaaS company at $15M ARR, growing 60 percent year-over-year. The marketing function reports to the CEO directly today; both candidates would build out the team (currently 6 marketers). The current Director-led marketing has produced strong results but is bandwidth-constrained.
+
+Sarah Chen specifics:
+- 12 years experience at three SaaS companies, including 4 years as VP at the most recent (a $100M ARR competitor).
+- Brings playbooks for enterprise GTM, ABM, brand marketing.
+- Would require non-compete buyout from current employer (~$80K).
+- References indicate strong execution but mixed feedback on culture-fit at her previous companies (some characterize her as politically-aware; others as "hard to read").
+- Available to start in 6 weeks.
+
+Marcus Rivera specifics:
+- 4 years at BuildCo, last 2 as Director of Marketing; has run all major campaigns.
+- Highly trusted internally; team and CEO express strong confidence.
+- Has not run a function at VP scope; has not built a team beyond 6.
+- Compensation expected: $180K (BuildCo internal range).
+- Strong domain knowledge of BuildCo's product and customer base.
+- Available immediately.
+
+Stakes: BuildCo's next 18 months will determine Series C narrative. Marketing execution drives pipeline which drives ARR growth which drives valuation. A wrong VP Marketing hire (either direction) costs 6-12 months and compounds into Series C timing. CEO bandwidth is currently 30 percent on marketing; either hire would reduce this.
+
+Current framing: CEO is reading the decision through "experience firepower for next stage of growth" frame; Sarah's external SaaS experience is dominant in the framing. Marcus's internal trust and BuildCo-specific knowledge are mentally categorized as "developmental but not yet at level." The non-compete buyout cost is being framed as "deal cost of getting the right person" rather than as a signal about Sarah's current employer's evaluation of her value.

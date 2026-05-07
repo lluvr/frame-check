@@ -1,0 +1,38 @@
+[
+  {
+    "output_uuid": "81024bf6-77c1-4684-8936-ab6020b5108d",
+    "case_id": "calib_001_strategic_investor",
+    "treatment": "single_frame",
+    "timestamp": "2026-04-27T19:24:30Z",
+    "prompt_tokens": 788,
+    "completion_tokens": 2000,
+    "cost": 0.0021576
+  },
+  {
+    "output_uuid": "5625a95b-f831-4f3a-9fa9-4bbe8cd66cd2",
+    "case_id": "calib_001_strategic_investor",
+    "treatment": "adversarial_chain",
+    "timestamp": "2026-04-27T19:27:05Z",
+    "prompt_tokens": 26291,
+    "completion_tokens": 8555,
+    "cost": 0.013813200000000001
+  },
+  {
+    "output_uuid": "ed776814-d4e6-4149-b48a-e4752f88eb44",
+    "case_id": "calib_002_legacy_refactor",
+    "treatment": "single_frame",
+    "timestamp": "2026-04-27T19:27:20Z",
+    "prompt_tokens": 862,
+    "completion_tokens": 1419,
+    "cost": 0.0015914000000000002
+  },
+  {
+    "output_uuid": "14df428f-d563-4906-a6df-2a986ad75e42",
+    "case_id": "calib_002_legacy_refactor",
+    "treatment": "adversarial_chain",
+    "timestamp": "2026-04-27T19:28:34Z",
+    "prompt_tokens": 19397,
+    "completion_tokens": 6135,
+    "cost": 0.0100144
+  }
+]
