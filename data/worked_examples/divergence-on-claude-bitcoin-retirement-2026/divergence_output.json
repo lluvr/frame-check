@@ -786,7 +786,7 @@
         "note": "V4.2 judge step delegated to caller's agent model per Rec I. Frame Check's MCP server does not invoke an external LLM. See agent_guidance.how_to_render_divergence for composition instructions."
       },
       "v4_2_engine_status": "beta",
-      "v4_2_engine_status_reference": "V4_2_GAP_INVENTORY_v1.md §5 for full status disclosure and remaining Tier 2-4 gaps.",
+      "v4_2_engine_status_reference": "ANTICIPATED_CRITIQUES.md and METHODOLOGY.md document engine tier status and Tier 2-4 known gaps.",
       "domain_inferred": "finance",
       "provisional_count": 0,
       "faithfulness_note": "Absent frames are named from the FVS catalog as not detected in the supplied document. Domain relevance is the tool's best judgment. Whether any absent frame is useful is the thinker's call. This is not a list of frames that should have been used.",

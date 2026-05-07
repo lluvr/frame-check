@@ -161,7 +161,7 @@ so the caller's agent runs V4.2 judgment with its own LLM if the
 caller chooses. Zero Frame Check LLM cost per MCP call; vendor
 independence by construction (the caller picks the model).
 
-**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
+**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in the MCP contract v2 proposal (maintainer-side). Breaking change from v1; the canonical first stable release that papers cite.
 
 **Collapsed release.** An earlier plan for a `0.7.1` V1-only
 name-reservation release on PyPI was retired 2026-04-23 in favor of
@@ -467,7 +467,7 @@ quick triage.
             "note": "V4.2 judge step delegated to caller's agent model per Rec I. Frame Check's MCP server does not invoke an external LLM."
         },
         "v4_2_engine_status": "beta",
-        "v4_2_engine_status_reference": "V4_2_GAP_INVENTORY_v1.md §5 for full status disclosure and remaining Tier 2-4 gaps.",
+        "v4_2_engine_status_reference": "ANTICIPATED_CRITIQUES.md and METHODOLOGY.md document engine tier status and Tier 2-4 known gaps.",
         "domain_inferred": "unfiltered",
         "provisional_count": 0,
         "tier_counts": {"high": 4, "medium": 5, "low": 8},
@@ -1333,7 +1333,7 @@ The v2 contract carries the construct through structure AND through serializatio
 
 Epistemic / claims / voice / temporal Phase A+B fields are additive; no migration window needed.
 
-See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
+See the MCP contract v2 proposal (maintainer-side) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
 
 ## Determinism
 
