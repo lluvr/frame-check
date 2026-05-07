@@ -1,15 +1,21 @@
 name: Tests
 
-# Runs the full Frame Check test suite on every push to master and on
-# pull requests. The existing runner is run_tests.py which wraps the
+# Runs the full Frame Check test suite on PRs and on manual dispatch.
+# The existing runner is run_tests.py which wraps the
 # standalone-script test pattern documented in CONTRIBUTING.md. Rather
 # than migrate to pytest in one move, CI respects the existing pattern.
+#
+# Push-on-master trigger removed 2026-05-07 alongside manual-deployment
+# discipline: the operator runs pytest + lift_dry_run locally before
+# every push, and the release orchestrator gates a release on the
+# same lift_dry_run + conformance driver. PR-time CI catches changes
+# from contributors before merge; master-push CI duplicated work
+# already done locally at billing cost. Re-enable via workflow_dispatch
+# when ad-hoc verification is wanted.
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
+  workflow_dispatch:
 
 # Least-privilege token. Both jobs only check out code and run
 # tests; they do not push, comment, or touch other repo state.

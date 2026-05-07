@@ -339,7 +339,7 @@ markers and I count substance").
    is settled.
 9. **Submit ratings** as a GitHub pull request adding your
    YAML files to `validation/decision_readiness/ratings/`.
-   Public-facing repository: https://github.com/Clarethium/frame-check-mcp.
+   Public-facing repository: https://github.com/Clarethium/frame-check-mcp/.
 
 ---
 
