@@ -1859,6 +1859,87 @@ def test_resources_list_includes_library_and_docs():
     print("  PASS\n")
 
 
+def test_resources_list_carries_attribution_schema_v1_0_0():
+    """Every resources/list entry must carry the attribution _meta
+    contract documented in METHODOLOGY.md §9.1 (schema version
+    1.0.0). The envelope carries an attribution-schema-version pin;
+    every analytical artifact carries license / license-uri / author
+    / year under the clarethium.com/ reverse-DNS prefix; corpus
+    bundled-document URIs carry content-type=bundled-document plus a
+    license-note in lieu of the CC-BY-4.0 quad. Without an explicit
+    test, the _meta surface can regress silently because no other
+    test path exercises the schema's field shape directly."""
+    print("=== resources/list carries attribution schema 1.0.0 ===")
+    resp = mcp_server.dispatch({
+        "jsonrpc": "2.0", "id": 100, "method": "resources/list",
+    })
+    result = resp["result"]
+    # Envelope schema-version pin.
+    envelope_meta = result.get("_meta", {})
+    check(
+        envelope_meta.get("clarethium.com/attribution-schema-version")
+        == "1.0.0",
+        "envelope must pin attribution-schema-version 1.0.0; got "
+        f"{envelope_meta.get('clarethium.com/attribution-schema-version')!r}",
+    )
+    resources = result["resources"]
+    check(len(resources) > 0, "resources/list must return at least one entry")
+    # Per-entry _meta contract.
+    n_corpus = 0
+    n_analytical = 0
+    for r in resources:
+        uri = r.get("uri", "")
+        meta = r.get("_meta")
+        check(meta is not None, f"resource missing _meta: {uri}")
+        # Bundled corpus documents (e.g. frame-check://corpus/<slug>
+        # without a trailing /profile, /peer, or /diff segment) carry
+        # the bundled-document distinction instead of CC-BY-4.0
+        # attribution to Lovro Lucic. Verbatim third-party text and
+        # AI service outputs ship under fair-use posture, not under
+        # the project's own license.
+        is_bundled_corpus = (
+            uri.startswith("frame-check://corpus/")
+            and uri.count("/") == 3  # scheme://corpus/<slug> only
+        )
+        if is_bundled_corpus:
+            n_corpus += 1
+            check(
+                meta.get("clarethium.com/content-type") == "bundled-document",
+                f"corpus URI must carry content-type=bundled-document: {uri}",
+            )
+            check(
+                isinstance(meta.get("clarethium.com/license-note"), str),
+                f"corpus URI must carry license-note: {uri}",
+            )
+        else:
+            n_analytical += 1
+            for field in (
+                "clarethium.com/license",
+                "clarethium.com/license-uri",
+                "clarethium.com/author",
+                "clarethium.com/year",
+            ):
+                check(
+                    field in meta,
+                    f"analytical artifact missing {field}: {uri}",
+                )
+            check(
+                meta.get("clarethium.com/license") == "CC-BY-4.0",
+                f"analytical artifact must be CC-BY-4.0: {uri}",
+            )
+    # Sanity: must have advertised at least one of each class so the
+    # contract is exercised. If a future refactor advertises only
+    # bundled docs or only analytical artifacts the test still asks
+    # the question and surfaces the shift loudly.
+    check(
+        n_analytical > 0,
+        "resources/list must advertise at least one analytical artifact",
+    )
+    print(
+        f"  PASS  ({n_analytical} analytical, {n_corpus} bundled-corpus)\n"
+    )
+
+
 def test_resources_read_library_entry_returns_markdown():
     print("=== resources/read library entry returns markdown ===")
     resp = mcp_server.dispatch({

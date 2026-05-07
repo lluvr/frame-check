@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Clarethium/frame-check-mcp/blob/master/schemas/attribution-1.0.0.json",
+  "title": "Frame Check MCP attribution schema",
+  "description": "Per-resource and envelope-level attribution metadata exposed on every resources/list response from the frame-check-mcp server. Schema is documented in METHODOLOGY.md §9.1. Keys live under the reverse-DNS prefix `clarethium.com/` per MCP spec 2025-06-18 _meta key naming. Additive minor bumps (1.x.0) preserve consumer compatibility; breaking changes bump the major.",
+  "version": "1.0.0",
+  "definitions": {
+    "spdxLicense": {
+      "type": "string",
+      "description": "SPDX license identifier. The Frame Check canon ships analytical artifacts under CC-BY-4.0; the source code is Apache-2.0 but is not advertised through this schema."
+    },
+    "absoluteUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://"
+    },
+    "isoDate": {
+      "type": "string",
+      "description": "ISO 8601 date (YYYY-MM-DD) for protocol-level annotations.lastModified.",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+  },
+  "type": "object",
+  "properties": {
+    "envelope": {
+      "$comment": "Schema for the resources/list response envelope's _meta block. The envelope-level attribution-schema-version pin lets a consumer negotiate evolution of this schema once per session rather than reading every resource entry.",
+      "type": "object",
+      "properties": {
+        "_meta": {
+          "type": "object",
+          "properties": {
+            "clarethium.com/attribution-schema-version": {
+              "type": "string",
+              "const": "1.0.0",
+              "description": "Pins the attribution-schema version this server emits. Consumers should fail-closed if the major component does not match the major they were built against."
+            }
+          },
+          "required": [
+            "clarethium.com/attribution-schema-version"
+          ]
+        }
+      },
+      "required": [
+        "_meta"
+      ]
+    },
+    "analyticalArtifact": {
+      "$comment": "Per-resource _meta shape for analytical artifacts authored by the project (FVS library entries, transmissions, methodology, calibration runs, decision-readiness aggregates, worked examples). The CC-BY-4.0 quad applies. Transmissions additionally carry citation-uri sourced from the YAML frontmatter source_url; FVS entries that declare a per-entry version carry it as version.",
+      "type": "object",
+      "properties": {
+        "_meta": {
+          "type": "object",
+          "properties": {
+            "clarethium.com/license": {
+              "$ref": "#/definitions/spdxLicense",
+              "const": "CC-BY-4.0"
+            },
+            "clarethium.com/license-uri": {
+              "$ref": "#/definitions/absoluteUrl",
+              "const": "https://creativecommons.org/licenses/by/4.0/"
+            },
+            "clarethium.com/author": {
+              "type": "string",
+              "const": "Lovro Lucic"
+            },
+            "clarethium.com/year": {
+              "type": "string",
+              "pattern": "^\\d{4}$"
+            },
+            "clarethium.com/citation-uri": {
+              "$ref": "#/definitions/absoluteUrl",
+              "description": "Optional. Human-readable canonical URL where the resource is published (e.g., the blog post URL for a transmission). Sourced from the resource's source-of-truth metadata (e.g., YAML frontmatter), not inferred from the URI slug."
+            },
+            "clarethium.com/version": {
+              "type": "string",
+              "description": "Optional. Per-entry version string, independent of any library-snapshot version. Pins the resource at a specific revision so consumers can cite without locking to the catalog as a whole."
+            }
+          },
+          "required": [
+            "clarethium.com/license",
+            "clarethium.com/license-uri",
+            "clarethium.com/author",
+            "clarethium.com/year"
+          ]
+        },
+        "annotations": {
+          "type": "object",
+          "description": "MCP spec 2025-06-18 annotations (in addition to _meta). Transmissions emit lastModified for protocol-canonical drift detection. Other resource classes may emit additional annotations.",
+          "properties": {
+            "lastModified": {
+              "$ref": "#/definitions/isoDate"
+            }
+          }
+        }
+      },
+      "required": [
+        "_meta"
+      ]
+    },
+    "bundledDocument": {
+      "$comment": "Per-resource _meta shape for corpus URIs that ship verbatim third-party text or AI service outputs (frame-check://corpus/<slug> without a /profile, /peer/<partner>, or /diff/<partner> sibling segment). The CC-BY-4.0 attribution does not apply: the project did not author this content. Adopters must consult the document's in-file header for the actual origin and license. The analytical commentary at the sibling URIs continues to use the analyticalArtifact shape.",
+      "type": "object",
+      "properties": {
+        "_meta": {
+          "type": "object",
+          "properties": {
+            "clarethium.com/content-type": {
+              "type": "string",
+              "const": "bundled-document"
+            },
+            "clarethium.com/license-note": {
+              "type": "string",
+              "description": "Free-text pointer to where the actual licensing terms for this bundled document live (typically the document's in-file header)."
+            }
+          },
+          "required": [
+            "clarethium.com/content-type",
+            "clarethium.com/license-note"
+          ]
+        }
+      },
+      "required": [
+        "_meta"
+      ]
+    }
+  },
+  "examples": [
+    {
+      "$comment": "Envelope-level pin on a resources/list response.",
+      "_meta": {
+        "clarethium.com/attribution-schema-version": "1.0.0"
+      }
+    },
+    {
+      "$comment": "Per-resource _meta on an analytical artifact (transmission).",
+      "uri": "frame-check://transmissions/self-check-illusion",
+      "_meta": {
+        "clarethium.com/license": "CC-BY-4.0",
+        "clarethium.com/license-uri": "https://creativecommons.org/licenses/by/4.0/",
+        "clarethium.com/author": "Lovro Lucic",
+        "clarethium.com/year": "2026",
+        "clarethium.com/citation-uri": "https://blog.clarethium.com/self-check-illusion"
+      },
+      "annotations": {
+        "lastModified": "2026-03-23"
+      }
+    },
+    {
+      "$comment": "Per-resource _meta on a bundled-document corpus URI.",
+      "uri": "frame-check://corpus/four-llms-bitcoin-claude",
+      "_meta": {
+        "clarethium.com/content-type": "bundled-document",
+        "clarethium.com/license-note": "Bundled documents may contain verbatim third-party text under fair-use posture for research analysis, or AI-generated outputs from third-party services. See the document's in-file header for the accurate origin and copyright. Frame Check's analytical commentary on this document (CC-BY-4.0, Lovro Lucic) lives at the sibling /profile, /peer/<partner>, and /diff/<partner> URIs."
+      }
+    }
+  ]
+}
