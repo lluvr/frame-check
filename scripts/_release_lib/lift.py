@@ -462,10 +462,13 @@ def main(argv: list[str] | None = None) -> int:
                 "lluvr/frame-check (private repo, 404 to public)",
                 re.compile(r"(?<![@\w`/])github\.com/lluvr/frame-check(?!-mcp)"),
             ),
-            (
-                "frame.clarethium.com (production paused 2026-04-23)",
-                re.compile(r"(?<![@\w`/])frame\.clarethium\.com\b"),
-            ),
+            # frame.clarethium.com production pause was lifted at the
+            # T-429 launch (2026-05-05). The tool is live and the
+            # launch piece tells readers "Try it: frame.clarethium.com",
+            # so worked-examples and FVS docs that link there are
+            # accurate, not stale. The pattern stayed here through
+            # 0.8.7; removing it as part of 0.8.8 release-pipeline
+            # cleanup.
         )
         violations: list[tuple[str, str, int]] = []
         for label, pat in bad_pats:

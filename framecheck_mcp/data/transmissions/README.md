@@ -15,7 +15,7 @@ alongside the Frame Vocabulary Standard, the methodology paper,
 the worked examples, and the calibration evidence. The URI
 scheme is `frame-check://transmissions/{slug}` where `{slug}`
 matches the public blog URL
-`https://blog.clarethium.com/blog/{slug}`.
+`https://blog.clarethium.com/{slug}`.
 
 Why expose them as MCP resources and not just link out: a
 Cloudflare edge layer in front of the blog makes the public
@@ -77,5 +77,5 @@ in the clarethium-app vault are intentionally not copied here.
 The transmissions are the author's research writing, reproduced
 here for structural analysis and MCP accessibility. They carry
 the same license as the rest of the Frame Check corpus material:
-CC-BY-4.0. Citation: `blog.clarethium.com/blog/{slug}` is the
+CC-BY-4.0. Citation: `blog.clarethium.com/{slug}` is the
 canonical URL; cite that alongside any derivative use.

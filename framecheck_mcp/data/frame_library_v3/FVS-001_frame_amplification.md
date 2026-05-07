@@ -98,7 +98,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 2, Grok 2, GPT-5 4.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
@@ -117,7 +117,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 2, Grok 2, GPT-5 4.
 1. NVIDIA fiscal-2024 analysis (EXP-094, HI-061). Identified frame-amplified document; counter-frame rewrite preserved data points but reframed as risk evidence; demonstrated that sophistication of the original analysis did not equal completeness. Material additions a strategic reader would want.
 2. Branch B (pre-commit intervention) operational concept. The "write your own analysis first before consulting AI" pattern is in active use as the primary preventive against frame amplification. Concept is shipped via methodology and outreach materials (FVS_001_OUTREACH_EMAIL_SHORT_v1.md); quantified outcomes pending.
 
-**Lived-experience anchor.** Authored 2026-04-26 per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
+**Lived-experience anchor.** Authored 2026-04-26 per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
 
 Late March 2026, approximately one month before the v2 architectural work landed. A four-hour continuous session with Claude as primary interlocutor (ChatGPT secondary), building proposals for new app projects with all proposals coupling tightly to the curator's existing measurement, evaluation, and vault-experiment work. Claude converged hard on the curator's existing context across the full session: whatever new direction the curator probed, Claude pattern-matched the response back to the curator's known repertoire and built proposals adjacent to it. The frame held for four hours.
 

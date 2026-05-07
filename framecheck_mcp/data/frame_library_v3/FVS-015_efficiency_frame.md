@@ -100,7 +100,7 @@ Per-family positives (of 15 docs): Claude 1, Gemini 2, Grok 3, GPT-5 3.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04; prevalence 15 percent)
@@ -119,7 +119,7 @@ Per-family positives (of 15 docs): Claude 1, Gemini 2, Grok 3, GPT-5 3.
 1. AI-powered legal document review worked example (v1 Identification). Document presented "85 percent time reduction" plus "10,000 documents per hour" as pure-efficiency framing. Counter-frame surfaced: what AI errors does it make; what types require human judgment AI cannot replicate; what happens to legal team expertise when they stop reading documents; liability exposure from missed clauses; whether 85 percent reduction includes time spent correcting AI errors. Per the sovereignty thesis: most dangerous failure mode is good outputs that erode human capability.
 2. Sovereignty-thesis operational integration. Efficiency frame is structurally connected to the sovereignty thesis. The "what capabilities are lost" question is the operational diagnostic for distinguishing efficiency-as-acceptable-tradeoff from efficiency-as-capability-erosion. Embedded in Frame Check methodology as part of the broader sovereignty discipline.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves accepting an efficiency framing that hid a capability cost (AI did the work; the operator's own capability for that work atrophied); (2) the sovereignty-frame counter-question applied ("what capability is being traded for this efficiency"); (3) outcome differential observed (decision adjusted, AI use rebalanced, capability preserved through deliberate practice); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves accepting an efficiency framing that hid a capability cost (AI did the work; the operator's own capability for that work atrophied); (2) the sovereignty-frame counter-question applied ("what capability is being traded for this efficiency"); (3) outcome differential observed (decision adjusted, AI use rebalanced, capability preserved through deliberate practice); (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~30-60 seconds per efficiency claim ("what capability is lost; who bears the cost")

@@ -88,7 +88,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04; frame absent from corpus, prevalence 0 percent)
@@ -107,7 +107,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 1. Worked example: Gemini-vs-Claude analytical reasoning attribution (v1 Identification). Document attributed "superior analytical reasoning" to Gemini and "conversational analysis with hedging" to Claude. Attribution-error counter-frame surfaced: heading-format choices may be system-prompt directives (Google's harness designs structured output for analytical queries); hedging may be safety-guardrail design (Anthropic's harness includes uncertainty acknowledgment). The "what would happen with the same system prompt" question is the operational diagnostic.
 2. Branch B pre-commit operational concept. Pre-commit step makes attribution error surface when the user names model-level expectations and the frame delta reveals the difference may be system-level not model-level. Operationalized in Frame Check methodology as the four-layer attribution discipline; user pre-writes own assessment which then anchors the comparison.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves attributing AI behavior to model identity when the actual cause was prompt or context layer; (2) controlled-comparison reasoning applied (asked "what would happen with the same system prompt"); (3) outcome differential observed (procurement decision adjusted, capability claim retracted, comparison revised); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves attributing AI behavior to model identity when the actual cause was prompt or context layer; (2) controlled-comparison reasoning applied (asked "what would happen with the same system prompt"); (3) outcome differential observed (procurement decision adjusted, capability claim retracted, comparison revised); (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~30-60 seconds per attribution claim ("have I controlled for the system prompt")

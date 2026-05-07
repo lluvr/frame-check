@@ -5,7 +5,7 @@ type: EVIDENCE
 summary: "The structured approach that produced precision on convergent problems actively harmed exploratory ones."
 published: 2026-03-24
 models: "xAI / Gemini"
-source_url: https://blog.clarethium.com/blog/constraint-paradox
+source_url: https://blog.clarethium.com/constraint-paradox
 ---
 
 # The Constraint Paradox

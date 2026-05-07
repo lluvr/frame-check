@@ -161,7 +161,7 @@ so the caller's agent runs V4.2 judgment with its own LLM if the
 caller chooses. Zero Frame Check LLM cost per MCP call; vendor
 independence by construction (the caller picks the model).
 
-**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
+**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
 
 **Collapsed release.** An earlier plan for a `0.7.1` V1-only
 name-reservation release on PyPI was retired 2026-04-23 in favor of
@@ -175,8 +175,6 @@ Two tools.
 
 ### `frame_check`: single-document analysis
 
-| Parameter | Required | Type | Meaning |
-|---|---|---|---|
 **Agent-facing parameters** (advertised in `tools/list` schema; the agent decides whether to pass each):
 
 | Parameter | Required | Type | Meaning |
@@ -269,6 +267,58 @@ NEXT_STEPS.md "Per-match field allowlist" subsection):
 - MCP-only knobs: `compose_budget`, `divergence_rendering`,
   `domain_hint`. Agent-shaped affordances with no web parallel.
 
+### `/api/profile` always-render contract (web-only)
+
+The web JSON surface adds two top-level fields with no MCP parallel
+because the MCP `frame_check` tool runs substrate-only and does not
+invoke Source Network:
+
+- `sn_status` (enum, always present): one of
+  - `"complete"` - every claim was processed by Source Network
+  - `"partial"` - SN per-claim budget (`SN_BUDGET_SECONDS`, default 25s)
+    exhausted before all claims processed; some claims carry
+    `verdict: "unverifiable"` with `detail` containing "budget"
+  - `"unavailable"` - SN raised an exception or exceeded the 35s outer
+    timeout; `source_verification` is null and no per-claim results
+    are returned
+  - `"skipped"` - the document carried no claims for SN to verify
+- `sn_status_reason` (string or null): human-readable cause when
+  `sn_status` is `"partial"` or `"unavailable"`, naming the specific
+  limitation (provider rate-limit, exception class, outer-budget
+  exhaustion). Null on `"complete"` or `"skipped"`.
+
+Consumers can branch on `sn_status` without parsing
+`source_verification` shape; the always-render contract guarantees
+substrate output is present at HTTP 200 even when SN failed
+(behavioral contract pinned by
+`test_always_render_contract_*` in `tests/test_pages.py`).
+
+The pipeline runs in three layers (named in source comments at
+`app.py` substrate / SN / portrait blocks):
+
+- **Layer A.1 substrate** - regex / parsing only (measure, claim
+  analysis, coverage, framing detectors). CPU-bound, mandatory, 15s
+  budget. Substrate failure returns HTTP 500 with structured `{"error"}`
+  JSON (NOT a generic HTML 500); consumers can branch on the type-
+  named error string.
+- **Layer A.2 Source Network** - network-bound, best-effort. 35s outer
+  timeout is a safety net; the real graceful path is SN's internal
+  `SN_BUDGET_SECONDS=25s` budget which synthesizes
+  `verdict: "unverifiable"` placeholder results when exhausted. SN
+  failures NEVER throw to the user; `sn_status` carries the signal.
+- **Layer A.3 portrait + headline + fuzzy** - inline CPU work,
+  always runs (consumes possibly-empty `sn_results`).
+
+The same `sn_status` enum surfaces on the compare SSE stream:
+
+- `/api/compare-stream`'s `model_analyzed` event payload carries
+  `sn_status` and `sn_status_reason` per model. The two values can
+  differ across the two models (one model's claims may exhaust SN
+  budget while the other's complete). Frontend renders an
+  `.sn-status-banner` per model card scoped to the affected document.
+  Pinned by `test_compare_stream_sn_failure_renders_unavailable_status_per_model`
+  and the field-presence assertion in `test_compare_stream_documents_mode`.
+
 A consumer that needs the rich agent-guidance / divergence /
 absence-clusters surface should pick MCP. A consumer that only
 needs the substrate-level structural signals (FVS firings,
@@ -334,7 +384,7 @@ to a file on disk.
 ### Validation corpus and decision-readiness profile
 
 The validation corpus is the document set on which the
-decision-readiness profile is measured. Profile output is currently labelled experimental and is **not** surfaced in the live UI; the gate lifts after the Phase 2 rater study (see [RATERS.md](https://github.com/lluvr/frame-check-mcp/blob/master/RATERS.md) in the repository).
+decision-readiness profile is measured. Profile output is currently labelled experimental and is **not** surfaced in the live UI; the gate lifts after the Phase 2 rater study (see RATERS.md in the repository).
 
 - `frame-check://corpus/{slug}` - the entry's source document
   (markdown). Slug is alphanumeric + hyphens; traversal-safe.
@@ -839,7 +889,7 @@ When the divergence block is emitted, `agent_guidance` gains two keys:
 Every FVS reference in a `frame_check` or `frame_compare` response
 carries a `library_url` field pointing at the entry's markdown source
 on the public GitHub repository
-(`https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-XXX_slug.md`).
+(`https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-XXX_slug.md`).
 The URL is always resolvable for end-users in MCP clients regardless
 of the hosted-production status; the previous form pointed at
 `frame.clarethium.com/corpus/library/...` which is paused while
@@ -1283,7 +1333,7 @@ The v2 contract carries the construct through structure AND through serializatio
 
 Epistemic / claims / voice / temporal Phase A+B fields are additive; no migration window needed.
 
-See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
+See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
 
 ## Determinism
 
@@ -1311,7 +1361,7 @@ without out-of-band knowledge:
   artifacts (GitHub repository, PyPI package).
 
 Active artifacts during the paused window: the public GitHub
-repository at `https://github.com/lluvr/frame-check-mcp` and the PyPI
+repository at `https://github.com/Clarethium/frame-check-mcp` and the PyPI
 package `frame-check-mcp`. Citations should resolve against the
 versioned PyPI release (`server_version` field) or the canonical
 production URL (which becomes the load-bearing reference on resume).
@@ -1324,7 +1374,7 @@ as Frame Check's, not as your own reading.
 
 ```
 Lucic, L. (YEAR). Frame Check: a research instrument for framing and
-verification in documents. https://github.com/lluvr/frame-check-mcp
+verification in documents. https://github.com/Clarethium/frame-check-mcp
 ```
 
 ## License

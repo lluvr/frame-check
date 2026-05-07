@@ -5,7 +5,7 @@ type: EVIDENCE
 summary: "The prompt determined whether behaviors existed at all. The model adjusted the volume."
 published: 2026-03-24
 models: "xAI / Gemini"
-source_url: https://blog.clarethium.com/blog/attribution-error
+source_url: https://blog.clarethium.com/attribution-error
 ---
 
 # The Attribution Error

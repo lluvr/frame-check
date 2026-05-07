@@ -118,7 +118,7 @@ SERVER_NAME = "frame-check"
 # test_server_version_bumped_for_decision_readiness_capability;
 # adding suffixes here would break that pin and the handshake
 # parser shape downstream consumers may rely on.
-SERVER_VERSION = "0.8.5"
+SERVER_VERSION = "0.8.8"
 
 # ── Logging ────────────────────────────────────────────────────────
 #
@@ -442,7 +442,19 @@ def handle_resources_list(_params: dict) -> dict:
             )
             continue
         out.append(resource)
-    return {"resources": out}
+    # Envelope-level _meta carries the schema version of the
+    # clarethium.com/* attribution fields surfaced on each resource.
+    # Pinning version at the envelope level (per MCP Result._meta)
+    # lets a single response advertise the schema applied across all
+    # entries; consumers can negotiate evolution without inspecting
+    # every resource individually. Bump on additive changes (minor)
+    # or breaking changes (major); document in METHODOLOGY.md §9.1.
+    return {
+        "resources": out,
+        "_meta": {
+            "clarethium.com/attribution-schema-version": "1.0.0",
+        },
+    }
 
 
 def handle_resources_read(params: dict) -> dict:
@@ -1213,7 +1225,7 @@ STARTUP AND TROUBLESHOOTING
 RESOURCES
   Public docs:   https://frame.clarethium.com
   Methodology:   https://frame.clarethium.com/corpus/methodology/
-  Repo:          https://github.com/lluvr/frame-check-mcp
+  Repo:          https://github.com/Clarethium/frame-check-mcp
 """
 
 

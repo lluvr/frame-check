@@ -5,7 +5,7 @@ type: EVIDENCE
 summary: "The signals you use to judge AI trustworthiness are the same signals fabrication produces."
 published: 2026-03-23
 models: "xAI"
-source_url: https://blog.clarethium.com/blog/trust-signals-are-inverted
+source_url: https://blog.clarethium.com/trust-signals-are-inverted
 ---
 
 # Trust Signals Are Inverted

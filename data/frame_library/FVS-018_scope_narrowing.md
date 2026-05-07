@@ -5,7 +5,7 @@
 **Curator:** Lovro Lucic
 **Curated:** 2026-04-13
 **Source:** HI-061 (Frame Amplification, the mechanism that drives scope narrowing), M-004 (frame inventory exercise), EXP-094 (the hard-topics extension where paired-topic isolation revealed scope-dependent findings)
-**Status:** v1, single-curator. Withdrawn from v1 publication per [INDEX.md](https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/INDEX.md) "v1 publication state" table (scope narrowing is a specific case of frame amplification; covered by FVS-001 with stronger examples; absorbed). Source markdown preserved for citation continuity; the FVS-018 ID is reserved and will not be reused.
+**Status:** v1, single-curator. Withdrawn from v1 publication per [INDEX.md](https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/INDEX.md) "v1 publication state" table (scope narrowing is a specific case of frame amplification; covered by FVS-001 with stronger examples; absorbed). Source markdown preserved for citation continuity; the FVS-018 ID is reserved and will not be reused.
 
 ## Identification
 
@@ -74,7 +74,7 @@ The frame does NOT fire when:
 
 **Intra-rater stability (Grok 4.1 fast).** `detector_intra_rater_ac1` = **1.000** across n=41 docs at temp=0 (0 verdict flip(s); per fvs_eval/v4/grok_intra_rater_ac1.json). Measures single-family consistency, independent of cross-family AC1: low cross-family + high intra-rater is possible (and common).
 
-**Construct-validity caveat.** `library_consensus_ac1` measures cross-family LLM agreement, NOT agreement with human reader labels. Per [METHODOLOGY.md](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) section 1.3, V1 detector macro-F1 against human labelers was 0.157 (chance-level, n=12); library_v4 LLM-judge has not been re-validated against humans. Read AC1 as inter-LLM consensus proxy, not human-validated reliability.
+**Construct-validity caveat.** `library_consensus_ac1` measures cross-family LLM agreement, NOT agreement with human reader labels. Per [METHODOLOGY.md](https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md) section 1.3, V1 detector macro-F1 against human labelers was 0.157 (chance-level, n=12); library_v4 LLM-judge has not been re-validated against humans. Read AC1 as inter-LLM consensus proxy, not human-validated reliability.
 
 ### Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence) and earlier variants
 

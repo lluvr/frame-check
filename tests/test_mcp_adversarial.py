@@ -825,10 +825,13 @@ def test_G1_tools_call_frame_check_is_byte_deterministic():
     b_text = b["result"]["content"][0]["text"]
     # Normalize the documented wall-clock fields to a constant so
     # determinism is checked on substrate output, not measurement
-    # timing.
+    # timing. The manifest's analysis_run_at is per-call wall-clock
+    # attribution by design (the receipt records WHEN this specific
+    # call ran), parallel to provenance.analysis_timestamp_utc; both
+    # sit outside the determinism contract.
     import re as _re
     pat = _re.compile(
-        r'"analysis_(latency_ms|timestamp_utc)":\s*[^,\n]+'
+        r'"analysis_(latency_ms|timestamp_utc|run_at)":\s*[^,\n]+'
     )
     norm = lambda s: pat.sub(
         '"analysis_\\1": NORMALIZED', s,

@@ -18,12 +18,14 @@ Architecture:
 import os
 import re
 import json
+import sys
 import threading
 import time
 import urllib.request
 import urllib.parse
 import urllib.error
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import TimeoutError as _FuturesTimeoutError
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -374,6 +376,19 @@ _GENERIC_HEADINGS = {
     "historical data", "current state", "future outlook",
     "competitive landscape", "market share", "pricing",
     "supply chain", "technology", "innovation", "regulation",
+    # Narrative-flow section labels common in business prose. The
+    # 2026-05-06 SN debug on the NVIDIA example showed
+    # "Growth and Challenges" and "Outlook" being accepted as
+    # entity-bearing headings; sentence-level proper nouns (Amazon
+    # Web Services, Microsoft, Google) got masked because heading
+    # took precedence in extract_subject's fallback chain. Adding
+    # them here forces fall-through to sentence-level entity
+    # extraction.
+    "growth and challenges", "outlook", "findings", "next steps",
+    "key takeaways", "learnings", "challenges", "growth",
+    "opportunities", "risks", "strengths", "weaknesses",
+    "objectives", "goals", "context", "rationale", "recommendation",
+    "recommendations", "implications", "limitations",
 }
 
 
@@ -1059,7 +1074,93 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
 # ================================================================
 
 _HEADERS = {"User-Agent": "FrameCheck/0.1 (claim-verification; contact@clarethium.com)"}
-_TIMEOUT = 5
+# Per-operation socket timeout for outbound provider calls. Bumped
+# from 5s to 8s on 2026-05-06 after production probe from Fly ORD
+# measured a single Wikipedia query (api.php query + extract round
+# trip) at ~4.16s. The 5s budget left no headroom for SSL handshake
+# variance and produced intermittent
+# `URLError: <urlopen error _ssl.c:993: The handshake operation
+# timed out>` lines in production logs that mapped to 0-of-N
+# verified-claims surfaces for users (the "0 verified" symptom the
+# operator reported). 8s is the smallest value that absorbs the
+# observed handshake variance without doubling the wait on real
+# provider failures.
+#
+# Trade-off: slow providers fail 3s later than before. The outer
+# SN_FETCH_JSON_DEADLINE_SECONDS (12s) and SN_BUDGET_SECONDS (25s)
+# still bound the total per-comparison wait; bumping the per-op
+# timeout only affects whether a single hung socket gets one more
+# read attempt before the outer bound fires.
+#
+# Override via SN_PER_OP_TIMEOUT_SECONDS env var so the operator can
+# tighten when production network paths improve, or further loosen
+# during a transient routing problem to a specific provider.
+def _read_float_env(name: str, default: float) -> float:
+    """Read a float env var with a default. A malformed value (non-numeric
+    or zero/negative) falls back to the default with a stderr log so the
+    operator sees it; never raises at module import time. The default is
+    the fallback for module-level constants that must initialize during
+    `import`, where a raised ValueError would prevent the app from
+    booting at all."""
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        value = float(raw)
+    except ValueError:
+        print(
+            f"[source-network] {name}={raw!r} is not numeric; "
+            f"falling back to default {default}",
+            file=sys.stderr,
+        )
+        return default
+    if value <= 0:
+        print(
+            f"[source-network] {name}={value} must be positive; "
+            f"falling back to default {default}",
+            file=sys.stderr,
+        )
+        return default
+    return value
+
+
+_TIMEOUT = _read_float_env("SN_PER_OP_TIMEOUT_SECONDS", 8.0)
+
+# Wall-clock budget (seconds) for the entire `verify_claims_source_network`
+# call. Each per-claim provider call has its own _TIMEOUT (5s); the budget
+# below caps the cumulative call to bound the user-facing wait when slow
+# providers, rate-limited providers, or pathologically claim-heavy
+# documents would otherwise stack up to many tens of seconds.
+#
+# Default 25s sits inside the outer `_structural` 35s budget at
+# app.py:1729, which leaves ~10s headroom for the substrate work
+# (detection, framing portrait, Brave fallback) plus render. Override
+# via SN_BUDGET_SECONDS env when production telemetry shows the p95 has
+# drifted (operator reads `[source-network] budget exhausted` log
+# frequency to calibrate).
+#
+# Architectural compromise named explicitly: this is a BEST-EFFORT
+# budget. Worker threads inside the per-claim ThreadPoolExecutor cannot
+# be truly cancelled in Python; when budget is exhausted the orchestrator
+# stops waiting and returns partial results, but background HTTP calls
+# already in flight continue until their per-call _TIMEOUT or natural
+# return. They do not extend the user-visible request time but do
+# consume CPU/network until they finish. The proper fix is to migrate
+# the SN call graph to asyncio with task cancellation, which is named
+# in NEXT_STEPS.md as 1.0.0+ territory; until then the budget primitive
+# below trades thread-cleanup precision for a bounded user wait, which
+# is the trade the user-facing UX requires today.
+#
+# This module exists at TWO paths in the working tree right now:
+# root-level source_network.py (this file; the active import target
+# for the web app) and framecheck_mcp/source_network.py (operator's
+# in-flight src-layout migration target). Both files MUST carry an
+# equivalent SN_BUDGET_SECONDS + budget-tracking implementation so
+# that whichever path resolves the import gets the budget. When the
+# src-layout migration commits and removes this root-level file,
+# only framecheck_mcp/source_network.py remains; the budget primitive
+# travels with the code unchanged.
+SN_BUDGET_SECONDS = float(os.environ.get("SN_BUDGET_SECONDS", "25"))
 
 
 # ================================================================
@@ -1125,7 +1226,17 @@ class _ProviderHealth:
             "providers": {
               "<provider>": {
                 "total": int,
-                "rate_limited": int,   # 429 / quota errors
+                "by_kind": {
+                  "rate_limited": int,    # 429 / quota errors
+                  "auth": int,            # 401 / 403
+                  "server_error": int,    # 5xx
+                  "deadline": int,        # caller-side total deadline fired
+                  "other": int,           # everything else (DNS, parse, etc.)
+                },
+                "rate_limited": int,      # backward-compat alias for
+                                          # by_kind.rate_limited; pre-2026-05-03
+                                          # /health consumers branched on this
+                                          # field directly
                 "last_error_age_s": int,
               },
               ...
@@ -1133,10 +1244,14 @@ class _ProviderHealth:
           }
 
         Empty providers dict means no errors in the window. The
-        rate_limited count is broken out because 429 is the
-        actionable signal: the operator can correlate with
-        per-provider quota documentation and decide whether to
-        rotate keys, switch providers, or accept the degradation.
+        by_kind breakdown is the actionable surface: a high "deadline"
+        count for one provider says "tighten that provider's per-op
+        timeout or increase _FETCH_JSON_DEADLINE_SECONDS"; a high
+        "rate_limited" count says "rotate keys / switch providers";
+        a high "server_error" count says "the provider is down."
+        Pre-2026-05-03 only rate_limited was surfaced, conflating
+        deadline-fired with HTTP server errors with DNS failures
+        under the catch-all "total" minus "rate_limited" inference.
         """
         now = time.time()
         with self._lock:
@@ -1146,11 +1261,34 @@ class _ProviderHealth:
                 if not events:
                     continue
                 total = len(events)
-                rate_limited = sum(1 for _, kind in events if kind == "rate_limited")
+                # Pre-seed the documented kinds at zero so the
+                # returned shape matches the docstring contract (5
+                # fixed keys). Without this the dict is sparse and a
+                # consumer that branches on by_kind["auth"] directly
+                # (per the docstring) would KeyError when the provider
+                # never had an auth error. Unknown kinds (future
+                # categorization additions) still count under their
+                # own key alongside the documented five.
+                by_kind: dict = {
+                    "rate_limited": 0,
+                    "auth": 0,
+                    "server_error": 0,
+                    "deadline": 0,
+                    "other": 0,
+                }
+                for _, kind in events:
+                    by_kind[kind] = by_kind.get(kind, 0) + 1
                 last_ts = max(ts for ts, _ in events)
                 providers_out[provider] = {
                     "total": total,
-                    "rate_limited": rate_limited,
+                    "by_kind": by_kind,
+                    # Backward-compat: pre-2026-05-03 the /health
+                    # consumers (operator dashboards, fly logs greps)
+                    # branched on `rate_limited` directly. Keep the
+                    # alias so a redeploy of just the source-network
+                    # module does not break those callers; they can
+                    # migrate to by_kind on their own cadence.
+                    "rate_limited": by_kind.get("rate_limited", 0),
                     "last_error_age_s": int(now - last_ts),
                 }
             return {
@@ -1198,51 +1336,207 @@ def _provider_from_url(url: str) -> str:
     return host
 
 
-def _fetch_json(url):
-    """Fetch JSON from a URL with timeout and error handling.
+# Hard upper bound on the wall-clock time _fetch_json can spend on a
+# single HTTP request, regardless of the per-socket-operation _TIMEOUT
+# parameter. urllib's `timeout` is per-operation (DNS, connect, TLS
+# handshake, send, each read chunk separately); a server that dribbles
+# bytes within the per-op window keeps urlopen alive indefinitely.
+# Production observed 2026-05-02 19:20:53 (cold-start fabrication-
+# profiler machine) showed a single Wikipedia _fetch_json blocking
+# ~30s before urllib's per-op timeout finally fired, by which point
+# SN's outer 35s wrapper had already returned to the user. The deadline
+# below enforces a hard caller-side cap by running urlopen in a sub-
+# thread and abandoning it if the deadline passes; the abandoned
+# thread continues until urllib eventually times out at its per-op
+# budget, but the caller is unblocked and can either move on to the
+# next provider or exit voluntarily on the next in-worker budget poll.
+#
+# Default raised from 8s to 12s on 2026-05-06 after production logs
+# (other-agent investigation report A2) showed Wikipedia and
+# Alphavantage caller-side deadline trips at 8s, contributing to
+# "0 verified claims" on prod. The 25s outer SN_BUDGET_SECONDS still
+# bounds total per-comparison cost; raising the per-fetch deadline
+# trades a slower-but-completing fetch for the prior fast-but-
+# discarded one. Env-overridable for further operator tuning.
+_FETCH_JSON_DEADLINE_SECONDS = float(
+    os.environ.get("SN_FETCH_JSON_DEADLINE_SECONDS", "12")
+)
 
-    Returns the parsed JSON dict on success, None on any error.
+
+def _urlopen_with_deadline(req, per_op_timeout, total_deadline=None):
+    """urlopen with HARD caller-side total deadline + the existing
+    per-socket-operation timeout.
+
+    Returns the response BYTES (caller decodes / json.loads). Raises:
+      - concurrent.futures.TimeoutError on caller-side deadline
+        exhaustion (existing call-site try/except around urlopen
+        catches generic Exception, so this propagates cleanly)
+      - Whatever urlopen raises on per-op timeout / network error /
+        HTTP error (preserved for existing call-site error handling)
+
+    Closes the gap that _fetch_json's deadline addressed but only for
+    the JSON-API path. The four direct urlopen sites (Wolfram Alpha,
+    SEC EDGAR ticker file, SEC EDGAR XBRL, Brave Search) had urllib's
+    per-op-only timeout, so a server that dribbles bytes within the
+    per-op window could block any of them indefinitely. The cold-
+    start architectural weakness is provider-agnostic; this helper
+    bounds the wall-clock at every direct urlopen call site uniformly.
+
+    Auto-records caller-side deadline exhaustion against
+    provider_health (kind="deadline") via _provider_from_url, so
+    /health surfaces per-provider deadline-fired counts the same way
+    it surfaces 429 / auth / server-error counts from _fetch_json.
+    """
+    deadline = (
+        total_deadline if total_deadline is not None
+        else _FETCH_JSON_DEADLINE_SECONDS
+    )
+
+    def _do():
+        # urlopen returns a response context manager; eagerly read the
+        # body inside the worker so the deadline bounds both the
+        # connect/handshake AND the read phase (returning the open
+        # response to the caller would let body-reads happen outside
+        # the deadline).
+        with urllib.request.urlopen(req, timeout=per_op_timeout) as resp:
+            return resp.read()
+
+    # Per-call ThreadPoolExecutor (not shared) for the same reason
+    # _fetch_json uses one: a hung urlopen does not leak slots against
+    # a long-lived executor; pool.shutdown(wait=False) lets the
+    # abandoned thread finish on urlopen's per-op timeout while the
+    # caller has already returned.
+    pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="sn-urlopen")
+    try:
+        future = pool.submit(_do)
+        try:
+            return future.result(timeout=deadline)
+        except _FuturesTimeoutError:
+            # Diagnostics are best-effort; wrap them so a failure
+            # inside _provider_from_url, a missing req.full_url
+            # attribute (e.g. caller passed a string URL instead of
+            # a Request), or a provider_health lock-contention raise
+            # cannot suppress the original deadline exception. The
+            # caller's try/except still catches generic Exception
+            # either way, but this guard preserves the exception TYPE
+            # so operator triage from fly logs sees
+            # "_FuturesTimeoutError" not the suppressed diagnostic
+            # exception class. getattr(req, "full_url", str(req))
+            # also handles the string-URL case defensively.
+            try:
+                import sys
+                full_url = getattr(req, "full_url", str(req))
+                provider = _provider_from_url(full_url)
+                provider_health.record_error(provider, "deadline")
+                safe_url = full_url.split("?")[0] if "?" in full_url else full_url
+                sys.stderr.write(
+                    f"[source-network] urlopen({safe_url[:100]}...): "
+                    f"caller-side deadline {deadline:.1f}s exceeded; "
+                    f"thread continues in background\n"
+                )
+            except Exception:
+                pass
+            raise
+    finally:
+        pool.shutdown(wait=False)
+
+
+def _fetch_json(url, total_deadline=None):
+    """Fetch JSON from a URL with a HARD total-time deadline.
+
+    Returns the parsed JSON dict on success, None on any error
+    (including deadline exhaustion).
+
+    The `total_deadline` parameter (default _FETCH_JSON_DEADLINE_SECONDS,
+    env-overridable via SN_FETCH_JSON_DEADLINE_SECONDS) caps the caller-
+    side wait. The underlying urlopen still uses the existing per-
+    socket-operation `_TIMEOUT` for chunk-level timeouts; the total
+    deadline is the additional outer bound that urllib alone cannot
+    enforce.
+
     Logs network/parse errors to stderr so a systematic source
     outage (FRED 403, World Bank timeout, etc.) is visible in
-    `fly logs` instead of silently producing empty results.
-
-    Records errors against the provider_health tracker so /health
-    can surface per-provider degradation without grepping logs.
-    Rate-limit responses (429) are tagged as rate_limited
-    specifically because 429 is the actionable operator signal:
-    correlate with per-provider quota, decide whether to rotate
-    keys / switch providers / accept the degradation.
+    `fly logs`. Records errors against provider_health so /health
+    can surface per-provider degradation. Rate-limit responses (429)
+    are tagged as rate_limited specifically because 429 is the
+    actionable operator signal. Caller-side deadline exhaustion is
+    tagged separately as "deadline" so /health can distinguish "fast-
+    fail caller-side bound" from "real provider error".
     """
+    deadline = (
+        total_deadline if total_deadline is not None
+        else _FETCH_JSON_DEADLINE_SECONDS
+    )
+
+    def _do_fetch():
+        # The original synchronous body. urllib's per-operation
+        # _TIMEOUT still applies; the outer thread wrapper enforces
+        # the additional total deadline.
+        try:
+            req = urllib.request.Request(url, headers=_HEADERS)
+            resp = urllib.request.urlopen(req, timeout=_TIMEOUT)
+            return ("ok", json.loads(resp.read()))
+        except Exception as exc:
+            return ("err", exc)
+
+    # Per-call ThreadPoolExecutor (not shared) so a hung urlopen does
+    # not leak slots against a long-lived shared executor;
+    # pool.shutdown(wait=False) in the finally lets the abandoned
+    # thread finish on its own urlopen-internal timeout while the
+    # caller has already returned. Per-call pool overhead (~10ms in
+    # CPython) is negligible compared to network latency.
+    pool = ThreadPoolExecutor(
+        max_workers=1, thread_name_prefix="sn-fetch-json"
+    )
     try:
-        req = urllib.request.Request(url, headers=_HEADERS)
-        resp = urllib.request.urlopen(req, timeout=_TIMEOUT)
-        return json.loads(resp.read())
-    except Exception as exc:
+        future = pool.submit(_do_fetch)
+        try:
+            kind, payload = future.result(timeout=deadline)
+        except _FuturesTimeoutError:
+            import sys
+            provider = _provider_from_url(url)
+            provider_health.record_error(provider, "deadline")
+            safe_url = url.split("?")[0] if "?" in url else url
+            sys.stderr.write(
+                f"[source-network] _fetch_json({safe_url}...): "
+                f"caller-side deadline {deadline:.1f}s exceeded; "
+                f"urlopen continues in background\n"
+            )
+            return None
+
+        if kind == "ok":
+            return payload
+
+        # kind == "err": replay the original error-handling block so
+        # provider_health categorization stays consistent with the
+        # pre-deadline behavior.
+        exc = payload
         import sys
         provider = _provider_from_url(url)
-        kind = "other"
-        # urllib HTTPError carries the status code; treat 429
-        # specifically as rate_limited so the operator can
-        # distinguish "we are over quota" from "the provider is
-        # down" without parsing free-form error strings.
+        kind_label = "other"
         if isinstance(exc, urllib.error.HTTPError):
             try:
                 if exc.code == 429:
-                    kind = "rate_limited"
+                    kind_label = "rate_limited"
                 elif exc.code in (403, 401):
-                    kind = "auth"
+                    kind_label = "auth"
                 elif 500 <= exc.code < 600:
-                    kind = "server_error"
+                    kind_label = "server_error"
             except Exception:
                 pass
-        provider_health.record_error(provider, kind)
-        # Truncate URL to avoid leaking API keys in query params
+        provider_health.record_error(provider, kind_label)
         safe_url = url.split("?")[0] if "?" in url else url
         sys.stderr.write(
             f"[source-network] _fetch_json({safe_url}...): "
             f"{type(exc).__name__}: {exc}\n"
         )
         return None
+    finally:
+        # wait=False so an abandoned hung thread does not block the
+        # caller's return. The thread will finish on urlopen's per-op
+        # timeout and Python's GC will reclaim the pool when no
+        # references remain.
+        pool.shutdown(wait=False)
 
 
 # ── Wikipedia ──
@@ -2137,7 +2431,12 @@ def verify_wolfram(decomp):
 
     try:
         req = urllib.request.Request(url, headers=_HEADERS)
-        result = urllib.request.urlopen(req, timeout=_TIMEOUT).read().decode()
+        # Caller-side deadline + per-op timeout. The except below
+        # catches both _FuturesTimeoutError (deadline) and any urlopen
+        # error (HTTPError, URLError, etc.) and returns no_data; the
+        # deadline-fired path also tags provider_health for /health
+        # observability via _urlopen_with_deadline's auto-tracking.
+        result = _urlopen_with_deadline(req, per_op_timeout=_TIMEOUT).decode()
     except Exception:
         return SourceResult(source_name="Wolfram Alpha", match_type="no_data")
 
@@ -2199,6 +2498,18 @@ def verify_wolfram(decomp):
 # `is not None` check before acquiring.
 _SEC_TICKERS = None
 _SEC_TICKERS_LOCK = threading.Lock()
+_SEC_TICKERS_FAIL_AT = 0.0
+# How long to skip retry after a failed tickers download. Operator-
+# overridable via SN_SEC_TICKERS_RETRY_AFTER_SECONDS. The default
+# balances two costs: too-short retries hammer SEC after a flaky
+# cold-start, too-long retries lock SEC verification out of the
+# worker for an excessive window after the upstream recovers. 60s
+# is a long-enough cool-down to absorb a typical CDN hiccup and a
+# short-enough one that the operator does not see "0 verified" on
+# repeated user requests after the network heals.
+_SEC_TICKERS_RETRY_AFTER = float(
+    os.environ.get("SN_SEC_TICKERS_RETRY_AFTER_SECONDS", "60")
+)
 _SEC_HEADERS = {"User-Agent": "FrameCheck/1.0 (hello@clarethium.com)"}
 
 
@@ -2215,20 +2526,78 @@ def _get_sec_tickers():
     by substring. Mixing them would let single-letter tickers like
     "V" (Visa) or "F" (Ford) substring-match any subject containing
     that letter, causing wildly wrong CIK lookups.
+
+    Failure handling: if the tickers file fetch raises (cold-start
+    8s deadline blown, SEC CDN timeout, network unreachable), we do
+    NOT poison _SEC_TICKERS with an empty tuple. The previous shape
+    cached the empty result for the life of the worker, locking SEC
+    verification out of every subsequent request. The current shape
+    leaves _SEC_TICKERS as None and records the failure timestamp;
+    callers within the retry-after window get an empty tuple without
+    a fresh fetch attempt, callers past the window retry. SEC
+    verification can recover within one cool-down window of an
+    upstream recovery.
     """
-    global _SEC_TICKERS
+    global _SEC_TICKERS, _SEC_TICKERS_FAIL_AT
     if _SEC_TICKERS is not None:
         return _SEC_TICKERS
+    if _SEC_TICKERS_FAIL_AT and (
+        time.time() - _SEC_TICKERS_FAIL_AT
+    ) < _SEC_TICKERS_RETRY_AFTER:
+        return ({}, {})
     with _SEC_TICKERS_LOCK:
         # Double-check after acquiring the lock: another thread
-        # may have populated while we waited.
+        # may have populated or failed while we waited.
         if _SEC_TICKERS is not None:
             return _SEC_TICKERS
+        if _SEC_TICKERS_FAIL_AT and (
+            time.time() - _SEC_TICKERS_FAIL_AT
+        ) < _SEC_TICKERS_RETRY_AFTER:
+            return ({}, {})
+
+        # Bundled-file primary path (since 2026-05-06). Production
+        # observation: Fly ORD egress to www.sec.gov is too slow to
+        # download the ~10MB tickers file within the caller-side
+        # deadline (>71s read times observed). The Dockerfile bakes
+        # the file into the image at /app/data/sec_company_tickers.json
+        # during build (Fly's builder has different network paths
+        # and the build is one-time-per-deploy). Reading the bundled
+        # file makes SEC verification work on prod cold-start without
+        # any network call. Updates land via redeploys; SEC ticker
+        # churn is roughly weekly so a daily-to-weekly deploy cadence
+        # keeps the cache acceptably fresh.
+        bundled_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "data", "sec_company_tickers.json",
+        )
+        data = None
         try:
-            url = "https://www.sec.gov/files/company_tickers.json"
-            req = urllib.request.Request(url, headers=_SEC_HEADERS)
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                data = json.loads(resp.read())
+            if os.path.isfile(bundled_path):
+                with open(bundled_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+        except (OSError, json.JSONDecodeError) as exc:
+            print(
+                f"[source-network] bundled SEC tickers unreadable "
+                f"({type(exc).__name__}: {exc}); falling back to "
+                f"runtime fetch",
+                file=sys.stderr,
+            )
+
+        try:
+            if data is None:
+                url = "https://www.sec.gov/files/company_tickers.json"
+                req = urllib.request.Request(url, headers=_SEC_HEADERS)
+                # SEC ticker file is ~10MB; per-op timeout 10s for
+                # the download phase, total deadline at the module
+                # default bounds the cold-start case where SEC's CDN
+                # dribbles the response within the per-op window.
+                # Reached only when the build-time bundle is missing
+                # (see Dockerfile RUN curl block; --fail-with-body
+                # exits the build on SEC error but skips the bundle
+                # on transient curl failures).
+                data = json.loads(
+                    _urlopen_with_deadline(req, per_op_timeout=10)
+                )
             # Build local dicts first, then assign to the global in
             # one shot so no reader ever sees a partial dict. The
             # global assignment itself is atomic in CPython
@@ -2244,10 +2613,36 @@ def _get_sec_tickers():
                 if ticker:
                     ticker_index[ticker.upper()] = (cik, ticker)
             _SEC_TICKERS = (titles, ticker_index)
+            _SEC_TICKERS_FAIL_AT = 0.0
             return _SEC_TICKERS
         except Exception:
-            _SEC_TICKERS = ({}, {})
-            return _SEC_TICKERS
+            _SEC_TICKERS_FAIL_AT = time.time()
+            return ({}, {})
+
+
+_COMMON_NOUN_BLACKLIST = frozenset({
+    # Common English nouns that title-case in headings ("Semiconductor",
+    # "Technology", "Industry") but are not company names. Without
+    # this gate the SEC ticker substring match (step 4 below) maps
+    # them to whichever real company contains the noun in its title:
+    # "SEMICONDUCTOR" -> "NXP SEMICONDUCTORS" / "LATTICE SEMICONDUCTOR"
+    # / "SKYWORKS SOLUTIONS" depending on iteration order. The
+    # resulting CIK lookup runs against a wrong entity and produces
+    # either no match (best case) or a false-positive contradiction
+    # (worst case, the wrong company's revenue). Discovered
+    # 2026-05-06 on the NVIDIA example: "Semiconductor fabrication
+    # costs ... $20 billion" classified subject="Semiconductor",
+    # canonical="NXPI". Generic nouns return UNKNOWN earlier so the
+    # pipeline can surface unverifiable instead of inventing a match.
+    "semiconductor", "semiconductors", "technology", "technologies",
+    "industry", "industries", "company", "companies", "corporation",
+    "corporations", "group", "groups", "holdings", "service",
+    "services", "financial", "bank", "banks", "manufacturing",
+    "partners", "partnership", "international", "global", "national",
+    "regional", "investment", "investments", "capital", "fund",
+    "funds", "trust", "ventures", "consulting", "solutions", "systems",
+    "growth", "challenges", "outlook", "findings",
+})
 
 
 def _find_cik(subject):
@@ -2260,7 +2655,10 @@ def _find_cik(subject):
       3. Suffix-stripped exact title match (Apple -> APPLE INC).
       4. Substring match on titles, requiring at least 3 characters
          in the subject so common short words don't match arbitrary
-         titles.
+         titles. Single-word subjects that match the common-noun
+         blacklist short-circuit before the substring scan to prevent
+         false-positive matches against real company titles that
+         happen to contain the noun.
     """
     cache = _get_sec_tickers()
     if not cache:
@@ -2287,8 +2685,16 @@ def _find_cik(subject):
 
     # 4. Substring match on titles only (never tickers). Require
     # at least 3 characters in the subject so we don't match
-    # arbitrary single letters.
+    # arbitrary single letters. Common-noun gate: a single-word
+    # subject that is a generic English noun is not allowed to
+    # substring-match a real company title; the false-positive cost
+    # (wrong company's data passed off as the claim's subject)
+    # outweighs the rare case where a common-noun-looking word is
+    # actually a brand.
     if len(subject_upper) >= 3:
+        is_single_word = " " not in subject_upper
+        if is_single_word and subject_upper.lower() in _COMMON_NOUN_BLACKLIST:
+            return None, None
         for title, (cik, ticker) in titles.items():
             if subject_upper in title or title in subject_upper:
                 return cik, ticker
@@ -2390,8 +2796,11 @@ def verify_sec_edgar(decomp):
         )
         req = urllib.request.Request(url, headers=_SEC_HEADERS)
         try:
-            with urllib.request.urlopen(req, timeout=8) as resp:
-                data = json.loads(resp.read())
+            # Caller-side deadline + per-op timeout. The except
+            # catches both _FuturesTimeoutError and any urlopen
+            # error and continues to the next concept; same
+            # iteration-skipping behavior as before.
+            data = json.loads(_urlopen_with_deadline(req, per_op_timeout=8))
         except Exception:
             continue
 
@@ -2639,14 +3048,17 @@ def verify_brave_search(decomp):
             "Accept-Encoding": "gzip",
             "X-Subscription-Token": api_key,
         })
-        with urllib.request.urlopen(req, timeout=8) as resp:
-            raw = resp.read()
-            # Handle gzip
-            try:
-                import gzip
-                data = json.loads(gzip.decompress(raw))
-            except Exception:
-                data = json.loads(raw)
+        # Caller-side deadline + per-op timeout. The except below
+        # catches both _FuturesTimeoutError and any urlopen error
+        # and returns no_data; deadline-fired path tags
+        # provider_health for /health observability.
+        raw = _urlopen_with_deadline(req, per_op_timeout=8)
+        # Handle gzip
+        try:
+            import gzip
+            data = json.loads(gzip.decompress(raw))
+        except Exception:
+            data = json.loads(raw)
     except Exception:
         return SourceResult(source_name="Web Search", match_type="no_data")
 
@@ -3262,6 +3674,32 @@ def verify_claims_source_network(
     # Article cache: same heading = one Wikipedia fetch for all claims
     _article_cache = {}
 
+    # Cooperative cancellation: capture the SN deadline origin HERE
+    # (above the nested function definitions) so each worker thread
+    # can poll the cumulative elapsed time against SN_BUDGET_SECONDS
+    # without depending on the as_completed loop yielding. Python
+    # threads cannot be cancelled externally; the workers cooperate
+    # by checking the deadline themselves before each provider hop.
+    # The orchestrator's in-loop budget check (line ~3500) only fires
+    # when as_completed yields a completed future; under the cold-
+    # start scenario observed 2026-05-02 19:20:53 (all workers stalled
+    # in a single Wikipedia urlopen for 30+s), no future yielded
+    # within budget, so the orchestrator could not engage. The in-
+    # worker poll is the cooperative-cancellation half of the budget
+    # primitive; combined with the _fetch_json caller-side total
+    # deadline added the same day, it bounds the worker's wall-clock
+    # in two ways: (a) workers exit voluntarily at provider boundaries
+    # when they observe budget exhausted, (b) urlopen calls themselves
+    # cannot block past the per-call deadline.
+    sn_orchestrator_start = time.monotonic()
+
+    def _budget_exhausted_in_worker():
+        """Return True when the SN_BUDGET_SECONDS deadline has elapsed.
+        Polled by _verify_one before each provider boundary so workers
+        exit voluntarily when the orchestrator cannot reach them via
+        the as_completed loop."""
+        return (time.monotonic() - sn_orchestrator_start) > SN_BUDGET_SECONDS
+
     def _get_cached_article(subject):
         """Fetch Wikipedia article once per unique subject."""
         if not subject:
@@ -3271,7 +3709,39 @@ def verify_claims_source_network(
             _article_cache[cache_key] = _query_wikipedia(subject)
         return _article_cache[cache_key]
 
+    def _budget_marked_result(claim, decomp):
+        """Synthesize the unverifiable-with-budget-marker result that
+        downstream code keys off (sn_status="partial" detection in
+        app.py reads detail.lower() for "budget"). Used by the in-
+        worker early-exit paths so the output shape matches the post-
+        loop synthesis path at the bottom of
+        verify_claims_source_network.
+
+        decomp is REQUIRED: the HTML render at app.py:2222 reads
+        decomp.subject unconditionally and crashes on None. Every
+        in-worker exit site must call decompose_claim first and pass
+        the result here. comparison.py:955 happens to be defensive,
+        but relying on each downstream consumer to add a None-check
+        would be fragile; the decomp-required signature pins the
+        invariant at the producer."""
+        return SourceNetworkResult(
+            claim_numbers=claim.get("numbers", []),
+            claim_sentence=claim.get("sentence", ""),
+            decomposition=decomp,
+            source_results=[],
+            verdict="unverifiable",
+            confidence=0.0,
+            detail="Verification budget exhausted; worker exited before provider attempts.",
+        )
+
     def _verify_one(claim):
+        # decompose_claim runs unconditionally as the worker's first
+        # step. It is a microseconds-scale regex pass; an entry-time
+        # budget poll skipping it would shave essentially nothing off
+        # the request and would force _budget_marked_result to accept
+        # decomp=None which crashes the HTML render at app.py:2222.
+        # Doing decomposition first means every in-worker exit below
+        # carries a valid decomp into _budget_marked_result.
         decomp = decompose_claim(
             claim,
             topic=topic,
@@ -3303,6 +3773,12 @@ def verify_claims_source_network(
                 detail="Could not extract subject or value from claim.",
             )
 
+        # Budget poll BEFORE Wikipedia. The expensive provider work
+        # starts here; bailing now saves the most CPU/network when
+        # budget is already exhausted.
+        if _budget_exhausted_in_worker():
+            return _budget_marked_result(claim, decomp=decomp)
+
         # Route to sources
         source_fns = _classify_and_route(decomp)
 
@@ -3310,6 +3786,14 @@ def verify_claims_source_network(
         source_results = []
         non_wiki_fns = []
         for fn in source_fns:
+            # Per-provider budget poll: workers exit voluntarily at
+            # every provider boundary, not just the first. Without
+            # this, a worker past budget after one slow provider
+            # would still iterate through every other source listed
+            # in source_fns. Symmetric coverage with the pre-Wikipedia
+            # poll above.
+            if _budget_exhausted_in_worker():
+                return _budget_marked_result(claim, decomp=decomp)
             if fn is verify_wikipedia:
                 # Time the full wiki path: the cache fetch
                 # (network I/O on miss, ~0ms on hit) and the
@@ -3328,6 +3812,13 @@ def verify_claims_source_network(
             else:
                 non_wiki_fns.append(fn)
 
+        # Budget poll BEFORE the non-Wikipedia sub-pool. Without it, a
+        # worker that completed Wikipedia within budget but is past
+        # budget by the time it reaches this branch would still spin
+        # up to 3 sub-workers (each making blocking provider calls)
+        # past the deadline. Symmetric with the pre-Wikipedia poll.
+        if non_wiki_fns and _budget_exhausted_in_worker():
+            return _budget_marked_result(claim, decomp=decomp)
         if non_wiki_fns:
             with ThreadPoolExecutor(max_workers=3) as pool:
                 futures = {
@@ -3380,12 +3871,71 @@ def verify_claims_source_network(
             confidence_dimensions=conf_dims,
         )
 
-    # Process claims (parallel at the claim level)
+    # Process claims (parallel at the claim level).
+    #
+    # Wall-clock budget: capture start_time and stop accepting new
+    # results when SN_BUDGET_SECONDS is exhausted. Unprocessed claims
+    # become unverifiable results (verdict pinned to existing vocab so
+    # template + aggregation paths are unchanged); the user-facing
+    # impact is "verification incomplete on N of M claims" rather than
+    # "Analysis timed out" at the outer _structural budget. See module
+    # constant comment for the architectural compromise.
     claim_list = claims[:max_claims]
-    with ThreadPoolExecutor(max_workers=5) as pool:
-        futures = {pool.submit(_verify_one, c): i for i, c in enumerate(claim_list)}
+    sn_start_time = time.monotonic()
+    budget_exhausted = False
+
+    def _log_budget_exhausted(elapsed_s, indexed_count):
+        import sys
+        print(
+            f"[source-network] budget exhausted at "
+            f"{elapsed_s:.1f}s; {indexed_count} of "
+            f"{len(claim_list)} claims processed; "
+            f"{len(claim_list) - indexed_count} marked "
+            f"unverifiable (budget)",
+            file=sys.stderr, flush=True,
+        )
+
+    # Fast-fail short-circuit. Budgets under 100ms are debug / test
+    # configurations: production is 25s, no realistic operator
+    # configuration sub-100ms returns useful provider results. Without
+    # this guard, the in-loop budget check races against per-claim
+    # workers; on fast systems with already-failing workers (e.g.
+    # malformed claim shapes raising AttributeError on submit), the
+    # workers complete and the loop's exception handler runs BEFORE
+    # the budget check fires, silently disengaging the budget primitive.
+    # Bypassing pool creation entirely under sub-100ms budget makes the
+    # fast-fail path deterministic across system speeds and tightens
+    # behavior under operator debugging without changing production.
+    if SN_BUDGET_SECONDS < 0.1:
+        budget_exhausted = True
+        _log_budget_exhausted(0.0, 0)
+        # Skip the pool path; jump straight to the post-loop budget-
+        # marked synthesis below. ThreadPoolExecutor still needs to be
+        # exited cleanly via the existing try / finally for parity with
+        # the normal-budget path, so create + shutdown an empty pool.
+        pool = ThreadPoolExecutor(max_workers=1)
+        futures = {}
         indexed_results = {}
+    else:
+        pool = ThreadPoolExecutor(max_workers=5)
+    try:
+        if not budget_exhausted:
+            futures = {pool.submit(_verify_one, c): i for i, c in enumerate(claim_list)}
+            indexed_results = {}
+
         for future in as_completed(futures):
+            elapsed = time.monotonic() - sn_start_time
+            if elapsed > SN_BUDGET_SECONDS:
+                # Budget exhausted: stop collecting more results,
+                # do not wait for in-flight workers. Cancel pending
+                # (best-effort; running workers continue until their
+                # per-call _TIMEOUT, but their results are discarded).
+                budget_exhausted = True
+                for f in futures:
+                    if not f.done():
+                        f.cancel()
+                _log_budget_exhausted(elapsed, len(indexed_results))
+                break
             idx = futures[future]
             try:
                 indexed_results[idx] = future.result()
@@ -3406,20 +3956,72 @@ def verify_claims_source_network(
                     f"{type(e).__name__}: {e}",
                     file=sys.stderr,
                 )
+    finally:
+        # shutdown(wait=False) returns immediately; running workers
+        # finish on their own per-call _TIMEOUT. They do not extend
+        # the user-visible request time but they do continue consuming
+        # CPU/network until they finish. The proper fix is asyncio
+        # task cancellation; see SN_BUDGET_SECONDS module comment.
+        pool.shutdown(wait=False)
 
-    # Return in original order
-    for i in range(len(claim_list)):
+    # Return in original order. Unprocessed claims (cancelled or
+    # not-yet-started when budget exhausted) get a synthetic
+    # unverifiable result so the caller's claim-count semantics
+    # ("M of N source-verified") still align with the input claims.
+    for i, claim in enumerate(claim_list):
         if i in indexed_results:
             results.append(indexed_results[i])
+        elif budget_exhausted:
+            # Construct a minimal unverifiable result so downstream
+            # rendering treats this claim as "not verified" rather
+            # than "absent." Decomposition is required for the
+            # rendering path to extract sentence + heading; build it
+            # the same way _verify_one does (no provider calls, just
+            # decomposition).
+            try:
+                decomp = decompose_claim(
+                    claim, topic=topic, doc_text=doc_text,
+                    doc_primary_entity=doc_primary_entity,
+                )
+                results.append(SourceNetworkResult(
+                    claim_numbers=claim.get("numbers", []),
+                    claim_sentence=claim.get("sentence", ""),
+                    decomposition=decomp,
+                    source_results=[],
+                    verdict="unverifiable",
+                    confidence=0.0,
+                    detail="Verification budget exhausted before this claim was processed.",
+                ))
+            except Exception:
+                # Defensive: if decomposition itself fails on this
+                # claim, omit silently rather than raising. The
+                # behavior matches the existing per-claim exception
+                # handler above.
+                pass
 
     # Step 4: Check derivations using verified base values
+    # (in-process computation; cheap; runs even when budget exhausted)
     check_derivations(results)
 
     # Step 5: Brave Search fallback for unverifiable claims.
     # Only attempt for claims with a real entity subject. Anonymous claims
     # ("Our platform", "Customer satisfaction") will produce false positives
     # because Brave matches on number coincidence across unrelated companies.
-    if os.environ.get("BRAVE_API_KEY"):
+    #
+    # Skip Brave entirely if the per-claim budget was exhausted: the user
+    # is already past the wall-clock target, and Brave (5 sequential
+    # network calls in a small thread pool) would extend the wait
+    # further. The unverifiable claims stay unverifiable; the caller
+    # renders the partial result as "incomplete verification" via the
+    # existing decision_readiness pipeline.
+    if budget_exhausted:
+        import sys
+        print(
+            "[source-network] Brave Search fallback skipped: "
+            "per-claim budget already exhausted",
+            file=sys.stderr, flush=True,
+        )
+    if os.environ.get("BRAVE_API_KEY") and not budget_exhausted:
         unverified_indices = [
             i for i, r in enumerate(results)
             if r.verdict == "unverifiable"

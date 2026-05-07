@@ -176,6 +176,619 @@ def get_teaching_question(fvs_id: str) -> str | None:
     return TEACHING_QUESTIONS.get(fvs_id)
 
 
+# Operator-authored takeaway entries per FVS. When an entry is present
+# here, the FVS surfaces as a button in the takeaway palette on the
+# /check results page (live and saved). Each button drops the user into
+# Claude / GPT with a per-document prompt that reads the user's document
+# through this lens. When TAKEAWAY_ENTRIES is empty, the palette section
+# is hidden entirely.
+#
+# The palette is the multi-frame surface: detected frames the document
+# IS using AND divergent frames the document is NOT using both surface
+# here, distinguished by the kind tag composed at render time. The
+# user picks the angle they want to take further; each click is one
+# lens applied to their document. Frame Check's value as a divergence
+# instrument against AGI's convergent default lives in this surface.
+#
+# Schema per entry:
+#   button_label:    short user-voice label for the button (no FVS
+#                    jargon; the user does not know what an FVS is)
+#   prompt_template: the prompt that opens in the user's LLM. Free-form
+#                    text with str.format-style placeholders for
+#                    substrate variables (see below)
+#
+# Prompt template substrate variables, filled at render time. Variables
+# that have no value for THIS document fall back to "" so a template
+# that references a missing variable does not crash:
+#   {frame_name}        FVS human-readable name (e.g., "Failure Framing")
+#   {fvs_id}            FVS-NNN identifier (rarely useful in user copy)
+#   {teaching_question} TEACHING_QUESTIONS[fvs_id] when authored, else ""
+#   {detected_frames}   comma-joined names of frames detected on this doc
+#   {absent_dimensions} comma-joined names of coverage dimensions absent
+#   {v4_2_reasoning}    V4.2 per-document reasoning text when available
+#
+# Per the "no LLM drafting of substantive content" discipline, every
+# entry is operator-authored. The empty default state is a feature; a
+# half-authored palette is worse than none. Adding one entry lights up
+# the palette section live; the operator iterates from there.
+TAKEAWAY_ENTRIES: dict[str, dict[str, str]] = {
+    # FVS-NNN: {
+    #     "button_label": "...",
+    #     "prompt_template": "...",
+    # },
+}
+
+
+class _EmptyDefault(dict):
+    """dict subclass that returns "" for missing keys.
+
+    Used by compose_takeaway_palette so a prompt template referencing a
+    substrate variable Frame Check did not provide for THIS document
+    silently empties out instead of raising KeyError. Keeps prompt
+    authoring forgiving: the operator can reference {v4_2_reasoning} or
+    {blind_spots} without having to guard every reference for the case
+    where that piece of substrate did not run.
+    """
+
+    def __missing__(self, key):
+        return ""
+
+
+def _derive_ac1_tier(ac1_score) -> str:
+    """Map a V4.2 AC1 inter-rater agreement score to a reliability
+    tier label. Mirrors the cutoffs used elsewhere in results.html
+    (strong >= 0.8, moderate >= 0.4, weak >= 0). Returns empty string
+    when the score is None or non-numeric so the operator's prompt
+    template can reference {ac1_tier} without a crash on documents
+    where V4.2 did not run.
+    """
+    try:
+        score = float(ac1_score)
+    except (TypeError, ValueError):
+        return ""
+    if score >= 0.8:
+        return "strong"
+    if score >= 0.4:
+        return "moderate"
+    return "weak"
+
+
+def _v4_2_entry_for_fvs(v4_2_result, fvs_id: str) -> dict | None:
+    """Return the V4.2 per-frame entry for an FVS ID, or None when
+    V4.2 did not run / did not include this FVS. v4_2_result is the
+    same dict the templates and JSON API consume; it carries
+    `entries` keyed by fvs_id when meta.framing_engine == "v4_2".
+    """
+    if not isinstance(v4_2_result, dict):
+        return None
+    meta = v4_2_result.get("meta") or {}
+    if meta.get("framing_engine") != "v4_2":
+        return None
+    for entry in v4_2_result.get("entries") or []:
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("fvs_id") == fvs_id:
+            return entry
+    return None
+
+
+def compose_takeaway_palette(
+    framing: dict | None,
+    coverage: dict | None = None,
+    v4_2_result: dict | None = None,
+    voice: dict | None = None,
+    epistemic: dict | None = None,
+    claim_stats: dict | None = None,
+) -> list[dict]:
+    """Build the takeaway palette for one document.
+
+    Iterates TAKEAWAY_ENTRIES in dict-insertion order. For every entry
+    with both fields authored, composes the prompt by templating the
+    entry's prompt_template with this document's enriched substrate.
+    Each entry is tagged "detected" (its FVS appears in
+    framing.frame_suggestions for this document) or "divergent" (its
+    FVS does not appear in detected frames).
+
+    The substrate carries per-FVS analysis findings (V4.2 per-frame
+    reasoning, AC1 score and tier, Layer A signal text, importance,
+    pattern_kind) plus cross-frame state (voice, claim density,
+    sourced percentage, detected/absent FVS lists) so an
+    operator-authored prompt template can weave document-specific
+    findings INTO the prompt body. Without this depth of substrate
+    the prompts collapse to slot-filled boilerplate.
+
+    Args:
+      framing:      the document's framing dict (with frame_suggestions)
+      coverage:     the document's coverage dict (covered/missing)
+      v4_2_result:  the V4.2 result dict (meta + entries) when V4.2 ran
+      voice:        the document's voice dict (voice classification, etc.)
+      epistemic:    the document's epistemic dict (sourced_pct, etc.)
+      claim_stats:  per-document claim density / count dict
+
+    Substrate variables exposed to operator prompt templates:
+      Per-frame (filled from the matching frame_suggestion +
+      V4.2 entry for THIS FVS):
+        frame_name, fvs_id, teaching_question
+        signal             Layer A's reason for firing
+        importance         rank_frame_suggestions priority
+        pattern_kind       present_detected | absent_pattern
+        ac1_score          float as string ("" when V4.2 did not run)
+        ac1_tier           strong | moderate | weak ("" when no score)
+        v4_2_reasoning     V4.2's per-frame reasoning text
+        v4_2_exhibited     "true" | "false" | "" (V4.2's verdict)
+
+      Cross-frame (same on every entry for this document):
+        detected_frames    comma-joined names of detected frames
+        detected_fvs_ids   comma-joined FVS IDs of detected frames
+        absent_dimensions  comma-joined absent coverage dimensions
+        voice              voice classification
+        claim_density      numerical claims per 1K words (string)
+        sourced_pct        percent sentences sourced (string)
+
+    Missing values fall through _EmptyDefault to "" so the operator's
+    template can reference any variable without crashing on documents
+    where the substrate is partial.
+
+    Returns:
+      Empty list when TAKEAWAY_ENTRIES is empty (section hidden).
+      Otherwise a list of dicts, one per authored entry, each:
+        fvs_id, frame_name, button_label, prompt, kind
+
+      Half-authored entries (one of the two fields empty) are silently
+      skipped: a partial entry surfacing as a broken button is worse
+      than the entry not surfacing at all.
+    """
+    if not TAKEAWAY_ENTRIES:
+        return []
+
+    framing = framing or {}
+    suggestions = framing.get("frame_suggestions") or []
+    coverage = coverage or {}
+    voice = voice or {}
+    epistemic = epistemic or {}
+    claim_stats = claim_stats or {}
+
+    # Index frame_suggestions by fvs_id for per-frame lookup.
+    suggestions_by_id = {
+        s.get("fvs_id"): s for s in suggestions if s.get("fvs_id")
+    }
+    detected_ids = list(suggestions_by_id.keys())
+    detected_names = [
+        s.get("name") or s.get("fvs_id") or ""
+        for s in suggestions
+    ]
+
+    # Cross-frame substrate (computed once; same for every palette entry).
+    cross_frame = {
+        "detected_frames": ", ".join(n for n in detected_names if n),
+        "detected_fvs_ids": ", ".join(detected_ids),
+        "absent_dimensions": ", ".join(coverage.get("missing") or []),
+        "voice": voice.get("voice", ""),
+        "claim_density": (
+            str(claim_stats.get("numerical_per_1kw", ""))
+            if claim_stats.get("numerical_per_1kw") is not None else ""
+        ),
+        "sourced_pct": (
+            str(epistemic.get("sourced_pct", ""))
+            if epistemic.get("sourced_pct") is not None else ""
+        ),
+    }
+
+    palette: list[dict] = []
+    for fvs_id, entry in TAKEAWAY_ENTRIES.items():
+        button_label = (entry.get("button_label") or "").strip()
+        template = entry.get("prompt_template") or ""
+        if not button_label or not template:
+            continue
+
+        suggestion = suggestions_by_id.get(fvs_id) or {}
+        v4_2_entry = _v4_2_entry_for_fvs(v4_2_result, fvs_id) or {}
+
+        # V4.2 entries place AC1 + tier inside a nested `reliability`
+        # dict (per templates/_v4_2_results.html); reading flat
+        # `ac1_score` off the entry returns None silently. `exhibits`
+        # is the verb-form field on the entry root.
+        rel = v4_2_entry.get("reliability") or {}
+        ac1_score = rel.get("library_consensus_ac1")
+        ac1_tier = rel.get("reliability_tier") or ""
+        v4_2_exhibits_raw = v4_2_entry.get("exhibits")
+        v4_2_exhibited = (
+            "true" if v4_2_exhibits_raw is True
+            else ("false" if v4_2_exhibits_raw is False else "")
+        )
+
+        substrate = {
+            # Per-frame
+            "frame_name": FVS_NAMES.get(fvs_id) or fvs_id,
+            "fvs_id": fvs_id,
+            "teaching_question": get_teaching_question(fvs_id) or "",
+            "signal": suggestion.get("signal") or "",
+            "importance": (
+                str(suggestion.get("_priority", ""))
+                if suggestion.get("_priority") is not None else ""
+            ),
+            "pattern_kind": suggestion.get("pattern_kind") or "",
+            "ac1_score": str(ac1_score) if ac1_score is not None else "",
+            "ac1_tier": ac1_tier,
+            "v4_2_reasoning": v4_2_entry.get("reasoning") or "",
+            "v4_2_exhibited": v4_2_exhibited,
+            # Cross-frame
+            **cross_frame,
+        }
+        try:
+            prompt = template.format_map(_EmptyDefault(substrate))
+        except (IndexError, ValueError):
+            # Malformed format spec inside the operator's template
+            # (e.g., a stray `{` they did not intend as a placeholder).
+            # Surface the raw template so the entry still appears; the
+            # operator catches the bug on first use rather than the
+            # whole palette disappearing.
+            prompt = template
+
+        palette.append({
+            "fvs_id": fvs_id,
+            "frame_name": FVS_NAMES.get(fvs_id) or fvs_id,
+            "button_label": button_label,
+            "prompt": prompt,
+            "kind": "detected" if fvs_id in suggestions_by_id else "divergent",
+        })
+    return palette
+
+
+# Canonical coverage-dimension questions. Mirrors the perspective_desc
+# Jinja set in templates/results.html (line ~412); centralized here so
+# the takeaway composer can reach the same questions without re-parsing
+# template source. Five fixed dimensions are Frame Check's structural
+# coverage contract.
+COVERAGE_QUESTIONS: dict[str, str] = {
+    "causes": "Why is this happening?",
+    "risks": "What could go wrong?",
+    "stakeholders": "Who is affected?",
+    "trends": "What is changing?",
+    "uncertainty": "What is unknown?",
+}
+
+
+def compose_takeaway_questions(
+    framing: dict | None,
+    v4_2_result: dict | None = None,
+    sn_results: list | None = None,
+    ai_interpret: dict | None = None,
+    doc_text: str | None = None,
+    *,
+    max_frames: int = 5,
+    max_unverified: int = 5,
+) -> dict:
+    """Deterministically compose the takeaway questions from existing
+    analysis substrate. Zero new LLM calls; everything below is
+    composed from data Frame Check already produced.
+
+    The takeaway is the user's path from the analysis to a decision.
+    It surfaces:
+      - Frames the document is doing structural work through, with
+        per-frame reasoning and the operator-curated question
+      - Dimensions the document does not engage with their canonical
+        question
+      - Concerns Frame Check flagged (AI-interpret blind_spots; empty
+        until that async stage resolves on live view)
+      - Claims Frame Check could not verify externally
+      - A bundled prompt the user can take to their LLM, structurally
+        composed from the substrate above (no LLM-authored content)
+
+    Source-of-truth selection for frames_in_use:
+      1. V4.2 entries with exhibits == True, sorted ac1_score desc,
+         capped at max_frames. V4.2 sees semantic frames Layer A's
+         conservative regex detection misses; on a typical document
+         V4.2 confirms 3-5 frames where Layer A emits 1-2.
+      2. Fallback: framing.frame_suggestions (Layer A) capped at 3
+         when V4.2 did not run (meta.framing_engine != "v4_2").
+
+    Args:
+      framing:       framing analysis dict (frame_suggestions + coverage)
+      v4_2_result:   V4.2 result dict (meta + entries) when V4.2 ran
+      sn_results:    list of SourceNetworkResult instances
+      ai_interpret:  AI-interpret response dict (blind_spots, etc.) when
+                     available; on live view first paint this is None
+                     and concerns are empty until the JS async upgrades
+      doc_text:      full document text (for bundling into llm_prompt)
+
+    Returns:
+      Dict with keys frames_in_use, absent_dimensions, concerns,
+      unverified_claims, llm_prompt. Empty / partial when substrate
+      is partial (no V4.2, no sn_results, no AI-interpret yet); the
+      template gates each section on truthiness so empty sections
+      hide cleanly.
+    """
+    framing = framing or {}
+    coverage = framing.get("coverage") or {}
+    suggestions = framing.get("frame_suggestions") or []
+
+    # ── frames_in_use ──
+    frames_in_use: list[dict] = []
+    v4_2_engine = (v4_2_result or {}).get("meta", {}).get("framing_engine")
+    if v4_2_result and v4_2_engine == "v4_2":
+        # V4.2 path: rank exhibited entries by cross-family AC1, take
+        # top-N. V4.2 carries semantic detection + per-frame reasoning
+        # that Layer A's structural regexes do not produce.
+        #
+        # The canonical V4.2 entry schema (per templates/_v4_2_results.
+        # html:81-110) places AC1 + tier inside a nested `reliability`
+        # dict, not on the entry root. The first cut read `ac1_score`
+        # off the entry (no such field), which silently returned None
+        # everywhere: sort key was always 0 (entries appeared in
+        # FVS-ID order, not AC1 desc), and ac1_tier was always empty
+        # (no badge rendered). Reading from reliability matches what
+        # the existing _v4_2_results.html partial does.
+        exhibited = [
+            e for e in (v4_2_result.get("entries") or [])
+            if isinstance(e, dict) and e.get("exhibits") is True
+        ]
+
+        def _ac1_for_sort(entry):
+            rel = entry.get("reliability") or {}
+            score = rel.get("library_consensus_ac1")
+            try:
+                return -float(score)
+            except (TypeError, ValueError):
+                # Unmeasured entries sort last among exhibited rather
+                # than crashing the whole sort.
+                return 0.0
+
+        exhibited.sort(
+            key=lambda e: (_ac1_for_sort(e), e.get("fvs_id") or "")
+        )
+
+        for entry in exhibited[:max_frames]:
+            fvs_id = entry.get("fvs_id") or ""
+            rel = entry.get("reliability") or {}
+            ac1 = rel.get("library_consensus_ac1")
+            tier = rel.get("reliability_tier") or ""
+            frames_in_use.append({
+                "fvs_id": fvs_id,
+                "frame_name": FVS_NAMES.get(fvs_id) or fvs_id,
+                "ac1_tier": tier,
+                "ac1_score": ac1,
+                "reasoning": (entry.get("reasoning") or "").strip(),
+                "question": (
+                    get_teaching_question(fvs_id)
+                    or _question_from_suggestion(suggestions, fvs_id)
+                    or ""
+                ),
+                "library_url": f"/corpus/library/{fvs_id}.html" if fvs_id else "",
+            })
+    else:
+        # Layer A fallback: V4.2 didn't run (skipped, fallback, blocked).
+        # frame_suggestions carries name + signal + question; reasoning
+        # field absent (the signal text serves as the rough equivalent).
+        for s in suggestions[:3]:
+            fvs_id = s.get("fvs_id") or ""
+            frames_in_use.append({
+                "fvs_id": fvs_id,
+                "frame_name": s.get("name") or FVS_NAMES.get(fvs_id) or fvs_id,
+                "ac1_tier": "",
+                "ac1_score": None,
+                "reasoning": (s.get("signal") or "").strip(),
+                "question": (
+                    s.get("question")
+                    or get_teaching_question(fvs_id)
+                    or ""
+                ),
+                "library_url": f"/corpus/library/{fvs_id}.html" if fvs_id else "",
+            })
+
+    # ── absent_dimensions ──
+    absent_dimensions: list[dict] = []
+    for dim in coverage.get("missing") or []:
+        question = COVERAGE_QUESTIONS.get(dim, "")
+        absent_dimensions.append({
+            "name": dim,
+            "question": question,
+        })
+
+    # ── concerns (AI-interpret blind_spots, when present) ──
+    concerns: list[str] = []
+    if ai_interpret and isinstance(ai_interpret, dict):
+        for s in (ai_interpret.get("blind_spots") or []):
+            if isinstance(s, str) and s.strip():
+                concerns.append(s.strip())
+
+    # ── contradicted_claims (from sn_results) ──
+    # The takeaway's job is to surface what's actionable. Contradicted
+    # claims (an external source SAYS the document is wrong about
+    # value X) are actionable; unverifiable claims (out of Frame
+    # Check's verification network coverage) are not, so flagging
+    # them as "worth verifying" creates noise that misframes
+    # methodology gap as document-quality concern. This filter keeps
+    # only verdicts where the source disagrees, which is the rare
+    # high-signal case the takeaway should pull up.
+    #
+    # claim_sentence on the underlying SourceNetworkResult sometimes
+    # carries a tight 30+30 char window (claim_analysis.py:171) rather
+    # than a clean sentence; the bullet-list path through
+    # claim_analysis stores tight_context as the "sentence" field. To
+    # avoid mid-word truncation in the rendered display, the composer
+    # re-extracts a clean sentence excerpt from doc_text around each
+    # value and falls back to the raw field only when extraction can't
+    # find the value in the document.
+    contradicted_claims: list[dict] = []
+    for r in (sn_results or []):
+        if len(contradicted_claims) >= max_unverified:
+            break
+        verdict = _read_sn_field(r, "verdict")
+        if verdict != "contradicted":
+            continue
+        claim_numbers = _read_sn_field(r, "claim_numbers") or []
+        raw_sentence = (_read_sn_field(r, "claim_sentence") or "").strip()
+        detail = (_read_sn_field(r, "detail") or "").strip()
+        primary_value = claim_numbers[0] if claim_numbers else ""
+        clean_sentence = _clean_excerpt_around_value(
+            doc_text or "", primary_value, raw_sentence,
+        )
+        contradicted_claims.append({
+            "value": ", ".join(claim_numbers) if claim_numbers else "",
+            "sentence": clean_sentence,
+            "reason": detail,
+        })
+
+    # ── llm_prompt: structural bundle, no LLM-authored content ──
+    llm_prompt = _compose_takeaway_llm_prompt(
+        frames_in_use=frames_in_use,
+        absent_dimensions=absent_dimensions,
+        concerns=concerns,
+        contradicted_claims=contradicted_claims,
+        doc_text=doc_text or "",
+    )
+
+    return {
+        "frames_in_use": frames_in_use,
+        "absent_dimensions": absent_dimensions,
+        "concerns": concerns,
+        "contradicted_claims": contradicted_claims,
+        "llm_prompt": llm_prompt,
+    }
+
+
+def _clean_excerpt_around_value(
+    doc_text: str,
+    value: str,
+    fallback: str = "",
+    *,
+    max_back: int = 200,
+    max_forward: int = 200,
+) -> str:
+    """Find `value` in doc_text and return a clean sentence-bounded
+    excerpt around it. Used by the takeaway composer because
+    SourceNetworkResult.claim_sentence sometimes carries a tight
+    30+30 char window (claim_analysis.py:171, the bullet-list
+    extraction path) rather than a clean sentence; that window
+    starts and ends mid-word, which renders as garbage in the UI.
+
+    Walks doc_text from the value's index outward to the nearest
+    sentence terminator (`.`, `!`, `?`, newline) on each side,
+    capped at max_back/max_forward chars to bound the excerpt
+    length on table-formatted text without sentence boundaries.
+    Falls back to `fallback` (or empty string) when value is not
+    found in doc_text or doc_text is empty.
+    """
+    if not doc_text or not value:
+        return (fallback or "").strip()
+    idx = doc_text.find(value)
+    if idx < 0:
+        return (fallback or "").strip()
+
+    end_value = idx + len(value)
+    start = max(0, idx - max_back)
+    for i in range(idx - 1, max(-1, idx - max_back - 1), -1):
+        if i < 0:
+            break
+        if doc_text[i] in ".!?\n":
+            start = i + 1
+            break
+    end = min(len(doc_text), end_value + max_forward)
+    for i in range(end_value, min(len(doc_text), end_value + max_forward)):
+        if doc_text[i] in ".!?\n":
+            end = i + 1
+            break
+
+    excerpt = doc_text[start:end].strip()
+    return excerpt or (fallback or "").strip()
+
+
+def _read_sn_field(obj, name: str):
+    """Read a field from a SourceNetworkResult that may arrive either
+    as a dataclass instance (live /check path) or as a dict (saved
+    view path, where the result was JSON-deserialized from disk).
+    Returns None when the field is absent or the object is neither
+    shape; callers handle the None.
+    """
+    if isinstance(obj, dict):
+        return obj.get(name)
+    return getattr(obj, name, None)
+
+
+def _question_from_suggestion(suggestions, fvs_id: str) -> str | None:
+    """Lookup a question for an FVS in framing.frame_suggestions; used
+    when V4.2 lists an FVS that has no TEACHING_QUESTIONS entry but
+    Layer A also emitted it. Returns None when no match.
+    """
+    for s in suggestions or []:
+        if s.get("fvs_id") == fvs_id:
+            return s.get("question")
+    return None
+
+
+def _compose_takeaway_llm_prompt(
+    *,
+    frames_in_use: list,
+    absent_dimensions: list,
+    concerns: list,
+    contradicted_claims: list,
+    doc_text: str,
+) -> str:
+    """Bundle the takeaway substrate into a single prompt the user can
+    take to their LLM. Pure structural composition: every line of
+    substantive content (frame names, reasoning, questions, blind
+    spots, claims) comes from operator-curated or LLM-pre-computed
+    sources. The wrapping prose ("Frame Check analyzed...", "Apply
+    these to the document.") is structural format only.
+
+    The output is plain text suitable for URL-encoding into a
+    Claude / GPT chat link or copy-pasting into any LLM.
+    """
+    parts: list[str] = []
+    parts.append("Frame Check has analyzed the document below. Findings:")
+    parts.append("")
+
+    if frames_in_use:
+        parts.append("Frames doing structural work in the document:")
+        for f in frames_in_use:
+            tier = f" ({f['ac1_tier']})" if f.get("ac1_tier") else ""
+            line = f"- {f['frame_name']}{tier}"
+            if f.get("reasoning"):
+                line += f": {f['reasoning']}"
+            parts.append(line)
+            if f.get("question"):
+                parts.append(f"  Question to consider: {f['question']}")
+        parts.append("")
+
+    if absent_dimensions:
+        parts.append("What the document does not engage:")
+        for d in absent_dimensions:
+            line = f"- {d['name']}"
+            if d.get("question"):
+                line += f": {d['question']}"
+            parts.append(line)
+        parts.append("")
+
+    if concerns:
+        parts.append("Specific concerns Frame Check flagged in this document:")
+        for c in concerns:
+            parts.append(f"- {c}")
+        parts.append("")
+
+    if contradicted_claims:
+        parts.append("Claims sources contradict in this document:")
+        for u in contradicted_claims:
+            value = u.get("value") or ""
+            sentence = u.get("sentence") or ""
+            if value and sentence:
+                parts.append(f"- {value} in: {sentence}")
+            elif sentence:
+                parts.append(f"- {sentence}")
+            elif value:
+                parts.append(f"- {value}")
+        parts.append("")
+
+    parts.append("Apply these questions and concerns to the document.")
+    parts.append("Walk through each one with specific evidence from the text.")
+    parts.append("Identify the strongest counter-position to the document's conclusion.")
+    parts.append("")
+    parts.append("Document:")
+    parts.append(doc_text)
+
+    return "\n".join(parts)
+
+
 _DEFINITIONS: dict[str, str] = {
     "FVS-001": (
         "When AI converges on a frame, each iteration produces more "
@@ -243,6 +856,44 @@ _DEFINITIONS: dict[str, str] = {
 }
 
 
+def rank_frame_suggestions(suggestions):
+    """Sort suggestions by structural importance, highest first.
+
+    Used when one frame must be picked from many: the structural-
+    takeaway synthesizer's fallback question, or any future surface
+    that elevates a "primary" frame card. Importance is the
+    `_priority` field set by ``_add()`` inside :func:`suggest_frames`;
+    the rule encoded there is:
+
+    - **absence-pattern frames score higher than presence-pattern
+      frames** (base 2.0 vs 1.0). Rationale: an absent-frame
+      detection (e.g. FVS-007 Failure Framing absent) flags what
+      the document is NOT doing. Reader-facing leverage is high
+      because absences are difficult to spot manually; a ranking
+      rule that ignored this would consistently surface the most
+      common (presence) patterns and bury the diagnostically
+      sharper ones.
+    - **Marker-density bonus** when the signal text encodes a
+      ``(X/1Kw)`` figure: ``priority += X * 0.1``. Higher density
+      means stronger structural evidence within the same pattern
+      kind. The coefficient is small enough that no plausible
+      density value flips an absence-pattern below a presence-
+      pattern.
+
+    Stable sort: ties (same priority) preserve source-code firing
+    order, so a future regression in priority computation does not
+    randomly reshuffle the rest of the list. Returns a NEW list;
+    does not mutate the input. Suggestions without a ``_priority``
+    field default to 1.0 so legacy callers (or future detector
+    rules that forget the field) do not crash.
+    """
+    indexed = list(enumerate(suggestions or []))
+    indexed.sort(
+        key=lambda iv: (-float(iv[1].get("_priority", 1.0)), iv[0])
+    )
+    return [iv[1] for iv in indexed]
+
+
 def suggest_frames(
     coverage: dict[str, Any],
     voice: dict[str, Any],
@@ -300,6 +951,18 @@ def suggest_frames(
         # "Failure Framing (absent)" name shape. Future cleanup that
         # strips the suffix is a separate decision; this change is purely
         # additive at the wire surface.
+        # Importance score consumed by rank_frame_suggestions when one
+        # frame must be chosen from many. Two components: an absence-
+        # vs-presence base (2.0 / 1.0) and a marker-density bonus
+        # extracted from the signal text. See rank_frame_suggestions
+        # for the rationale and tradeoffs.
+        priority = 2.0 if pattern_kind == "absence_detected" else 1.0
+        density_match = re.search(r'\(([\d.]+)/1Kw\)', signal)
+        if density_match:
+            try:
+                priority += float(density_match.group(1)) * 0.1
+            except ValueError:
+                pass
         suggestions.append({
             "fvs_id": fvs_id,
             "name": name,
@@ -308,6 +971,7 @@ def suggest_frames(
             "definition": _DEFINITIONS.get(fvs_id, ""),
             "url": f"/corpus/library/{fvs_id}.html",
             "pattern_kind": pattern_kind,
+            "_priority": priority,
         })
 
     # ── Growth Frame (FVS-008) ──

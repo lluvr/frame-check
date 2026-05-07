@@ -5,7 +5,7 @@ type: RECIPE
 summary: "Source material drops AI fabrication from 85% to single digits. Three steps."
 published: 2026-03-23
 models: "xAI / Gemini"
-source_url: https://blog.clarethium.com/blog/source-conditioning
+source_url: https://blog.clarethium.com/source-conditioning
 ---
 
 # Source Conditioning
