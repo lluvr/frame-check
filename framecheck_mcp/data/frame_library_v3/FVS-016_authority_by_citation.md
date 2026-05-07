@@ -115,7 +115,7 @@ Per-family positives (of 15 docs): Claude 2, Gemini 6, Grok 11, GPT-5 7.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; revised Phase 1C 2026-04-23 (3-case fire + 3-case exclusion conditions per Revision note above); grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; revised Phase 1C 2026-04-23 (3-case fire + 3-case exclusion conditions per Revision note above); grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04 measured pre-Phase 1C; post-revision re-measurement pending)
@@ -135,7 +135,7 @@ Per-family positives (of 15 docs): Claude 2, Gemini 6, Grok 11, GPT-5 7.
 1. AI enterprise-AI market analysis worked example (v1 Identification). Document presented "according to a 2024 McKinsey study," "Research from MIT's Media Lab," "industry analysts project" - three authority-veneer signals. Authority-by-citation detection surfaced: no specific report titles, no DOI, no author names, no methodology. Reader can apply three diagnostic questions per citation; arguments anchored only on institution authority collapse without specific sourcing.
 2. MCP integration as canonical absent-frame. FVS-016 cited in MCP `_PROMPT_CHALLENGE_DOCUMENT` as canonical absent-frame for divergence: "FVS-016 (Authority by Citation) absent leads to question 'Which claims here lean on the author's register rather than on citable sources?'" Operationally embedded as agent-facing divergence target.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the three diagnostic questions (can-I-look-it-up; does-it-support-this-claim; would-it-stand-without-citation) to a citation-laden document revealed fabricated, misattributed, or authority-veneer citations; (2) the contrast between the cited-as-authoritative reading and the verification-tested reading is concrete; (3) outcome differential observed; (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the three diagnostic questions (can-I-look-it-up; does-it-support-this-claim; would-it-stand-without-citation) to a citation-laden document revealed fabricated, misattributed, or authority-veneer citations; (2) the contrast between the cited-as-authoritative reading and the verification-tested reading is concrete; (3) outcome differential observed; (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~1-3 minutes per document, scaling with citation density

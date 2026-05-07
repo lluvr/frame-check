@@ -90,6 +90,17 @@ PYTEST_SUITES = [
     # Source Network calibration substrate
     "test_calibration_harness.py",
     "test_source_network_validation.py",
+    # Source Network wall-clock budget primitive (2026-05-02). Pins
+    # the architectural compromise documented at
+    # framecheck_mcp/source_network.py:SN_BUDGET_SECONDS: best-effort
+    # bound on cumulative SN time so a slow / rate-limited provider
+    # cannot blow the outer _structural budget. Also pins that
+    # budget-exhausted fallback uses existing verdict vocabulary
+    # ('unverifiable') so template + aggregation paths are unchanged.
+    # Two tests (~0.04s); registered here so a refactor that drops the
+    # budget primitive fails CI at PR time rather than producing
+    # production "Analysis timed out" rejections later.
+    "test_source_network_budget.py",
     "test_numerical_extraction.py",
     "test_domain_baselines.py",
     "test_documented_boundaries.py",

@@ -13,15 +13,6 @@ perspectives a document takes, which it omits, and how it positions
 the reader. Numerical claims are cross-checked against authoritative
 sources where coverage exists.
 
-## Project home
-
-Frame Check is part of [Clarethium](https://clarethium.com), an applied vehicle built on the [Touchstone](https://github.com/Clarethium/touchstone) substrate. Touchstone defines eleven measurement layers for AI output profiling; Frame Check applies that substrate to structural framing analysis with a Frame Vocabulary Standard layered on top.
-
-- Web app (drop a document, get the structural reading): [frame.clarethium.com](https://frame.clarethium.com)
-- Background and methodology: [blog.clarethium.com/frame-check](https://blog.clarethium.com/frame-check)
-- Validation evidence (corpus, labels, scripts, three pre-registered reports): [blog.clarethium.com/receipts/frame-check](https://blog.clarethium.com/receipts/frame-check)
-- The Touchstone substrate: [github.com/Clarethium/touchstone](https://github.com/Clarethium/touchstone)
-
 ## Quickstart (MCP server)
 
 The PyPI package `frame-check-mcp` is the Model Context Protocol
@@ -92,12 +83,35 @@ see framing they would otherwise miss.
 Honest limits and anticipated adversarial readings are catalogued in
 `docs/ANTICIPATED_CRITIQUES.md`.
 
+## Worked example
+
+Same prompt, four frontier LLMs, four materially different framing
+signatures.
+[`data/worked_examples/four-llms-on-bitcoin-retirement-2026.md`](data/worked_examples/four-llms-on-bitcoin-retirement-2026.md)
+runs Claude Haiku 4.5, GPT-5, Grok 4.1 Fast Reasoning, and Gemini 2.5
+Flash against an investment question and surfaces the per-model
+structural shape: voice, coverage, frame matches, sourcing rate. The
+sovereignty case in plain form: your AI is one framing choice among
+several, not the framing.
+
+Five more published examples live alongside it: framings of an LLM
+response to a life-decision prompt, an AI-company founder essay, an
+FOMC monetary-policy statement, and a Source-Network verification pass
+on an LLM-summarised earnings release, plus a divergence walk-through
+on Claude's Bitcoin retirement recommendation. See
+[`data/worked_examples/`](data/worked_examples/) for the full set.
+
 ## Documentation
 
-- `METHODOLOGY.md`: full methodology paper (v0.2 draft)
+Browse [`docs/README.md`](docs/README.md) for reading paths organised
+by intent (install + use, evaluate the methodology, understand frame
+divergence, validate the substrate, verify the audit, read the worked
+examples). The full inventory:
+
+- `METHODOLOGY.md`: full methodology paper (v0.3.1 draft)
 - `docs/MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
 - `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
-- `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (4 entries)
+- `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (6 entries)
 - `docs/FRAME_DIVERGENCE_v1.md` (Part 1: definition) + `docs/FRAME_DIVERGENCE_CONTRACT_v1.md` (Part 2: interface contract, c1.0 shipping) + `docs/FRAME_DIVERGENCE_v2.md` (broader architecture, supersedes v1 Parts 3-4)
 - `docs/ANTICIPATED_CRITIQUES.md`: self-enumerated adversarial readings
 - `docs/VALIDATION_PROGRAM.md`: observational + formal validation plans
@@ -105,14 +119,6 @@ Honest limits and anticipated adversarial readings are catalogued in
 - `docs/RATERS.md`: rater protocol for the validation program
 - `docs/internal/MCP_CLIENT_CONFORMANCE_v1.md`: 32/32 conformance round-trips against the installed wheel
 - `docs/internal/`: maintainer-internal supporting documents (audit deliverables, methodology paper outlines, archived design proposals) shipped publicly under evidence discipline
-
-## Companions
-
-Frame Check is part of the Clarethium open reference artifact family:
-
-- **[Touchstone](https://github.com/Clarethium/touchstone)**: the public Standard plus reference Python implementation that formalizes the structural measurement methodology Frame Check applies. Both descend from the same Clarethium measurement substrate.
-- **[Lodestone](https://github.com/Clarethium/lodestone)**: the canonical operator methodology for working with AI systems. The first-person practice that pairs with Touchstone's third-person measurement.
-- **[cma](https://github.com/Clarethium/cma)**: executable compound-practice loop, terminal-side companion to Lodestone.
 
 ## Running tests
 

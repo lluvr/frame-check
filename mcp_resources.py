@@ -918,7 +918,7 @@ def _list_resources() -> list[dict]:
         # distinguish current from stale entries without reading
         # each file.
         version_note = f"v{version}. " if version else ""
-        resources.append({
+        entry: dict = {
             "uri": f"{RESOURCE_SCHEME}://library/{fvs_id}",
             "name": f"{fvs_id}: {title}",
             "description": (
@@ -928,7 +928,13 @@ def _list_resources() -> list[dict]:
                 f"worked examples."
             ),
             "mimeType": "text/markdown",
-        })
+        }
+        # Per-entry version surfaced as a machine-parseable _meta
+        # field so an agent citing FVS-NNN can pin to the version it
+        # saw without regex-extracting from the description prose.
+        if version:
+            entry["_meta"] = {"clarethium.com/version": str(version)}
+        resources.append(entry)
 
     # Worked-examples index: the curator-facing README that
     # documents the collection and its submission format. Only
@@ -1019,12 +1025,32 @@ def _list_resources() -> list[dict]:
             "Published research transmission from "
             "blog.clarethium.com."
         )
-        resources.append({
+        # Per-transmission attribution metadata. citation-uri sources
+        # from the YAML frontmatter source_url (the curator's
+        # canonical published URL) rather than being inferred from
+        # the slug, so the metadata reflects the curator's explicit
+        # choice. published date is exposed as an MCP-spec annotation
+        # (lastModified) for drift-detection at the protocol level.
+        entry_meta: dict = {}
+        source_url = meta.get("source_url")
+        if isinstance(source_url, str) and source_url.startswith(
+            "https://blog.clarethium.com/"
+        ):
+            entry_meta["clarethium.com/citation-uri"] = source_url
+        annotations: dict = {}
+        if isinstance(pub, str) and pub:
+            annotations["lastModified"] = pub
+        entry: dict = {
             "uri": f"{RESOURCE_SCHEME}://transmissions/{slug}",
             "name": title,
             "description": description,
             "mimeType": "text/markdown",
-        })
+        }
+        if entry_meta:
+            entry["_meta"] = entry_meta
+        if annotations:
+            entry["annotations"] = annotations
+        resources.append(entry)
 
     if os.path.isfile(_METHODOLOGY_PATH):
         resources.append({
@@ -1250,6 +1276,76 @@ def _list_resources() -> list[dict]:
                     ),
                     "mimeType": "application/json",
                 })
+
+    # Attribution metadata (CC-BY-4.0 chain). Most resources
+    # advertised here are CC-BY-4.0 data artifacts authored by Lovro
+    # Lucic per NOTICE. The MCP Resource interface carries an
+    # `_meta` field (spec 2025-06-18, schema.ts) that servers use to
+    # attach additional metadata under reverse-DNS-prefixed keys.
+    # Without per-resource attribution, an agent that consumes a
+    # resource has no in-band way to know the license, the author,
+    # or the canonical citation URL, so the attribution chain breaks
+    # at the agent boundary.
+    #
+    # The exception is `frame-check://corpus/<slug>` (the document
+    # URI itself, not /profile, /peer/, or /diff/). Corpus documents
+    # are bundled third-party text (e.g., a verbatim NVIDIA press
+    # release) or AI-generated outputs, included under fair-use for
+    # research analysis. The document file's own header carries the
+    # accurate origin and copyright; the analytical commentary at
+    # the sibling /profile, /peer/, and /diff/ URIs is what is
+    # licensed CC-BY-4.0. Claiming CC-BY-4.0 over the verbatim
+    # bundled text would overreach.
+    #
+    # Schema (clarethium.com/* prefix per MCP _meta key naming rules):
+    #   license:       SPDX identifier (CC-BY-4.0) for analytical artifacts
+    #   license-uri:   full license URL
+    #   author:        canonical author for citation
+    #   year:          publication year (currently 2026 across the corpus)
+    #   citation-uri:  human-readable canonical URL when one exists
+    #                  (sourced from per-resource construction sites,
+    #                  e.g. transmissions read source_url from YAML
+    #                  frontmatter; library entries and the methodology
+    #                  paper are not yet published to the public web)
+    #   version:       per-entry version when the entry declares one
+    #                  (FVS library entries surface this)
+    #   content-type:  set to "bundled-document" on corpus document URIs
+    #                  to signal mixed origin
+    #   license-note:  free-text override pointing the consumer at the
+    #                  document's in-file header for accurate origin
+    #                  (set on bundled-document URIs only)
+    _CORPUS_DOC_RE = re.compile(
+        rf"^{re.escape(RESOURCE_SCHEME)}://corpus/[^/]+$"
+    )
+    for r in resources:
+        uri = r.get("uri", "")
+        meta = r.setdefault("_meta", {})
+        if _CORPUS_DOC_RE.match(uri):
+            # Bundled document URI. Do not claim CC-BY-4.0 or
+            # author over text that may be third-party. Point the
+            # consumer at the document's own header instead.
+            meta.setdefault(
+                "clarethium.com/content-type", "bundled-document"
+            )
+            meta.setdefault(
+                "clarethium.com/license-note",
+                "Bundled documents may contain verbatim third-party "
+                "text under fair-use posture for research analysis, "
+                "or AI-generated outputs from third-party services. "
+                "See the document's in-file header for the accurate "
+                "origin and copyright. Frame Check's analytical "
+                "commentary on this document (CC-BY-4.0, Lovro Lucic) "
+                "lives at the sibling /profile, /peer/<partner>, and "
+                "/diff/<partner> URIs.",
+            )
+            continue
+        meta.setdefault("clarethium.com/license", "CC-BY-4.0")
+        meta.setdefault(
+            "clarethium.com/license-uri",
+            "https://creativecommons.org/licenses/by/4.0/",
+        )
+        meta.setdefault("clarethium.com/author", "Lovro Lucic")
+        meta.setdefault("clarethium.com/year", "2026")
 
     return resources
 

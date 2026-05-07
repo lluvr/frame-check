@@ -5,7 +5,7 @@ type: EVIDENCE
 summary: "77 to 100 percent of AI-generated numbers are temporally unstable. Source material fixes it. Prompts don't."
 published: 2026-03-23
 models: "xAI / Gemini"
-source_url: https://blog.clarethium.com/blog/fabrication-architecture
+source_url: https://blog.clarethium.com/fabrication-architecture
 ---
 
 # The Fabrication Architecture

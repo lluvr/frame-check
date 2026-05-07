@@ -5,7 +5,7 @@ type: MECHANISM
 summary: "Four layers produce every AI output. The company's system. Your system. Your prompt. The model. The model is the only one with a name."
 published: 2026-04-03
 models: "xAI / Gemini"
-source_url: https://blog.clarethium.com/blog/system-layer
+source_url: https://blog.clarethium.com/system-layer
 ---
 
 # The System Layer

@@ -4,7 +4,7 @@ display_title: "Your Body Reads AI Output Before You Do"
 type: MIRROR
 summary: "180 trials. The same circuits fire on AI disagreement as on human. The first read happens in your body before your conscious evaluation gets a chance. Speed is what hides it."
 published: 2026-04-07
-source_url: https://blog.clarethium.com/blog/first-read
+source_url: https://blog.clarethium.com/first-read
 ---
 
 # The 60-Second Pause

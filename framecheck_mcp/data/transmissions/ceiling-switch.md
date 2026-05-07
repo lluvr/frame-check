@@ -4,7 +4,8 @@ display_title: "Stop Polishing, Start Switching"
 type: MECHANISM
 summary: "The ceiling is per generation mode. Switch modes to access territory that iteration can't reach."
 models: "Multiple models"
-source_url: https://blog.clarethium.com/blog/ceiling-switch
+published: 2026-04-16
+source_url: https://blog.clarethium.com/ceiling-switch
 ---
 
 # The Ceiling Switch

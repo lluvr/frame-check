@@ -16,7 +16,7 @@ Currently all 20 entries are `draft` on the canon trajectory. Four are `withdraw
 
 ## Parallel directory: v2 §11 grounded-authorship retrofit
 
-A v2 §11 grounded-authorship retrofit shipped 2026-04-25 in a parallel directory at `../frame_library_v3/`. That directory carries the FVS entries (FVS-001 through FVS-019; FVS-020 retained at v1 form) with v2 §11 grounded-authorship sections appended (eight fields per entry: authorship dated, context of testing, failure record, success record, lived-experience anchor, applicability metadata, empirical track record, plus internal-operational friction-cost estimate). Lived-experience anchors are uniformly held "Open" with entry-specific criteria pending curator authorship per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/lluvr/frame-check-mcp/blob/master/docs/internal/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
+A v2 §11 grounded-authorship retrofit shipped 2026-04-25 in a parallel directory at `../frame_library_v3/`. That directory carries the FVS entries (FVS-001 through FVS-019; FVS-020 retained at v1 form) with v2 §11 grounded-authorship sections appended (eight fields per entry: authorship dated, context of testing, failure record, success record, lived-experience anchor, applicability metadata, empirical track record, plus internal-operational friction-cost estimate). Lived-experience anchors are uniformly held "Open" with entry-specific criteria pending curator authorship per [ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/ANCHOR_AUTHORSHIP_METHODOLOGY_v1.md).
 
 The two directories serve different layers of catalog discipline:
 
@@ -25,7 +25,7 @@ The two directories serve different layers of catalog discipline:
 | `data/frame_library/` (this directory) | Canon-promotion track. Detailed measurement evidence (cross-family reliability, generation comparison, target-scope construct validity). Source for the `build_corpus_site.py` rendered library pages. The directory the canon-promotion review process operates on per the criteria below. |
 | `data/frame_library_v3/` | v2 architectural surface. v2 §11 grounded-authorship sections appended to entries; structural-grade across all 19 active entries; full-grade requires authored anchors. Cross-curator practitioners apply the anchor methodology against these entries. |
 
-Citation discipline: cite the canon-promotion entry from `data/frame_library/`; cite the v2 §11 retrofit from `data/frame_library_v3/`. The two are not competing; they sit at different layers of the same catalog. See [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §16 for the v2 spec implementation status.
+Citation discipline: cite the canon-promotion entry from `data/frame_library/`; cite the v2 §11 retrofit from `data/frame_library_v3/`. The two are not competing; they sit at different layers of the same catalog. See FRAME_DIVERGENCE_v2.md §16 for the v2 spec implementation status.
 
 ### Library version landscape (for reading cross-family reliability tables)
 
@@ -84,7 +84,7 @@ A rule is moved to `retired` when it fires on cases it should not flag and misse
 
 ## The Frames
 
-**Format note:** the six-column order below (`ID | Name | Class | Detection | Status | Curated`) is parsed by `frame_library_index.py` for citation blocks and MCP responses. Column reorder, column addition, or `Status` field value changes require coordinated updates to `frame_library_index.py`, `test_frame_library_index.py`, and downstream consumers (`build_corpus_site.py`, `mcp_server.py`). See [CONTRIBUTING.md](https://github.com/lluvr/frame-check-mcp/blob/master/CONTRIBUTING.md) for the contribution workflow; DR-1 in SESSION_STATE.md §3 names this as a tracked drift risk.
+**Format note:** the six-column order below (`ID | Name | Class | Detection | Status | Curated`) is parsed by `frame_library_index.py` for citation blocks and MCP responses. Column reorder, column addition, or `Status` field value changes require coordinated updates to `frame_library_index.py`, `test_frame_library_index.py`, and downstream consumers (`build_corpus_site.py`, `mcp_server.py`). See [CONTRIBUTING.md](https://github.com/Clarethium/frame-check-mcp/blob/master/CONTRIBUTING.md) for the contribution workflow; DR-1 in SESSION_STATE.md §3 names this as a tracked drift risk.
 
 | ID | Name | Class | Detection | Status | Curated |
 |----|------|-------|-----------|--------|---------|
@@ -137,7 +137,7 @@ Full rationales in `build_corpus_site.py._WITHDRAWN`. Withdrawal decisions are r
   cases across the 12-document corpus). The frame concepts
   remain text-side and the library entries remain in place; the
   detection rules are pending redesign. See
-  [METHODOLOGY.md §2.4.1](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) for the full v1-to-v2 measurement
+  [METHODOLOGY.md §2.4.1](https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md) for the full v1-to-v2 measurement
   comparison and the audit that led to the retirements.
 
 **Class-assignment curator pass (2026-04-18).** FVS-017, FVS-018,
@@ -247,4 +247,4 @@ When this index is operational:
 - VERSION file rules are enforced (e.g., a check that fails if `canon` frame changes without VERSION bump)
 - `data/frame_library/` README points new readers at this INDEX as the entry point
 
-[CONTRIBUTING.md](https://github.com/lluvr/frame-check-mcp/blob/master/CONTRIBUTING.md) already exists at the repo root with per-contribution-type instructions for new FVS entries, detection rules, calibration data, and MCP server additions.
+[CONTRIBUTING.md](https://github.com/Clarethium/frame-check-mcp/blob/master/CONTRIBUTING.md) already exists at the repo root with per-contribution-type instructions for new FVS entries, detection rules, calibration data, and MCP server additions.

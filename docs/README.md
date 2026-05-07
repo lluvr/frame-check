@@ -16,7 +16,7 @@ you find the one that matches your need.
 
 ### "I want to evaluate the methodology"
 
-1. [`../METHODOLOGY.md`](../METHODOLOGY.md): the methodology paper (v0.2 draft).
+1. [`../METHODOLOGY.md`](../METHODOLOGY.md): the methodology paper (v0.3.1 draft).
    Read sections §1 (substrate), §3 (frame library), §6 (validation program),
    §7 (honest limits).
 2. [ANTICIPATED_CRITIQUES.md](ANTICIPATED_CRITIQUES.md): self-enumerated

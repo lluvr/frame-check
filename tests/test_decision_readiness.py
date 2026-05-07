@@ -106,7 +106,7 @@ def test_dimensions_carry_library_entries_citations():
             public_url = ref.get("public_url") or ""
             _check(
                 public_url.startswith(
-                    "https://github.com/lluvr/frame-check-mcp"
+                    "https://github.com/Clarethium/frame-check-mcp"
                     "/blob/master/data/frame_library/"
                 )
                 and f"{ref['fvs_id']}_" in public_url

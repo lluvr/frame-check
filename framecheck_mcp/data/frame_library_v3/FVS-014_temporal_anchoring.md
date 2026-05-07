@@ -98,7 +98,7 @@ Per-family positives (of 15 docs): Claude 14, Gemini 14, Grok 14, GPT-5 12.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
@@ -117,7 +117,7 @@ Per-family positives (of 15 docs): Claude 14, Gemini 14, Grok 14, GPT-5 12.
 1. AI healthcare worked example (v1 Identification). Document presented "achieved 95 percent accuracy" plus "reached 38 percent during the pandemic" plus "continues to grow" - past results presented in present tense with extrapolation. Vintage-check question ("when from?") exposes the temporal anchoring is in training data, not in current reality. Operationalized as "verified current as of [date]" or "potentially stale (training data vintage)" annotation per claim.
 2. Observatory cadence design. The Observatory's daily-topic stream is the structural answer to temporal anchoring at the methodology level: regular cadence ensures that what Frame Check measures is current, not training-vintage. The temporal-orientation detector plus Observatory cadence together address the temporal-anchoring failure mode at the methodology level rather than the per-document level.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught a temporal-anchoring issue in AI output (data presented as current that was actually vintage from training data); (2) the vintage-check antidote applied (asking "when from" for each numerical claim); (3) outcome differential observed (claim re-verified against current source, conclusion adjusted, projection re-grounded); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught a temporal-anchoring issue in AI output (data presented as current that was actually vintage from training data); (2) the vintage-check antidote applied (asking "when from" for each numerical claim); (3) outcome differential observed (claim re-verified against current source, conclusion adjusted, projection re-grounded); (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~30-60 seconds (check vintage of each numerical claim; apply tense-vs-vintage check)

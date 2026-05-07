@@ -95,7 +95,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04; frame absent from corpus, prevalence 0 percent)
@@ -115,7 +115,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 1. Claude Code source leak quantitative evidence. The leak revealed 512K lines of harness code shaping behavior. Quantitative anchor for "the wrapper layer is enormous and largely invisible." Negative-space behaviors (what the AI is told NOT to do) are most invisible because they prevent behaviors users never see; the source leak made these visible at scale. Foundation evidence for the four-layer model.
 2. Worked example: Claude vs GPT-4o consulting attribution (v1 Identification). Document attributed "more nuanced analysis" to Claude and "more direct" to GPT-4o. System-attribution counter-frame surfaced: nuance may be Anthropic harness design (multi-perspective + hedging instructions); directness may be OpenAI UX choice (priority on actionability). The "controlled comparison with same system prompt" is the verification path; most end users cannot run this test, which is exactly why the error persists at population scale.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves attributing AI behavior to "the model" when investigation revealed harness, context, or prompt was the actual cause; (2) four-layer attribution analysis applied (which layer is the actual variable); (3) outcome differential observed (capability claim corrected, procurement decision adjusted, debugging path redirected); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator caught themselves attributing AI behavior to "the model" when investigation revealed harness, context, or prompt was the actual cause; (2) four-layer attribution analysis applied (which layer is the actual variable); (3) outcome differential observed (capability claim corrected, procurement decision adjusted, debugging path redirected); (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~30-60 seconds per attribution claim

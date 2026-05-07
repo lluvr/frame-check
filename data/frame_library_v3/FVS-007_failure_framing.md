@@ -96,7 +96,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 3, Grok 1, GPT-5 0.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
@@ -116,7 +116,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 3, Grok 1, GPT-5 0.
 1. AI healthcare market analysis (worked example in v1 Identification). Document presented $187.95B 2030 projection with growth narrative and no failure conditions. Failure-framing counter-frame surfaced: regulatory adoption barriers, clinical trial evidence gaps, projection-model assumption inconsistencies. Material additions for due-diligence-grade reading.
 2. Decision-readiness Counterfactual dimension structural signal. FVS-007 is the canonical structural signal for the Counterfactual readiness dimension. Documents that do not name what would falsify their claims are structurally less decision-supportive on counterfactual reasoning. Operationalized in MCP `_PROMPT_AI_RESPONSE_AUDIT` and `_PROMPT_CHALLENGE_DOCUMENT` as canonical absent-frame question: "What would have to be true for the conclusion to be wrong?"
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the failure-framing question ("what would make this wrong") to an unframed analysis shifted the read; (2) the contrast between the unframed reading and the failure-framed reading is concrete; (3) outcome differential observed (decision changed, position adjusted, claim withdrawn); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the failure-framing question ("what would make this wrong") to an unframed analysis shifted the read; (2) the contrast between the unframed reading and the failure-framed reading is concrete; (3) outcome differential observed (decision changed, position adjusted, claim withdrawn); (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application (no tools, experienced reader): ~30-60 seconds to ask "does this document name what would make it wrong"

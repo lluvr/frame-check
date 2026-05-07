@@ -316,31 +316,31 @@
           "fvs_id": "FVS-001",
           "title": "Frame Amplification",
           "library_resource_uri": "frame-check://library/FVS-001",
-          "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+          "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md"
         },
         {
           "fvs_id": "FVS-007",
           "title": "Failure Framing",
           "library_resource_uri": "frame-check://library/FVS-007",
-          "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-007_failure_framing.md"
+          "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-007_failure_framing.md"
         },
         {
           "fvs_id": "FVS-009",
           "title": "Risk Frame",
           "library_resource_uri": "frame-check://library/FVS-009",
-          "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-009_risk_frame.md"
+          "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-009_risk_frame.md"
         },
         {
           "fvs_id": "FVS-012",
           "title": "Uncertainty Frame",
           "library_resource_uri": "frame-check://library/FVS-012",
-          "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
+          "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
         },
         {
           "fvs_id": "FVS-014",
           "title": "Temporal Anchoring",
           "library_resource_uri": "frame-check://library/FVS-014",
-          "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+          "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
         }
       ],
       "fired_patterns": [
@@ -348,14 +348,14 @@
           "fvs_id": "FVS-007",
           "title": "Failure Framing",
           "library_resource_uri": "frame-check://library/FVS-007",
-          "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-007_failure_framing.md",
+          "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-007_failure_framing.md",
           "fired_in_n_documents": 2
         },
         {
           "fvs_id": "FVS-001",
           "title": "Frame Amplification",
           "library_resource_uri": "frame-check://library/FVS-001",
-          "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+          "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md",
           "fired_in_n_documents": 1
         }
       ],
@@ -382,49 +382,49 @@
         "fvs_id": "FVS-001",
         "title": "Frame Amplification",
         "library_resource_uri": "frame-check://library/FVS-001",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md"
       },
       {
         "fvs_id": "FVS-008",
         "title": "Growth Frame",
         "library_resource_uri": "frame-check://library/FVS-008",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-008_growth_frame.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-008_growth_frame.md"
       },
       {
         "fvs_id": "FVS-009",
         "title": "Risk Frame",
         "library_resource_uri": "frame-check://library/FVS-009",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-009_risk_frame.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-009_risk_frame.md"
       },
       {
         "fvs_id": "FVS-010",
         "title": "Completeness Illusion",
         "library_resource_uri": "frame-check://library/FVS-010",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
       },
       {
         "fvs_id": "FVS-011",
         "title": "Stakeholder Frame",
         "library_resource_uri": "frame-check://library/FVS-011",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
       },
       {
         "fvs_id": "FVS-014",
         "title": "Temporal Anchoring",
         "library_resource_uri": "frame-check://library/FVS-014",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
       },
       {
         "fvs_id": "FVS-015",
         "title": "Efficiency Frame",
         "library_resource_uri": "frame-check://library/FVS-015",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-015_efficiency_frame.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-015_efficiency_frame.md"
       },
       {
         "fvs_id": "FVS-017",
         "title": "False Balance",
         "library_resource_uri": "frame-check://library/FVS-017",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-017_false_balance.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-017_false_balance.md"
       }
     ],
     "calibration": [
@@ -432,13 +432,13 @@
         "fvs_id": "FVS-012",
         "title": "Uncertainty Frame",
         "library_resource_uri": "frame-check://library/FVS-012",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
       },
       {
         "fvs_id": "FVS-017",
         "title": "False Balance",
         "library_resource_uri": "frame-check://library/FVS-017",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-017_false_balance.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-017_false_balance.md"
       }
     ],
     "evidence": [
@@ -446,7 +446,7 @@
         "fvs_id": "FVS-016",
         "title": "Authority by Citation",
         "library_resource_uri": "frame-check://library/FVS-016",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
       }
     ],
     "robustness": [
@@ -454,7 +454,7 @@
         "fvs_id": "FVS-016",
         "title": "Authority by Citation",
         "library_resource_uri": "frame-check://library/FVS-016",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
       }
     ],
     "counterfactual": [
@@ -462,31 +462,31 @@
         "fvs_id": "FVS-001",
         "title": "Frame Amplification",
         "library_resource_uri": "frame-check://library/FVS-001",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-001_frame_amplification.md"
       },
       {
         "fvs_id": "FVS-007",
         "title": "Failure Framing",
         "library_resource_uri": "frame-check://library/FVS-007",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-007_failure_framing.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-007_failure_framing.md"
       },
       {
         "fvs_id": "FVS-009",
         "title": "Risk Frame",
         "library_resource_uri": "frame-check://library/FVS-009",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-009_risk_frame.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-009_risk_frame.md"
       },
       {
         "fvs_id": "FVS-012",
         "title": "Uncertainty Frame",
         "library_resource_uri": "frame-check://library/FVS-012",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
       },
       {
         "fvs_id": "FVS-014",
         "title": "Temporal Anchoring",
         "library_resource_uri": "frame-check://library/FVS-014",
-        "public_url": "https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+        "public_url": "https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
       }
     ]
   },

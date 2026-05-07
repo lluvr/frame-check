@@ -993,15 +993,20 @@ def test_payload_is_deterministic():
     a = mcp_server.build_epistemic_payload(_DOC_SAMPLE)
     b = mcp_server.build_epistemic_payload(_DOC_SAMPLE)
 
-    # Strip the wall-clock latency field which is allowed to differ.
     # Strip wall-clock fields that are allowed to differ between
     # calls (latency is duration, timestamp is the start-of-call
     # ISO stamp). Determinism here means "same input produces
     # identical measurement output", not "the two calls land in
-    # the same microsecond."
+    # the same microsecond." The manifest's analysis_run_at is
+    # per-call wall-clock attribution by design (the receipt records
+    # WHEN this specific call ran); other manifest fields stay in
+    # the comparison so a real determinism regression in the
+    # operational layers still surfaces.
     for p in (a, b):
         p["provenance"]["analysis_latency_ms"] = 0
         p["provenance"]["analysis_timestamp_utc"] = ""
+        if isinstance(p.get("manifest"), dict):
+            p["manifest"].pop("analysis_run_at", None)
 
     check(a == b, "two calls on the same input produced different payloads")
     print("  PASS\n")
@@ -1736,12 +1741,14 @@ def test_compare_is_deterministic():
     b = mcp_server.build_compare_payload(doc_a, doc_b, "A", "B")
     # Strip wall-clock fields that are allowed to differ between
     # calls (latency is duration, timestamp is the start-of-call
-    # ISO stamp). Determinism here means "same input produces
-    # identical measurement output", not "the two calls land in
-    # the same microsecond."
+    # ISO stamp). Same rationale as test_payload_is_deterministic
+    # above: the manifest's analysis_run_at is per-call wall-clock
+    # attribution by design, not a determinism violation.
     for p in (a, b):
         p["provenance"]["analysis_latency_ms"] = 0
         p["provenance"]["analysis_timestamp_utc"] = ""
+        if isinstance(p.get("manifest"), dict):
+            p["manifest"].pop("analysis_run_at", None)
     check(a == b, "two compare calls on the same inputs differed")
     print("  PASS\n")
 
@@ -2991,7 +2998,7 @@ def test_frame_library_matches_carry_clickable_library_url():
     url = first.get("library_url") or ""
     check(
         url.startswith(
-            "https://github.com/lluvr/frame-check-mcp"
+            "https://github.com/Clarethium/frame-check-mcp"
             "/blob/master/data/frame_library/"
         ),
         f"library_url must point at the canonical GitHub markdown "
@@ -3039,7 +3046,7 @@ def test_absent_frames_carry_clickable_library_url():
     url = first.get("library_url") or ""
     check(
         url.startswith(
-            "https://github.com/lluvr/frame-check-mcp"
+            "https://github.com/Clarethium/frame-check-mcp"
             "/blob/master/data/frame_library/"
         )
         and f"{first['frame_id']}_" in url
@@ -3058,7 +3065,7 @@ def test_absent_frames_carry_clickable_library_url():
     co_url = co_absences[0].get("library_url") or ""
     check(
         co_url.startswith(
-            "https://github.com/lluvr/frame-check-mcp"
+            "https://github.com/Clarethium/frame-check-mcp"
             "/blob/master/data/frame_library/"
         )
         and f"{co_absences[0]['fvs_id']}_" in co_url
@@ -3147,7 +3154,7 @@ def test_suggested_next_actions_carries_findings_anchored_actions():
         url = resource_actions[0].get("related_url") or ""
         check(
             url.startswith(
-                "https://github.com/lluvr/frame-check-mcp"
+                "https://github.com/Clarethium/frame-check-mcp"
                 "/blob/master/data/frame_library/"
             )
             and url.endswith(".md"),
@@ -3512,13 +3519,13 @@ def test_frame_match_carries_adjacent_frames():
         # divergence here would mean someone bypassed the helper.
         # URL pattern follows decision_readiness.LIBRARY_PUBLIC_URL_BASE,
         # which switched from frame.clarethium.com/corpus/library to
-        # github.com/lluvr/frame-check-mcp/blob/master/data/frame_library
+        # github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library
         # when production paused 2026-04-23 (Path A.1 decision): GitHub
         # is always resolvable for end-users regardless of hosted-
         # production status, and per-entry filenames stay accurate
         # under entry rename via parse_entry_filenames().
         public_url_prefix = (
-            "https://github.com/lluvr/frame-check-mcp/blob/master"
+            "https://github.com/Clarethium/frame-check-mcp/blob/master"
             "/data/frame_library/"
         )
         check(
@@ -10858,14 +10865,27 @@ def test_stdio_subprocess_handles_rapid_fire_sequential_requests():
         return json.loads(line) if line else None
 
     def _normalize_for_determinism(payload_dict):
-        """Strip wall-clock-variant fields before comparison. Matches
-        the normalization in ``test_payload_is_deterministic``:
-        analysis_latency_ms (duration) and analysis_timestamp_utc
-        (start-of-call ISO stamp) are allowed to differ between calls
-        without breaking the determinism contract."""
+        """Strip wall-clock-variant fields before comparison.
+
+        Matches the normalization in ``test_payload_is_deterministic``:
+        analysis_latency_ms (duration), analysis_timestamp_utc
+        (start-of-call ISO stamp), and the manifest's analysis_run_at
+        (per-call wall-clock attribution) are allowed to differ between
+        calls without breaking the determinism contract.
+
+        The manifest IS per-call operational metadata by design (the
+        whole point is to record what ran on this specific call), so
+        the run timestamp is a feature, not a determinism violation.
+        Other manifest fields (substrate identity, layers run, layers
+        skipped with reasons, llm_calls, sn_providers) are constant
+        for identical inputs and stay in the determinism comparison.
+        """
         prov = payload_dict.get("provenance", {})
         prov.pop("analysis_latency_ms", None)
         prov.pop("analysis_timestamp_utc", None)
+        manifest = payload_dict.get("manifest", {})
+        if isinstance(manifest, dict):
+            manifest.pop("analysis_run_at", None)
         return payload_dict
 
     try:

@@ -3,7 +3,7 @@ title: Four LLMs, one investment question: a Frame Check comparison of AI framin
 slug: four-llms-on-bitcoin-retirement-2026
 author: Lovro Lucic
 published: 2026-04-18
-source_document_url: https://github.com/lluvr/frame-check-mcp/tree/master/data/worked_examples/four-llms-on-bitcoin-retirement-2026
+source_document_url: https://github.com/Clarethium/frame-check-mcp/tree/master/data/worked_examples/four-llms-on-bitcoin-retirement-2026
 source_document_title: Claude Haiku 4.5, GPT-5, Grok 4.1 Fast Reasoning, Gemini 2.5 Flash; responses to a Bitcoin retirement prompt
 source_document_author: AI-generated (four distinct models, 2026-04-18 run)
 source_document_type: multi-model LLM responses to a life-decision prompt

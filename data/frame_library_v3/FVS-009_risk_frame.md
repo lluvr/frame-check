@@ -102,14 +102,14 @@ Per-family positives (of 15 docs): Claude 9, Gemini 10, Grok 11, GPT-5 9.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
 - M-004 Frame Inventory corpus
 - EXP-094 Mauna Loa analysis case study
 - `detect_coverage` risks dimension in `framing.py` (rule-based detector)
-- L2 reframe study Growth-to-Risk pair (per [METHODOLOGY.md](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) §5.2)
+- L2 reframe study Growth-to-Risk pair (per [METHODOLOGY.md](https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md) §5.2)
 - Observatory daily-topic stream from 2026-04-08 forward (Tier B paused 2026-04-22)
 
 **Failure record.** Three failure modes observed in operation:
@@ -119,9 +119,9 @@ Per-family positives (of 15 docs): Claude 9, Gemini 10, Grok 11, GPT-5 9.
 
 **Success record.** Two operationalized cases:
 1. Cloud infrastructure worked example (v1 Identification). Document presented growth-only reading: 28% growth, 67% concentration favoring leaders, AI workload migration accelerating. Risk Frame counter-frame surfaced: 67% concentration is critical-infrastructure risk for three companies; 28% growth rate is unsustainable long-term; AI workload migration is unquantified. Decision changed from "invest in cloud infrastructure companies" to "invest selectively, hedge against concentration risk, verify AI workload migration translates to sustainable revenue."
-2. L2 reframe controlled-transformation study. Per [METHODOLOGY.md](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) §5.2, Growth-to-Risk pair scored 5/5 on coverage shift, 5/5 on density shift, 5/5 on suggestion shift across two documents and frame-pairs. One of the cleanest reframe operations in the L2 study; structural validation that Risk and Growth are operationally distinct counters, not nominal opposites.
+2. L2 reframe controlled-transformation study. Per [METHODOLOGY.md](https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md) §5.2, Growth-to-Risk pair scored 5/5 on coverage shift, 5/5 on density shift, 5/5 on suggestion shift across two documents and frame-pairs. One of the cleanest reframe operations in the L2 study; structural validation that Risk and Growth are operationally distinct counters, not nominal opposites.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the Risk Frame to an opportunity-framed or growth-framed analysis surfaced a vulnerability that was not visible from inside the original frame; (2) outcome differential observed (decision adjusted, position rebalanced, exposure reduced); (3) the contrast between the original frame's reading and the risk-framed reading is concrete; (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the Risk Frame to an opportunity-framed or growth-framed analysis surfaced a vulnerability that was not visible from inside the original frame; (2) outcome differential observed (decision adjusted, position rebalanced, exposure reduced); (3) the contrast between the original frame's reading and the risk-framed reading is concrete; (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application (no tools, experienced reader): ~30-60 seconds to ask "what could go wrong here; what assumptions does this depend on"

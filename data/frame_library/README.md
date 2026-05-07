@@ -13,7 +13,7 @@ snapshot at `../frame_library_v4/` (Identification sections only).
 |---|---|---|
 | Living library (this directory) | `data/frame_library/` | Reviewer-facing prose. Edits accumulate continuously. Renders to corpus pages. |
 | Frozen snapshot | `data/frame_library_v4/` | Ratified library_v4 snapshot. Engine reads `## Identification` sections from here. Never edited post-ratification (see snapshot's POST_RATIFICATION_DIVERGENCE.md). |
-| Per-entry status | [INDEX.md](https://github.com/lluvr/frame-check-mcp/blob/master/data/frame_library/INDEX.md) (this directory) | Canonical status, citation rules, detection class for each FVS-XXX. |
+| Per-entry status | [INDEX.md](https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/INDEX.md) (this directory) | Canonical status, citation rules, detection class for each FVS-XXX. |
 | Engine reliability values | fvs_eval/v4/library_v4_reliability.json | Per-frame `library_consensus_ac1` that the engine emits in V4.2 results. |
 | Library version | `VERSION` (this directory) | SemVer of the living library. Bumped at ratification time. |
 | Canon-promotion dossiers | `promotions/FVS-XXX_v1.md` | Reviewer-engagement packages for canon-candidate frames. |
@@ -80,7 +80,7 @@ These tests are part of the canonical runner (`python3 run_tests.py`).
    composition: the library_v3 → library_v4 ratification at
    fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md.
 3. If the edit touches `## Generation affordances`, run a reframe-behavior
-   smoke test before merging via [scripts/reframe_smoke_test.py](https://github.com/lluvr/frame-check-mcp/blob/master/scripts/reframe_smoke_test.py)
+   smoke test before merging via [scripts/reframe_smoke_test.py](https://github.com/Clarethium/frame-check-mcp/blob/master/scripts/reframe_smoke_test.py)
    (single-frame manual recipe currently runnable; see file-top docstring
    for what "passing" means and for the full-sweep TODO).
 4. If the edit touches any other section, no LLM-behavior check is required.

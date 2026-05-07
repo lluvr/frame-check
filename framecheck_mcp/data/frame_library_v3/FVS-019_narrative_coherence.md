@@ -71,7 +71,7 @@ Per-family positives (of 15 docs): Claude 14, Gemini 15, Grok 15, GPT-5 15.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-13; grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04; prevalence 98 percent - the highest-prevalence frame in the catalog)
@@ -89,7 +89,7 @@ Per-family positives (of 15 docs): Claude 14, Gemini 15, Grok 15, GPT-5 15.
 1. Company-decline worked example (v1 Identification). Document constructed compelling causal narrative ("rising costs led to margin pressure, which caused reduced investment, which led to competitive weakness, which accelerated the decline"). Counter-frame surfaced: did rising costs actually cause margin pressure, or did management decisions cause both? The narrative picks one causal chain and tells it coherently, hiding alternatives. Diagnostic: produce two alternative causal chains explaining the same data; identify which data points are consistent with all three vs only one.
 2. EXP-094 confound integration. The confound where "correct analysis within wrong frame produces a coherent but wrong narrative" is the operational case study for narrative coherence as separate from factual accuracy. A perfectly coherent story can be false; a collection of accurate facts can be incoherent. The construction trace (T-356) is the antidote: generating your own causal model before reading AI's narrative creates the comparison point that reveals whether you adopted AI's narrative or maintained your own.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator accepted a coherent AI narrative as true and later found that an alternative causal chain explained the data better, or that data points were omitted to maintain the narrative's coherence; (2) the alternative-narrative diagnostic applied (could other causal chains explain the same data); (3) outcome differential observed (narrative challenged, alternative pursued, decision re-anchored on more accurate causal model); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where the operator accepted a coherent AI narrative as true and later found that an alternative causal chain explained the data better, or that data points were omitted to maintain the narrative's coherence; (2) the alternative-narrative diagnostic applied (could other causal chains explain the same data); (3) outcome differential observed (narrative challenged, alternative pursued, decision re-anchored on more accurate causal model); (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~2-5 minutes (identify causal chain; produce 1-2 alternative chains; check data points against each)

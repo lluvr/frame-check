@@ -46,7 +46,9 @@ GENERATION_PROMPT = """Write a detailed, factual analysis of the following topic
 Topic:
 {wrapped_topic}
 
-Write 300-500 words with specific, verifiable claims."""
+Write 300-500 words with specific, verifiable claims.
+
+Punctuation: use only straight ASCII punctuation. Do not use em-dashes, en-dashes, curly quotes, curly apostrophes, or ellipsis characters. If you would use an em-dash, rewrite the sentence with a comma, colon, period, or parenthesis instead."""
 
 
 def _render_generation_prompt(topic: str) -> str:
@@ -829,12 +831,41 @@ def analyze_model(model_name, text, sn_max_claims=15):
     # compare-path was discovered by the 2026-04-30 alignment audit.
     frame_suggestions = suggest_frames(cov, voice, temp, epist, text=text)
 
+    # Source Network with always-render contract parity to /api/profile
+    # (commit b01b163). Per-model sn_status surfaces partial-coverage and
+    # unavailable states to the SSE consumer so the compare UI can show
+    # the same honest banner the single-doc result page renders, instead
+    # of silently presenting a partial verification subset as if it were
+    # complete. sn_status enum values match /api/profile:
+    #   "complete"    - every claim was processed
+    #   "partial"     - SN budget exhausted; some claims budget-marked
+    #   "unavailable" - SN raised; sn=[] returned
+    #   "skipped"     - no claims to verify
     sn = []
+    sn_status = "skipped"
+    sn_status_reason = None
     if ca.get("claims"):
         try:
             sn = verify_claims_source_network(
                 ca["claims"], doc_text=text, max_claims=sn_max_claims,
             )
+            n_budget = sum(
+                1 for r in sn
+                if r.verdict == "unverifiable"
+                and "budget" in (r.detail or "").lower()
+            )
+            if n_budget > 0:
+                sn_status = "partial"
+                processed = len(sn) - n_budget
+                sn_status_reason = (
+                    f"Source verification budget reached after "
+                    f"{processed} of {len(sn)} claims for {model_name}. "
+                    f"The most common cause is provider rate-limiting "
+                    f"(CoinGecko free-tier 429s on crypto-heavy docs). "
+                    f"The structural analysis is unaffected."
+                )
+            else:
+                sn_status = "complete"
         except Exception as e:
             # Tolerated by design: source-network verification is
             # best-effort enrichment. A network failure, provider
@@ -851,9 +882,40 @@ def analyze_model(model_name, text, sn_max_claims=15):
                 f"{model_name}: {type(e).__name__}: {e}",
                 file=sys.stderr,
             )
+            sn_status = "unavailable"
+            sn_status_reason = (
+                f"Source verification failed for {model_name}: "
+                f"{type(e).__name__}. The structural analysis is "
+                f"complete and unaffected."
+            )
+
+    # Annotated rendering of the document with claim highlights.
+    # Mirrors the /check (single-doc) flow at app.py:1670 where every
+    # analysis pipes through annotate_document. The compare flow had
+    # never wired this in: model cards showed metric pills with the
+    # original text hidden inside <details><summary>View full
+    # response</summary>, so the actual document the user pasted was
+    # not the centerpiece evidence on the comparison surface. Empty
+    # string fallback when no claims were extracted (very short docs)
+    # so the template can branch on truthiness without surfacing a
+    # raw text dump as a claimless block.
+    try:
+        from annotator import annotate_document as _annotate
+        annotated_html = (
+            _annotate(text, ca["claims"]) if ca.get("claims") else ""
+        )
+    except Exception as _exc:
+        import sys
+        print(
+            f"[comparison.analyze_model] annotate_document failed for "
+            f"{model_name}: {type(_exc).__name__}: {_exc}",
+            file=sys.stderr,
+        )
+        annotated_html = ""
 
     return {
         "text": text,
+        "annotated_doc": annotated_html,
         "word_count": profile["claim_density"]["word_count"],
         "claims": ca,
         "claim_count": ca.get("total_claims", 0),
@@ -870,6 +932,14 @@ def analyze_model(model_name, text, sn_max_claims=15):
         "source_verified": sum(1 for r in sn if r.verdict in ("verified", "close")),
         "source_contradicted": sum(1 for r in sn if r.verdict == "contradicted"),
         "source_total": len(sn),
+        # Per-model SN status for the always-render contract on the
+        # compare surface. Mirrors the /api/profile sn_status field
+        # documented in docs/MCP_SERVER.md so a programmatic consumer
+        # of /api/compare-stream's model_analyzed event branches on
+        # the same vocabulary it would on /api/profile. Internal
+        # substrate signal; not surfaced as user-facing copy.
+        "sn_status": sn_status,
+        "sn_status_reason": sn_status_reason,
         # Per-contradiction surface so the compare UI can name what
         # contradicted what. Pre-fix the response carried only the
         # count ("1 contradicted out of 2") with no provider attribution
@@ -1001,12 +1071,514 @@ def serialize_model_for_stream(model_data):
     return out
 
 
-def build_cross_model_comparison(models):
+def _compose_compare_verdict(
+    *,
+    verbatim_overlap=None,
+    frames_shared=None,
+    frames_per_model=None,
+    agreed_count=0,
+    disagreement_count=0,
+    subject="Both responses",
+):
+    """Compose the at-a-glance verdict sentence for the compare page.
+
+    The verdict leads with FRAMES, not counts. The frame each response
+    operates in is the load-bearing finding for a comparison: same
+    frame means same lens (agreement is plausibly tautological);
+    different frames means different measurement (responses reach
+    different conclusions because they answer different questions).
+    Counts and dimension lists become evidence in sections below;
+    the verdict surfaces the structural finding the reader needs to
+    interpret everything else.
+
+    Mirrors /check's verdict-headline pattern (frame as headline,
+    consequence implicit) adapted for two responses. Zero LLM cost.
+
+    Branches in priority order:
+
+      1. Verbatim alignment. When the structural detector flagged the
+         responses as substantially identical text, "Both operate in
+         X" is misleading because there is only ONE text being read
+         twice. Verdict subsumes what a separate verbatim callout
+         used to say.
+
+      2. Shared top frame. Both responses' top detected frame is the
+         same; the verdict states what frame they share.
+
+      3. Divergent top frames. Each response has a different top
+         detected frame; the verdict names the difference.
+
+      4. One-sided frame. Only one response has a detected frame;
+         the verdict names the asymmetry.
+
+      5. No frames detected on either side. The verdict falls back to
+         a structural count summary so the page does not lead with
+         silence on a comparison that produced data.
+
+      6. All-empty. Rare; the verdict says the responses are analyzed
+         below without inventing content.
+
+    Args:
+        verbatim_overlap: dict {ratio, level} from
+            _detect_verbatim_overlap, or None when responses have
+            meaningful text-level differences.
+        frames_shared: list of frame dicts from _compose_compare_
+            takeaway when both responses use identical frames in the
+            same order; None or empty otherwise.
+        frames_per_model: list of {model_name, frames} dicts from
+            _compose_compare_takeaway. Each "frames" list is the
+            top-3 detected frames for that model; the verdict uses
+            only the top one.
+        agreed_count: int, number of values both responses cite.
+        disagreement_count: int, number of near_matches.
+        subject: noun phrase for the count fallback ("These responses",
+            "These documents", or "Both responses").
+    """
+
+    def _frame_label(f):
+        # Format a frame for verdict prose. Frame NAME only; the
+        # FVS-NNN identifier is library jargon and surfaces on the
+        # FVS chip (clickable badge linking to the library entry)
+        # rather than in the user-facing verdict sentence. Operator
+        # flagged the prior "Frame Name (FVS-NNN)" form as noise:
+        # readers don't know what FVS is, and the badge already
+        # carries the identifier where it earns its space. The fvs
+        # fallback applies only when a frame fired without a name
+        # (rare; defensive against partial library data).
+        name = (f or {}).get("name") or ""
+        fvs = (f or {}).get("fvs_id") or ""
+        return name or fvs or "an unnamed frame"
+
+    # 1. Verbatim alignment takes precedence. There is no comparison
+    # to make when the responses are the same text.
+    if verbatim_overlap and verbatim_overlap.get("level") == "verbatim":
+        return f"{subject} are the same text. There is no comparison to make."
+
+    fpm = frames_per_model or []
+    a_block = fpm[0] if len(fpm) >= 1 else {}
+    b_block = fpm[1] if len(fpm) >= 2 else {}
+    a_frames = (a_block.get("frames") or []) if isinstance(a_block, dict) else []
+    b_frames = (b_block.get("frames") or []) if isinstance(b_block, dict) else []
+    a_top = a_frames[0] if a_frames else None
+    b_top = b_frames[0] if b_frames else None
+    a_name = (a_block.get("model_name") if isinstance(a_block, dict) else None) or "Document A"
+    b_name = (b_block.get("model_name") if isinstance(b_block, dict) else None) or "Document B"
+
+    # 2. Shared top frame. The composer (_compose_compare_takeaway)
+    # populates frames_shared only when the top-level frame shape
+    # matches across both sides; surface the top shared frame.
+    if frames_shared:
+        shared_top = frames_shared[0] if isinstance(frames_shared, list) and frames_shared else None
+        if shared_top:
+            return f"Both responses operate in {_frame_label(shared_top)}."
+
+    # 3. Divergent top frames. Both sides have a frame and they
+    # differ. (frames_shared would have caught the matching case
+    # above.)
+    if a_top and b_top:
+        return (
+            f"{a_name} operates in {_frame_label(a_top)}; "
+            f"{b_name} in {_frame_label(b_top)}. "
+            f"They measure different things."
+        )
+
+    # 4. One-sided frame.
+    if a_top and not b_top:
+        return (
+            f"{a_name} operates in {_frame_label(a_top)}; "
+            f"{b_name} has no detected frame."
+        )
+    if b_top and not a_top:
+        return (
+            f"{b_name} operates in {_frame_label(b_top)}; "
+            f"{a_name} has no detected frame."
+        )
+
+    # 5. No frames on either side. Fall back to structural counts so
+    # the page does not lead with silence.
+    if agreed_count > 0 or disagreement_count > 0:
+        parts = []
+        if agreed_count > 0:
+            parts.append(
+                f"{agreed_count} numerical value"
+                f"{'' if agreed_count == 1 else 's'} agree"
+            )
+        if disagreement_count > 0:
+            parts.append(
+                f"{disagreement_count} disagreement"
+                f"{'' if disagreement_count == 1 else 's'}"
+            )
+        return f"{subject}: {'; '.join(parts)}."
+
+    # 6. All-empty: no frames, no verbatim, no counts. Returns the
+    # empty string so the verdict-hero hides entirely. /check uses
+    # the same pattern (frame-check-portrait / frame-check-headline
+    # are conditional on substantive content; nothing renders when
+    # both are empty). Hollow placeholder prose lowers authority;
+    # honest absence beats "<subject> analysed structurally below."
+    return ""
+
+
+def _compose_compare_takeaway(models, model_names, shared_blind):
+    """Compose structural takeaway questions for the comparison.
+
+    Mirrors the per-document takeaway-questions panel on /check
+    (frame_library.compose_takeaway_questions). Surfaces:
+      - frames_per_model: each model's detected frames, capped at
+        three per side, with name + FVS id + library link + the
+        operator-curated per-frame question. Lets a reader see at
+        a glance which structural frames each response is doing
+        work through; the per-frame question is the operator-
+        curated probe to take to an LLM.
+      - absent_dimensions: shared blind-spot dimensions (those
+        BOTH responses fail to engage) with the canonical
+        COVERAGE_QUESTIONS phrasing. Each dimension gets a
+        ready-to-ask question rather than a bare label.
+
+    Zero LLM cost; pure composition from existing per-model
+    `frame_library_matches` data + the cross-model `shared_blind`
+    list.
+
+    Returned dict shape mirrors compose_takeaway_questions's
+    relevant subset so a future template-extraction pass could
+    share a partial between /check and /compare for the
+    frames-list rendering. The numerical_disputes section that
+    /check's takeaway panel does not have is omitted here too:
+    the compare page already has a dedicated Numerical
+    disagreements section with full per-claim cards, so duplicating
+    in the takeaway panel would crowd the page.
+    """
+    # Avoid a hard import dependency at module load time; this
+    # composition path is only exercised when callers actually need
+    # the takeaway data, so import inline keeps comparison.py
+    # importable without frame_library installed (e.g., for save-
+    # side validation paths that read the compare JSON without
+    # building it).
+    try:
+        from frame_library import COVERAGE_QUESTIONS
+    except ImportError:
+        COVERAGE_QUESTIONS = {}
+
+    def _collect_frames(model_data):
+        # frame_library_matches is the analyzed-model output's
+        # canonical name (set in comparison.analyze_model). Older
+        # callers that pass models without this field get an empty
+        # list rather than a KeyError.
+        matches = (model_data or {}).get("frame_library_matches") or []
+        out = []
+        for m in matches[:3]:
+            if not isinstance(m, dict):
+                continue
+            fvs_id = m.get("fvs_id")
+            out.append({
+                "name": m.get("name") or "",
+                "fvs_id": fvs_id or "",
+                "library_url": (
+                    f"/corpus/library/{fvs_id}.html" if fvs_id else ""
+                ),
+                "signal": m.get("signal") or "",
+                "question": m.get("question") or "",
+                # Carry the frame's library-paragraph definition so the
+                # compare takeaway panel can render at the same depth as
+                # /check's suggestion-card surface (name + signal +
+                # definition + question), not just a thinner three-field
+                # subset. Pre-2026-05-06 the compare path stripped this
+                # field on the way through; the operator flagged the
+                # missing context as the highest-leverage gap on the
+                # compare top-section.
+                "definition": m.get("definition") or "",
+            })
+        return out
+
+    frames_per_model = []
+    for name in model_names:
+        if name not in models:
+            continue
+        frames_per_model.append({
+            "model_name": name,
+            "frames": _collect_frames(models[name]),
+        })
+
+    # Detect "both responses use the exact same frames in the same
+    # order." When true, the takeaway panel collapses the per-model
+    # block into one shared "Both documents" block instead of
+    # rendering the same frame chip + signal + question twice. The
+    # operator flagged the per-side duplicate as visual noise on
+    # comparisons of near-identical documents (verbatim sample).
+    #
+    # Comparison key: (fvs_id, name, signal, question) tuple per
+    # frame. fvs_id alone would be enough for shape-equality but
+    # carrying name + signal + question prevents a future case
+    # where two slightly different signal extractions for the same
+    # FVS-ID get collapsed when they shouldn't be. List length must
+    # match too; if A has [X, Y] and B has [X], they're not the
+    # same shape even if X matches.
+    frames_shared = None
+    if len(frames_per_model) == 2:
+        a_frames = frames_per_model[0].get("frames") or []
+        b_frames = frames_per_model[1].get("frames") or []
+        if a_frames and len(a_frames) == len(b_frames):
+            def _key(f):
+                return (
+                    f.get("fvs_id") or "",
+                    f.get("name") or "",
+                    f.get("signal") or "",
+                    f.get("question") or "",
+                )
+            if [_key(f) for f in a_frames] == [_key(f) for f in b_frames]:
+                # Both sides identical: surface the shared list.
+                # Templates branch on this and skip per-model render.
+                frames_shared = list(a_frames)
+
+    absent_dimensions = [
+        {"name": dim, "question": COVERAGE_QUESTIONS.get(dim, "")}
+        for dim in (shared_blind or [])
+    ]
+
+    return {
+        "frames_per_model": frames_per_model,
+        "frames_shared": frames_shared,
+        "absent_dimensions": absent_dimensions,
+    }
+
+
+def _detect_verbatim_overlap(models, model_names, threshold=0.95):
+    """Detect whether two compared responses share substantially
+    identical text.
+
+    Why this matters: when two responses are byte-identical or
+    near-identical, the structural agreements surfaced elsewhere on
+    /compare (numerical agreement, shared blind spots, shared frames)
+    reflect the SAME TEXT being analyzed twice, not two independent
+    reads converging. Failure modes that produce near-identical text:
+    cached response served from two providers, the same response
+    pasted twice by accident, two RAG calls hitting the same source,
+    training-data echo across providers, deterministic models with
+    temperature 0 on the same prompt. Without this signal a reader
+    of /compare draws "both responses agree" conclusions when the
+    correct read is "the responses are the same text."
+
+    Algorithm: difflib.SequenceMatcher.ratio() in [0, 1]. Inputs are
+    capped at 20K chars per side to bound the O(N*M) worst case;
+    longer responses sample the first 20K which preserves verbatim-
+    alignment detection (verbatim duplicates trigger >= threshold on
+    any substantial prefix). The cheap real_quick_ratio() and
+    quick_ratio() upper bounds short-circuit the full ratio() when
+    they cannot possibly cross threshold, so the typical "very
+    different responses" path stays O(N+M).
+
+    Args:
+        models: {name: analyze_model_result} dict. Each model_result
+            carries a "text" field with the original response.
+        model_names: ordered list of names to compare. Only the
+            first two are read; if fewer than two are available,
+            returns None.
+        threshold: ratio cutoff. Default 0.95 corresponds to "byte-
+            identical or trivially different (whitespace, encoding)."
+            Below 0.95 the responses have meaningful text-level
+            differences even if they share substantial prose, so the
+            agreement signal is still informative; above 0.95 the
+            responses are effectively the same text and the agreement
+            signal is misleading.
+
+    Returns:
+        {"ratio": float, "level": "verbatim"} when ratio >= threshold;
+        None otherwise. Future expansion can add more levels at
+        lower thresholds; the current scope only surfaces the
+        strongest signal so the page does not flag every comparison
+        with shared topic-driven prose.
+    """
+    import difflib
+
+    if not model_names or len(model_names) < 2:
+        return None
+    name_a = model_names[0]
+    name_b = model_names[1]
+    if name_a not in models or name_b not in models:
+        return None
+    text_a = (models[name_a] or {}).get("text") or ""
+    text_b = (models[name_b] or {}).get("text") or ""
+    if not text_a or not text_b:
+        return None
+
+    cap = 20000
+    a = text_a[:cap]
+    b = text_b[:cap]
+
+    sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
+    if sm.real_quick_ratio() < threshold:
+        return None
+    if sm.quick_ratio() < threshold:
+        return None
+    ratio = sm.ratio()
+    if ratio < threshold:
+        return None
+
+    return {
+        "ratio": round(ratio, 3),
+        "level": "verbatim",
+    }
+
+
+def _oxford(items, conj="and"):
+    """Join a list with commas + a conjunction for the last item.
+
+    Returns "" for empty, "X" for one, "X <conj> Y" for two,
+    "X, Y, <conj> Z" for three or more (Oxford comma). Conjunction
+    defaults to "and"; pass conj="or" for negative-list lists where
+    "neither addresses A, B, or C" reads more naturally than "and".
+    """
+    items = [str(x) for x in items if x]
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    if len(items) == 2:
+        return f"{items[0]} {conj} {items[1]}"
+    return ", ".join(items[:-1]) + f", {conj} {items[-1]}"
+
+
+def _compose_comparison_portrait(models, model_names, agreed_count, mode=None):
+    """Deterministic 2-3 sentence prose portrait of the comparison.
+
+    Sits at the top of /compare's takeaway panel, mirroring the role
+    /check's framing_portrait_natural plays: a one-glance read of the
+    structural picture before any LLM lands. Zero LLM cost, anchored
+    on measured signals (voice, temporal, coverage overlap, claim
+    counts, numerical agreement).
+
+    Three sentences, each conditional:
+      1. voice + temporal across both responses
+      2. shared coverage / shared blind spots (intersection language)
+      3. claim counts + numerical agreement note (if agreed > 0)
+
+    Returns the composed paragraph as a string, or None when
+    insufficient input (less than two models, missing voice data).
+    """
+    if not model_names or len(model_names) < 2:
+        return None
+    name_a = model_names[0]
+    name_b = model_names[1]
+    if name_a not in models or name_b not in models:
+        return None
+    a = models[name_a] or {}
+    b = models[name_b] or {}
+
+    a_voice = (a.get("voice") or {}).get("voice", "") or ""
+    b_voice = (b.get("voice") or {}).get("voice", "") or ""
+    a_temp = (a.get("temporal") or {}).get("dominant", "") or ""
+    b_temp = (b.get("temporal") or {}).get("dominant", "") or ""
+
+    # Subject vocabulary. Documents-mode reads as "responses" still,
+    # because the user is comparing two pasted texts side-by-side and
+    # "documents" + "neither addresses" + claim counts feels stilted
+    # in the same sentence. Mirrors the verdict_subject default.
+    subject_plural = (
+        "These documents" if mode == "documents" else "Both responses"
+    )
+
+    sentences = []
+
+    # ── 1. voice + temporal ──
+    voice_phrase = None
+    if a_voice and b_voice:
+        if a_voice == b_voice:
+            voice_phrase = f"{subject_plural} read as {a_voice}"
+        else:
+            voice_phrase = (
+                f"{name_a} reads as {a_voice} while "
+                f"{name_b} reads as {b_voice}"
+            )
+
+    temporal_phrase = None
+    if a_temp and b_temp:
+        if a_temp == b_temp:
+            temporal_phrase = f"both {a_temp}-oriented"
+        else:
+            temporal_phrase = (
+                f"{name_a} leans {a_temp}-oriented while "
+                f"{name_b} leans {b_temp}-oriented"
+            )
+
+    if voice_phrase and temporal_phrase:
+        sentences.append(f"{voice_phrase}, {temporal_phrase}.")
+    elif voice_phrase:
+        sentences.append(f"{voice_phrase}.")
+    elif temporal_phrase:
+        # Capitalize the first letter when temporal is the lead.
+        s = temporal_phrase[0].upper() + temporal_phrase[1:]
+        sentences.append(f"{s}.")
+
+    # ── 2. shared coverage + shared blind spots ──
+    a_cov = a.get("coverage") or {}
+    b_cov = b.get("coverage") or {}
+    a_covered = set(a_cov.get("covered") or [])
+    b_covered = set(b_cov.get("covered") or [])
+    a_missing = set(a_cov.get("missing") or [])
+    b_missing = set(b_cov.get("missing") or [])
+
+    shared_covered = sorted(a_covered & b_covered)
+    shared_missing = sorted(a_missing & b_missing)
+
+    if shared_covered and shared_missing:
+        sentences.append(
+            f"Both engage {_oxford(shared_covered)}; "
+            f"neither addresses {_oxford(shared_missing, conj='or')}."
+        )
+    elif shared_covered:
+        sentences.append(f"Both engage {_oxford(shared_covered)}.")
+    elif shared_missing:
+        sentences.append(
+            f"Neither addresses {_oxford(shared_missing, conj='or')}."
+        )
+
+    # ── 3. claim counts + numerical agreement ──
+    a_claims = a.get("claim_count") or 0
+    b_claims = b.get("claim_count") or 0
+    a_unhedged = a.get("unhedged_count") or 0
+    b_unhedged = b.get("unhedged_count") or 0
+
+    if a_claims > 0 and b_claims > 0:
+        a_part = (
+            f"{name_a} carries {a_claims} "
+            f"{'claim' if a_claims == 1 else 'claims'}"
+        )
+        if a_unhedged > 0:
+            a_part += f" ({a_unhedged} as fact)"
+        b_part = (
+            f"{name_b} carries {b_claims}"
+        )
+        if b_unhedged > 0:
+            b_part += f" ({b_unhedged} as fact)"
+        tail = ""
+        if agreed_count > 0:
+            tail = (
+                f", with {agreed_count} numerical "
+                f"{'value' if agreed_count == 1 else 'values'} "
+                f"cited identically"
+            )
+        sentences.append(f"{a_part}; {b_part}{tail}.")
+
+    if not sentences:
+        return None
+    return " ".join(sentences)
+
+
+def build_cross_model_comparison(models, mode=None):
     """Build the cross-model insights from per-model analyses.
 
     Takes a dict of {model_name: analyze_model(...) result} and
     returns the agreed numbers, disagreements, blind spots, etc.
     Used both by compare_responses and by the SSE stream endpoint.
+
+    The optional `mode` arg ("topic" or "documents") drives the
+    subject phrasing in the at-a-glance verdict text. Defaults to
+    None so existing callers (compare_examples.py, sync
+    compare_responses) keep working without modification; the
+    verdict uses the generic "Both responses" subject in that
+    case, which reads cleanly for both topic-mode (LLM models
+    answering the same question) and documents-mode (pasted
+    documents on the same subject).
     """
     if len(models) < 2:
         return None
@@ -1085,6 +1657,98 @@ def build_cross_model_comparison(models):
             "shared_blind_note": framing_data["shared_blind_note"],
         }
 
+    # Agreed numbers with per-model context. Operator's call
+    # 2026-05-05: bare-number tags ("383", "200", "31.5") tell the
+    # reader nothing about what those numbers mean or where they
+    # came from. The richer shape attaches model A's sentence and
+    # model B's sentence for each agreed value (using the same
+    # _find_sentence_for_value helper that near_matches uses), so
+    # the rendered output can show "Both models cite $383B in:
+    # 'Apple reported total revenue of $383 billion' / 'Apple's
+    # FY2024 revenue was $383 billion'" instead of just "$383".
+    # Older saved-comparison JSON files carry agreed_numbers as a
+    # plain list of strings; the saved-view template tolerates
+    # both shapes (list-of-strings -> bare tags fallback;
+    # list-of-dicts -> context cards) so existing saves keep
+    # rendering without server backfill.
+    agreed_numbers_sorted = sorted(
+        agreed_numbers,
+        key=lambda x: float(x) if x.replace(".", "").isdigit() else 0,
+    )
+    agreed_numbers_with_context = [
+        {
+            "value": v,
+            "context_a": _find_sentence_for_value(v, a["claims"]),
+            "context_b": _find_sentence_for_value(v, b["claims"]),
+        }
+        for v in agreed_numbers_sorted
+    ]
+
+    # Compute the takeaway and verbatim-overlap signals BEFORE the
+    # verdict so the verdict can lead with frames (which the takeaway
+    # composer detects) and short-circuit on verbatim alignment. The
+    # verdict is the load-bearing top-of-page string; pulling its
+    # input dependencies up here means the verdict has full
+    # structural context, not just count fallbacks.
+    takeaway_questions = _compose_compare_takeaway(
+        models=models,
+        model_names=model_names,
+        shared_blind=shared_blind,
+    )
+    # Mode-aware verbatim gating. The detector's documented failure
+    # modes (cached response served from two providers, training-data
+    # echo, deterministic models with temperature 0 on the same prompt,
+    # the same response pasted twice by accident) are topic-mode
+    # pathologies primarily, but documents-mode users also paste
+    # near-identical text often enough that a quietly-disabled detector
+    # leaves the verdict reading "Both responses operate in <Frame>"
+    # on a comparison that is actually two copies of the same document.
+    # The original gate disabled documents-mode entirely after a 0.98-
+    # ratio false-positive on docs sharing exec-summary + conclusion
+    # boilerplate; raising the documents-mode threshold to 0.99 keeps
+    # the detector live for byte-identical paste-twice cases while
+    # still excluding shared-template comparisons. Topic-mode keeps
+    # the original 0.95 threshold (where shared training-data echo
+    # is the dominant pathology); the legacy mode=None caller keeps
+    # 0.95 for backward compat with programmatic consumers that have
+    # not opted into the mode contract.
+    if mode == "documents":
+        verbatim_overlap = _detect_verbatim_overlap(
+            models, model_names, threshold=0.99,
+        )
+    else:
+        verbatim_overlap = _detect_verbatim_overlap(models, model_names)
+
+    verdict_subject = (
+        "These responses" if mode == "topic"
+        else "These documents" if mode == "documents"
+        else "Both responses"
+    )
+    verdict_text = _compose_compare_verdict(
+        verbatim_overlap=verbatim_overlap,
+        frames_shared=takeaway_questions.get("frames_shared"),
+        frames_per_model=takeaway_questions.get("frames_per_model"),
+        agreed_count=len(agreed_numbers_sorted),
+        disagreement_count=len(near_matches),
+        subject=verdict_subject,
+    )
+
+    # Comparison portrait: deterministic 2-3 sentence prose summary
+    # of the structural picture across both responses (voice +
+    # temporal, shared coverage + blind spots, claim counts +
+    # numerical agreement). Mirrors /check's framing_portrait_natural
+    # role on the compare side: gives the reader a one-glance read of
+    # the structural depth before any LLM narrative lands. Zero LLM
+    # cost; rendered immediately in the takeaway panel hero. Operator
+    # flagged 2026-05-06 that the compare top-section was missing the
+    # complexity and value /check's first section surfaces.
+    comparison_portrait = _compose_comparison_portrait(
+        models=models,
+        model_names=model_names,
+        agreed_count=len(agreed_numbers_sorted),
+        mode=mode,
+    )
+
     return {
         "models": models,
         "model_names": model_names,
@@ -1112,10 +1776,33 @@ def build_cross_model_comparison(models):
         # canonical name is reachable from every export surface,
         # not just the live SSE stream.
         "framing_differences": framing_data,
-        "agreed_numbers": sorted(
-            agreed_numbers,
-            key=lambda x: float(x) if x.replace(".", "").isdigit() else 0,
-        ),
+        # Verdict text: a single-sentence at-a-glance read composed
+        # frame-first. The verdict leads with what frame each response
+        # operates in, falling back to a structural count summary when
+        # no frames detected, and short-circuits to "These responses
+        # are the same text" when verbatim alignment fires. Zero LLM
+        # cost; computed above from takeaway_questions + verbatim_
+        # overlap + agreed/disagreed counts. Mirrors /check's
+        # verdict-headline shape (frame as headline) adapted for two
+        # responses.
+        "verdict_text": verdict_text,
+        # Comparative takeaway questions: structurally composed
+        # from per-model frame_library_matches + cross-model
+        # shared_blind. Mirrors /check's takeaway-questions panel
+        # but on the compare side. Zero LLM cost. The compare
+        # template renders this as a panel right after the verdict
+        # hero; the compare-takeaway block driven by Grok
+        # (honest_headline + question_to_ask) stays separately
+        # inside the framing-comparison section so the two action
+        # surfaces complement rather than overlap.
+        "takeaway_questions": takeaway_questions,
+        # Deterministic structural prose portrait of the comparison.
+        # Sits at the top of the takeaway panel as a one-glance read of
+        # the structural picture before any LLM lands. Mirrors the role
+        # framing_portrait_natural plays on /check. May be None when
+        # input is too thin (single model, missing voice data).
+        "comparison_portrait": comparison_portrait,
+        "agreed_numbers": agreed_numbers_with_context,
         "only_a": sorted(only_a),
         "only_b": sorted(only_b),
         "near_matches": near_matches,
@@ -1128,6 +1815,14 @@ def build_cross_model_comparison(models):
             "total_only_b": len(only_b),
             "disagreements": len(near_matches),
         },
+        # Verbatim overlap finding: populated when both responses
+        # share substantially identical text (>= 0.95 SequenceMatcher
+        # ratio). The verdict_text above absorbs this into its
+        # leading sentence ("These responses are the same text...");
+        # the field is also persisted on the SSE payload and saved
+        # JSON for programmatic consumers (MCP, etc.) that may want
+        # the raw signal independent of the verdict prose.
+        "verbatim_overlap": verbatim_overlap,
     }
 
 

@@ -8,6 +8,44 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 
 ## [Unreleased]
 
+## [0.8.8] - 2026-05-07
+
+### Critical fix: bundle missing top-level modules
+
+- 0.8.6 and 0.8.7 shipped without `manifest.py`, `annotator.py`, and `security.py`. All three are imported by wheel-bundled modules (`mcp_compose.py` imports `manifest` for the analysis-manifest provenance receipt; `comparison.py` imports `annotator`; `frame_opportunities.py` imports `security`). Adopters running the `frame_check` or `frame_compare` MCP tools on those releases hit `ModuleNotFoundError: No module named 'manifest'` (and would hit `annotator` / `security` errors on the comparison and frame-opportunities code paths). Local pytest passed because pytest runs from the source-tree CWD where the missing modules are still on the import path; only the conformance driver, which imports against an installed wheel, caught it (29/32 round-trips on 0.8.7, three failures all `ModuleNotFoundError`).
+
+- Root cause: `mcp_compose.py` started importing `manifest` in commit `e6bacd1` (2026-05-03, "Analysis manifest: provenance receipt on every Frame Check result"), but `pyproject.toml [tool.setuptools] py-modules` was not updated to include `manifest`, `annotator`, or `security`. The wheel bundles only modules listed there. 0.8.6 and 0.8.7 inherited the silent omission. 0.8.8 adds all three to `py-modules`; conformance driver now passes 32/32 against the new wheel.
+
+- Bundle verification: `frame_check_mcp-0.8.8-py3-none-any.whl` ships 28 top-level `.py` modules (was 25); `manifest.py`, `annotator.py`, and `security.py` are present in the wheel listing. `pip install frame-check-mcp==0.8.8` followed by `from mcp_server import build_epistemic_payload; build_epistemic_payload(...)` returns a valid payload (no ModuleNotFoundError).
+
+### Process: pytest-against-source insufficient as a release gate
+
+- Pytest passing locally against the source tree is necessary but not sufficient for release. The source tree's CWD is on the import path, so missing-from-wheel modules still resolve. The conformance driver in `scripts/mcp_conformance_driver.py` imports against an installed wheel via a fresh venv and is the gate that catches this class of bug. The release orchestrator (`scripts/release.py release X.Y.Z`) runs the conformance driver as part of its `lift_dry_run` preflight step, so a future release run through the orchestrator will hard-stop at that gate before any tag push or PyPI upload. 0.8.6 and 0.8.7 bypassed the orchestrator and went straight to manual `python -m build` + `twine upload`; the gate existed but was not run. Discipline: future releases use `scripts/release.py release` end-to-end, or run `python3 scripts/lift_dry_run.py` standalone against the staged wheel before tagging.
+
+## [0.8.7] - 2026-05-07
+
+### Project metadata: canonical URLs + branch fix
+
+- `pyproject.toml [project.urls]`: every URL pointed at `github.com/lluvr/frame-check` (the operator's private dev tree, 404 to outsiders) shipped to PyPI with 0.8.6. Adopters clicking Repository, Issues, Changelog, or Security on the PyPI page hit 404. Re-pointed to `github.com/Clarethium/frame-check-mcp` (the public mirror) on its `master` default branch so every link resolves directly. Homepage moved from `frame.clarethium.com` (one tool surface) to `blog.clarethium.com/frame-check` (the launch piece, which is the canonical "what is this and why does it exist" page for someone arriving from PyPI).
+
+- `METHODOLOGY.md` §9 citation block: corrected `Clarethium/frame-check-mcp/blob/main/METHODOLOGY.md` (404; the public mirror's default branch is `master`, not `main`) to `/blob/master/METHODOLOGY.md`. The previous form rendered an academic-grade citation pointing at a 404, which broke the citation chain the §9.1 surface promises.
+
+- `SECURITY.md` web-service-source paragraph: `github.com/lluvr/frame-check` (404) replaced with prose describing the operator's private dev tree as the authoritative web-service source, plus a pointer to the public MCP package source at `github.com/Clarethium/frame-check-mcp` so adopters reading SECURITY.md inside the wheel get an accurate map.
+
+### Project metadata: canonicality sweep
+
+- 45 source files plus 29 generated artifacts (aggregate.json, html templates) had inbound `lluvr/frame-check-mcp` references that 301-redirect to `Clarethium/frame-check-mcp`. The redirect chain works, but the wheel was shipping legacy URLs that adopters had to follow through a redirect to land at the canonical home. Mass-replaced to direct `Clarethium/frame-check-mcp` references across CITATION.cff, README.md, frame_library, frame_library_v3, worked_examples, validation aggregates, source modules, and public-mirror docs. CHANGELOG.md historical entries left untouched (those are factual records of where things lived at ship time).
+
+### Methodology
+
+- METHODOLOGY.md §9 example pin updated 0.8.6 → 0.8.7 to track the just-shipped wheel.
+
+### Known follow-up (not in 0.8.7)
+
+- 65 files reference `lluvr/frame-check/blob/master/fvs_eval/...` (no `-mcp` suffix; the operator's private dev tree, 404 to outsiders). These are validation evidence citations in the frame library entries (`library_v4_reliability.json`, `compute_per_corpus_reliability.py`, etc.) that live in the private dev tree only. Closing this gap requires an explicit decision: either port the `fvs_eval/` artifacts to `Clarethium/frame-check-mcp` (preserves URL claims), or rephrase the frame library docs to describe the validation methodology without linking to internal artifacts. Tracked separately; not blocking 0.8.7 metadata fix.
+
+## [0.8.6] - 2026-05-07
+
 ### Public-repo organization
 
 - 10 substantive docs moved from repo root to `docs/`: `ANTICIPATED_CRITIQUES.md`, `EXTRACT_POLICY.md`, `FRAME_DIVERGENCE_v1.md`, `FRAME_DIVERGENCE_v2.md`, `FRAME_DIVERGENCE_CONTRACT_v1.md`, `MCP_SERVER.md`, `RATERS.md`, `V4_2_GAP_INVENTORY_v1.md`, `VALIDATION_PROGRAM.md`. Public-mirror root drops from 15 `.md` files to 6 (the canonical primary set: README, CHANGELOG, CONTRIBUTING, GOVERNANCE, METHODOLOGY, SECURITY plus LICENSE/NOTICE/CITATION.cff). Wheel still bundles the runtime-coupled subset at `framecheck_mcp/<NAME>.md` so `mcp_resources.py` runtime URI resolution unchanged. METHODOLOGY.md kept at root for PyPI URL stability (the v0.8.5 wheel METADATA `Methodology` Project-URL points at the root path; moving it would 404 the link). (`db449bf`, `4564ca9`)
@@ -33,6 +71,56 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 - README "Running tests" section: `pip install -r requirements.txt` to `pip install -e .[test]`. requirements.txt is the operator's web-side runtime stack (fastapi, uvicorn, pillow, google-genai, openai, duckdb, boto3); installing it just to run the MCP test suite is overkill. The pyproject test extras (pytest, pytest-timeout, pytest-cov) plus the wheel dependency (PyYAML) are all an adopter actually needs. (`9643f44`)
 
 - README stale path refs from the docs/ + tests/ migrations: `test_mcp_adversarial.py` to `tests/test_mcp_adversarial.py`; `RATERS.md` to `docs/RATERS.md` in the Contributing section. (`9643f44`)
+
+- README "Worked example" section added between "Approach" and "Documentation". A casual reader scrolling the public README previously saw the worked-examples directory mentioned only as a single bullet in the Documentation list; the four-LLM Bitcoin retirement comparison is the load-bearing demonstration of what Frame Check does and warrants surfacing as a section. The "N more" sentence + total entry count are computed from the destination tree at extract time (same data-driven discipline as the test count) so the README never lies about how many examples ship and adding a new example does not require a separate doc bump. The whole section is guarded on the featured example actually being present in the destination tree, so a stripped extract that excludes worked examples does not advertise content it cannot deliver.
+
+- README "Documentation" section now opens with a pointer to `docs/README.md` (the adopter-facing navigation index added earlier in this Unreleased batch) so readers who land on the main README can reach the reading-paths-by-intent guidance in one click instead of having to discover it by browsing the docs/ directory.
+
+- Methodology paper version in README's documentation list is now parsed from `METHODOLOGY.md`'s `**Version:**` frontmatter line at extract time rather than hardcoded. The hardcoded value had drifted to "v0.2 draft" while the actual paper had bumped to v0.3.1; the parse closes the drift class so future bumps do not require a separate README edit. `docs/README.md` (static, hand-maintained) updated by hand to match. The regex falls back to a generic "draft" phrasing if `METHODOLOGY.md` is absent or its frontmatter is unparseable so a stripped extract still produces well-formed prose.
+
+- `docs/MCP_SERVER.md` "Tool surface": stripped an orphan empty-table-header artifact above the `frame_check` "Agent-facing parameters" section. Source had `| Parameter | Required | Type | Meaning | / |---|---|---|---|` with no rows directly below the heading, then a duplicate header above the actual rows. GitHub renders the orphan as an empty table; removed so the heading flows directly into the parameter callout and the populated table. Cross-checked: runtime tool params (8 agent-facing on `frame_check`, 4 on `frame_compare`) match the documented params 1-for-1; runtime prompt names (`frame_check_my_response`, `frame_check_this_ai_response`, `challenge_document`, `explain_framing`) match the four named in the Initialize-handshake section.
+
+### MCP citation surface: attribution schema 1.0.0
+
+- Per-resource `_meta` block on every `resources/list` entry under reverse-DNS prefix `clarethium.com/` (per MCP spec 2025-06-18 _meta key naming rules). Standard fields on analytical artifacts: `license` (`CC-BY-4.0` SPDX), `license-uri`, `author` (`Lovro Lucic`), `year`. Researchers and other tools that consume the canon programmatically have an in-band attribution chain without scraping the human web surface. (`mcp_resources.py`, `2894ef7`)
+
+- Transmission entries additionally carry `_meta.clarethium.com/citation-uri` sourced from each YAML frontmatter `source_url`, plus `annotations.lastModified` (per MCP spec 2025-06-18) sourced from the frontmatter `published` date. Citation-uri is the human-readable canonical URL; lastModified is the protocol-canonical drift hint that some clients filter or display on. Single source of truth: the YAML, not the URI slug.
+
+- FVS library entries carry `_meta.clarethium.com/version` matching the per-entry `version:` field where declared. Per-entry version is independent of the library snapshot; consumers can pin to a specific entry release without locking to the library at large.
+
+- `frame-check://corpus/<slug>` URIs (bundled documents: verbatim third-party text or AI service outputs included for analysis under fair-use posture) special-cased via a regex match in `_list_resources`: instead of CC-BY-4.0 attribution to Lovro Lucic, they carry `content-type: bundled-document` and `license-note` pointing the reader at the document's in-file header. The CC-BY-4.0 attribution applies to the analytical commentary at the sibling `/profile`, `/peer/<partner>`, and `/diff/<partner>` URIs, not the verbatim source. Prevents over-claiming attribution over content Frame Check did not author.
+
+- `resources/list` envelope carries `_meta.clarethium.com/attribution-schema-version: "1.0.0"` so consumers negotiate evolution of the field set once per session rather than per entry. Additive changes bump the minor version; breaking changes bump the major. (`mcp_server.py`)
+
+- `METHODOLOGY.md` §9.1 ("Agent-readable citation surface") added: full schema documentation, URI scheme table, per-resource `_meta` fields table, schema-version pin documentation, bundled-document distinction, MCP-spec `annotations` note, worked end-to-end example. §9 citation block updated to v0.3.1 (draft) with corrected GitHub-canonical methodology URL.
+
+- `data/transmissions/*.md` source_url drift fix: 10 transmission YAMLs corrected from `https://blog.clarethium.com/blog/<slug>` (404) to `https://blog.clarethium.com/<slug>` (200), the canonical published-blog path. Matches the README correction in the same directory. (`2894ef7`)
+
+- `data/transmissions/ceiling-switch.md` (T-392) backfilled with `published: 2026-04-16` (sourced from vault PUBLISHING_LOG row at ship time). Pre-fix it was the only one of 10 transmissions missing the field; runtime `_list_resources()` saw `published: None` and skipped both the description suffix `(T-392, published <date>.)` and the `annotations.lastModified` annotation. All 10 transmissions now expose lastModified.
+
+- 314 / 314 MCP tests pass post-edit. Existing call sites unchanged; resources resolve at the same URIs with the same content; the addition is purely additive metadata under the `_meta` extension point that older clients ignore safely.
+
+### Web app: always-render contract + Turnstile robustness
+
+- Layer A (the `/profile` HTML route + `/api/profile` JSON route) split into substrate (regex/parsing, 15s budget, mandatory) + Source Network (network-bound, 35s outer with internal `SN_BUDGET_SECONDS=25s` graceful degradation, best-effort) + portrait/headline/fuzzy (CPU, fast, inline). Pre-split, a single `run_with_timeout(35s)` (HTML) / `run_with_timeout(45s)` (JSON) wrapped both substrate + SN; SN slowness past the wrapper killed the entire response and returned "Analysis timed out. Try a shorter document." even when substrate had completed cleanly. Production logs at 13:46:17 / 13:46:26 (2026-05-02) showed the outer wrapper firing 9s before SN's own budget-exhausted graceful path could synthesize partial results. New architecture surfaces SN state as `sn_status ∈ {complete, partial, unavailable, skipped}` with a human-readable `sn_status_reason` on both the HTML banner (`results.html` `.sn-status-banner`) and the JSON response. Substrate output always renders; SN failures degrade to a quiet banner instead of dropping the user's input. (`62b4b0b` HTML, this batch JSON parity)
+
+- Behavioral test suite (`test_pages.py`) for the always-render contract: three tests monkeypatch `verify_claims_source_network` to (1) raise a generic exception, (2) return a partial-budget result list, (3) raise via the JSON route, and assert the response is 200 with the appropriate banner / JSON field present. Static checks alone would not catch a future refactor that re-bundled SN into substrate; behavioral coverage closes that regression class.
+
+- Cloudflare Turnstile widget hardening: `data-refresh-expired="auto"` made explicit on every `cf-turnstile` instance (index, compare x2, results) so a long-idle page does not submit an expired token and trigger Cloudflare's `timeout-or-duplicate` rejection. Implicit default behavior across Turnstile API revisions is fragile; explicit attribute pins the contract. Also tightens the layout: `transform: scale(0.8)` on the widget shrinks visuals 300x65 to 240x52, but the layout box stays 300x65; negative margins (`margin-right: -60px` to absorb horizontal void; `margin-bottom: -5px` calibrated partial vertical absorption) pull the submit button flush against the scaled widget edge instead of the un-scaled layout edge. (`19b5e71`, `94c1300`)
+
+- CSS design system: `--bg-warn`, `--accent-warn`, `--bg-muted` tokens defined in both light and dark mode token blocks. Pre-fix the call sites used `var(--bg-warn, #fffbeb)` etc. with hardcoded fallbacks because the token had no definition; references resolved to the fallback unconditionally and the design system carried a dead var-name. The token now resolves; future tweaks to the warn-yellow ratchet through one definition.
+
+- Permissions-Policy: investigated console-surface `xr-spatial-tracking` violation from the Turnstile iframe. Initial fix granted the feature to `https://challenges.cloudflare.com` (commit `94c1300`); revert (commit `022e473`) because cross-origin iframes need both a parent grant AND an `allow="xr-spatial-tracking"` attribute on the iframe element, which Cloudflare's `api.js` does not set. Parent-only grant is inert; reverted to keep the deny-by-default posture clean. Investigation trail preserved in the `Permissions-Policy` header comment block so a future auditor does not re-attempt the same dead-end fix.
+
+### Source Network: operator env knobs
+
+The Source Network layer (`source_network.py`) reads the following env vars at module load. All have safe defaults; the entries below let an operator find them in one place rather than grepping the source.
+
+- `SN_BUDGET_SECONDS` (default `25`) - per-claim budget for SN verification across all providers. When exhausted, remaining claims synthesize `verdict: "unverifiable"` with `detail` containing "budget"; the response still returns 200 with `sn_status: "partial"`. Tune up if your corpus has many claims and providers are responsive; tune down to fail-fast on slow upstreams.
+
+- `SN_FETCH_JSON_DEADLINE_SECONDS` (default `8`) - hard caller-side deadline on a single `_fetch_json` provider call (CoinGecko / Brave / FRED / Wikipedia / Alpha Vantage / SEC). Implemented as a sub-thread with abandonment past the deadline, so the per-call wait is bounded even when urllib's per-op timeout would otherwise block ~30s. Production observed 2026-05-02 cold-start showed Wikipedia blocking ~30s past the 35s outer wrapper; the deadline closes that pathology.
+
+- `SN_SEC_TICKERS_RETRY_AFTER_SECONDS` (default `60`) - cool-down between SEC tickers JSON fetch retries when the first fetch fails. Pre-fix a single failed fetch poisoned the in-process cache for the worker's lifetime (`_SEC_TICKERS = ({}, {})`) and SEC verification was permanently locked out; the negative-cache TTL lets calls past the window retry. Tune up if SEC CDN flakiness is bursty; tune down to recover faster from short outages.
 
 ## [0.8.5] - 2026-05-01
 
@@ -291,7 +379,7 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 - **`scripts/extract_public_repo.py` grows `rewrite_content_links()`** (commit `5a5df3e`). Walks every `.md` / `.txt` in the destination tree and applies four rewrites between pyproject rewrite and README write:
   - Markdown link `[label](url)` where `url` points at the private repo: rewrite to the new public repo URL if the linked path exists in dest, else drop the link wrapper and keep `label` as plain text.
   - Markdown link where `url` points at `frame.clarethium.com`: drop the link wrapper, keep `label`.
-  - Bare `https://github.com/lluvr/frame-check-mcp/...` URLs: same path-existence rule; non-existent paths replaced with `(see upstream development tree)`.
+  - Bare `https://github.com/Clarethium/frame-check-mcp/...` URLs: same path-existence rule; non-existent paths replaced with `(see upstream development tree)`.
   - Bare `(production paused)...` URLs: replaced with `(production paused)`.
 
   Schemeless forms (`github.com/...`, `frame.clarethium.com/...`) handled with a negative lookbehind that excludes email `@`, word chars, code-span backtick, and path-internal slash so textual mentions inside code blocks and email addresses (`curator@frame.clarethium.com`) are left intact. Trailing sentence punctuation stripped from the URL match before substitution and reattached after. Tested on full upstream tree to v2 extract: 1269 private refs + 1455 production refs reduced to 0 + 0; 1764 refs rewritten, 1539 stripped. Default `--new-version` bumped to `0.8.2`.

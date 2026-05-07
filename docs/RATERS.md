@@ -339,7 +339,7 @@ markers and I count substance").
    is settled.
 9. **Submit ratings** as a GitHub pull request adding your
    YAML files to `validation/decision_readiness/ratings/`.
-   Public-facing repository: https://github.com/lluvr/frame-check-mcp.
+   Public-facing repository: https://github.com/Clarethium/frame-check-mcp.
 
 ---
 
@@ -387,7 +387,7 @@ the v2 expansion.
 ## How to reach the curator
 
 GitHub: open an issue at
-https://github.com/lluvr/frame-check-mcp/issues with the title
+https://github.com/Clarethium/frame-check-mcp/issues with the title
 prefix `[phase-2-rating]` and a brief expression of interest.
 The curator monitors this label.
 

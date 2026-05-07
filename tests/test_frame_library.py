@@ -869,3 +869,294 @@ class TestPatternKindField:
             f"FVS-002 carries no parenthetical suffix by historical "
             f"convention; got {fvs_002['name']!r}"
         )
+
+
+class TestComposeTakeawayPalette:
+    """Tests for the operator-authored takeaway palette composer.
+
+    The palette is the multi-frame surface on /check/results: each
+    operator-authored TAKEAWAY_ENTRIES entry surfaces as one button
+    that drops the user into Claude / GPT with a per-document prompt.
+    The composer's job is to filter authored-only entries, fill the
+    prompt template with this document's substrate, and tag each
+    entry as detected vs divergent so the UI can group them.
+
+    These tests pin the contract; the entries themselves are operator-
+    authored and are NOT exercised here (an empty TAKEAWAY_ENTRIES is
+    the supported default state until the operator authors one).
+    """
+
+    def _framing(self, *fvs_ids):
+        """Build a minimal framing dict whose frame_suggestions list
+        names the given FVS IDs as detected."""
+        return {
+            "frame_suggestions": [
+                {"fvs_id": fid, "name": fid} for fid in fvs_ids
+            ],
+        }
+
+    def test_empty_when_no_entries_authored(self, monkeypatch):
+        """The default state of TAKEAWAY_ENTRIES is empty; the composer
+        returns []. The template hides the section when palette is
+        empty so the surface is invisible until authored content lands."""
+        from frame_library import compose_takeaway_palette
+        monkeypatch.setattr("frame_library.TAKEAWAY_ENTRIES", {})
+        assert compose_takeaway_palette(self._framing("FVS-007")) == []
+
+    def test_lights_up_when_one_entry_authored(self, monkeypatch):
+        """A single authored entry produces one palette card. The
+        operator-authored button_label is preserved verbatim; the
+        prompt template is filled with substrate."""
+        from frame_library import compose_takeaway_palette
+        monkeypatch.setattr(
+            "frame_library.TAKEAWAY_ENTRIES",
+            {
+                "FVS-007": {
+                    "button_label": "What would have to be true",
+                    "prompt_template": (
+                        "Apply {frame_name} to my document."
+                    ),
+                },
+            },
+        )
+        palette = compose_takeaway_palette(self._framing("FVS-001"))
+        assert len(palette) == 1
+        assert palette[0]["fvs_id"] == "FVS-007"
+        assert palette[0]["button_label"] == "What would have to be true"
+        assert palette[0]["frame_name"] == "Failure Framing"
+        # prompt template was filled with the FVS-007 frame name
+        assert "Failure Framing" in palette[0]["prompt"]
+        # FVS-007 not in detected frames -> divergent
+        assert palette[0]["kind"] == "divergent"
+
+    def test_marks_detected_vs_divergent(self, monkeypatch):
+        """An entry whose FVS appears in the document's
+        frame_suggestions is tagged "detected"; one that does not
+        appear is tagged "divergent". The UI groups by kind so the
+        user sees both lenses-in-use and lenses-not-in-use without
+        the engine collapsing them."""
+        from frame_library import compose_takeaway_palette
+        monkeypatch.setattr(
+            "frame_library.TAKEAWAY_ENTRIES",
+            {
+                "FVS-007": {
+                    "button_label": "L1",
+                    "prompt_template": "{frame_name}",
+                },
+                "FVS-015": {
+                    "button_label": "L2",
+                    "prompt_template": "{frame_name}",
+                },
+            },
+        )
+        palette = compose_takeaway_palette(self._framing("FVS-015"))
+        by_id = {e["fvs_id"]: e for e in palette}
+        assert by_id["FVS-007"]["kind"] == "divergent"
+        assert by_id["FVS-015"]["kind"] == "detected"
+
+    def test_skips_half_authored_entries(self, monkeypatch):
+        """An entry missing button_label OR prompt_template is silently
+        skipped; a partial entry surfacing as a broken button is worse
+        than the entry not surfacing. Operator authors both fields or
+        neither."""
+        from frame_library import compose_takeaway_palette
+        monkeypatch.setattr(
+            "frame_library.TAKEAWAY_ENTRIES",
+            {
+                "FVS-007": {
+                    "button_label": "",
+                    "prompt_template": "Apply {frame_name}.",
+                },
+                "FVS-008": {
+                    "button_label": "Authored",
+                    "prompt_template": "",
+                },
+                "FVS-015": {
+                    "button_label": "Both authored",
+                    "prompt_template": "Apply {frame_name}.",
+                },
+            },
+        )
+        palette = compose_takeaway_palette(self._framing())
+        assert [e["fvs_id"] for e in palette] == ["FVS-015"]
+
+    def test_fills_cross_frame_substrate_variables(self, monkeypatch):
+        """Cross-frame substrate variables fill on every palette entry.
+        Pinned: frame_name, fvs_id, teaching_question, detected_frames,
+        detected_fvs_ids, absent_dimensions, voice, claim_density,
+        sourced_pct. Variables absent for THIS document fill with ""
+        so the template renders without crashing on partial substrate.
+        """
+        from frame_library import compose_takeaway_palette
+        monkeypatch.setattr(
+            "frame_library.TAKEAWAY_ENTRIES",
+            {
+                "FVS-007": {
+                    "button_label": "x",
+                    "prompt_template": (
+                        "frame={frame_name}; id={fvs_id}; "
+                        "tq={teaching_question}; "
+                        "detected={detected_frames}; "
+                        "ids={detected_fvs_ids}; "
+                        "absent={absent_dimensions}; "
+                        "voice={voice}; "
+                        "cd={claim_density}; "
+                        "sp={sourced_pct}"
+                    ),
+                },
+            },
+        )
+        framing = {
+            "frame_suggestions": [
+                {"fvs_id": "FVS-015", "name": "Efficiency Frame"},
+            ],
+        }
+        coverage = {"missing": ["stakeholders", "uncertainty"]}
+        palette = compose_takeaway_palette(
+            framing,
+            coverage=coverage,
+            voice={"voice": "prescriptive"},
+            epistemic={"sourced_pct": 12},
+            claim_stats={"numerical_per_1kw": 7.5},
+        )
+        prompt = palette[0]["prompt"]
+        assert "frame=Failure Framing" in prompt
+        assert "id=FVS-007" in prompt
+        # FVS-007 has an authored teaching question in TEACHING_QUESTIONS
+        assert "tq=" in prompt and "wrong" in prompt
+        assert "detected=Efficiency Frame" in prompt
+        assert "ids=FVS-015" in prompt
+        assert "absent=stakeholders, uncertainty" in prompt
+        assert "voice=prescriptive" in prompt
+        assert "cd=7.5" in prompt
+        assert "sp=12" in prompt
+
+    def test_fills_per_frame_substrate_for_detected_entry(self, monkeypatch):
+        """When a TAKEAWAY_ENTRIES entry is for a detected FVS, its
+        per-frame substrate (signal, importance, pattern_kind) fills
+        from the matching frame_suggestion. V4.2 substrate (ac1_score,
+        ac1_tier, v4_2_reasoning, v4_2_exhibited) fills from the
+        matching V4.2 entry. Without this depth the prompts cannot
+        weave document-specific findings into the prompt body."""
+        from frame_library import compose_takeaway_palette
+        monkeypatch.setattr(
+            "frame_library.TAKEAWAY_ENTRIES",
+            {
+                "FVS-015": {
+                    "button_label": "x",
+                    "prompt_template": (
+                        "signal={signal}; pk={pattern_kind}; "
+                        "ac1={ac1_score}; tier={ac1_tier}; "
+                        "v42r={v4_2_reasoning}; ex={v4_2_exhibited}"
+                    ),
+                },
+            },
+        )
+        framing = {
+            "frame_suggestions": [
+                {
+                    "fvs_id": "FVS-015",
+                    "name": "Efficiency Frame",
+                    "signal": "Optimization metrics present",
+                    "pattern_kind": "present_detected",
+                    "_priority": 1.7,
+                },
+            ],
+        }
+        v4_2_result = {
+            "meta": {"framing_engine": "v4_2"},
+            "entries": [
+                {
+                    "fvs_id": "FVS-015",
+                    "exhibits": True,
+                    "reasoning": "Cost section organizes around operating costs.",
+                    "reliability": {
+                        "library_consensus_ac1": 0.58,
+                        "reliability_tier": "moderate",
+                    },
+                },
+            ],
+        }
+        palette = compose_takeaway_palette(
+            framing,
+            v4_2_result=v4_2_result,
+        )
+        prompt = palette[0]["prompt"]
+        assert "signal=Optimization metrics present" in prompt
+        assert "pk=present_detected" in prompt
+        assert "ac1=0.58" in prompt
+        assert "tier=moderate" in prompt
+        assert "v42r=Cost section organizes" in prompt
+        assert "ex=true" in prompt
+        # Detected FVS gets kind=detected
+        assert palette[0]["kind"] == "detected"
+
+    def test_per_frame_substrate_empty_for_divergent_entry(self, monkeypatch):
+        """When a TAKEAWAY_ENTRIES entry is for an FVS NOT in the
+        document's detected frames, per-frame substrate (signal,
+        ac1_score, etc.) fills with empty strings. Cross-frame
+        substrate still populates so the prompt can name the doc's
+        detected frames as context for what this divergent lens
+        adds."""
+        from frame_library import compose_takeaway_palette
+        monkeypatch.setattr(
+            "frame_library.TAKEAWAY_ENTRIES",
+            {
+                "FVS-007": {
+                    "button_label": "x",
+                    "prompt_template": (
+                        "signal=[{signal}]; ac1=[{ac1_score}]; "
+                        "detected=[{detected_frames}]"
+                    ),
+                },
+            },
+        )
+        framing = {
+            "frame_suggestions": [
+                {"fvs_id": "FVS-015", "name": "Efficiency Frame"},
+            ],
+        }
+        palette = compose_takeaway_palette(framing)
+        prompt = palette[0]["prompt"]
+        assert "signal=[]" in prompt
+        assert "ac1=[]" in prompt
+        assert "detected=[Efficiency Frame]" in prompt
+        assert palette[0]["kind"] == "divergent"
+
+    def test_missing_substrate_fills_empty_string(self, monkeypatch):
+        """Variables not provided to the composer fall back to "" via
+        the _EmptyDefault helper. A template that references
+        {blind_spots} (substrate not yet wired) renders as an empty
+        string rather than raising KeyError. Forgiving authoring."""
+        from frame_library import compose_takeaway_palette
+        monkeypatch.setattr(
+            "frame_library.TAKEAWAY_ENTRIES",
+            {
+                "FVS-007": {
+                    "button_label": "x",
+                    "prompt_template": "ref={blind_spots}END",
+                },
+            },
+        )
+        palette = compose_takeaway_palette(self._framing())
+        assert palette[0]["prompt"] == "ref=END"
+
+    def test_handles_missing_framing_gracefully(self, monkeypatch):
+        """Live /check passes the framing dict; tests, MCP callers,
+        and saved views that may pass None should not crash. Empty
+        framing produces empty detected_frames; entries still surface
+        as divergent."""
+        from frame_library import compose_takeaway_palette
+        monkeypatch.setattr(
+            "frame_library.TAKEAWAY_ENTRIES",
+            {
+                "FVS-007": {
+                    "button_label": "x",
+                    "prompt_template": "detected=[{detected_frames}]",
+                },
+            },
+        )
+        palette = compose_takeaway_palette(None)
+        assert len(palette) == 1
+        assert palette[0]["kind"] == "divergent"
+        assert palette[0]["prompt"] == "detected=[]"

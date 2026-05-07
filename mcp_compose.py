@@ -141,7 +141,7 @@ PRODUCTION_STATUS_NOTE = (
     "production site and may not currently resolve; this reflects "
     "hosting state, not a tool defect. Live alternates while the "
     "site is paused: GitHub repository "
-    "https://github.com/lluvr/frame-check-mcp; PyPI package "
+    "https://github.com/Clarethium/frame-check-mcp; PyPI package "
     "frame-check-mcp (this server)."
 )
 
@@ -1280,7 +1280,7 @@ def _build_divergence_block(
             "affects_dimensions": affects_dims,
             "citation_uri": f"{RESOURCE_SCHEME}://library/{fvs_id}",
             # GitHub URL pointing at the entry's markdown source on
-            # the public repository (lluvr/frame-check-mcp). End-users
+            # the public repository (Clarethium/frame-check-mcp). End-users
             # in MCP clients (Claude Desktop, Cursor) cannot click
             # frame-check://library/... resource URIs because those
             # are MCP-internal; the library_url gives them an HTTP
@@ -2596,7 +2596,7 @@ def build_epistemic_payload(
                 "fvs_id": f.get("fvs_id"),
                 "name": f.get("name"),
                 # GitHub URL pointing at the entry's markdown source
-                # on the public repository (lluvr/frame-check-mcp).
+                # on the public repository (Clarethium/frame-check-mcp).
                 # End-users can click this to read the entry directly;
                 # GitHub is always resolvable regardless of hosted-
                 # production status (frame.clarethium.com is paused
@@ -3213,6 +3213,39 @@ def build_epistemic_payload(
         elapsed_ms=elapsed_ms,
     )
 
+    # Analysis manifest. Sibling to provenance, with a different
+    # cut: provenance is identity / citation metadata (versions,
+    # license, author); manifest is operational disclosure ("which
+    # analytical layers ran on THIS call, with explicit reasons for
+    # any that did not"). On the MCP surface every dynamic layer is
+    # delegated to the caller's agent (no SN, no V4.2, no AI
+    # interpret), so the manifest's main value is naming each
+    # delegation explicitly so an agent integrator knows what it
+    # owes the user that this response did not provide. Web
+    # surfaces (/check, /compare) emit the same manifest shape with
+    # different layer states; the structural parity is the point.
+    from manifest import build_check_manifest as _build_manifest
+    manifest = _build_manifest(
+        sn_results=[],
+        sn_status="skipped",
+        sn_status_reason=(
+            "Source Network is not invoked on the MCP server-side "
+            "path. Per FRAME_DIVERGENCE_CONTRACT_v1 §7, network-bound "
+            "verification is a caller-side responsibility on this "
+            "surface; the agent integrator runs SN against its own "
+            "provider set and budget."
+        ),
+        reliability_tiers={},
+        source_name_to_provider_key={},
+        ai_interpret=None,
+        v4_2_result=None,
+        consistency_ran=bool(source_text and source_text.strip()),
+    )
+    # Surface the MCP-specific delegation in the manifest so the
+    # client agent's reading of "what didn't run" matches the
+    # contract docs without having to cross-reference them.
+    manifest["surface"] = "mcp_frame_check"
+
     # FRAME_DIVERGENCE_CONTRACT_v1 Part 2 integration. When
     # include_divergence=True: compute absent-frame records from the
     # library_v3 catalog minus the V1 frame_library_matches, build
@@ -3224,6 +3257,7 @@ def build_epistemic_payload(
         "analysis": analysis,
         "agent_guidance": agent_guidance,
         "provenance": provenance,
+        "manifest": manifest,
     }
     if include_divergence:
         # Pass cov_missing so the divergence builder can compute
@@ -3436,7 +3470,7 @@ def _summarize_per_document(doc: dict, text: str) -> dict:
                 "fvs_id": f.get("fvs_id"),
                 "name": f.get("name"),
                 # GitHub URL pointing at the entry's markdown source
-                # on the public repository (lluvr/frame-check-mcp).
+                # on the public repository (Clarethium/frame-check-mcp).
                 # See the frame_check tool's matching field for the
                 # full rationale; same shape, same resolution
                 # behavior, so a client can handle both surfaces
@@ -3684,8 +3718,37 @@ def build_compare_payload(
         ),
     )
 
+    # Analysis manifest. Same structural shape as frame_check's
+    # manifest above; documents-mode comparison surface, every LLM
+    # path explicitly skipped because MCP's compare flow is also
+    # zero-LLM by contract (FRAME_DIVERGENCE_CONTRACT_v1 §7).
+    # Mirrors the web /compare manifest so an agent that reads both
+    # surfaces sees the same provenance vocabulary.
+    from manifest import build_compare_manifest as _build_cm
+    manifest = _build_cm(
+        mode="documents",
+        analyzed_models={},
+        reliability_tiers={},
+        source_name_to_provider_key={},
+        framing_comparison_call={
+            "ran": False,
+            "reason_skipped": (
+                "Cross-document AI framing comparison is not invoked "
+                "on the MCP server-side path. Per "
+                "FRAME_DIVERGENCE_CONTRACT_v1 §7, AI narratives are a "
+                "caller-side responsibility on this surface; the "
+                "agent integrator composes the cross-document narrative "
+                "using the structural comparison data above."
+            ),
+        },
+        stability_call=None,
+        topic_generation_calls=None,
+    )
+    manifest["surface"] = "mcp_frame_compare"
+
     return {
         "analysis": analysis,
         "agent_guidance": agent_guidance,
         "provenance": provenance,
+        "manifest": manifest,
     }

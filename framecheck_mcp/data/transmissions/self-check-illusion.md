@@ -5,7 +5,7 @@ type: MECHANISM
 summary: "The agent reported clean. The output was wrong. Same process generating and evaluating."
 published: 2026-03-23
 models: "xAI"
-source_url: https://blog.clarethium.com/blog/self-check-illusion
+source_url: https://blog.clarethium.com/self-check-illusion
 ---
 
 # The Self-Check Illusion

@@ -80,7 +80,7 @@ A risk-frame-only document is still narrow; multi-frame coverage is the goal.
 - **The amplification thesis** (HI-062): the risk frame amplifies just as the growth frame does. Extended risk analysis produces progressively darker conclusions. The cure is the same: frame breaks via library alternatives.
 - **Source conditioning** (T-351): grounding in source data is especially important under the risk frame because ungrounded risk analysis generates plausible-sounding threats that may not exist.
 - **Failure Framing** (FVS-007, HI-016): risk framing names what could go wrong; failure framing makes the what-could-go-wrong specific enough to mitigate against. Risk frame without failure framing tends to produce fear rather than judgment; risk identification becomes risk paralysis.
-- **The evidence discipline** ([METHODOLOGY.md](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) §6): risk framing without ground truth generates plausible-sounding threats that may not exist. Evidence discipline asks how the reader would know if a risk is real, and what evidence would distinguish a real risk from a manufactured one.
+- **The evidence discipline** ([METHODOLOGY.md](https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md) §6): risk framing without ground truth generates plausible-sounding threats that may not exist. Evidence discipline asks how the reader would know if a risk is real, and what evidence would distinguish a real risk from a manufactured one.
 - **The fluency-quality illusion** (FVS-002, HI-012): risk frame can produce fluent-but-thin output where every conceivable risk is listed without probability or severity assessment. Fluent risk catalogs feel analytically thorough; without quantification they often serve avoidance rather than judgment.
 
 ## Cross-family reliability
@@ -92,7 +92,7 @@ A risk-frame-only document is still narrow; multi-frame coverage is the goal.
 
 **Intra-rater stability (Grok 4.1 fast).** `detector_intra_rater_ac1` = **0.909** across n=41 docs at temp=0 (2 verdict flip(s); per fvs_eval/v4/grok_intra_rater_ac1.json). Measures single-family consistency, independent of cross-family AC1: low cross-family + high intra-rater is possible (and common).
 
-**Construct-validity caveat.** `library_consensus_ac1` measures cross-family LLM agreement, NOT agreement with human reader labels. Per [METHODOLOGY.md](https://github.com/lluvr/frame-check-mcp/blob/master/METHODOLOGY.md) section 1.3, V1 detector macro-F1 against human labelers was 0.157 (chance-level, n=12); library_v4 LLM-judge has not been re-validated against humans. Read AC1 as inter-LLM consensus proxy, not human-validated reliability.
+**Construct-validity caveat.** `library_consensus_ac1` measures cross-family LLM agreement, NOT agreement with human reader labels. Per [METHODOLOGY.md](https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md) section 1.3, V1 detector macro-F1 against human labelers was 0.157 (chance-level, n=12); library_v4 LLM-judge has not been re-validated against humans. Read AC1 as inter-LLM consensus proxy, not human-validated reliability.
 
 ### Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence) and earlier variants
 

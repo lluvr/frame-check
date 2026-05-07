@@ -110,7 +110,7 @@ Per-family positives (of 15 docs): Claude 11, Gemini 9, Grok 14, GPT-5 5.
 
 ## Grounded authorship (v2 §11 retrofit)
 
-**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) §11 catalog discipline.
+**Authorship.** Lovro Lucic. v1 curated 2026-04-12; grounded-authorship retrofit 2026-04-25 per FRAME_DIVERGENCE_v2.md §11 catalog discipline.
 
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04)
@@ -131,7 +131,7 @@ Per-family positives (of 15 docs): Claude 11, Gemini 9, Grok 14, GPT-5 5.
 1. Tesla market analysis worked example (v1 Identification). Document scored 4/5 categories present but analytical weight was approximately 70% growth, 5% risk, 5% stakeholders, 15% trends, 5% uncertainty. Single-sentence "regulatory challenges exist" was performative not analytical. Strip-the-mention test confirmed: removing the risk mention does not change the document's argument; the mention is cosmetic.
 2. EXP-096 CHD pilot validation (2026-04-14). 124-page frontier-lab AI safety evaluation scored 6/18 (33%) on a 9-point evaluation honesty checklist. Coverage of 12+ safety categories was extraordinary; reflection on what evaluation methodology cannot detect was zero. Highest-scoring document in pilot (11/18, 61%) had explicit "what is missing" section structured by the benchmark's own taxonomy. Demonstrates the completeness illusion operating at the highest-stakes level: deployment decisions made on the impression that evaluation was thorough.
 
-**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the strip-the-mention or density-not-presence test to a "comprehensive" analysis revealed weighted concentration on one frame; (2) the contrast between the surface-comprehensive reading and the density-weighted reading is concrete; (3) outcome differential observed (claim re-scoped, additional analysis demanded, conclusion downgraded in confidence); (4) concrete first-person recall. Held open per [FRAME_DIVERGENCE_v2.md](https://github.com/lluvr/frame-check-mcp/blob/master/FRAME_DIVERGENCE_v2.md) P5 honest-scope discipline rather than synthesized.
+**Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the strip-the-mention or density-not-presence test to a "comprehensive" analysis revealed weighted concentration on one frame; (2) the contrast between the surface-comprehensive reading and the density-weighted reading is concrete; (3) outcome differential observed (claim re-scoped, additional analysis demanded, conclusion downgraded in confidence); (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.
 
 **Friction-cost estimate** (operator-validation pending):
 - Manual application: ~2-5 minutes (read, identify dimensions, estimate per-dimension weight, run strip-the-mention test on thin sections)
