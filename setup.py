@@ -67,7 +67,11 @@ _DATA_CARRIERS = [
     ("docs/MCP_SERVER.md", "MCP_SERVER.md"),
     ("docs/FRAME_DIVERGENCE_v1.md", "FRAME_DIVERGENCE_v1.md"),
     ("docs/FRAME_DIVERGENCE_CONTRACT_v1.md", "FRAME_DIVERGENCE_CONTRACT_v1.md"),
-    ("docs/V4_2_GAP_INVENTORY_v1.md", "V4_2_GAP_INVENTORY_v1.md"),
+    # V4_2_GAP_INVENTORY_v1.md was bundled in 0.8.x wheels but is an
+    # maintainer-internal construct-honesty audit, not user-facing
+    # reference content. Migrated off the public surface; not bundled
+    # in subsequent releases. Existing 0.8.x PyPI wheels remain frozen
+    # with the bundled copy until a yank-and-republish decision lands.
     ("pipeline_version.txt", "pipeline_version.txt"),
 ]
 
