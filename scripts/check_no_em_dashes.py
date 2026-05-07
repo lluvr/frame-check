@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Pre-commit hook: reject prose em-dashes and en-dashes.
 
-Per `feedback_em_dashes.md` and the operator's writing-rule discipline
-(`~/.claude/CLAUDE.md` "WRITING RULES" section), em-dashes (U+2014) and
-en-dashes (U+2013) are not allowed in code comments, docstrings, test
-messages, or markdown prose. They are allowed only where the character
-is functional (regex character classes that match em/en-dash characters
-in user text, and the em-dash-scanning grep pattern in CONTRIBUTING.md
-itself).
+Per the project's writing-rule discipline (`AGENTS.md` and
+`CONTRIBUTING.md`), em-dashes (U+2014) and en-dashes (U+2013) are
+not allowed in code comments, docstrings, test messages, or
+markdown prose. They are allowed only where the character is
+functional (regex character classes that match em/en-dash
+characters in user text, and the em-dash-scanning grep pattern in
+CONTRIBUTING.md itself).
 
 This hook scans files staged for commit and fails if any em-dash or
 en-dash is found outside the allowlist below.

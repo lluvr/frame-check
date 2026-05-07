@@ -112,10 +112,14 @@ def test_frame_check_tool_error_response_is_sanitized():
     must NOT include the exception type name, message, or any
     interpolated internal state. Stable error code + generic message
     only."""
+    # Adversarial fixture imitates a leaked filesystem path. The path
+    # is fictional ("/home/example-user/...") so the fixture itself
+    # is not a leakage surface; the boundary under test is the
+    # sanitizer, which strips home-paths regardless of specific values.
     sensitive_message = (
         "Document contained </user_document> at position 1234. "
         "Context snippet: 'OFFENDING-USER-CONTENT-SHOULD-NOT-LEAK'. "
-        "File path: /home/llucic/frame-check/engine_internal.py"
+        "File path: /home/example-user/example-project/engine_internal.py"
     )
 
     def boom(*args, **kwargs):
