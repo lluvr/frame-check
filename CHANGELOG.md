@@ -8,6 +8,20 @@ The earlier plan for a `0.7.1` V1-only name-reservation release on PyPI was reti
 
 ## [Unreleased]
 
+## [0.8.9] - 2026-05-07
+
+### Wheel content: strip 399 broken `lluvr/frame-check` links from bundled docs
+
+- 0.8.8 (and every prior 0.8.x release) shipped 399 broken markdown links to `(see upstream development tree)...` across the bundled `data/frame_library/`, `data/frame_library_v3/`, `data/worked_examples/`, and the wheel-bundled `framecheck_mcp/<NAME>.md` docs. The host `lluvr/frame-check` (no `-mcp` suffix) is the operator's private dev tree and 404s to outsiders. Adopters reading the wheel-bundled FVS frame definitions saw broken academic-grade citation links to validation evidence (`fvs_eval/v4/library_v4_reliability.json`, `fvs_eval/v4/RELIABILITY_STUDY.md`, etc.).
+- The public extract pipeline (`scripts/_release_lib/extract.py::rewrite_content_links`) already strips these links at extract time, so the public mirror has been clean since 0.8.0. The wheel bypasses that logic because `setup.py _stage_package_data` just copies the source tree as-is.
+- 0.8.9 fixes at the source: applied the same `rewrite_content_links` policy to the dev-tree source files. Where the path resolves to a publicly-bundled location, the URL is rewritten to the canonical `Clarethium/frame-check-mcp` URL. Where it does not (`fvs_eval/*` paths, internal-only artifacts), the URL is stripped and the prose label remains as plain text. Net change: 110 refs rewritten, 658 refs stripped, 96 source files cleaned. The wheel now ships zero `lluvr/frame-check` (no `-mcp`) refs.
+
+### CI workflow optimization: drop push-on-master triggers
+
+- Manual deployment is the new operator discipline (the release orchestrator runs end-to-end before any tag push, lift_dry_run + conformance driver run locally as preflight). Push-on-master triggers in `codeql.yml`, `tests.yml`, and `orchestrator-tests.yml` duplicated work the operator already does locally and burned CI minutes on every dev push.
+- Triggers narrowed to `pull_request` + `workflow_dispatch` (tests.yml, orchestrator-tests.yml) and `pull_request` + `schedule` + `workflow_dispatch` (codeql.yml). PR coverage stays for contributors. Cron stays for codeql to track GitHub-published rule updates. Manual dispatch is available for ad-hoc verification.
+- `publish.yml` (tag-push + manual) and `dco-check.yml` (PR-only) are unchanged; both were already minimal.
+
 ## [0.8.8] - 2026-05-07
 
 ### Critical fix: bundle `manifest.py` in wheel

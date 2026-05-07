@@ -1,15 +1,18 @@
 name: CodeQL
 
-# GitHub-provided static security analysis. Runs on every push to
-# master, every PR against master, and a weekly cron so the analyzed
-# version stays fresh against rule updates that GitHub publishes.
-# Findings appear under the repository Security tab; PR-time findings
-# block merge if the rule is severity-elevated. Zero secrets, zero
-# write permissions: this workflow only reads the source tree.
+# GitHub-provided static security analysis. Runs on every PR against
+# master, a weekly cron, and on manual dispatch. Findings appear under
+# the repository Security tab; PR-time findings block merge if the
+# rule is severity-elevated. Zero secrets, zero write permissions:
+# this workflow only reads the source tree.
+#
+# Push-on-master trigger removed 2026-05-07 alongside manual-deployment
+# discipline: master pushes happen frequently, the cron already keeps
+# the analysis fresh against GitHub rule updates, and PR coverage
+# catches every change before merge. The push trigger duplicated cron
+# coverage at billing cost.
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
   schedule:
@@ -17,6 +20,7 @@ on:
     # without waiting for the next push to master. Day chosen so a
     # finding lands at the start of the work week, not over weekends.
     - cron: '0 13 * * 1'
+  workflow_dispatch:
 
 permissions:
   contents: read
