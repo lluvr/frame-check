@@ -15,12 +15,9 @@ title = "Frame Check gitleaks configuration"
 # zero (an unrelated 32-char hex string elsewhere in the repo will
 # not match because it is not preceded by `FRED_API_KEY=`).
 #
-# The 2026-04-29 leak audit (LEAKAGE_AUDIT_v1.md) found CONTINUATION_PROMPT.md
-# committed all four provider keys to private-repo history. These
-# rules make a recurrence detectable at commit time. See also the
-# `.gitleaksignore` file for the one allowlisted historical leak
-# location (which has been scrubbed via filter-repo as of the same
-# audit date) and the deliberate test fixtures in detection tests.
+# An additional shape-based rule below refuses commits matching
+# common agent-handoff scratchpad filename patterns; those files are
+# scratch space and should never enter version control.
 
 [extend]
 # Inherit gitleaks' built-in ruleset (GitHub PATs, AWS, Stripe,
@@ -72,16 +69,12 @@ regexes = [
   '''WOLFRAM_APP_ID\s*=\s*['"]?\$\{?[A-Z_]+\}?['"]?''',
 ]
 
-# Catch CONTINUATION_PROMPT-shaped agent-handoff scratchpads being
-# committed (these proved to be the leak vector on 2026-04-23).
-# Doesn't enforce content rules; just refuses commits that match
-# the file-path pattern, since these files are scratch-space and
-# should never enter version control.
+# Refuse commits matching common agent-handoff scratchpad filename
+# patterns. Doesn't enforce content rules; just refuses commits that
+# match the file-path pattern, since these files are scratch-space
+# and should never enter version control.
 [[rules]]
 id = "agent-handoff-scratchpad"
 description = "Agent handoff scratchpad files (should not be committed)"
 regex = '''.+''' # match anything in the file content
 path = '''(?i)(CONTINUATION_PROMPT|HANDOFF_PROMPT|AGENT_HANDOFF|SESSION_HANDOFF|SCRATCH_PROMPT|AGENT_SCRATCH).*\.md$'''
-[rules.allowlist]
-# Allow LEAKAGE_AUDIT_v1.md to discuss these patterns by name.
-paths = ['''docs/internal/LEAKAGE_AUDIT_v1\.md$''', '''LEAKAGE_AUDIT_v1\.md$''']

@@ -181,7 +181,7 @@ def test_A5_internal_exception_message_is_sanitized():
     from unittest.mock import patch
 
     sensitive = (
-        "ERROR at /home/llucic/frame-check/secret.py:42 -- "
+        "ERROR at /home/example-user/example-project/secret.py:42 -- "
         "GEMINI_API_KEY=sk-test-LEAK-ME-PLZ-9999 raised in handler"
     )
 
@@ -193,7 +193,7 @@ def test_A5_internal_exception_message_is_sanitized():
     text = resp["result"]["content"][0]["text"]
     assert resp["result"]["isError"] is True
     assert "sk-test-LEAK-ME-PLZ-9999" not in text
-    assert "/home/llucic" not in text
+    assert "/home/example-user" not in text
     assert "RuntimeError" not in text
     parsed = json.loads(text)
     assert parsed["error"] == "frame_check_internal_error"

@@ -127,6 +127,34 @@ VAULT_DOC_PATTERNS = [
 ]
 
 
+def _load_extra_audit_doc_patterns() -> list[str]:
+    """Load additional audit-doc filename patterns from a
+    maintainer-side config file.
+
+    Per the public-canon discipline (FM-PCD-4: a leak detector that
+    enumerates what it detects in public source IS a leak), specific
+    filename shapes for deployment-specific audit artifacts load from
+    a maintainer config rather than being hardcoded here.
+
+    Resolution order:
+      1. $FRAME_CHECK_AUDIT_DOC_PATTERNS_FILE (newline-separated)
+      2. ~/.frame-check-audit-doc-patterns (newline-separated)
+      3. Empty list if neither resolves
+    """
+    candidates = []
+    env_path = os.environ.get("FRAME_CHECK_AUDIT_DOC_PATTERNS_FILE")
+    if env_path:
+        candidates.append(Path(env_path))
+    candidates.append(Path.home() / ".frame-check-audit-doc-patterns")
+    for path in candidates:
+        if path.exists() and path.is_file():
+            lines = [
+                ln.strip() for ln in path.read_text(encoding="utf-8").splitlines()
+            ]
+            return [ln for ln in lines if ln and not ln.startswith("#")]
+    return []
+
+
 _TOTAL_STEPS = 11
 
 # Harness FAIL substrings that are accepted as known gaps and do NOT
@@ -316,11 +344,23 @@ def main(argv: list[str] | None = None) -> int:
     home_leaks: list[str] = []
     vault_leaks: list[str] = []
     audit_leaks: list[str] = []
+    # Audit/governance documents that should not be wheel-bundled.
+    # SECURITY.md / CONTRIBUTING.md / GOVERNANCE.md ship at repo root
+    # (public-facing) but must NOT also ship inside the wheel where
+    # they would compete with their canonical repo-root location for
+    # IDE search results. Other named shapes are loaded from a
+    # maintainer-side config file so the public source does not
+    # enumerate them.
     audit_doc_names = [
-        "LEAKAGE_AUDIT", "REMEDIATION_LOG", "MCP_CLIENT_CONFORMANCE",
-        "PUBLISH_READINESS", "SECURITY.md", "CONTRIBUTING.md",
-        "GOVERNANCE.md",
+        "SECURITY.md", "CONTRIBUTING.md", "GOVERNANCE.md",
     ]
+    audit_doc_names.extend(_load_extra_audit_doc_patterns())
+    # Producer-machine path pattern: configurable via env var; defaults
+    # to the generic Linux home-directory shape that catches absolute
+    # paths leaking from a developer machine.
+    home_re = re.compile(os.environ.get(
+        "FRAME_CHECK_HOME_PATH_PATTERN", r"/home/[a-zA-Z0-9_-]+/"
+    ))
     vault_re = re.compile("|".join(VAULT_DOC_PATTERNS))
     with zipfile.ZipFile(wheel) as z:
         files = z.namelist()
@@ -333,14 +373,14 @@ def main(argv: list[str] | None = None) -> int:
                 content = z.read(f).decode("utf-8", errors="ignore")
             except Exception:
                 continue
-            if "/home/llucic" in content:
+            if home_re.search(content):
                 home_leaks.append(f)
             if vault_re.search(content):
                 vault_leaks.append(f)
     if home_leaks:
-        return fail(f"operator-path leaks: {home_leaks}")
+        return fail(f"absolute-path leaks: {home_leaks}")
     if vault_leaks:
-        return fail(f"maintainer-side doc proxy-leaks: {vault_leaks}")
+        return fail(f"unbundled-doc references: {vault_leaks}")
     if audit_leaks:
         return fail(f"audit/governance docs bundled: {audit_leaks}")
     print(

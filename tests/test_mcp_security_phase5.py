@@ -115,7 +115,7 @@ def test_frame_check_tool_error_response_is_sanitized():
     sensitive_message = (
         "Document contained </user_document> at position 1234. "
         "Context snippet: 'OFFENDING-USER-CONTENT-SHOULD-NOT-LEAK'. "
-        "File path: /home/llucic/frame-check/engine_internal.py"
+        "File path: /home/example-user/example-project/engine_internal.py"
     )
 
     def boom(*args, **kwargs):
