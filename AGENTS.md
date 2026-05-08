@@ -139,3 +139,34 @@ the sentence; the diff is already authoritative.
   plans.
 - `CONTRIBUTING.md`: PR flow, sign-off, style.
 - `SECURITY.md`: vulnerability disclosure.
+
+## Forbidden vocabulary
+
+Beyond the file shapes above, certain phrasings always leak. These never appear in committed content (with the exception of this AGENTS.md, the canon audit script, and its self-test fixture, which are allowed to name the patterns in order to forbid them):
+
+- `maintainer-side`, `maintainer-internal` (any compound).
+- `the operator's [strategy|methodology|notes|vault|workspace|tree|dev tree|bet|stake|positioning]` — also when an adjective intervenes (`the maintainer-side notebook`).
+- Bare `operator [methodology|framework|practice|positioning|paper|study|playbook|doctrine|memo|brief]`.
+- Any definite reference to `vault` as a body of operator material: `the upstream`, `in the upstream`, `from the upstream`. Also forbidden as terms of art: `pinned`, `validated`, `behaviour`, `vault precision threshold`, `prior notes`. Allowed only in domain compounds where `vault` is unrelated (`password vault`, `secrets vault`, `hashicorp vault`, `key vault`).
+- Sanitization-shape parentheticals: `(see private)`, `(internal reference)`, `(maintainer-side reference)`, `(see maintainer-side ...)`.
+- Strategic-positioning vocabulary: `trust|data|authorship|named-authorship|compounding|methodology moat`, `Clarethium-empire`, `empire-grade`, `the project's empire`, `compounding claim`, `evidence discipline`.
+- Operator hostname / username: `Powerhouse.localdomain`, `llucic@`.
+
+Subtract over substitute: when removing one of these, delete the sentence and rewrite the surrounding paragraph. Do not replace it with a placeholder marker; the marker itself is a leak.
+
+## Verification before commit
+
+Run the canon audit:
+
+```bash
+bash scripts/canon_audit.sh --self-test   # verify the audit catches every forbidden shape
+bash scripts/canon_audit.sh               # check the working tree
+```
+
+Both must exit 0. The self-test runs the audit against `scripts/canon_audit_known_leaks.txt` (the fixture lists every shape forbidden above) and confirms the pattern set still catches all of them. The working-tree check verifies your changes don't introduce new violations.
+
+False positives can be tagged with an inline comment: `# canon-exempt: <reason>`. The reason is mandatory; bare `# canon-exempt:` without a reason is rejected.
+
+## Build artifacts
+
+`build/`, `dist/`, `*.egg-info/`, `__pycache__/`, `.pytest_cache/`, `.venv/`, `venv/`, `.tox/`, `.coverage`, `htmlcov/` MUST NOT be committed. They re-import previously-sanitized text from prior pipeline runs and have leaked maintainer-side content in past releases. The repository `.gitignore` covers these patterns; do not bypass.
