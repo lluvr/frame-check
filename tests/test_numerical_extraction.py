@@ -21,8 +21,6 @@ tests exercising it. If the pattern is ever rewritten, this
 file tells the next engineer what the contract is.
 """
 
-import pytest
-
 from clarethium_measure import extract_numbers_for_matching
 from claim_analysis import analyze_claims
 

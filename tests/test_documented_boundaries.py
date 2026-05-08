@@ -22,8 +22,6 @@ does NOT do in the docstring. If a detection improvement lands, the
 test must update consciously. That is the point.
 """
 
-import re
-
 from framing import (
     detect_coverage,
     detect_voice,

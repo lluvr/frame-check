@@ -17,7 +17,6 @@ zero-cost cross-model verification.
 import concurrent.futures
 import os
 import re
-import time
 
 from clarethium_measure import measure
 from claim_analysis import analyze_claims
@@ -76,7 +75,6 @@ def _render_generation_prompt(topic: str) -> str:
 # sites should import directly from llm_cost; these aliases exist
 # only to avoid a cross-file atomic refactor.
 from llm_cost import (
-    MODEL_PRICING_PER_1K_TOKENS,
     compute_cost_usd as _compute_token_cost,
     empty_usage as _empty_usage,
 )

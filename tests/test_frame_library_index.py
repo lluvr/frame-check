@@ -9,8 +9,6 @@ these tests lock the format contract in one place so a future change
 to INDEX.md must be visible to a test run.
 """
 
-from pathlib import Path
-
 import pytest
 
 import frame_library_index as fli
