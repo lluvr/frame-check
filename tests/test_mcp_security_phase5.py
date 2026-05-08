@@ -1,5 +1,4 @@
-"""Phase 5 tests for mcp_server.py security hardening (items 7-MCP,
-8-MCP per V4_2_GAP_INVENTORY_v1.md).
+"""Phase 5 tests for mcp_server.py security hardening.
 
 Two concerns:
 
@@ -115,7 +114,7 @@ def test_frame_check_tool_error_response_is_sanitized():
     sensitive_message = (
         "Document contained </user_document> at position 1234. "
         "Context snippet: 'OFFENDING-USER-CONTENT-SHOULD-NOT-LEAK'. "
-        "File path: /home/llucic/frame-check/engine_internal.py"
+        "File path: /home/llucic/frame-check/engine_internal.py"  # canon-exempt: leak-redaction test fixture
     )
 
     def boom(*args, **kwargs):

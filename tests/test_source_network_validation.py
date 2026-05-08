@@ -2,9 +2,10 @@
 Source Network validation corpus.
 
 First empirical accuracy test of the production verification engine against
-known ground truth. The 5 topics come from the EXP-094 hard-topics experiment
-(Apple, NVIDIA, Bhutan, BLS, Wegovy). Ground truth values are from the APIs
-themselves (SEC EDGAR XBRL, World Bank, REST Countries), probed April 2026.
+known ground truth. The 5 topics (Apple, NVIDIA, Bhutan, BLS, Wegovy) come
+from a hard-topics corpus selected for adversarial coverage. Ground truth
+values are from the APIs themselves (SEC EDGAR XBRL, World Bank, REST
+Countries), probed April 2026.
 
 This test makes REAL API calls. Run separately from fast unit tests:
     python3 -m pytest test_source_network_validation.py -v
@@ -49,7 +50,7 @@ BHUTAN_POPULATION = 784_043        # REST Countries (current)
 BHUTAN_AREA_KM2 = 38_394           # REST Countries (current)
 BHUTAN_GDP_2023 = 3.013e9          # World Bank NY.GDP.MKTP.CD (2023)
 
-# Confabulated values from EXP-094
+# Confabulated values observed in the hard-topics corpus
 NVIDIA_CONFABULATED = 39.3e9       # Model applied prior-quarter number as annual
 
 

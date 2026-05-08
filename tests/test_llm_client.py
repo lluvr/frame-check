@@ -1,11 +1,8 @@
 """Unit tests for llm_client.xai_endpoint resolution + helpers.
 
-llm_client is the single source of truth for "where do we send Grok
-requests?" for 8 importing modules across the codebase
-(consensus.py, framing_ai.py, comparison.py, framing_sdk.py,
-reframe.py, pipeline.py, fvs_eval/v4/v4_2_engine.py, app.py). A
-regression in `xai_endpoint`'s resolution order would silently
-mis-route every xAI call across the surface.
+llm_client is the single source of truth for where xAI requests
+get sent. A regression in `xai_endpoint`'s resolution order would
+silently mis-route every xAI call across the surface.
 
 The four behavioral branches of `xai_endpoint`:
 
@@ -16,12 +13,10 @@ The four behavioral branches of `xai_endpoint`:
   (b) Proxy partially configured (one of LLM_PROXY_BASE_URL or
       LLM_PROXY_API_KEY set, the other missing) -> degrades to
       the direct path rather than silently 401-ing on misconfig.
-      Critical for "OR-fallback shape" the docstring promises.
 
   (c) Direct only (XAI_API_KEY set, no proxy env) -> returns
       direct api.x.ai/v1 + the direct key. Production deploy
-      shape: Fly secrets set XAI_API_KEY and no LiteLLM proxy
-      runs in front.
+      shape with no proxy in front.
 
   (d) Unconfigured (no proxy env, no XAI_API_KEY) -> returns
       (None, None). Caller branches on the None return rather
@@ -66,12 +61,12 @@ def test_xai_endpoint_returns_proxy_when_both_proxy_env_set(
     set. Proxy wins regardless of whether XAI_API_KEY is also set
     (proxy > direct in the resolution order).
     """
-    monkeypatch.setenv("LLM_PROXY_BASE_URL", "http://127.0.0.1:4000")
+    monkeypatch.setenv("LLM_PROXY_BASE_URL", "http://proxy.test:4000")
     monkeypatch.setenv("LLM_PROXY_API_KEY", "proxy-secret")
     monkeypatch.setenv("XAI_API_KEY", "direct-key-should-be-ignored")
 
     base, key = llm_client.xai_endpoint()
-    assert base == "http://127.0.0.1:4000"
+    assert base == "http://proxy.test:4000"
     assert key == "proxy-secret"
 
 
@@ -83,11 +78,11 @@ def test_xai_endpoint_strips_trailing_slash_from_proxy_base(
     (`http://proxy/v1/chat` vs `http://proxy//v1/chat`). Pin so a
     refactor that drops the rstrip surfaces immediately.
     """
-    monkeypatch.setenv("LLM_PROXY_BASE_URL", "http://127.0.0.1:4000/")
+    monkeypatch.setenv("LLM_PROXY_BASE_URL", "http://proxy.test:4000/")
     monkeypatch.setenv("LLM_PROXY_API_KEY", "proxy-secret")
 
     base, _key = llm_client.xai_endpoint()
-    assert base == "http://127.0.0.1:4000"
+    assert base == "http://proxy.test:4000"
     assert not base.endswith("/")
 
 
@@ -101,7 +96,7 @@ def test_xai_endpoint_degrades_to_direct_when_proxy_key_missing(
     base URL but forgets to push the secret) should not be silently
     broken; the direct path is the safety net.
     """
-    monkeypatch.setenv("LLM_PROXY_BASE_URL", "http://127.0.0.1:4000")
+    monkeypatch.setenv("LLM_PROXY_BASE_URL", "http://proxy.test:4000")
     monkeypatch.setenv("XAI_API_KEY", "direct-fallback")
 
     base, key = llm_client.xai_endpoint()
@@ -127,7 +122,7 @@ def test_xai_endpoint_returns_direct_when_only_xai_key_set(
     llm_client: Any, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Branch (c): production-deploy shape. XAI_API_KEY set via
-    Fly secrets, no LiteLLM proxy runs in front. Returns
+    deployment secrets manager, no proxy runs in front. Returns
     api.x.ai/v1 + the direct key.
     """
     monkeypatch.setenv("XAI_API_KEY", "prod-key")
@@ -190,7 +185,7 @@ def test_xai_configured_true_when_proxy_configured(
     """xai_configured is the boolean form for use as a gate guard
     (e.g., V4.2 enable check). True when proxy path is configured.
     """
-    monkeypatch.setenv("LLM_PROXY_BASE_URL", "http://127.0.0.1:4000")
+    monkeypatch.setenv("LLM_PROXY_BASE_URL", "http://proxy.test:4000")
     monkeypatch.setenv("LLM_PROXY_API_KEY", "proxy-secret")
 
     assert llm_client.xai_configured() is True

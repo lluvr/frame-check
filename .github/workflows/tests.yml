@@ -109,13 +109,10 @@ jobs:
           # Direct-pytest invocation of suites that are idiomatic
           # pytest (vs the standalone-script pattern most upstream
           # tests follow). Keeps both invocation paths verified.
-          # Excluded from this list: test_circuit_breaker.py (imports
-          # from `security`, which is web-only and not in the wheel-
-          # bundled subset; ships on upstream only) and
-          # test_construct_honesty_voice.py (gates on `framing_ai`
-          # which is web-only and absent on the public mirror; the
-          # primitives the file exercises are still pinned via
-          # test_framing_validation.py and the frame-library suite).
+          # Excluded from this list: tests that depend on optional
+          # web-only modules absent from the wheel; the primitives
+          # they exercise are pinned by test_framing_validation.py
+          # and the frame-library suite.
           # --cov=. produces a coverage report against every Python
           # module exercised by the three suites. --cov-report=term
           # prints a line-coverage summary in the CI log so a

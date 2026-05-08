@@ -73,8 +73,6 @@ signature from the deterministic detectors:
   runway is typical") and cites nothing. Ten extracted claims,
   zero hedged. The model states projections as facts.
 
-> **Note on detection state.** This worked example was published 2026-04-18 against v1 substrate detection. The v1 deterministic rules for FVS-001 Frame Amplification and FVS-008 Growth Frame were retired the same day per `data/frame_library/INDEX.md` (validation evidence showed they fired on cases they should not flag, per `fvs_eval/validation_study/RULE_AUDIT.md` §2.1). The frame concepts stand as library entries; current-generation detection (V4.2 LLM-judge) replaces the v1 rules. The bullets above (voice, coverage, temporal, sourcing) preserve the publish-time analysis: those measurements still hold byte-for-byte against the response under the current substrate. The detection-side and absence-side surfaces below have been restructured to reflect post-retirement state; the teaching points describe what the response *does* (frame concepts), not what a particular detector layer flags.
-
 ### Frame detections
 
 Under the current substrate (frame_library version 0.2.0), the frame-library matcher fires zero present-frames on this response. The saved snapshot in `data/worked_examples/ai-on-life-decisions-startup-2026/data.json` captures the publish-time state when FVS-001 Frame Amplification fired before its v1 rule retirement.
@@ -83,7 +81,7 @@ The divergence block surfaces 19 absent frames. The high-signal absences (the st
 
 - [FVS-017 False Balance](/corpus/library/FVS-017.html) (high signal, stable).
 - [FVS-009 Risk Frame](/corpus/library/FVS-009.html) (high signal, stable).
-- [FVS-001 Frame Amplification](/corpus/library/FVS-001.html) (high signal, stable). The frame concept stands; the v1 PRESENT-detector retired (see Note on detection state above). The absence-side surface still flags the frame because the substrate measures structural coverage of the frame's vocabulary; whether the response IS amplifying a frame is the reader judgment the v1 detector previously attempted and the V4.2 LLM-judge will attempt next.
+- [FVS-001 Frame Amplification](/corpus/library/FVS-001.html) (high signal, stable). The absence-side surface flags the frame because the substrate measures structural coverage of the frame's vocabulary; whether the response IS amplifying a frame is a reader judgment that the V4.2 LLM-judge layer evaluates.
 - [FVS-014 Temporal Anchoring](/corpus/library/FVS-014.html) (high signal, stable).
 
 The teaching point preserved from the publish-time analysis (the structural reading does not depend on the v1 detector firing; it describes what the response does):
@@ -127,7 +125,7 @@ response that the measurements point at:
 
 ## What the method missed
 
-- **v1 detector retirement scope.** The 2026-04-18 retirement of the FVS-001 / FVS-008 / FVS-015 v1 rules (per `INDEX.md`) means the frame-library matcher fires zero present-frames here today. Pre-retirement (saved snapshot), FVS-001 fired. The frame concepts stand as library entries; the V4.2 LLM-judge replaces the v1 rules. The evidence discipline this exemplifies: detection layers evolve when validation evidence shows they fail design intent; frame concepts are stable; absence-side analysis remains a reliable surface independent of which detector layer is active.
+- **Detection layer evolution.** Some v1 deterministic detection rules (FVS-001, FVS-008, FVS-015) were retired when validation evidence showed they fired on cases they should not flag; the V4.2 LLM-judge layer carries those frames now. Frame concepts are stable across detection-layer changes; absence-side analysis remains a reliable surface independent of which detector layer is active.
 
 - **Density threshold and the Growth Frame that did not trigger (historical reading; FVS-008 v1 also retired).**
   GPT-5's response is growth-framed at the reading level (edge,

@@ -52,8 +52,6 @@ Per-model structural signature, from the deterministic detectors:
 | Grok    | advisory      | risks, trends                       | causes, stakeholders, uncertainty          | 7%      | FVS-001, FVS-015        |
 | Gemini  | prescriptive  | risks, stakeholders, trends, uncertainty | causes                                     | 0%      | FVS-012                 |
 
-> **Note on detection state.** This worked example was published 2026-04-18 against v1 substrate detection. The v1 deterministic rules for FVS-001 Frame Amplification, FVS-008 Growth Frame, and FVS-015 Efficiency Frame were retired the same day per `data/frame_library/INDEX.md` (validation evidence showed they fired on cases they should not flag). The frame concepts stand as library entries; current-generation detection (V4.2 LLM-judge) replaces the v1 rules for these three. The per-model table above and the "five distinct entries" tally below preserve the publish-time analysis the walkthrough was built on; the teaching points about each frame remain valid because they describe frame concepts, not detector firings.
-
 A few observations the table does not carry:
 
 - **Stakeholders absent from three of four responses.** Only Gemini

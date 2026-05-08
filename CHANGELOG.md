@@ -6,34 +6,47 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-05-08
+
+### Public canon discipline: comprehensive cleanup
+
+This release replaces 0.9.0 (which itself superseded the 0.8.x line) as the first wheel that ships construction-clean public canon: documentation, frame catalog, source-comments, and tests have been authored for the adopter audience rather than redacted from maintainer-internal sources. 0.9.0 was yanked because it still carried operator-research vocabulary in shipped FVS cards and worked-example narrative.
+
+### Catalog: per-card cleanup
+
+- `data/frame_library/INDEX.md` is rewritten as an adopter-facing data table: the 20 entries with their class, detection state, status, and curation date, plus column semantics. The earlier file additionally carried canon-trajectory rationale and library-version landscape exposition that was not adopter-facing.
+- Per-card `## Cross-family reliability` and `## Vocabulary connections` sections are stripped from the public extract. The numerical reliability values continue to ship live in MCP responses (`library_consensus_ac1` field on each frame match); the per-card prose carrying the operator-research version trajectory does not.
+- Worked-example markdowns (`data/worked_examples/*.md`) had maintainer-internal "Note on detection state" blockquotes scrubbed; the adopter-facing teaching points remain.
+
+### Wheel: scope unchanged from 0.9.0
+
+The wheel bundles the MCP server contract (`docs/MCP_SERVER.md`), the Frame Divergence interface contract (`docs/FRAME_DIVERGENCE_CONTRACT_v1.md`), the FVS catalog (`data/frame_library/`), and the worked-examples corpus. The MCP resource registry auto-deregisters resources whose underlying files are absent. The Frame Vocabulary Standard methodology canon lives at `github.com/Clarethium/lodestone`.
+
+### Engine: divergence catalog fallback
+
+- `mcp_resources._library_v3_entries()` now falls back to `data/frame_library/` (excluding FVS-020) when `data/frame_library_v3/` is absent. The public extract drops the v3 directory because it duplicates the v4 catalog content; without this fallback the divergence engine returned an empty absence catalog and named-pattern triggers (`recommendation-without-falsification`, `growth-without-risk`, etc.) could not fire. The 0.9.0 wheel exhibited this regression for adopters whose deployment used the orchestrator-built wheel rather than the dev-tree wheel.
+
+### Pipeline: extract-time + wheel-time guardrails
+
+- `scripts/_release_lib/extract.py` runs nine phases. The canon-substitution phase applies a literal before-to-after map (`scripts/_release_lib/canon_replacements.txt`); the new card-cleanup phase truncates each FVS card at the first of `## Cross-family reliability` or `## Vocabulary connections` and replaces `data/frame_library/INDEX.md` with adopter-facing content; the canon-audit phase runs `scripts/canon_audit.sh` against the extracted tree and halts the release on any non-zero exit.
+- `scripts/release.py` orchestrator's `_step_extract_public_tree` now invokes the same phases (`clean_library_cards`, `write_clean_run_tests`, full `.gitignore` including `framecheck_mcp/` build-staging excludes). Earlier the orchestrator had a stripped-down extract path that skipped FVS card cleaning and INDEX.md replacement; releases driven through it would have shipped a leaky wheel even when the standalone path was clean. Both paths now share the same phase set.
+- `setup.py` registers a `bdist_wheel` hook that runs the canon-substitution map against the built wheel before it leaves the build directory; the same substitution map governs both the public-extract tree and the wheel content.
+- New lift gate (`Canon audit on wheel content`): extracts the wheel and runs `canon_audit.sh` against the contents.
+- The `framecheck_mcp/` build-staging tree (data files reconstructed from elsewhere on every wheel build) is now gitignored except for the two tracked source files (`__init__.py`, `source_network.py`). Earlier extracts left the staging tree visible in the public repo.
+
+### Adopter-facing surface
+
+- `AGENTS.md` added at the repo root: guidance for AI coding agents (Claude Code, Cursor, Codex, Aider) that work in the repository, with explicit canon-discipline rules.
+- `README.md`, `CONTRIBUTING.md`, `GOVERNANCE.md`, `SECURITY.md`, `docs/README.md`, `docs/MCP_SERVER.md`, `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`, `docs/RATERS.md`, `NOTICE`, `.github/ISSUE_TEMPLATE/*` rewritten to remove dead-link surface and operator vocabulary.
+- The cleaning replaced `evidence discipline` (operator phrasing) with adopter-facing phrasing throughout.
+
+### Note on prior versions
+
+- The 0.8.x line and 0.9.0 are yanked from PyPI. They shipped working code but bundled documentation and per-card content that mixed adopter-facing prose with maintainer-side vocabulary. 0.9.1 is the first construction-clean release. Existing pinned installs continue to work; new installs should pin to `>=0.9.1`.
+
 ## [0.9.0] - 2026-05-08
 
-### Repository rename: `Clarethium/frame-check-mcp` → `Clarethium/frame-check`
-
-- The public repository moved from `github.com/Clarethium/frame-check-mcp` to `github.com/Clarethium/frame-check`. GitHub installs a permanent 301 redirect, so existing clones, pinned URLs, and PyPI Project-URLs that reference the old name continue to resolve. The PyPI package name (`frame-check-mcp`) is unchanged; `pip install frame-check-mcp` and the import path (`framecheck_mcp.*`) work byte-for-byte against the new repo.
-- Wheel-bundled documentation, MCP resource URIs, and `pyproject.toml [project.urls]` now point at the new canonical URL. Adopters reading frame catalog entries or worked examples land at the new repo without redirect chains.
-
-### Wheel: three documents no longer bundled
-
-- METHODOLOGY.md, `docs/FRAME_DIVERGENCE_v1.md`, and `docs/V4_2_GAP_INVENTORY_v1.md` are removed from `setup.py:_DATA_CARRIERS` and no longer ship in the wheel. These are maintainer-side working documents, not part of the public canon. The 0.8.x line bundled them; 0.9.0 does not.
-- The MCP resources `frame-check://methodology`, `frame-check://spec/frame-divergence/v1/part-1`, and `frame-check://spec/v4-2-gap-inventory/v1` auto-deregister when the underlying files are absent (file-presence gate in `mcp_resources.py`). `resources/list` returns the smaller set; clients that previously read these URIs receive no reply for them.
-- The methodology canon lives at `frame.clarethium.com/corpus/methodology/` and at `github.com/Clarethium/lodestone`.
-
-### Pipeline: canon discipline guardrails
-
-- `scripts/_release_lib/extract.py` gains three new phases. Phase 6 (`canon_substitutions`) applies a literal before-to-after substitution map from `scripts/_release_lib/canon_replacements.txt` to all extracted text content. Phase 7 (`install_canon_audit`) writes `canon_audit.sh` and `canon_audit_known_leaks.txt` into the public extract. Phase 8 (`run_canon_audit`) runs the audit before `lift_dry_run` and halts the release on any forbidden pattern outside the path allowlist.
-- `setup.py` registers a `bdist_wheel` hook (`_CanonSubstitutedBdistWheel`) that runs the same substitution map against the built wheel before it leaves the build directory. Wheels ship to PyPI; without this hook, dev-tree comments and adopter-facing markdown reach `pip install` consumers even when the public mirror is canon-clean. The wheel-content path and the public-extract path share `apply_canon_substitutions_to_wheel` and `apply_canon_substitutions` (both backed by the same `_load_canon_replacements`) so the two surfaces cannot drift.
-- `scripts/release.py` orchestrator's `_step_extract_public_tree` was duplicating the extract-pipeline phases inline and silently skipped phases 6, 7, and 8 (canon substitutions, canon-audit install, canon audit). The release path was bypassing canon discipline entirely while the standalone `extract_public_repo.py` ran it. The orchestrator now calls all three canon phases against the public extract and halts the release on a non-zero audit exit before the public-repo sync step.
-- New lift gate 15 (`Canon audit on wheel content`): extracts the wheel and runs `canon_audit.sh` against the contents. Halts the release if any forbidden pattern survives. Defense-in-depth verifier for the `bdist_wheel` hook; replays the 0.8.x leak class (wheel shipped maintainer-side vocabulary) directly because that class lacked any wheel-content audit at lift time.
-- `scripts/_release_lib/lift.py` was refactored so the wheel-content pattern allowlist loads maintainer-side patterns from a configurable file path (`FRAME_CHECK_VAULT_PATTERNS_FILE`) rather than enumerating them inline. The public source now ships only shape-based patterns (`F-NNNN-NNN`, `EXP-NNN-data/`).
-
-### Lift: gate 14 retired
-
-- Lift gate 14 (`Wheel bundles every setup.py _DATA_CARRIERS destination`) was authored on the assumption that any apparent absence in the wheel was a defect. The assumption was wrong: an apparent absence may be a deliberate cleanup. The gate is retired in favor of the canon-audit gate at extract time, which fails the release on the presence of leak content rather than its absence.
-
-### Note on 0.8.x
-
-- The 0.8.x line on PyPI bundled the three documents named above. There is no functional defect; the wheel works. The bundled documentation includes maintainer-side content that 0.9.0 corrects. The 0.8.x wheels will be yanked from PyPI after 0.9.0 publishes; existing pinned installs continue to work.
+Yanked from PyPI; superseded by 0.9.1. The release renamed the public repository (`Clarethium/frame-check-mcp` → `Clarethium/frame-check`) and tightened the wheel-bundle scope, but per-card content in the FVS catalog and worked-example markdowns still carried maintainer-side vocabulary. Adopters who pinned to 0.9.0 should upgrade to 0.9.1.
 
 ## [0.8.10] - 2026-05-07
 
@@ -164,7 +177,7 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 ### Added
 
 - First public PyPI release. The `frame-check-mcp` package ships the analyzer modules (`framing.py`, `frame_library.py`, `claim_analysis.py`, `comparison.py`, `source_network.py`, `decision_readiness.py`, `frame_deepening.py`, `frame_opportunities.py`, `frame_patterns.py`, `entity_classifier.py`, `time_context.py`, `corpus_intelligence.py`, `genre_classifier.py`, `user_goals.py`) plus the MCP plumbing (`mcp_server.py`, `mcp_compose.py`, `mcp_resources.py`, `mcp_schema.py`, `mcp_log.py`).
-- The Frame Vocabulary Standard catalog (20 entries under `data/frame_library/` and `data/frame_library_v3/`) and worked examples under `data/worked_examples/` ship with the wheel.
+- The Frame Vocabulary Standard catalog (20 entries under `data/frame_library/`) and worked examples under `data/worked_examples/` ship with the wheel.
 - The divergence-block API contract (`docs/FRAME_DIVERGENCE_CONTRACT_v1.md` c1.0) and MCP server reference (`docs/MCP_SERVER.md`) ship as adopter-facing canonical references.
 - Default-on frame-divergence block: agents passing the analysis to the user without attribution are flagged. Per the contract, divergence-block emission is mandatory unless the caller explicitly opts out.
 - MCP surface delegates V4.2 judgment to the caller's agent model. Frame Check itself spends zero LLM cost per query.

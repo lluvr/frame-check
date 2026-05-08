@@ -944,13 +944,10 @@ def suggest_frames(
         #   "present_future"    directional future-anchored present
         #                       (FVS-014 future site)
         # The legacy suffix in `name` is preserved for backward compat with
-        # operator-facing UI rendering at `V4_2_GAP_INVENTORY_v1.md:194`
-        # (the chip-renderer that distinguishes "(active)" vs "(absent)")
-        # and with hand-authored test fixtures at
-        # `test_decision_readiness.py:407, 1095` that pin the literal
-        # "Failure Framing (absent)" name shape. Future cleanup that
-        # strips the suffix is a separate decision; this change is purely
-        # additive at the wire surface.
+        # hand-authored test fixtures at `test_decision_readiness.py:407,
+        # 1095` that pin the literal "Failure Framing (absent)" name
+        # shape. Future cleanup that strips the suffix is a separate
+        # decision; this change is purely additive at the wire surface.
         # Importance score consumed by rank_frame_suggestions when one
         # frame must be chosen from many. Two components: an absence-
         # vs-presence base (2.0 / 1.0) and a marker-density bonus
@@ -962,7 +959,6 @@ def suggest_frames(
             try:
                 priority += float(density_match.group(1)) * 0.1
             except ValueError:
-                # Non-numeric density string; priority stays at the base 1.0/2.0.
                 pass
         suggestions.append({
             "fvs_id": fvs_id,
@@ -1033,12 +1029,11 @@ def suggest_frames(
                 )
 
     # ── Frame Amplification (FVS-001) ── RETIRED 2026-04-18.
-    # Rule removed from production. Retirement rationale:
-    # METHODOLOGY.md §2.4.1 and fvs_eval/validation_study/RULE_AUDIT.md §2.1.
-    # The v1 signal substrate (coverage/voice/temporal/epistemic density)
-    # cannot distinguish FVS-001 target cases from similarly-shaped non-
-    # cases: "the rule labels vocabulary-distribution patterns as
-    # amplification" (RULE_AUDIT §2.1). The frame concept stands as a
+    # Rule removed from production. The v1 signal substrate
+    # (coverage/voice/temporal/epistemic density) cannot distinguish
+    # FVS-001 target cases from similarly-shaped non-cases: the rule
+    # labels vocabulary-distribution patterns as amplification. The
+    # frame concept stands as a
     # library entry; detection is pending richer signals (V4.2 LLM-judge
     # or new signals in framing.py). See test_frame_library.py
     # TestFrameAmplificationRetired for the sentinel test guarding against

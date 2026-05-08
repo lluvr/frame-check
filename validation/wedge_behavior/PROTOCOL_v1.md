@@ -26,7 +26,7 @@ Without this measurement, the wedge claim is a design claim. The agent_guidance 
 
 ## Sample-selection criteria
 
-Documents are drawn from the boundary of agent-behavior-change interest. Not from the boundary of "where the engine reliably fires" (that is upstream calibration, already done in F-2026-035). The boundary here is "where an opinion-shaped response from the agent would normally suppress the structural shape."
+Documents are drawn from the boundary of agent-behavior-change interest. Not from the boundary of "where the engine reliably fires" (that is upstream calibration, addressed by the V4.2 reliability study). The boundary here is "where an opinion-shaped response from the agent would normally suppress the structural shape."
 
 Inclusion criteria:
 
@@ -116,7 +116,7 @@ These exclusions are pre-registered so the result cannot be over-claimed. Hence 
 - The operator who pre-registered this protocol is also the agent_guidance author. There is a structural conflict of interest: the prompts being measured are written by the same person who chose what to measure. The mitigation: the rubric is binary and behavior-derived, not author-judgment-derived. Three independent raters at the main study reduce the residual bias.
 - The without-tool arm is not a "naive agent"; it is the same agent without the tool call. This is the right comparison for the wedge claim (does the tool change behavior?) but it is NOT the right comparison for "does an agent that has never been trained on frame_check produce shaped output?" That stronger claim requires a different study with a model unaware of Frame Check's existence.
 - Single-model, single-temperature, single-prompt-shape. The result generalizes only as far as those constraints. Generalization beyond is conjecture until the cross-model study runs.
-- The published methodology paper (docs/internal/METHODOLOGY_PAPER_OUTLINE_v2.md in the public repository) cites this protocol as an empirical foothold, not as a definitive validation.
+- The Frame Vocabulary Standard methodology canon at github.com/Clarethium/lodestone cites this protocol as an empirical foothold, not as a definitive validation.
 
 ## What this protocol becomes in 3-4 years
 

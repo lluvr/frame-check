@@ -5,5 +5,12 @@ __pycache__/
 dist/
 build/
 .venv/
+venv/
+.tox/
+.coverage
+htmlcov/
 .pytest_cache/
 /tmp/
+framecheck_mcp/*
+!framecheck_mcp/__init__.py
+!framecheck_mcp/source_network.py

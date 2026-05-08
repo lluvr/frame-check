@@ -2,12 +2,12 @@
 Tests for the shared frame library index parser.
 
 frame_library_index.py is the single source of truth for INDEX.md row
-format and VERSION file location. It is consumed by both
-build_corpus_site.py (citation blocks) and mcp_server.py (frame match
-status decoration). Before unification, both carried their own regex;
-these tests lock the format contract in one place so a future change
-to INDEX.md must be visible to a test run.
+format and VERSION file location. It is consumed by mcp_server.py
+(frame match status decoration). These tests lock the format contract
+so a future change to INDEX.md must be visible to a test run.
 """
+
+from pathlib import Path
 
 import pytest
 

@@ -161,7 +161,7 @@ so the caller's agent runs V4.2 judgment with its own LLM if the
 caller chooses. Zero Frame Check LLM cost per MCP call; vendor
 independence by construction (the caller picks the model).
 
-**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
+**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in this file. Breaking change from v1; the canonical first stable release that papers cite.
 
 **Collapsed release.** An earlier plan for a `0.7.1` V1-only
 name-reservation release on PyPI was retired 2026-04-23 in favor of
@@ -351,15 +351,11 @@ the exact resource that justifies it.
 ### Frame Divergence spec
 
 The authored canonical reference for the frame divergence category
-(FRAME_DIVERGENCE_v1.md Part 1, FRAME_DIVERGENCE_CONTRACT_v1.md Part 2,
-Parts 3-4 pending). Consumers binding against the category claim or
-the interface contract cite these resources.
+contract is `docs/FRAME_DIVERGENCE_CONTRACT_v1.md` (Part 2, c1.0).
+Consumers binding against the interface contract cite this resource.
 
 - `frame-check://spec/frame-divergence/v1` - generated spec index
-  listing available parts and naming pending ones (reflects current
-  disk state at read time).
-- `frame-check://spec/frame-divergence/v1/part-1` - category definition
-  and non-negotiables (FRAME_DIVERGENCE_v1.md).
+  listing available parts (reflects current disk state at read time).
 - `frame-check://spec/frame-divergence/v1/part-2` - contract c1.0
   (FRAME_DIVERGENCE_CONTRACT_v1.md). Specifies operations, inputs,
   outputs, faithfulness guarantees, the MCP-vs-web tier split,
@@ -466,7 +462,7 @@ quick triage.
             "note": "V4.2 judge step delegated to caller's agent model per Rec I. Frame Check's MCP server does not invoke an external LLM."
         },
         "v4_2_engine_status": "beta",
-        "v4_2_engine_status_reference": "V4_2_GAP_INVENTORY_v1.md §5 for full status disclosure and remaining Tier 2-4 gaps.",
+        "v4_2_engine_status_reference": "Engine status reflects production-readiness of the V4.2 detection layer; the value is informational for callers that gate on stability.",
         "domain_inferred": "unfiltered",
         "provisional_count": 0,
         "tier_counts": {"high": 4, "medium": 5, "low": 8},
@@ -664,7 +660,7 @@ The deepening block surfaces under `analysis.frame_deepening`:
 
 ### Frame opportunities (opt-in LLM-augmented composition)
 
-Item 12 of the substrate-side composition roadmap. The strategic reservation: this layer breaks the zero-LLM-cost moat that the deterministic substrate has held until now. It is opt-in only via `include_frame_opportunities=true` on the `frame_check` tool; the default behavior is preserved deterministic substrate composition.
+Item 12 of the substrate-side composition roadmap. The strategic reservation: this layer breaks the zero-LLM-cost layer that the deterministic substrate has held until now. It is opt-in only via `include_frame_opportunities=true` on the `frame_check` tool; the default behavior is preserved deterministic substrate composition.
 
 Where the deterministic substrate gives the agent abstract teaching questions ("What would have to be true for this analysis to be wrong?"), this layer generates document-specific questions composed from the absent frame's perspective + the document's content + the user's goal. Example: instead of the abstract teaching question, the agent receives "Given the document's recommendation for Regenerative Agriculture is based on 'right now' opportunities and 2026 market sizes, how might this advice be reconsidered if 2026 data is historical by the time the decision matures?"
 
@@ -1187,7 +1183,7 @@ The `scope_assessment.derivation_regime` field classifies every invocation:
 `agent_guidance.scope_regime_guidance` adapts per invocation so the
 calling agent gets this directive in-band.
 
-## Construct-honesty posture across the five analytical signals
+## Evidence posture across the five analytical signals
 
 The MCP payload carries per-signal construct-honesty treatment with an explicit `construct` sub-block that agent framework serializers can quote verbatim. Each signal has a construct that fits its signal shape (presence/absence vs classification vs distribution); none of the signals is restated with false certainty by agents following the `how_to_serialize` guidance.
 
@@ -1332,7 +1328,7 @@ The v2 contract carries the construct through structure AND through serializatio
 
 Epistemic / claims / voice / temporal Phase A+B fields are additive; no migration window needed.
 
-See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
+The construct-carrying payload is the load-bearing surface for callers that compose framing analysis with their own model: each signal is named, scoped, and emitted with the structural matchers it derives from, so the caller's model has the same evidence base that produced the verdict. Payload sizes track the listed signals and are bounded by the configured catalog version.
 
 ## Determinism
 

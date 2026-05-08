@@ -14,10 +14,10 @@ exists to register two custom build commands:
 
 Why we need (1). The repo carries data files at root (data/,
 calibration/, validation/, FRAME_DIVERGENCE_CONTRACT_v1.md,
-pipeline_version.txt). The web app, fvs_eval/ scripts, and
-build_corpus_site.py all read those paths directly from the repo
-root. The MCP wheel needs them bundled INSIDE the framecheck_mcp/
-package so a pip-installed user gets the data alongside the code.
+pipeline_version.txt). Various tools read those paths directly from
+the repo root in dev mode. The MCP wheel needs them bundled INSIDE
+the framecheck_mcp/ package so a pip-installed user gets the data
+alongside the code.
 
 The original approach (Unix symlinks at framecheck_mcp/data ->
 ../data, etc.) works on Linux and macOS but breaks on Windows
@@ -74,19 +74,15 @@ _DATA_CARRIERS = [
     # FRAME_DIVERGENCE_CONTRACT_v1.md is the divergence-block interface
     # contract (load-bearing for adopter integration). Stays.
     #
-    # METHODOLOGY.md, docs/FRAME_DIVERGENCE_v1.md,
-    # docs/V4_2_GAP_INVENTORY_v1.md were dropped on 2026-05-08 per
-    # PUBLIC_CANON_DISCIPLINE.md §3c + FM-PCD-5: their substrate carries
-    # maintainer-internal vocabulary (the bet, trust depth, empire moat,
-    # Maintainer-side invariants heading, STRATEGY references) that does
-    # not survive the §3c forbidden-pattern audit. The corresponding
-    # frame-check://methodology, frame-check://spec/frame-divergence/v1
-    # (and /part-1, /part-2), frame-check://spec/v4-2-gap-inventory/v1
-    # URIs are retired in mcp_resources.py and the conformance driver
-    # expects 29 round-trips (was 32) accordingly. Public-canon-clean
-    # adopter-facing methodology will be reconstructed from scratch
-    # for a future cut, not sanitized from these maintainer-internal
-    # documents.
+    # The methodology paper, the frame-divergence specification draft,
+    # and the v4.2 gap inventory are not bundled in the wheel. They
+    # are part of the public methodology canon hosted separately at
+    # github.com/Clarethium/lodestone and at
+    # frame.clarethium.com/corpus/methodology/. mcp_resources.py
+    # registers no URIs for those paths when their files are absent
+    # from the wheel layout (the file-presence gate handles it). The
+    # conformance driver's expected resource count tracks the
+    # currently-bundled subset.
     ("docs/MCP_SERVER.md", "MCP_SERVER.md"),
     ("docs/FRAME_DIVERGENCE_CONTRACT_v1.md", "FRAME_DIVERGENCE_CONTRACT_v1.md"),
     ("pipeline_version.txt", "pipeline_version.txt"),
@@ -98,8 +94,9 @@ def _should_skip(rel_dir: str, name: str) -> bool:
     directory whose path relative to the repo root is `rel_dir`.
 
     Returns True to exclude (file or subdirectory). The exclusion list
-    is the staging-time enforcement of RELEASE_PREP_v1.md Section 3
-    plus the maintainer-internal items named in LEAKAGE_AUDIT_v1.md.
+    enforces the must-exclude inventory at staging time so the wheel
+    cannot ship research artifacts, scaffolding templates, or
+    dev-side audit output that has no MCP runtime use.
 
     `rel_dir` is POSIX-separated (forward-slash) for portability.
     """
@@ -110,11 +107,11 @@ def _should_skip(rel_dir: str, name: str) -> bool:
         return True
     if name.endswith((".sqlite", ".sqlite-shm", ".sqlite-wal")):
         return True
-    if name in ("circuit_breaker.json", "frame_check_observatory_state.json"):
+    if name in ("circuit_breaker.json", "frame_check_observatory_state.json"):  # canon-exempt: skip-list literals
         return True
 
     # data/: research-snapshot and research-fork subdirectories that
-    # are not runtime resources. RELEASE_PREP_v1.md Section 3.
+    # are not runtime resources.
     if rel_dir == "data":
         if name in (
             "adversarial_fixtures",
@@ -123,17 +120,18 @@ def _should_skip(rel_dir: str, name: str) -> bool:
             "falsifications",
             "track_b_informal",
             "frame_library_v2",
+            "frame_library_v3",
             "frame_library_v4",
         ):
             return True
         if fnmatch.fnmatch(name, "frame_library_*_abl*"):
             return True
 
-    # data/frame_library/: maintainer-internal canon-development audits
-    # and the reviewer-recruitment dossiers. AI-authored audits
-    # (AUDIT_*, ADJACENCY_*, DETECTION_RULE_*) are research-internal;
-    # the promotions/ subtree is reviewer-engagement material.
-    # See LEAKAGE_AUDIT_v1.md Findings 3, 13, 15.
+    # data/frame_library/: dev-side canon-development audits and the
+    # reviewer-recruitment dossiers. AUDIT_*.md / ADJACENCY_*.md /
+    # DETECTION_RULE_*.md files are dev-side audit output; the
+    # promotions/ subtree is reviewer-engagement material. None of
+    # these are part of the adopter-facing frame catalog.
     if rel_dir == "data/frame_library":
         if name == "promotions":
             return True
@@ -145,26 +143,24 @@ def _should_skip(rel_dir: str, name: str) -> bool:
             return True
 
     # data/worked_examples/: scaffolding (template + internal review)
-    # follows the build_corpus_site.py convention: leading-underscore
-    # files are not rendered as entries. See LEAKAGE_AUDIT_v1.md
-    # Findings 2 and 7.
+    # files are leading-underscore-prefixed; the corpus rendering
+    # convention treats them as non-rendered entries.
     if rel_dir == "data/worked_examples":
         if name.startswith("_") and name.endswith(".md"):
             return True
 
-    # validation/decision_readiness/: operator CLI scripts. Only the
+    # validation/decision_readiness/: dev-side CLI scripts. Only the
     # data subdirectories (results/, corpus/) are runtime resources for
-    # the MCP server. See LEAKAGE_AUDIT_v1.md Finding 16.
+    # the MCP server.
     if rel_dir == "validation/decision_readiness":
         if name.endswith(".py"):
             return True
 
     # validation/decision_readiness/results/{date}-{hash}/: drop the
-    # cross_check.{json,md} files. Their `aggregate_source` /
+    # cross_check.{json,md} files. Their `aggregate_source` and
     # "Aggregate file:" fields contain the producer's absolute path
-    # (operator dev machine) and the files are not consumed by
-    # mcp_server.py. aggregate.{json,md} remain. See
-    # LEAKAGE_AUDIT_v1.md Finding 1.
+    # (dev machine layout) and the files are not consumed by
+    # mcp_server.py. aggregate.{json,md} remain.
     parts = rel_dir.split("/")
     if (
         len(parts) == 4
@@ -200,8 +196,7 @@ def _stage_package_data() -> None:
     inspects the package tree. Idempotent: existing destinations are
     replaced. Missing sources are skipped (e.g., pipeline_version.txt
     may not exist locally if it has not been baked yet). Per-directory
-    exclusions enforce RELEASE_PREP_v1.md Section 3 + the LEAKAGE_AUDIT
-    findings; see _should_skip.
+    exclusions are enforced via _should_skip.
     """
     repo_root = os.path.dirname(os.path.abspath(__file__))
     pkg_root = os.path.join(repo_root, "framecheck_mcp")

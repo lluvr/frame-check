@@ -28,14 +28,16 @@ from concurrent.futures import TimeoutError as _FuturesTimeoutError
 from dataclasses import dataclass, field
 from typing import Optional
 
+from .clarethium_measure import split_sentences
+
 
 # ================================================================
 # Per-request operational counters
 # ================================================================
 #
-# Phase 1.5 (PHASE_1_5_GAPS.md Item 5) needed the actual count
-# of Brave Search queries issued during a verification run for
-# the corpus telemetry path. The previous implementation used a
+# A counter is needed for the actual number of Brave Search queries
+# issued during a verification run for the corpus telemetry path.
+# The previous implementation used a
 # threading.local sidecar, which broke under FastAPI's async
 # dispatch: verify_claims_source_network runs on the analysis
 # thread pool worker, but the corpus telemetry read happens on
@@ -111,7 +113,7 @@ class SourceResult:
     confidence: float = 0.0     # 0.0-1.0
     # Wall-clock milliseconds the verifier spent producing this
     # result, stamped by _timed_verify at the dispatch site. The
-    # Observatory worker reads this field directly off each
+    # caller worker reads this field directly off each
     # SourceResult to populate the per-source latency histogram.
     # Default 0 means the
     # caller did not go through the timed dispatch path (e.g.,
@@ -126,7 +128,7 @@ def _timed_verify(fn, decomp):
     """Run a per-source verifier and stamp the wall-clock
     latency on the returned SourceResult.
 
-    Phase 1.6e item 4. The Observatory worker reads
+    Phase 1.6e item 4. The caller worker reads
     query_latency_ms directly off each SourceResult to populate
     Section 5.3's per-source latency histogram. The wrapper uses
     perf_counter for monotonic wall-clock timing (right signal
@@ -999,9 +1001,8 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
     else:
         claim_type = "direct"
 
-    # Detect unit. Phase 1.5 (PHASE_1_5_GAPS.md Part C item 5):
-    # values are dimensional categories (currency, distance,
-    # mass, time, count, percent, other) rather than concrete
+    # Detect unit. Values are dimensional categories (currency,
+    # distance, mass, time, count, percent, other) rather than concrete
     # units (USD, EUR, m, kg). The dimensional enum matches
     # what the corpus telemetry pipeline records via the
     # SUBJECT_CLASSES enum in telemetry.py.
@@ -1270,7 +1271,6 @@ def _urlopen_with_deadline(req, per_op_timeout, total_deadline=None):
                     f"thread continues in background\n"
                 )
             except Exception:
-                # stderr write failed (closed pipe, etc.); the raise/control flow below is load-bearing.
                 pass
             raise
     finally:
@@ -1335,7 +1335,6 @@ def _fetch_json(url, total_deadline=None):
                 elif 500 <= exc.code < 600:
                     kind_label = "server_error"
             except Exception:
-                # Exception lacks the expected .code shape; kind_label stays at its default.
                 pass
         provider_health.record_error(provider, kind_label)
         safe_url = url.split("?")[0] if "?" in url else url
@@ -1607,7 +1606,6 @@ def verify_wikipedia(decomp, _cached_article=None):
         raw_cleaned = re.sub(r'[TBMKk]$', '', raw_cleaned).replace(",", "")
         raw_float = float(raw_cleaned)
     except (ValueError, AttributeError):
-        # raw_value not numeric or attribute missing; raw_float stays 0.0 and the raw-scale match is skipped.
         pass
 
     matched_val, context, confidence = None, None, 0
@@ -2262,7 +2260,6 @@ def verify_wolfram(decomp):
             raw_cleaned = re.sub(r'[TBMKk]$', '', raw_cleaned).replace(",", "")
             raw_float = float(raw_cleaned)
         except (ValueError, AttributeError):
-            # raw_value not numeric or attribute missing; raw_float stays 0.0 and the raw-scale match is skipped.
             pass
         if raw_float and raw_float != decomp.value:
             matched_val, context, confidence = _match_in_text(

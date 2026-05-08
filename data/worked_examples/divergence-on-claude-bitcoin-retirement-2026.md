@@ -17,10 +17,8 @@ hook: The V1 detector named two present frames. The divergence block named seven
 
 This worked example demonstrates frame divergence: the companion
 primitive to Frame Check's V1 detection, shipped on the MCP surface
-through the `divergence` block on `frame_check` output. The canonical
-references are FRAME_DIVERGENCE_v1.md Part 1 (category definition
-and non-negotiables) and `FRAME_DIVERGENCE_CONTRACT_v1.md` Part 2
-c1.0 (interface contract).
+through the `divergence` block on `frame_check` output. The interface
+contract is `FRAME_DIVERGENCE_CONTRACT_v1.md` (c1.0).
 
 The source document is Claude Haiku 4.5's response to a Bitcoin
 retirement prompt, originally captured as part of the
@@ -69,20 +67,18 @@ response carries a top-level `divergence` block alongside
 fields:
 
 - `absent_frames`: an array of `AbsentFrameRecord` entries, one per
-  FVS library_v3 catalog entry the V1 detector did not match. Each
-  carries `frame_id`, `frame_title`, `citation_uri`,
-  `absence_basis`, `domain_relevance_rationale`, `stability`, and
-  `frame_version`. On Claude's response the array has 17 entries
-  (library_v3 has 19 entries; the V1 detector matched two; FVS-020
-  is excluded from divergence per library_v3's retirement-from-
-  detection-scope decision).
+  FVS catalog entry the V1 detector did not match. Each carries
+  `frame_id`, `frame_title`, `citation_uri`, `absence_basis`,
+  `domain_relevance_rationale`, `stability`, and `frame_version`. On
+  Claude's response the array has 17 entries (the catalog has 19
+  active entries; the V1 detector matched two; FVS-020 is excluded
+  from divergence by detection-scope policy).
 - `envelope`: a `FaithfulnessEnvelope` with `spec_version`
-  (`FRAME_DIVERGENCE_v1_c1.0`), `catalog_version` (`library_v3`),
-  `surface` (`mcp`), `v4_2_execution` (`caller_side`,
-  `caller_model`), `v4_2_engine_status` (`beta` per
-  `V4_2_GAP_INVENTORY_v1.md §5`), `domain_inferred` (`finance` for
-  this invocation), `provisional_count`, `faithfulness_note`, and
-  `limitations`.
+  (`FRAME_DIVERGENCE_v1_c1.0`), `catalog_version`, `surface`
+  (`mcp`), `v4_2_execution` (`caller_side`, `caller_model`),
+  `v4_2_engine_status` (the engine-readiness enum),
+  `domain_inferred` (`finance` for this invocation),
+  `provisional_count`, `faithfulness_note`, and `limitations`.
 
 Two keys land on `agent_guidance`: `how_to_render_divergence` (the
 caller-side composition instructions) and
@@ -116,7 +112,7 @@ of them matter for reading the composition below:
 ## The 17 absent frames
 
 For completeness, the raw catalog the V1 detector did not match on
-Claude's response (library_v3):
+Claude's response:
 
 ```
 FVS-001 Frame Amplification          FVS-010 Completeness Illusion
@@ -227,7 +223,7 @@ Framing Asymmetry, FVS-009 Risk Frame, FVS-010 Completeness
 Illusion, FVS-013 Oracle Frame, FVS-014 Temporal Anchoring, FVS-015
 Efficiency Frame, FVS-019 Narrative Coherence) are catalog-true
 absences. The MCP surface returned them because they are in the
-library_v3 catalog and did not match. A reader of this specific
+catalog and did not match. A reader of this specific
 document would not typically read them as meaningful gaps; the
 scope-narrowing-by-relevance is the caller-side move. A different
 document in a different domain would have a different relevant
@@ -274,9 +270,8 @@ this specific document:
 
 ## Why publish this worked example
 
-Frame divergence is the AGI-era primitive Frame Check claims
-(FRAME_DIVERGENCE_v1.md §3). Without a worked example, the claim
-is abstract. This piece makes it concrete in one direction: what
+Frame divergence is the AGI-era primitive Frame Check claims.
+Without a worked example, the claim is abstract. This piece makes it concrete in one direction: what
 the MCP surface emits, what the caller-side composition does with
 it, and what the reader-sovereignty constraint looks like in
 practice on a real AI-generated document in a real domain.

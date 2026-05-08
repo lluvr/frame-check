@@ -2,8 +2,7 @@
 
 **Status:** Open invitation. v0 shipped 2026-04-20.
 **Curator:** Lovro Lucic (curator@frame-check; contact details at bottom).
-**Companion documents:** REVIEWERS.md (library canon promotion review,
-distinct from rating), `validation/decision_readiness/rater_guide.md`
+**Companion documents:** `validation/decision_readiness/rater_guide.md`
 (operational guide once you accept), `validation/decision_readiness/`
 (scaffolding tree).
 
@@ -18,14 +17,10 @@ with explicit `experimental` status pending Phase 2 results. Without
 external raters, the profile stays experimental indefinitely and the
 methodology cannot be cited as validated.
 
-**Phase 2 ratings are different from library canon review.**
-REVIEWERS.md describes review of individual library entries
-(FVS-XXX) for canon promotion: prose review, 12-20 hours per entry.
-**This document describes per-document rating for the
-decision-readiness profile validation:** YAML scores on five
-dimensions, 30-60 minutes per document. Different review target,
-different deliverable shape. The same person can do both at
-different times; commitments are independent.
+**Phase 2 ratings are per-document ratings against the
+decision-readiness profile**, not library canon review of FVS entries.
+The deliverable is YAML scores on five dimensions, 30-60 minutes per
+document.
 
 This document describes what a rater is signing up for, the honest
 state of what they would be rating against, the deliverable shape,
@@ -212,9 +207,8 @@ not unwind the first. A rater is not committing to rate every
 document in the corpus; the corpus exceeds any individual
 rater's bandwidth.
 
-**Compensation.** The Phase 2 effort uses the same compensation
-options REVIEWERS.md describes for canon review, scaled to the
-rating commitment shape:
+**Compensation.** The Phase 2 effort offers three compensation
+options, scaled to the rating commitment shape:
 
 - *Volunteer with named attribution.* Zero cash. Rater's name
   and rating dates recorded in the corpus's rater registry.

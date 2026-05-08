@@ -181,7 +181,7 @@ def test_A5_internal_exception_message_is_sanitized():
     from unittest.mock import patch
 
     sensitive = (
-        "ERROR at /home/llucic/frame-check/secret.py:42 -- "
+        "ERROR at /home/llucic/frame-check/secret.py:42 -- "  # canon-exempt: leak-redaction test fixture
         "GEMINI_API_KEY=sk-test-LEAK-ME-PLZ-9999 raised in handler"
     )
 
@@ -193,7 +193,7 @@ def test_A5_internal_exception_message_is_sanitized():
     text = resp["result"]["content"][0]["text"]
     assert resp["result"]["isError"] is True
     assert "sk-test-LEAK-ME-PLZ-9999" not in text
-    assert "/home/llucic" not in text
+    assert "/home/llucic" not in text  # canon-exempt: leak-redaction assertion
     assert "RuntimeError" not in text
     parsed = json.loads(text)
     assert parsed["error"] == "frame_check_internal_error"
@@ -611,7 +611,6 @@ def test_E7_stdio_main_loop_emits_parse_error_for_malformed_line():
         try:
             proc.stdin.close()
         except OSError:
-            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=5)
@@ -644,7 +643,6 @@ def test_E8_stdio_main_loop_rejects_jsonrpc_other_than_2_0():
         try:
             proc.stdin.close()
         except OSError:
-            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=5)
@@ -758,8 +756,7 @@ def test_F6_log_message_escapes_control_chars_for_operator_safety():
     their terminal hijacked. CR/LF/TAB are preserved because they
     are legitimate in multi-line log messages.
 
-    Closes the deferred residual flagged in REMEDIATION_LOG_v1.md
-    section K and MCP_CLIENT_CONFORMANCE_v1.md."""
+    Verifies the log-injection mitigation."""
     hostile = "URI=\x1b[31mEVIL\x07\x00alert"
     sanitized = mcp_server._sanitize_log_message(hostile)
     # Escape sequences must be replaced with \xNN form.

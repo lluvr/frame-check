@@ -1,4 +1,4 @@
-"""Conformance driver for D3.
+"""Conformance driver for the MCP server.
 
 Drives the installed `frame-check-mcp` wheel as an MCP client would
 (subprocess + stdio + JSON-RPC line-delimited frames) and reports
@@ -7,8 +7,7 @@ every primitive's pass/fail status with one-line summaries.
 Run from any cwd; the wheel is loaded from /tmp/fc-target via
 PYTHONPATH and the entry script is /tmp/fc-target/mcp_server.py.
 
-Output: structured report to stdout. Captured into
-MCP_CLIENT_CONFORMANCE_v1.md as the D3 deliverable evidence.
+Output: structured report to stdout.
 """
 from __future__ import annotations
 
@@ -202,15 +201,14 @@ def main() -> int:
 
         # 14. resources/read on one of each kind
         kinds = {
-            "library/INDEX": "frame-check://library",
             "library/FVS-008": "frame-check://library/FVS-008",
         }
-        # Sample slugs that are present on this deploy. methodology and
-        # spec/frame-divergence/v1 part-1 were retired from the wheel
-        # on 2026-05-08 per PUBLIC_CANON_DISCIPLINE.md §3c (the source
-        # documents carried maintainer-internal vocabulary; public-canon-
-        # clean reconstruction is queued separately). The kinds are now
-        # all conditional on appearing in the listed resources.
+        # Sample slugs that are present on this deploy. The library
+        # index, methodology, and spec/frame-divergence/v1 part-1
+        # were retired from the wheel on 2026-05-08 (the source
+        # documents carried maintainer-internal vocabulary; public-
+        # canon-clean reconstruction is queued separately). The
+        # kinds are conditional on appearing in the listed resources.
         for r in resources:
             uri = r["uri"]
             if uri.startswith("frame-check://worked-examples/") and "/" in uri[27:]:
@@ -340,7 +338,6 @@ def main() -> int:
         try:
             proc.stdin.close()
         except OSError:
-            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=5)
@@ -351,7 +348,6 @@ def main() -> int:
         try:
             stderr_tail = proc.stderr.read()
         except Exception:
-            # stderr drain failed; the tail message stays empty.
             pass
         proc.stderr.close()
 

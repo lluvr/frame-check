@@ -417,8 +417,8 @@ def compute_decision_readiness(display: dict) -> Optional[dict]:
     }
     # Build an effective frame_suggestions list that merges the
     # detector-layer emissions (already in framing.frame_suggestions
-    # from domain_baselines.py / framing.py) with any FVS-016
-    # synthesis from this module's local view of source_network +
+    # from framing.py) with any FVS-016 synthesis from this
+    # module's local view of source_network +
     # epistemic. The synthesis is needed because the detector layer
     # does not have source_network access and FVS-016's defining
     # signal requires it. The merge happens against a SHALLOW COPY

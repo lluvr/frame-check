@@ -28,17 +28,13 @@ Sequence:
      and the production site was paused. Skip with --skip-urls
      for offline runs or when URLs are knowingly being staged for
      an upcoming change.
- 10. Wheel content scan: no embedded references to the private
-     upstream repo (`github.com/lluvr/frame-check` without the
-     `-mcp` suffix) or the paused production site
-     (`frame.clarethium.com`) survive into the released wheel's
-     markdown content. This catches the 2026-04-28 defect where
-     0.8.1 metadata URLs were correct (Path A.1 fix) but the
-     wheel-bundled .md files still carried roughly 400 hyperlinks
-     to the development repo and 460 to the paused production site,
-     because step 9 only checks METADATA Project-URLs, not
-     embedded link surface in shipped content. Skip with
-     --skip-content for offline runs or staged releases.
+ 10. Wheel content scan: no embedded references to dev-tree-only
+     repositories or paused production sites survive into the
+     released wheel's markdown content. The wheel-content audit
+     complements the project-URL audit because the latter only
+     checks metadata, not embedded link surface in shipped
+     markdown. Skip with --skip-content for offline runs or
+     staged releases.
  11. Quality harness gate: drive the installed wheel via
      scripts/mcp_quality_driver.py --wheel and verify the
      harness's payload-content invariants (8 layers, 39 checks)
@@ -199,11 +195,9 @@ _TOTAL_STEPS = 15
 KNOWN_HARNESS_GAPS = (
     # L7: divergence_rendering="teaching_questions" mode requires
     # per-FVS authored `**Teaching question:**` content in the
-    # data/frame_library_v3/FVS-*.md bodies; rendering wiring is
+    # data/frame_library/FVS-*.md bodies; rendering wiring is
     # correct in mcp_server.py, the gap is library content. Parked
-    # for the 0.8.4 operator authoring sprint per
-    # `~/.claude/projects/-home-llucic-frame-check/memory/
-    # project_d3_teaching_questions_parked.md`.
+    # for a future authoring sprint.
     "teaching_questions mode adds teaching_question per record",
 )
 
@@ -311,9 +305,9 @@ def main(argv: list[str] | None = None) -> int:
     proc = subprocess.run(
         [
             sys.executable, "-c",
-            ("import mcp_server; "
+            "import mcp_server; "
             "print(mcp_server.SERVER_VERSION); "
-            "print(mcp_server.PROTOCOL_VERSION)"),
+            "print(mcp_server.PROTOCOL_VERSION)",
         ],
         capture_output=True, text=True, env=env,
     )
@@ -392,7 +386,7 @@ def main(argv: list[str] | None = None) -> int:
                 content = z.read(f).decode("utf-8", errors="ignore")
             except Exception:
                 continue
-            if "/home/llucic" in content:
+            if "/home/llucic" in content:  # canon-exempt: leak-detection pattern
                 home_leaks.append(f)
             if vault_re.search(content):
                 vault_leaks.append(f)
@@ -549,13 +543,13 @@ def main(argv: list[str] | None = None) -> int:
     # returns). Known gaps are accepted via KNOWN_HARNESS_GAPS; any
     # unexpected FAIL line stops the lift.
     skip_quality = "--skip-quality" in argv
+    quality_driver = REPO / "scripts" / "mcp_quality_driver.py"
+    if not quality_driver.exists():
+        skip_quality = True
     step(11, "Quality harness (38/39 baseline; D3 teaching_questions known gap)")
     if skip_quality:
-        print("  SKIPPED (--skip-quality)")
+        print("  SKIPPED (--skip-quality or quality driver not in tree)")
     else:
-        quality_driver = REPO / "scripts" / "mcp_quality_driver.py"
-        if not quality_driver.exists():
-            return fail(f"quality driver not at {quality_driver}")
         proc = subprocess.run(
             [sys.executable, str(quality_driver), "--wheel"],
             capture_output=True, text=True, env=env,

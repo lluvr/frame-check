@@ -39,7 +39,7 @@ import sys
 # USD per 1,000 tokens. Keyed by (provider, model).
 # Source: public pricing pages of each provider as of 2026-04.
 # Update here first when a provider changes pricing; the
-# Observatory's Phase 1.10 reconciliation validates this table
+# caller's Phase 1.10 reconciliation validates this table
 # against measured costs in the corpus.
 
 MODEL_PRICING_PER_1K_TOKENS = {
@@ -225,13 +225,13 @@ def measure(provider, model, response, fallback_cost_usd=0.0):
                 "cost_usd": float(fallback_cost_usd),
             }
 
-        # Prefer the proxy-reported cost when it is present. The
-        # LiteLLM proxy in front of frame-check (when configured)
-        # returns cost_in_usd_ticks on usage; that value reflects
-        # the actual billing the proxy will pass to the master
-        # provider key, which is more accurate than frame-check's
-        # local pricing table whenever provider pricing has changed
-        # since the table was last calibrated. Round-3 audit F29.
+        # Prefer the proxy-reported cost when it is present. A proxy
+        # in front of frame-check (when configured) returns
+        # cost_in_usd_ticks on usage; that value reflects the actual
+        # billing the proxy will pass to the master provider key,
+        # which is more accurate than frame-check's local pricing
+        # table whenever provider pricing has changed since the
+        # table was last calibrated.
         proxy_cost = extract_proxy_cost_usd(response)
         if proxy_cost is not None and proxy_cost > 0:
             return {

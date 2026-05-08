@@ -156,7 +156,7 @@ class TestVoiceClassificationConfidence:
     """Phase B voice construct: classification confidence, runner-up,
     borderline flag. The under-detection construct from Fix A does not
     apply to classification signals (no not_detected state); this is
-    the analogous construct-honesty posture for voice.
+    the analogous evidence posture for voice.
 
     Shape:
       voice: the classifier's pick
@@ -629,41 +629,41 @@ class TestTemporalOrientation:
         # patterns, exercising residue=0, 1, and 2 paths.
         cases = [
             # Past-dominant historical narrative.
-            ("## History\n\n"
+            "## History\n\n"
             "The founders started the company in nineteen ninety-eight from a garage.\n"
             "Revenue grew rapidly during the early years of the dot-com boom.\n"
             "The company went public in two thousand four after filing.\n"
             "Several acquisitions followed over the next decade in the industry.\n"
             "Profits reached record highs in two thousand twenty during the pandemic.\n"
             "The CEO retired last year after a long and distinguished career.\n"
-            "Many employees stayed through the long arc of the company's life.\n"),
+            "Many employees stayed through the long arc of the company's life.\n",
             # Future-dominant strategy doc.
-            ("## Five Year Plan\n\n"
+            "## Five Year Plan\n\n"
             "We will launch the new platform across all markets in 2027.\n"
             "Revenue will reach one billion dollars within the next three years.\n"
             "The company will expand into Asia in the second half of next year.\n"
             "Costs will decline as the manufacturing facility comes online soon.\n"
             "Customers will benefit from the new features being developed currently.\n"
             "Innovation will continue to drive long-term growth into the next decade.\n"
-            "Markets will reward the disciplined approach we plan to maintain.\n"),
+            "Markets will reward the disciplined approach we plan to maintain.\n",
             # Mixed past + present + future, biased toward present.
-            ("## Mixed Document\n\n"
+            "## Mixed Document\n\n"
             "The company achieved record revenue last quarter according to filings.\n"
             "Operations continue to run smoothly across all major regions today.\n"
             "Customer acquisition costs are declining steadily over time periods.\n"
             "The product team will ship a major release in the third quarter.\n"
             "Market share remains strong despite increased competitive pressure.\n"
             "Engineering velocity is accelerating as the team grows in size.\n"
-            "Forward guidance suggests continued momentum into the next year.\n"),
+            "Forward guidance suggests continued momentum into the next year.\n",
             # Heavy mix to exercise residue distribution.
-            ("## Variety\n\n"
+            "## Variety\n\n"
             "We grew the topline by twenty percent last year through new launches.\n"
             "The team will continue to expand into adjacent verticals next season.\n"
             "Customers report high satisfaction across all major surveys conducted.\n"
             "Margins improved as cost discipline took hold in the second half.\n"
             "Future product lines will leverage the same go-to-market motion.\n"
             "Operations are stable and predictable across our global footprint.\n"
-            "Several risks remain on the horizon but we plan to address them.\n"),
+            "Several risks remain on the horizon but we plan to address them.\n",
         ]
         for doc in cases:
             result = temporal_orientation(doc)

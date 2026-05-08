@@ -92,12 +92,6 @@ can run independently:
 
        python3 -m pytest test_mcp_adversarial.py -v
 
-5. **Read the four audit deliverables** in the repository root for
-   the original audit's findings, remediation log, conformance
-   report, and verdict: LEAKAGE_AUDIT_v1.md,
-   REMEDIATION_LOG_v1.md, MCP_CLIENT_CONFORMANCE_v1.md,
-   PUBLISH_READINESS_VERDICT_v1.md.
-
 If any of the four scripts above fail on a released wheel, that is
 a security-relevant regression. File a report per "Reporting a
 vulnerability" above.
@@ -106,7 +100,7 @@ vulnerability" above.
 
 | Date | Surface | Audit | Outcome |
 |---|---|---|---|
-| 2026-04-27 | `frame-check-mcp` 0.8.0 wheel | Pre-publish leakage audit + adversarial harness + client conformance | 16 leakage findings catalogued, 14 closed, 2 partial; 3 dispatcher defects surfaced + closed; 32/32 client round-trips pass. See LEAKAGE_AUDIT_v1.md, REMEDIATION_LOG_v1.md, MCP_CLIENT_CONFORMANCE_v1.md, PUBLISH_READINESS_VERDICT_v1.md. |
+| 2026-04-27 | `frame-check-mcp` 0.8.0 wheel | Pre-publish leakage audit + adversarial harness + client conformance | 16 leakage findings catalogued, 14 closed, 2 partial; 3 dispatcher defects surfaced + closed; 32/32 client round-trips pass. |
 | 2026-04-18 | Web service | Phase 5 cost / origin / abuse hardening | $5 -> $3 daily cap, attacker-hardened error messages, /admin/gates operator endpoint, env-overrides on 7 caps. See commit range `bee2265..f3dce50`. |
 
 ## Security-sensitive surfaces
@@ -114,16 +108,17 @@ vulnerability" above.
 The following areas are worth attention. A report against any of
 these is in scope.
 
-- **Cost gates and rate limiting** (`security.py`,
-  `app.py::charge_cost_gates`, per-feature daily limits). The
-  gates protect against LLM-cost amplification. A bypass here
-  has financial impact on the deploy.
-- **User-text handling** (`app.py`, `comparison.py`, `framing_ai.py`,
-  MCP server). The privacy page commits to a specific contract
-  (`/privacy` and DATA_MOAT.md §3-§6); a leak of that contract
-  is in scope. AI-interpretation flows send excerpts to
-  third-party LLMs; user-facing documentation names this
-  explicitly.
+- **Cost gates and rate limiting** on the web service (per-feature
+  daily limits, per-IP cost budget). The gates protect against
+  LLM-cost amplification. A bypass has financial impact on the
+  deployed web service. The MCP wheel does not run any cost gates;
+  it bears zero LLM cost per query.
+- **User-text handling** (web service: comparison + AI-interpretation
+  flows; MCP server: deterministic measurement only). The privacy
+  page at `frame.clarethium.com/privacy` commits to a specific
+  contract; a leak of that contract is in scope. AI-interpretation
+  flows on the web service send excerpts to third-party LLMs and
+  user-facing documentation names this explicitly.
 - **MCP server** (`mcp_server.py`, distributed as the
   `frame-check-mcp` wheel). Untrusted input reaches the detection
   engine through the MCP `frame_check` / `frame_compare` tools and
@@ -137,27 +132,9 @@ these is in scope.
   pinned by `test_mcp_adversarial.py` (61 tests across 7 attack
   classes); regressions surface there. The 0.8.0 audit closed
   three dispatcher defects (D2.1, D2.2, D2.3) where malformed
-  input returned `-32603` instead of the documented `-32602`;
-  see REMEDIATION_LOG_v1.md §K. Conformance against a real MCP
-  client wire is verified by
-  `scripts/mcp_conformance_driver.py` and recorded in
-  MCP_CLIENT_CONFORMANCE_v1.md.
-- **Observatory ingestion** (`observatory.py`, `telemetry.py`).
-  The Observatory cycles through a curated topic list; no user
-  submission reaches the Observatory corpus. A path that
-  persists user content into the Observatory is a privacy
-  violation in scope.
-- **Saved-analyses URLs** (`/saved/{hash}` and
-  `/compare/saved/{hash}` routes). URLs are hash-unguessable but
-  not authenticated; shared URLs expose the analysis. A
-  cross-hash leak (one save reading another) is in scope.
-- **Corpus exports and R2 credentials** (`export_corpus.py`,
-  `entrypoint.sh`, `litestream.yml`). Private-bucket credentials
-  must not reach the public bucket and vice versa; see
-  `RUNBOOK.md §1.1-1.2`.
-- **Cloudflare Turnstile + origin protection** (`origin_protection.py`,
-  Turnstile config). A bypass here raises cost-amplification risk
-  because it removes a bot filter.
+  input returned `-32603` instead of the documented `-32602`.
+  Conformance against a real MCP client wire is verified by
+  `scripts/mcp_conformance_driver.py`.
 
 ## Out of scope
 

@@ -10,8 +10,10 @@ the rules, these tests fail loudly rather than silently
 regressing the calibration-surfaced bug.
 """
 
+import pytest
+
 from entity_classifier import (
-    EntityType, classify_subject,
+    EntityType, Classification, classify_subject,
 )
 
 

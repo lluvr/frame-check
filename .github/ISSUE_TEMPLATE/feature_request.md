@@ -20,7 +20,7 @@ Tick all that apply:
 - [ ] MCP server (`mcp_server.py` contract; MCP resources)
 - [ ] Corpus / library (FVS entries)
 - [ ] Methodology (METHODOLOGY.md, empirical studies)
-- [ ] Observatory or verification pipeline
+- [ ] caller or verification pipeline
 - [ ] Governance or documentation
 
 **Alternatives considered**
@@ -30,13 +30,13 @@ distinguish a feature request from an under-specified problem.
 **Blocking gates**
 Which of the following (if any) would this feature require?
 
-- [ ] `[RFC]` because it overturns or is close to overturning a
-      `STRATEGY.md §6` durable decision
+- [ ] `[RFC]` because it would overturn or come close to overturning
+      a durable governance decision named in `GOVERNANCE.md`
 - [ ] A new detection rule in `frame_library.py` (see
       `CONTRIBUTING.md §"Contribution types"`)
 - [ ] A new FVS library entry (see the same section)
 - [ ] A backward-incompatible change to the MCP contract
-- [ ] An external dependency addition to `requirements.txt`
+- [ ] An external dependency addition
 - [ ] A cost change (new LLM call, new paid provider)
 
 **Honest limits of the proposal**

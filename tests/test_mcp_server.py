@@ -129,7 +129,7 @@ def test_analysis_fields_are_present():
 def test_coverage_v2_shape():
     """MCP contract v2 coverage payload carries per-dimension evidence
     (markers_matched, vocabulary_searched_sample, signal_strength) and
-    a first-class construct block. See MCP_CONTRACT_V2_PROPOSAL.md §3.2.
+    a first-class construct block.
 
     Pins:
       - analysis.coverage_v2 present alongside analysis.coverage (v1).
@@ -197,7 +197,7 @@ def test_coverage_v2_shape():
 
 
 def test_coverage_v2_signal_strength_thresholds():
-    """signal_strength thresholds per MCP_CONTRACT_V2_PROPOSAL.md §3.3:
+    """signal_strength thresholds:
     none (density 0), nominal (<3), moderate (<10), substantive (>=10).
 
     Test by feeding documents engineered to hit each strength band
@@ -1180,8 +1180,8 @@ def test_lift_dry_run_gate_10_matches_rewriter_policy():
     for backticked in (
         "`frame.clarethium.com`",
         "`frame.clarethium.com/corpus/library/`",
-        "`https://github.com/lluvr/frame-check`",
-        "`github.com/lluvr/frame-check`",
+        "`https://github.com/lluvr/frame-check`",  # canon-exempt: leak-detection test fixture
+        "`github.com/lluvr/frame-check`",  # canon-exempt: leak-detection test fixture
     ):
         check(
             paused_pat.search(backticked) is None,
@@ -1199,8 +1199,8 @@ def test_lift_dry_run_gate_10_matches_rewriter_policy():
     for raw in (
         "https://frame.clarethium.com/corpus/library/",
         "frame.clarethium.com is paused",
-        "see https://github.com/lluvr/frame-check/blob/master/README.md",
-        "see github.com/lluvr/frame-check/issues/1",
+        "see https://github.com/lluvr/frame-check/blob/master/README.md",  # canon-exempt: leak-detection test fixture
+        "see github.com/lluvr/frame-check/issues/1",  # canon-exempt: leak-detection test fixture
     ):
         # At least one of the two patterns must match raw forms
         check(
@@ -1978,16 +1978,25 @@ def test_resources_read_worked_example_returns_markdown():
 
 
 def test_resources_read_methodology_returns_markdown():
-    print("=== resources/read methodology returns markdown ===")
+    """The methodology resource is optional; the MCP server returns
+    -32602 when the underlying file is absent. Pin both branches so
+    the resource keeps its stable URI when the methodology file is
+    re-introduced for an adopter audience.
+    """
+    print("=== resources/read methodology returns markdown or 404 ===")
     resp = mcp_server.dispatch({
         "jsonrpc": "2.0", "id": 6, "method": "resources/read",
         "params": {"uri": "frame-check://methodology"},
     })
-    contents = resp["result"]["contents"]
-    check(contents[0]["mimeType"] == "text/markdown",
-          "methodology MIME must be markdown")
-    check("Frame Check" in contents[0]["text"],
-          "methodology must mention Frame Check")
+    if "result" in resp:
+        contents = resp["result"]["contents"]
+        check(contents[0]["mimeType"] == "text/markdown",
+              "methodology MIME must be markdown")
+        check("Frame Check" in contents[0]["text"],
+              "methodology must mention Frame Check")
+    else:
+        check(resp["error"]["code"] == -32602,
+              "absent methodology must return -32602")
     print("  PASS\n")
 
 
@@ -2086,37 +2095,27 @@ def test_resources_read_frame_divergence_index_returns_markdown():
 
 
 def test_resources_read_frame_divergence_part_1_returns_markdown():
-    """resources/read on Part 1 returns the authored markdown for
-    the category definition and non-negotiables."""
-    baseline = len(_FAILURES)
+    """Part 1 was retired from the wheel; the URI is no longer
+    advertised. The MCP server returns -32602 when the resource is
+    absent. Pin the not-found contract so a future re-introduction
+    of Part 1 keeps the same URI shape.
+    """
     print("=== resources/read Frame Divergence v1 Part 1 ===")
-    if not os.path.isfile(mcp_server._SPEC_FD_V1_PART1_PATH):
-        print("  (Part 1 not on this deploy; skipping)\n")
-        return
     resp = mcp_server.dispatch({
         "jsonrpc": "2.0", "id": 12, "method": "resources/read",
         "params": {
             "uri": "frame-check://spec/frame-divergence/v1/part-1"
         },
     })
-    contents = resp["result"]["contents"]
-    check(
-        contents[0]["mimeType"] == "text/markdown",
-        "Part 1 MIME must be markdown",
-    )
-    text = contents[0]["text"]
-    check(
-        text.startswith("# Frame Divergence v1"),
-        "Part 1 must open with the canonical H1",
-    )
-    check(
-        "Author:" in text and "Lovro Lucic" in text,
-        "Part 1 must carry named authorship per STRATEGY §4",
-    )
-    _assert_no_new_failures(
-        baseline,
-        "test_resources_read_frame_divergence_part_1_returns_markdown",
-    )
+    if "result" in resp:
+        contents = resp["result"]["contents"]
+        check(
+            contents[0]["mimeType"] == "text/markdown",
+            "Part 1 MIME must be markdown",
+        )
+    else:
+        check(resp["error"]["code"] == -32602,
+              "absent Part 1 must return -32602")
     print("  PASS\n")
 
 
@@ -4750,9 +4749,9 @@ def test_user_context_extends_agent_guidance():
     agent_guidance.how_to_render_divergence text is extended with
     contextual filtering instructions plus the prescription-
     prevention guardrail. The MCP does NOT echo the user_context
-    value back into the response (privacy posture per
-    DATA_MOAT.md §3); the caller's agent has the value from its own
-    call args. Pins the discipline so a future change cannot weaken
+    value back into the response (caller-side privacy posture); the
+    caller's agent has the value from its own call args. Pins the
+    discipline so a future change cannot weaken
     the guardrail or accidentally echo the value."""
     baseline = len(_FAILURES)
     print("=== user_context extends agent_guidance with guardrail ===")
@@ -4776,7 +4775,7 @@ def test_user_context_extends_agent_guidance():
     check(
         "I'm a startup founder making a hire decision." not in text_with,
         "user_context value must NOT be echoed verbatim into the "
-        "response (privacy posture per DATA_MOAT.md §3)",
+        "response (caller-side privacy posture)",
     )
     payload_without = mcp_server.build_epistemic_payload(
         _DOC_SAMPLE, include_divergence=True,
@@ -4916,12 +4915,13 @@ def test_content_hash_stable_across_calls():
     """Same resource read twice produces the same hash. This is
     the reproducibility guarantee: a citation made today will
     resolve to the exact bytes tomorrow as long as the file does
-    not change."""
+    not change. Uses an FVS card that always ships in the wheel.
+    """
     print("=== content hash is stable across calls ===")
     for _ in range(3):
         resp = mcp_server.dispatch({
             "jsonrpc": "2.0", "id": 57, "method": "resources/read",
-            "params": {"uri": "frame-check://methodology"},
+            "params": {"uri": "frame-check://library/FVS-008"},
         })
         h = resp["result"]["contents"][0]["contentHash"]
         if not hasattr(test_content_hash_stable_across_calls, "first"):
@@ -5366,7 +5366,6 @@ def test_stdio_subprocess_roundtrip():
         try:
             proc.stdin.close()
         except Exception:
-            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=5)
@@ -5375,12 +5374,10 @@ def test_stdio_subprocess_roundtrip():
         try:
             proc.stdout.close()
         except Exception:
-            # stdout already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.stderr.close()
         except Exception:
-            # stderr already closed or broken; idempotent cleanup proceeds.
             pass
     print("  PASS\n")
 
@@ -8075,8 +8072,7 @@ def test_frame_opportunities_carries_provenance_discipline():
     )
     check(
         "cost" in text.lower(),
-        "discipline must address cost (the moat is broken; cost "
-        "must be surfaced)",
+        "discipline must surface cost when an LLM call is involved",
     )
     check(
         "graceful" in text.lower() or "unavailable" in text.lower()
@@ -11035,7 +11031,6 @@ def test_stdio_subprocess_handles_rapid_fire_sequential_requests():
         try:
             proc.stdin.close()
         except Exception:
-            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=15)
@@ -11047,12 +11042,10 @@ def test_stdio_subprocess_handles_rapid_fire_sequential_requests():
         try:
             proc.stdout.close()
         except Exception:
-            # stdout already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.stderr.close()
         except Exception:
-            # stderr already closed or broken; idempotent cleanup proceeds.
             pass
     _assert_no_new_failures(baseline, "test_stdio_subprocess_handles_rapid_fire_sequential_requests")
     print("  PASS\n")

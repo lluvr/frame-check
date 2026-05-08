@@ -1,28 +1,13 @@
 # Publish workflow: builds the frame-check-mcp wheel + sdist on every
-# tag push (vX.Y.Z), validates the artifact, and stages it for upload.
+# tag push (vX.Y.Z) and validates the artifact.
 #
-# THE UPLOAD STEPS BELOW ARE INTENTIONALLY COMMENTED OUT. The
-# operator's publish hold (per STRATEGY.md §14 and the 2026-04-23
-# directive in MCP_PACKAGE_DESIGN_v1.md) blocks any push to PyPI or
-# TestPyPI until explicitly lifted. To enable publishing:
-#
-#   1. Confirm V4.2 engine has reached Tier 2 completion per
-#      V4_2_GAP_INVENTORY_v1.md §5.
-#   2. Bump version in pyproject.toml from 0.8.0.dev0 to 0.8.0.
-#      Bump SERVER_VERSION in mcp_server.py to "0.8.0".
-#      Move CHANGELOG.md [Unreleased] to [0.8.0] with release date.
-#   3. Configure PyPI Trusted Publishing (PEP 740) for this repo:
-#      https://docs.pypi.org/trusted-publishers/
-#      OR set TWINE_USERNAME / TWINE_PASSWORD secrets the old way.
-#   4. Uncomment the publish-to-testpypi job below.
-#   5. Push tag: `git tag v0.8.0 && git push --tags`. The workflow
-#      builds, validates, and uploads to TestPyPI.
-#   6. Verify install from TestPyPI:
-#      `uvx --from frame-check-mcp==0.8.0 --index-url https://test.pypi.org/simple/ frame-check-mcp --version`
-#   7. Uncomment the publish-to-pypi job. Push the same tag again
-#      (or a new tag); the workflow uploads to real PyPI.
-#   8. Zenodo automatically DOIs the release if GitHub-Zenodo
-#      integration is enabled (one-time setting in repo settings).
+# The upload steps below are intentionally commented out. Releases are
+# cut by the curator and published manually (or via the orchestrator
+# at scripts/release.py); this workflow exists to validate that the
+# wheel still builds cleanly under CI conditions on every tag. To
+# enable automated upload, configure PyPI Trusted Publishing
+# (https://docs.pypi.org/trusted-publishers/) and uncomment the
+# publish jobs.
 
 name: publish
 

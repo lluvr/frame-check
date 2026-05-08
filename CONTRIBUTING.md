@@ -15,16 +15,16 @@ For **who** decides and **when** a contribution becomes canon, see
 ## Repository layout
 
 ```
-frame-check-mcp/
+frame-check/
 ├── data/frame_library/          # 20-entry FVS markdown catalog + INDEX + VERSION
-├── data/worked_examples/        # 4 published worked examples (multi-LLM comparisons)
-├── data/transmissions/          # Frame divergence transmissions (research artifacts)
+├── data/worked_examples/        # Published worked examples (multi-LLM comparisons)
+├── data/transmissions/          # Frame Check transmissions (research pieces)
 ├── calibration/                 # Calibration corpus + results
 ├── validation/                  # Decision-readiness validation runs
-├── framecheck_mcp/              # Wheel-bundle data carrier (data/calibration/validation copies populated at build time)
-├── scripts/                     # Build + release infrastructure (extract, lift, orchestrator libs)
-├── *.py                         # MCP server, framing detectors, claim analysis (flat-modules wheel layout)
-├── test_*.py                    # Tests (flat at root next to source per the wheel-modules convention)
+├── framecheck_mcp/              # Wheel-bundle data carrier (data populated at build time)
+├── scripts/                     # Build + release infrastructure
+├── *.py                         # MCP server + framing detectors (flat-modules wheel layout)
+├── tests/test_*.py              # Tests
 └── mcp_server.py                # MCP protocol server entry point
 ```
 
@@ -44,9 +44,9 @@ src-layout package per `framecheck_mcp/__init__.py` docstring;
 1. **Read `data/frame_library/INDEX.md`.** It is the source of truth
    for which frames exist, their stability status, and the promotion
    criteria. All other surfaces derive from it.
-2. **Read STRATEGY.md §6 Durable Decisions.** Contributions that
-   require overturning a durable decision need an explicit proposal,
-   not a silent PR.
+2. **Read `GOVERNANCE.md`.** It defines the curator role, the
+   review bar, and the small set of durable decisions a contribution
+   would need to overturn explicitly rather than silently.
 3. **Run the full test suite before opening a PR:**
    ```bash
    python3 -m pytest -q --ignore=test_source_latency.py --ignore=test_phase1_load.py
@@ -73,13 +73,9 @@ src-layout package per `framecheck_mcp/__init__.py` docstring;
    - Positive / negative examples
    - Adjacent frames (new contributions must be reciprocal: if you
      list FVS-008 as adjacent, FVS-008's entry must also list yours.
-     The existing library has 49 known non-reciprocal edges being
-     reconciled per-edge in `data/frame_library/ADJACENCY_RECONCILIATION_v1.md`;
-     do not treat the existing one-way edges as precedent for
-     unilateral additions. If the frame you are adjacent-to has a
-     non-reciprocal edge to a third frame, that is a separate
-     reconciliation item and should be flagged in the PR, not
-     propagated.)
+     If the frame you are adjacent-to has a non-reciprocal edge to a
+     third frame, flag that as a separate item in the PR rather than
+     propagating it.)
    - When appropriate / when misleading
    - Honest limits (required: name what the frame does not cover)
    - `## Generation affordances` with rewrite + counter prompts and
@@ -95,29 +91,13 @@ src-layout package per `framecheck_mcp/__init__.py` docstring;
      Step 4 measurement" verbatim (the discipline test accepts this
      as an honest acknowledgment until reliability is measured at the
      next ratification).
-3. Update `INDEX.md`:
-   - Promote your row from `aspirational` to `draft`
-   - Set `class` (text-side / meta-side) and `detection` (yes / gap /
-     n/a) correctly
-4. Run `python3 build_corpus_site.py` to verify the page renders.
-5. Run `python3 run_tests.py` to verify all 46+ canonical-runner
-   suites pass, including the 8 discipline-boundary tests in
-   `test_v4_2_discipline_boundary.py` that protect the library_v4
-   ratification (engine-LLM-facing boundary, framing-line presence,
-   engine-emit disclosure consistency, intra-rater disclosure
-   presence, construct-validity caveat presence, VERSION sync,
-   per-corpus reliability supplement reproducibility, Generation-
-   affordances byte-equivalence). The new entry is auto-discovered
+3. Run `python3 run_tests.py` to verify all canonical-runner suites
+   pass, including the discipline-boundary tests in
+   `test_v4_2_discipline_boundary.py`. The new entry is auto-discovered
    by these tests and must comply.
-6. If your edit changes `## Identification` for any existing entry
-   (separate workflow), run a section 2.4.3 ablation per
-   METHODOLOGY.md before merging. If your edit changes `## Generation
-   affordances`, run a reframe-behavior smoke test via
-   `scripts/reframe_smoke_test.py` before merging (METHODOLOGY section
-   2.4.4 corollary).
-7. Open a PR. Reviewers will check the reciprocity, the honest-limits
+4. Open a PR. Reviewers will check the reciprocity, the honest-limits
    section, whether the worked example actually exhibits the
-   claimed frame, and the four post-stress-test paragraphs in the
+   claimed frame, and the post-stress-test paragraphs in the
    Cross-family reliability section.
 
 ### Contributing a detection rule
@@ -184,39 +164,21 @@ specific, citable public document. They live in
    once the tool is applied and here is what the reader should do
    with that." Honest limits section is required (what the tool
    missed, what a careful reader could add).
-5. Run `python3 build_corpus_site.py` to generate the HTML.
-6. Open a PR. Reviewers check that the example actually teaches
+5. Open a PR. Reviewers check that the example actually teaches
    and that citations resolve.
-
-### Contributing an Observatory topic
-
-`observatory_topics.yaml` is the curated list of topics the
-Observatory cycles through. Adding a topic requires that the
-topic has at least two independent, Source-Network-queryable
-ground-truth signals (see `STRATEGY.md §5` "Remaining 9 have low
-Source Network confidence" for why the current list is bounded).
-Propose topic additions via issue with `[FVS proposal]` analog:
-
-1. Name the topic and the ground-truth signals.
-2. Verify Source Network coverage on a sample claim about the
-   topic in the last 30 days.
-3. If coverage is thin, the topic is not yet Observatory-ready;
-   leave it on the issue for future consideration rather than
-   committing it to the yaml.
 
 ### Contributing documentation
 
-Documentation PRs (README, methodology, governance, privacy,
-corpus site prose) follow the same mechanical process as code
-PRs with one addition: if the document carries a honest-limits
-section (see `METHODOLOGY.md §6` pattern), updates must update
-the limits too. A limits section that does not reflect the
-current document is worse than no limits section because it
-signals false assurance.
+Documentation PRs (README, governance, privacy, corpus site prose)
+follow the same mechanical process as code PRs with one addition:
+if the document carries an honest-limits section, updates must
+update the limits too. A limits section that does not reflect the
+current document is worse than no limits section because it signals
+false assurance.
 
-Documentation changes that affect a `STRATEGY.md §6` durable
-decision require an `[RFC]` (see below). Small copy-edits, typo
-fixes, and clarifications do not.
+Documentation changes that affect a durable governance decision
+require an `[RFC]` (see below). Small copy-edits, typo fixes, and
+clarifications do not.
 
 ### Contributing to the MCP server
 
@@ -336,8 +298,8 @@ project owner: a clean provenance trail for every line of code.
    section).** Use `git commit -s`.
 2. Open a PR against `master`. PR description must:
    - Name the FVS IDs, files, or modules touched.
-   - State explicitly if it overturns anything in STRATEGY.md §6
-     Durable Decisions.
+   - State explicitly if it overturns any durable decision named in
+     `GOVERNANCE.md`.
    - Link the relevant issue or discussion, if any.
 3. A reviewer (initially: Lovro) evaluates against the promotion
    criteria (for library entries) or against the detection-rule /
@@ -352,7 +314,7 @@ project owner: a clean provenance trail for every line of code.
 
 ## What a contribution cannot do without an RFC
 
-- Overturn a durable decision from STRATEGY.md §6.
+- Overturn a durable decision named in `GOVERNANCE.md`.
 - Change the meaning of an existing FVS ID (create a new ID instead).
 - Retire a `canon` entry (retirement is a separate governance path).
 - Introduce a hosted MCP server or any surface that sends document
@@ -367,8 +329,9 @@ decision (see `GOVERNANCE.md`) is required before code can land.
 ## Getting help
 
 - **Issues:** open on GitHub for bugs, feature ideas, or questions.
-- **Strategic alignment:** STRATEGY.md is the canonical direction
-  document. PRs that conflict with it will stall.
+- **Direction:** `GOVERNANCE.md` describes the curator role and the
+  decisions that shape what the project will accept. PRs that
+  conflict with it will stall.
 - **Reviewing frames for canon promotion:** a different role from
   contributing via PR. See `docs/RATERS.md` for the open
   invitation, terms, deliverable shape, and how to engage. Raters

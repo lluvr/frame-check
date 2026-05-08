@@ -1,7 +1,7 @@
 """LLM-augmented frame-opportunity composition.
 
 Item 12 of the substrate-side composition roadmap. The strategic
-reservation: this module breaks the zero-LLM-cost moat that the
+reservation: this module breaks the zero-LLM-cost layer that the
 deterministic substrate has held until now. It is opt-in only
 (via include_frame_opportunities=true on the frame_check tool); the
 default behavior is preserved deterministic substrate composition.
@@ -196,10 +196,10 @@ def _generate_one_opportunity(
     # documents don't get echoed into a third-party LLM context.
     # Round-8 follow-up audit (2026-05-01) closed this gap.
     try:
-        from security import redact_pii_in_text
+        from security import redact_pii_in_text  # canon-exempt: optional PII redactor
         document_text = redact_pii_in_text(document_text)
     except ImportError:
-        pass  # standalone fvs_eval invocation without security module
+        pass  # standalone invocation without the optional security module
 
     excerpt = document_text[:_DOC_EXCERPT_CHARS]
     if len(document_text) > _DOC_EXCERPT_CHARS:
