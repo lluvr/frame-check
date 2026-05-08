@@ -7,7 +7,7 @@ the method is shown in action on text readers can check against the
 original.
 
 Each entry is one markdown file in this directory. Browse the
-rendered versions at (production paused).
+rendered versions at https://frame.clarethium.com/corpus/worked-examples/.
 
 ## Contributing
 

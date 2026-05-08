@@ -416,7 +416,7 @@ def _release_page_url(version: str) -> str:
 
     Path A.1 split-repo discipline: the public source repo
     `Clarethium/frame-check` is the user-visible release target; the
-    upstream development tree `lluvr/frame-check` carries audit-trail-only
+    the upstream development tree carries audit-trail-only
     tags. Both are valid call sites for cut_release.py, so the URL
     must reflect whichever repo this script is actually running in
     rather than carrying a hardcoded reference.

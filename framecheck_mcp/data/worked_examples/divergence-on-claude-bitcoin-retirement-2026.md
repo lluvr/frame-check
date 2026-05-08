@@ -18,7 +18,7 @@ hook: The V1 detector named two present frames. The divergence block named seven
 This worked example demonstrates frame divergence: the companion
 primitive to Frame Check's V1 detection, shipped on the MCP surface
 through the `divergence` block on `frame_check` output. The canonical
-references are `FRAME_DIVERGENCE_v1.md` Part 1 (category definition
+references are FRAME_DIVERGENCE_v1.md Part 1 (category definition
 and non-negotiables) and `FRAME_DIVERGENCE_CONTRACT_v1.md` Part 2
 c1.0 (interface contract).
 
@@ -96,7 +96,7 @@ of them matter for reading the composition below:
 
 1. **The MCP surface does not run an LLM for divergence.** V4.2
    judgment is delegated to the caller's agent model per Rec I in
-   `ENGINE_TIER_RECOMMENDATIONS_v1.md`. `absence_basis` on each
+   ENGINE_TIER_RECOMMENDATIONS_v1.md. `absence_basis` on each
    record is scaffolding ("Caller's model must confirm no FVS-XXX
    identification cues fired in the supplied document"), not a
    finished verdict. The final absence verdict is the caller's
@@ -275,7 +275,7 @@ this specific document:
 ## Why publish this worked example
 
 Frame divergence is the AGI-era primitive Frame Check claims
-(`FRAME_DIVERGENCE_v1.md` §3). Without a worked example, the claim
+(FRAME_DIVERGENCE_v1.md §3). Without a worked example, the claim
 is abstract. This piece makes it concrete in one direction: what
 the MCP surface emits, what the caller-side composition does with
 it, and what the reader-sovereignty constraint looks like in
@@ -324,7 +324,7 @@ valid shape.
 Lucic, L. (2026). *Frame divergence in action: what frames Claude's
 Bitcoin retirement recommendation did not use*. Frame Check Worked
 Examples.
-(production paused)
+frame.clarethium.com/corpus/worked-examples/divergence-on-claude-bitcoin-retirement-2026/
 
 Licensed CC-BY-4.0. The source document (Claude Haiku 4.5 response)
 is the output of a third-party system (Anthropic); its reproduction

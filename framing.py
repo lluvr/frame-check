@@ -1819,12 +1819,12 @@ def framing_portrait_natural(coverage, temporal, voice, epistemic, claim_stats,
                               verification=None, grounding=None):
     """Natural-language synthesis of the framing signals.
 
-    Parallel to `framing_portrait` (the clinical version) but written
-    in professional-but-readable prose for the default UI render.
-    Where the clinical version emits "residual analytical
-    classification", the natural version emits "what's left by
-    elimination rather than what's positively detected". Same content
-    scope, readable register.
+    Parallel to `framing_portrait` (the clinical / construct-honest
+    version) but written in professional-but-readable prose for the
+    default UI render. The evidence discipline is preserved
+    in plain words: where the clinical version emits
+    "residual analytical classification", the natural version emits
+    "what's left by elimination rather than what's positively detected".
 
     Both portraits are generated on every request. The template
     renders natural by default and exposes clinical in an expandable
@@ -1885,9 +1885,10 @@ def framing_portrait_natural(coverage, temporal, voice, epistemic, claim_stats,
             f"({voice['you_pct']}% addressed to the reader)."
         )
     else:
-        # Cascade-residual analytical. Plain register: "what's left by
-        # elimination rather than positively detected" rather than
-        # "residual classification" terminology. Same content.
+        # Cascade-residual analytical. The evidence discipline
+        # shifts from "residual classification" terminology to plain
+        # words: "what's left by elimination rather than positively
+        # detected". Same content, readable register.
         parts.append(
             "Reads as a third-person analytical piece. None of the "
             "directive, promotional, descriptive, or advisory voice "

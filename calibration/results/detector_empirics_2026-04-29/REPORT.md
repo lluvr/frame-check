@@ -39,7 +39,7 @@ Read this table as: 'FVS-NNN fires as PRESENT in K of N corpus documents.' The c
 | instruction | 1 | 8 |
 | advocacy | 1 | 8 |
 
-`(abstain)` = classifier returned `null` (no feature-marker regex matched). Abstention is preferred over mislabeling. A high abstention rate on a corpus is not a defect; it is a measurement of how often the regex-based feature surface fires.
+`(abstain)` = classifier returned `null` (no feature-marker regex matched). Per the evidence discipline, abstention is preferred over mislabeling. A high abstention rate on a corpus is not a defect; it is a measurement of how often the regex-based feature surface fires.
 
 ## Voice classification distribution
 

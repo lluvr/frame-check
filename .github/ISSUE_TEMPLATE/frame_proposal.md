@@ -48,4 +48,4 @@ See `CONTRIBUTING.md §"Proposing a new FVS library entry"` for the
 full mechanical process. See `GOVERNANCE.md §canon-promotion` for
 the promotion criteria a frame must meet to move from `draft` to
 `canon`. Zero frames are currently `canon`; first promotion will
-go through the `REVIEWERS.md` pipeline.
+go through the REVIEWERS.md pipeline.

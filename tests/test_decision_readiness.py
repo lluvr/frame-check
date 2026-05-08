@@ -1137,9 +1137,9 @@ def test_aggregate_outlier_counts_by_llm_emits_sorted_keys():
     if not (harness_path / "aggregate_corpus_findings.py").exists():
         # The harness is upstream-only: `validation/decision_readiness/`
         # Python files are excluded from the public extract per
-        # `setup.py::_should_skip` (build/CLI tooling, not a runtime
-        # resource of the wheel). Skip cleanly on the public mirror
-        # rather than ImportError-failing the suite.
+        # `setup.py::_should_skip` (maintainer-side analysis tooling, not
+        # a runtime resource of the wheel). Skip cleanly on the public
+        # mirror rather than ImportError-failing the suite.
         print(f"  SKIP (harness {harness_path}/aggregate_corpus_findings.py not present; upstream-only module)\n")
         return
     sys.path.insert(0, str(harness_path))

@@ -96,7 +96,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 - HI-027 The Default Geometry case study (origin)
 - EXP-064 cross-evaluator compression
 - EXP-077/b prompt attribution controlled experiment
-- Cross-model default-profile observations from internal experiments (Claude convergent, GPT expansive, Gemini balancing)
+- Cross-model default-profile observations from controlled experiments (Claude convergent, GPT expansive, Gemini balancing)
 - Observatory daily-topic stream from 2026-04-08 forward (Tier B paused 2026-04-22)
 
 **Failure record.** Three failure modes observed in operation:
@@ -127,7 +127,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 - HI-027 The Default Geometry origin study
 - EXP-064 cross-evaluator compression
 - EXP-077/b prompt attribution
-- Cross-model default-profile observations: directional from internal experiments (rigorous quantification open)
+- Cross-model default-profile observations: directional from controlled experiments (rigorous quantification open)
 - V4 detection mode: meta (not present in mixed_genre_v1)
 - Observatory fire rate: pending Tier A quarterly export
 - User-reported outcomes: not yet collected (Tier 3 future work)

@@ -2,7 +2,7 @@
 
 **Status:** Open invitation. v0 shipped 2026-04-20.
 **Curator:** Lovro Lucic (curator@frame-check; contact details at bottom).
-**Companion documents:** `REVIEWERS.md` (library canon promotion review,
+**Companion documents:** REVIEWERS.md (library canon promotion review,
 distinct from rating), `validation/decision_readiness/rater_guide.md`
 (operational guide once you accept), `validation/decision_readiness/`
 (scaffolding tree).
@@ -13,13 +13,13 @@ distinct from rating), `validation/decision_readiness/rater_guide.md`
 
 An open invitation and a contract-in-plain-prose for the Phase 2
 expert validation of Frame Check's decision-readiness profile. The
-profile lives at (production paused)
+profile lives at https://frame.clarethium.com/corpus/decision-readiness/
 with explicit `experimental` status pending Phase 2 results. Without
 external raters, the profile stays experimental indefinitely and the
 methodology cannot be cited as validated.
 
 **Phase 2 ratings are different from library canon review.**
-`REVIEWERS.md` describes review of individual library entries
+REVIEWERS.md describes review of individual library entries
 (FVS-XXX) for canon promotion: prose review, 12-20 hours per entry.
 **This document describes per-document rating for the
 decision-readiness profile validation:** YAML scores on five
@@ -307,7 +307,7 @@ markers and I count substance").
 ## How to engage
 
 1. **Read the methodology page** at
-   (production paused)
+   https://frame.clarethium.com/corpus/decision-readiness/
    to confirm the framework matches what you are willing to rate
    against.
 2. **Read this document** (RATERS.md) in full for the contract.

@@ -122,7 +122,7 @@ Per-family positives (of 15 docs): Claude 6, Gemini 12, Grok 9, GPT-5 7.
 **Friction-cost estimate** (operator-validation pending):
 - Manual application (no tools, experienced reader): ~30-60 seconds to scan a document for stakeholder presence/absence; substantive re-imagining from a specific stakeholder perspective takes longer (3-10 minutes depending on document complexity)
 - V4.2 LLM judge invocation: ~$0.0008/document
-- Branch B pre-commit (user-named perspective before AI consultation): 1-2 minutes
+- Branch B pre-commit (maintainer-side-named perspective before AI consultation): 1-2 minutes
 - Appropriate use depths: any decision document affecting more than the immediate decision-maker
 
 **Applicability metadata.**

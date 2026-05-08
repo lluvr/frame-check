@@ -698,13 +698,13 @@ Surface shape (when enabled):
   ],
   "total_cost_usd": 0.000282,
   "available": true,
-  "note": "Frame-opportunity composition is opt-in via include_frame_opportunities=true. The deterministic substrate (clusters, patterns, absences with goal and genre relevance) provides the same insights without LLM cost when this flag is omitted. See agent_guidance.frame_opportunities_discipline for the rules that apply when opportunities are surfaced."
+  "note": "Frame-opportunity composition is opt-in via include_frame_opportunities=true. The deterministic substrate (clusters, patterns, absences with goal and genre relevance) provides the same insights without LLM cost when this flag is omitted. See agent_guidance.frame_opportunities_discipline for the evidence discipline that applies when opportunities are surfaced."
 }
 ```
 
 When the flag is omitted or set to `false`, the same key is still present but carries `opportunities=[]`, `total_cost_usd=0.0`, and `available=null` (the substrate did not invoke the LLM). When the flag is `true` but the LLM is unavailable (no API key, library not installed), `available=false` with an `unavailable_reason` field; the deterministic substrate continues to provide clusters, patterns, and absent_frames.
 
-The `agent_guidance.frame_opportunities_discipline` field carries the rules for surfacing opportunities to the user: name the LLM provenance, surface the cost, keep the general teaching question alongside the generated one, never present LLM content as Frame Check's measurement, and handle graceful degradation as a feature (the deterministic substrate still works) rather than an error.
+The `agent_guidance.frame_opportunities_discipline` field carries the construct-honesty rules for surfacing opportunities to the user: name the LLM provenance, surface the cost, keep the general teaching question alongside the generated one, never present LLM content as Frame Check's measurement, and handle graceful degradation as a feature (the deterministic substrate still works) rather than an error.
 
 ### Genre-segmented corpus prevalence
 
@@ -788,7 +788,7 @@ The `audit` goal is the default-equivalent posture: no goal-specific override is
 
 Items 5, 6, and 7 of the substrate-side composition roadmap. Frame Check ships with a small validation corpus (10 documents today) under `validation/decision_readiness/corpus/` plus aggregate findings under `validation/decision_readiness/results/{date}-{hash}/aggregate.json`. The corpus carries empirical signal that previously did not surface through the MCP response: per-frame firing rates, co-fire patterns, co-absence patterns, per-dimension peer-difference rates, and cross-question outlier findings. The substrate now exposes this signal as `corpus_context` blocks attached to matched frames, absent frames, and absence clusters.
 
-Honest small-N reporting. The corpus is small. Every prevalence statement carries the denominator (`fires in N of M corpus documents`) so the small-N is explicit. Outcome data based on expert ratings is not yet available (current `cross_check.json` reports `n_ratings_discovered: 0`); the outcome-shaped signals surfaced are peer-pair-difference rates and cross-question outlier findings from validation runs, named as such in `envelope.corpus_summary.small_n_caveat`. When the corpus is unavailable (e.g., wheel without bundled corpus), every `corpus_context` field is `None` rather than a fabricated value.
+Evidence discipline. The corpus is small. Every prevalence statement carries the denominator (`fires in N of M corpus documents`) so the small-N is honest. Outcome data based on expert ratings is not yet available (current `cross_check.json` reports `n_ratings_discovered: 0`); the outcome-shaped signals surfaced are peer-pair-difference rates and cross-question outlier findings from validation runs, named as such in `envelope.corpus_summary.small_n_caveat`. When the corpus is unavailable (e.g., wheel without bundled corpus), every `corpus_context` field is `None` rather than a fabricated value.
 
 Per-frame `corpus_context` (attached to each entry in `frame_library_matches` and `divergence.absent_frames`):
 
@@ -1133,12 +1133,12 @@ is the L5 of substrate-side composition: not composing the
 substrate further, composing the substrate's epistemic discipline
 so the substrate knows what kind of claim it makes at each layer.
 
-Per-level epistemic accuracy is preserved at every level. IRR
+The evidence discipline is preserved at every level. IRR
 status is reported honestly (`not_yet_measured` for classifiers and
 composed patterns, since no IRR pilot has shipped). Validity data
-names the gap explicitly. The substrate stays accurate about its
-own validation status; the agent inherits the per-level treatment
-rather than over-claiming on the user's behalf.
+names the gap explicitly. The substrate stays construct-honest
+about its own validation status; the agent inherits the per-level
+treatment rather than over-claiming on the user's behalf.
 
 ### Catalog stability and library_v4
 
@@ -1271,7 +1271,7 @@ The MCP server emits both legacy v1 and new v2 shapes for the **coverage** signa
     "construct": {
         "signal_type": "vocabulary_and_pattern_detector",
         "statement": "The coverage signal is vocabulary-and-pattern based. ...",
-        "reference": "(production paused)",
+        "reference": "https://frame.clarethium.com/corpus/methodology/",
         "how_to_serialize": "When restating this analysis to a user, say 'the detector found markers for X, Y, Z' rather than 'the document covers X, Y, Z.' ..."
     }
 }
@@ -1291,7 +1291,7 @@ The MCP server emits both legacy v1 and new v2 shapes for the **coverage** signa
     "construct": {
         "signal_type": "cascade_classification",
         "statement": "Voice classification is a 7-rule deterministic cascade. ...",
-        "reference": "(production paused)",
+        "reference": "https://frame.clarethium.com/corpus/methodology/",
         "how_to_serialize": "When restating this classification to a user, say 'classified as X' rather than 'the document is X.' When confidence is 'borderline', name the runner-up class explicitly: 'classified as X, borderline; Y nearly fired.' ..."
     }
 }
@@ -1308,7 +1308,7 @@ The MCP server emits both legacy v1 and new v2 shapes for the **coverage** signa
     "construct": {
         "signal_type": "distribution_with_dominant",
         "statement": "Temporal orientation is the distribution of past, present, and future tense markers across sentences. ...",
-        "reference": "(production paused)",
+        "reference": "https://frame.clarethium.com/corpus/methodology/",
         "how_to_serialize": "When restating, say 'X-oriented with a Y-point margin over the runner-up tense' rather than 'the document is X-oriented.' When balanced is True, say 'temporally balanced; no tense dominates' ..."
     }
 }

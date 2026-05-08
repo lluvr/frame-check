@@ -94,9 +94,9 @@ can run independently:
 
 5. **Read the four audit deliverables** in the repository root for
    the original audit's findings, remediation log, conformance
-   report, and verdict: `LEAKAGE_AUDIT_v1.md`,
-   `REMEDIATION_LOG_v1.md`, `MCP_CLIENT_CONFORMANCE_v1.md`,
-   `PUBLISH_READINESS_VERDICT_v1.md`.
+   report, and verdict: LEAKAGE_AUDIT_v1.md,
+   REMEDIATION_LOG_v1.md, MCP_CLIENT_CONFORMANCE_v1.md,
+   PUBLISH_READINESS_VERDICT_v1.md.
 
 If any of the four scripts above fail on a released wheel, that is
 a security-relevant regression. File a report per "Reporting a
@@ -106,7 +106,7 @@ vulnerability" above.
 
 | Date | Surface | Audit | Outcome |
 |---|---|---|---|
-| 2026-04-27 | `frame-check-mcp` 0.8.0 wheel | Pre-publish leakage audit + adversarial harness + client conformance | 16 leakage findings catalogued, 14 closed, 2 partial; 3 dispatcher defects surfaced + closed; 32/32 client round-trips pass. See `LEAKAGE_AUDIT_v1.md`, `REMEDIATION_LOG_v1.md`, `MCP_CLIENT_CONFORMANCE_v1.md`, `PUBLISH_READINESS_VERDICT_v1.md`. |
+| 2026-04-27 | `frame-check-mcp` 0.8.0 wheel | Pre-publish leakage audit + adversarial harness + client conformance | 16 leakage findings catalogued, 14 closed, 2 partial; 3 dispatcher defects surfaced + closed; 32/32 client round-trips pass. See LEAKAGE_AUDIT_v1.md, REMEDIATION_LOG_v1.md, MCP_CLIENT_CONFORMANCE_v1.md, PUBLISH_READINESS_VERDICT_v1.md. |
 | 2026-04-18 | Web service | Phase 5 cost / origin / abuse hardening | $5 -> $3 daily cap, attacker-hardened error messages, /admin/gates operator endpoint, env-overrides on 7 caps. See commit range `bee2265..f3dce50`. |
 
 ## Security-sensitive surfaces
@@ -138,10 +138,10 @@ these is in scope.
   classes); regressions surface there. The 0.8.0 audit closed
   three dispatcher defects (D2.1, D2.2, D2.3) where malformed
   input returned `-32603` instead of the documented `-32602`;
-  see `REMEDIATION_LOG_v1.md` §K. Conformance against a real MCP
+  see REMEDIATION_LOG_v1.md §K. Conformance against a real MCP
   client wire is verified by
   `scripts/mcp_conformance_driver.py` and recorded in
-  `MCP_CLIENT_CONFORMANCE_v1.md`.
+  MCP_CLIENT_CONFORMANCE_v1.md.
 - **Observatory ingestion** (`observatory.py`, `telemetry.py`).
   The Observatory cycles through a curated topic list; no user
   submission reaches the Observatory corpus. A path that

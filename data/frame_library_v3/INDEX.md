@@ -183,14 +183,14 @@ Cite a specific frame entry as:
 
 ```
 Lucic, L. (2026). FVS-008 Growth Frame, v1. FrameCheck Frame Library 0.1.0.
-(production paused)
+https://frame.clarethium.com/corpus/library/FVS-008
 ```
 
 Cite the library as a whole as:
 
 ```
 Lucic, L. (2026). FrameCheck Frame Library, v0.1.0.
-(production paused)
+https://frame.clarethium.com/corpus/library
 ```
 
 Citation form will stabilize when the first `canon` frame is promoted.

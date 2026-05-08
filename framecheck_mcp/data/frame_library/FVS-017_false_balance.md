@@ -85,7 +85,7 @@ Two examples covering structurally distinct mechanisms of the frame: quantitativ
 
 ## Vocabulary connections
 
-- **Evidence asymmetry**: false balance papers over evidence asymmetry by making the unequal look equal. The reader-aid posture goes the other direction by naming what the detector measures and what it does not, surfacing the asymmetry rather than hiding it.
+- **The evidence discipline** ([METHODOLOGY.md](https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md) §6): false balance does the opposite of what construct-honesty asks for. Construct-honesty makes evidence asymmetry visible by naming what the detector measures and what it does not. False balance papers over evidence asymmetry by making the unequal look equal.
 - **The amplification thesis** (HI-062, CLARETHIUM_VOCABULARY): false balance gets stronger when the same two-camp framing repeats across many sources. After enough repetition, the two camps start to look like the whole discourse, and the median view quietly drops out of public awareness.
 - **The fluency-quality illusion** (FVS-002, HI-012): false balance often travels with fluency-quality illusion. A document with parallel structure and named-figure citations on each side reads as analytical and well-sourced; the polished form carries weight the underlying evidence does not earn.
 - **Authority by citation** (FVS-016): false balance often uses authority by citation to make each side feel solid. Naming prominent figures on each side gives an authority signal, and the reader translates that into evidence weight, even though counting authorities is not the same as weighing evidence.
