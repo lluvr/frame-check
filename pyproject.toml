@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "frame-check-mcp"
-version = "0.8.10"
+version = "0.9.0"
 description = "Frame Check MCP server: deterministic structural framing analysis for AI-generated documents, with default-on frame-divergence block per FRAME_DIVERGENCE_CONTRACT_v1 c1.0. MCP surface delegates V4.2 judgment to the caller's agent model; zero Frame Check LLM cost per query."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -47,12 +47,13 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Clarethium/frame-check"
+Homepage = "https://blog.clarethium.com/frame-check"
 Repository = "https://github.com/Clarethium/frame-check"
 Issues = "https://github.com/Clarethium/frame-check/issues"
 Changelog = "https://github.com/Clarethium/frame-check/blob/master/CHANGELOG.md"
 Security = "https://github.com/Clarethium/frame-check/blob/master/SECURITY.md"
-"Frame Library" = "https://github.com/Clarethium/frame-check/tree/master/data/frame_library"
+Methodology = "https://frame.clarethium.com/corpus/methodology/"
+"Frame Library" = "https://frame.clarethium.com/corpus/library/"
 
 [project.scripts]
 frame-check-mcp = "mcp_server:cli"
@@ -100,8 +101,11 @@ framecheck_mcp = [
     "data/frame_library_v3/**/*",
     "data/worked_examples/**/*",
     "data/transmissions/**/*",
+    "METHODOLOGY.md",
     "MCP_SERVER.md",
+    "FRAME_DIVERGENCE_v1.md",
     "FRAME_DIVERGENCE_CONTRACT_v1.md",
+    "V4_2_GAP_INVENTORY_v1.md",
     "calibration/results/**/*",
     "validation/decision_readiness/results/**/*",
     "validation/decision_readiness/corpus/**/*",
@@ -118,9 +122,9 @@ framecheck_mcp = [
 #     prevents the warning regardless.
 #
 #   filterwarnings = default: keep the standard filter permissive so
-#     test-suite warnings about real measurement gaps (e.g. the
+#     test suites that surface real construct-honesty signals (e.g.
 #     clarethium_measure UserWarning on non-markdown inputs) stay
-#     visible. Suppressing warnings would hide them.
+#     visible. Suppressing warnings would hide real measurement gaps.
 markers = [
     "timeout: soft timeout hint (enforced only when pytest-timeout plugin is installed)",
     "visual: browser-rendered visual regression tests (require playwright + chromium)",

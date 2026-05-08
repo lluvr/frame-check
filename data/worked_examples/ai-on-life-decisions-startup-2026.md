@@ -127,7 +127,7 @@ response that the measurements point at:
 
 ## What the method missed
 
-- **v1 detector retirement scope.** The 2026-04-18 retirement of the FVS-001 / FVS-008 / FVS-015 v1 rules (per `INDEX.md`) means the frame-library matcher fires zero present-frames here today. Pre-retirement (saved snapshot), FVS-001 fired. The frame concepts stand as library entries; the V4.2 LLM-judge replaces the v1 rules. What this exemplifies: detection layers evolve when validation evidence shows they fail design intent; frame concepts are stable; absence-side analysis remains a reliable surface independent of which detector layer is active.
+- **v1 detector retirement scope.** The 2026-04-18 retirement of the FVS-001 / FVS-008 / FVS-015 v1 rules (per `INDEX.md`) means the frame-library matcher fires zero present-frames here today. Pre-retirement (saved snapshot), FVS-001 fired. The frame concepts stand as library entries; the V4.2 LLM-judge replaces the v1 rules. The evidence discipline this exemplifies: detection layers evolve when validation evidence shows they fail design intent; frame concepts are stable; absence-side analysis remains a reliable surface independent of which detector layer is active.
 
 - **Density threshold and the Growth Frame that did not trigger (historical reading; FVS-008 v1 also retired).**
   GPT-5's response is growth-framed at the reading level (edge,
@@ -195,7 +195,7 @@ in resource metadata is designed to support.
 Lucic, L. (2026). *One LLM, one life decision: what framing your
 AI imposes when you ask it for advice*. Frame Check Worked
 Examples.
-(production paused)
+frame.clarethium.com/corpus/worked-examples/ai-on-life-decisions-startup-2026/
 
 Licensed CC-BY-4.0. The LLM response analysed is the output of a
 third-party system (OpenAI GPT-5). Its reproduction here is for

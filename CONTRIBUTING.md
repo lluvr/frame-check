@@ -111,7 +111,7 @@ src-layout package per `framecheck_mcp/__init__.py` docstring;
    by these tests and must comply.
 6. If your edit changes `## Identification` for any existing entry
    (separate workflow), run a section 2.4.3 ablation per
-   `METHODOLOGY.md` before merging. If your edit changes `## Generation
+   METHODOLOGY.md before merging. If your edit changes `## Generation
    affordances`, run a reframe-behavior smoke test via
    `scripts/reframe_smoke_test.py` before merging (METHODOLOGY section
    2.4.4 corollary).

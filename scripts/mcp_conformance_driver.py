@@ -204,13 +204,19 @@ def main() -> int:
         kinds = {
             "library/INDEX": "frame-check://library",
             "library/FVS-008": "frame-check://library/FVS-008",
-            "methodology": "frame-check://methodology",
         }
-        # Sample slugs that are present on this deploy
+        # Sample slugs that are present on this deploy. methodology and
+        # spec/frame-divergence/v1 part-1 were retired from the wheel
+        # on 2026-05-08 per PUBLIC_CANON_DISCIPLINE.md §3c (the source
+        # documents carried maintainer-internal vocabulary; public-canon-
+        # clean reconstruction is queued separately). The kinds are now
+        # all conditional on appearing in the listed resources.
         for r in resources:
             uri = r["uri"]
             if uri.startswith("frame-check://worked-examples/") and "/" in uri[27:]:
                 continue  # skip secondary slugs
+            if uri == "frame-check://methodology":
+                kinds.setdefault("methodology", uri)
             if uri.startswith("frame-check://transmissions/") and "/transmissions/" in uri:
                 kinds.setdefault("transmissions/sample", uri)
             if uri.startswith("frame-check://corpus/") and uri.count("/") == 3:

@@ -92,5 +92,5 @@ Of 1 pairs, the count of pairs where the transformation measurably moved a dimen
 
 ## Citation
 
-Lucic, L. (2026). Frame Check decision-readiness aggregate findings, corpus revision `70e2a95a9d1f`, computed 2026-04-19. (production paused)
+Lucic, L. (2026). Frame Check decision-readiness aggregate findings, corpus revision `70e2a95a9d1f`, computed 2026-04-19. https://frame.clarethium.com/corpus/decision-readiness/
 

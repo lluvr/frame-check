@@ -2,7 +2,7 @@
 
 The interface contract for the `divergence` block inside `frame_check` output. Binds interface, not implementation. Specifies the block shape, inputs that activate it, faithfulness guarantees specific to absence claims, provenance requirements, the MCP-vs-web capability regime, MCP resource URIs, error envelope, and versioning commitments.
 
-**Status:** v1 contract `c1.0` is canonical and shipping (PyPI `frame-check-mcp` `0.8.0` / `0.8.1` / `0.8.2`). The v1 c1.0 contract carries forward unchanged for backward compatibility under the broader v2 layered-architecture spec (`FRAME_DIVERGENCE_v2.md`, 2026-04-25). The originally-planned v1 Parts 3-4 were superseded by v2; this contract document remains the canonical Part 2 reference and the citation target for any caller binding to the existing `divergence` block. Reflects operator-approved Rec II enhance-existing (no separate tool) and Rec I capability regime per `ENGINE_TIER_RECOMMENDATIONS_v1.md`.
+**Status:** v1 contract `c1.0` is canonical and shipping (PyPI `frame-check-mcp` `0.8.0` / `0.8.1` / `0.8.2`). The v1 c1.0 contract carries forward unchanged for backward compatibility under the broader v2 layered-architecture spec (FRAME_DIVERGENCE_v2.md, 2026-04-25). The originally-planned v1 Parts 3-4 were superseded by v2; this contract document remains the canonical Part 2 reference and the citation target for any caller binding to the existing `divergence` block. Reflects operator-approved Rec II enhance-existing (no separate tool) and Rec I capability regime per ENGINE_TIER_RECOMMENDATIONS_v1.md.
 **Author:** Lovro Lucic
 **Date:** 2026-04-23 (last revised 2026-04-23 evening for Rec II/I alignment and V4.2-alpha status disclosure)
 **Depends on:** FRAME_DIVERGENCE_v1.md (Part 1). Every claim here honors Part 1 §5 non-negotiables. If a claim here conflicts with Part 1, Part 1 wins and this document is updated.
@@ -167,7 +167,7 @@ Every `divergence` block response carries provenance sufficient for the consumer
 
 Per `envelope.v4_2_execution` in §4.3. Key invariant: the envelope always reports where the V4.2 judge ran (server-side on web; caller-side on MCP). This is the load-bearing disclosure that distinguishes the two surfaces.
 
-On web, the envelope carries model version (e.g., `xai/grok-4-1-fast-non-reasoning-2026-03`), architecture tier, and fallback state. V4.2 server-side status tracks `V4_2_GAP_INVENTORY_v1.md` §5 labels (`beta` currently, reached 2026-04-23 late-evening after all four Tier 1 items shipped; upgrades to `production_candidate` after Tier 2, `production` after Tiers 3-4).
+On web, the envelope carries model version (e.g., `xai/grok-4-1-fast-non-reasoning-2026-03`), architecture tier, and fallback state. V4.2 server-side status tracks V4_2_GAP_INVENTORY_v1.md §5 labels (`beta` currently, reached 2026-04-23 late-evening after all four Tier 1 items shipped; upgrades to `production_candidate` after Tier 2, `production` after Tiers 3-4).
 
 On MCP, the envelope explicitly notes the caller-side execution model. Caller's agent is responsible for naming its own model in its downstream report; Frame Check cannot observe caller's model choice and does not claim to. Vendor-independence per Part 1 §5.2.1 is automatically preserved on MCP because the caller chooses the model.
 
@@ -375,6 +375,6 @@ This extension pattern is the load-bearing architectural commitment that makes `
 - MCP contract v2 proposal (shapes 1.0.0 release): [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md).
 - MCP package design (release arc): [MCP_PACKAGE_DESIGN_v1.md](https://github.com/Clarethium/frame-check/blob/master/docs/internal/MCP_PACKAGE_DESIGN_v1.md) §7.
 - FVS library: `data/frame_library/` entries FVS-001 through FVS-020 (library_v3 current per commit `9abeb3d`; FVS-012/016/018 revised, FVS-010 kept, FVS-020 retired from detection).
-- Methodology: `METHODOLOGY.md` (bundled).
+- Methodology: METHODOLOGY.md (bundled).
 - Audit infrastructure: VALIDATION_PROGRAM.md.
 - Confidence-field resolution (Path C, `confidence_level` removed): commit `928a447`; historical context in [V4_CONFIDENCE_INVERSION_IMPACT_v1.md](https://github.com/Clarethium/frame-check/blob/master/docs/internal/V4_CONFIDENCE_INVERSION_IMPACT_v1.md).

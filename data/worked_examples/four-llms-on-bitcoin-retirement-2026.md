@@ -211,7 +211,7 @@ responses are not.
 Lucic, L. (2026). *Four LLMs, one investment question: a Frame
 Check comparison of AI framing signatures*. Frame Check Worked
 Examples.
-(production paused)
+frame.clarethium.com/corpus/worked-examples/four-llms-on-bitcoin-retirement-2026/
 
 Licensed CC-BY-4.0. The LLM responses embedded in this analysis
 are the outputs of third-party systems (Anthropic, OpenAI, xAI,

@@ -62,7 +62,7 @@ Usage
     python3 scripts/detector_empirics.py --out /tmp/empirics_smoke
         # Override output directory.
 
-    python3 scripts/detector_empirics.py --bin /path/to/frame-check-mcp
+    python3 scripts/detector_empirics.py --bin /home/llucic/.local/bin/frame-check-mcp
         # Override mcp_server invocation. Default: dev-tree
         # `python3 mcp_server.py` so changes-in-progress are measured.
 
@@ -424,9 +424,10 @@ def _markdown_report(per_doc: list[dict], agg: dict) -> str:
     lines.append("")
     lines.append(
         "`(abstain)` = classifier returned `null` (no feature-marker regex "
-        "matched). Abstention is preferred over mislabeling. A high "
-        "abstention rate on a corpus is not a defect; it is a measurement "
-        "of how often the regex-based feature surface fires."
+        "matched). Per the evidence discipline, abstention is "
+        "preferred over mislabeling. A high abstention rate on a corpus is "
+        "not a defect; it is a measurement of how often the regex-based "
+        "feature surface fires."
     )
     lines.append("")
     lines.append("## Voice classification distribution")

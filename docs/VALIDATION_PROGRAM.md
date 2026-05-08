@@ -400,7 +400,7 @@ claim).**
 - Cross-model generalization study (does the effect replicate
   when the AI under test is GPT-5, Gemini, etc., not just
   Claude). High value but adds evaluator burden.
-- Publication-grade paper write-up (the v1 outputs are
+- Publication-quality paper write-up (the v1 outputs are
   internal evidence; publication is v2 after replication).
 
 ### Budget envelope

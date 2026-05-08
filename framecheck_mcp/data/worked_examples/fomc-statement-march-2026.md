@@ -171,7 +171,7 @@ bias.
 Lucic, L. (2026). *FOMC Statement March 2026: framing analysis
 of an institutional monetary-policy release*. Frame Check
 Worked Examples.
-(production paused)
+frame.clarethium.com/corpus/worked-examples/fomc-statement-march-2026/
 
 Licensed CC-BY-4.0. The FOMC statement is a U.S. federal
 government work in the public domain; this analysis does not

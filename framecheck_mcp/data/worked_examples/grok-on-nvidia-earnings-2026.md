@@ -283,7 +283,7 @@ content-hash field supports.
 Lucic, L. (2026). *Grok summarises NVIDIA earnings: what Layer
 4 verification shows when an LLM paraphrases a source*. Frame
 Check Worked Examples.
-(production paused)
+frame.clarethium.com/corpus/worked-examples/grok-on-nvidia-earnings-2026/
 
 Licensed CC-BY-4.0. The press release analysed is the public
 property of NVIDIA Corporation. The Grok summary is the output

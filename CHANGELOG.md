@@ -6,6 +6,35 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-05-08
+
+### Repository rename: `Clarethium/frame-check-mcp` → `Clarethium/frame-check`
+
+- The public repository moved from `github.com/Clarethium/frame-check-mcp` to `github.com/Clarethium/frame-check`. GitHub installs a permanent 301 redirect, so existing clones, pinned URLs, and PyPI Project-URLs that reference the old name continue to resolve. The PyPI package name (`frame-check-mcp`) is unchanged; `pip install frame-check-mcp` and the import path (`framecheck_mcp.*`) work byte-for-byte against the new repo.
+- Wheel-bundled documentation, MCP resource URIs, and `pyproject.toml [project.urls]` now point at the new canonical URL. Adopters reading frame catalog entries or worked examples land at the new repo without redirect chains.
+
+### Wheel: three documents no longer bundled
+
+- METHODOLOGY.md, `docs/FRAME_DIVERGENCE_v1.md`, and `docs/V4_2_GAP_INVENTORY_v1.md` are removed from `setup.py:_DATA_CARRIERS` and no longer ship in the wheel. These are maintainer-side working documents, not part of the public canon. The 0.8.x line bundled them; 0.9.0 does not.
+- The MCP resources `frame-check://methodology`, `frame-check://spec/frame-divergence/v1/part-1`, and `frame-check://spec/v4-2-gap-inventory/v1` auto-deregister when the underlying files are absent (file-presence gate in `mcp_resources.py`). `resources/list` returns the smaller set; clients that previously read these URIs receive no reply for them.
+- The methodology canon lives at `frame.clarethium.com/corpus/methodology/` and at `github.com/Clarethium/lodestone`.
+
+### Pipeline: canon discipline guardrails
+
+- `scripts/_release_lib/extract.py` gains three new phases. Phase 6 (`canon_substitutions`) applies a literal before-to-after substitution map from `scripts/_release_lib/canon_replacements.txt` to all extracted text content. Phase 7 (`install_canon_audit`) writes `canon_audit.sh` and `canon_audit_known_leaks.txt` into the public extract. Phase 8 (`run_canon_audit`) runs the audit before `lift_dry_run` and halts the release on any forbidden pattern outside the path allowlist.
+- `setup.py` registers a `bdist_wheel` hook (`_CanonSubstitutedBdistWheel`) that runs the same substitution map against the built wheel before it leaves the build directory. Wheels ship to PyPI; without this hook, dev-tree comments and adopter-facing markdown reach `pip install` consumers even when the public mirror is canon-clean. The wheel-content path and the public-extract path share `apply_canon_substitutions_to_wheel` and `apply_canon_substitutions` (both backed by the same `_load_canon_replacements`) so the two surfaces cannot drift.
+- `scripts/release.py` orchestrator's `_step_extract_public_tree` was duplicating the extract-pipeline phases inline and silently skipped phases 6, 7, and 8 (canon substitutions, canon-audit install, canon audit). The release path was bypassing canon discipline entirely while the standalone `extract_public_repo.py` ran it. The orchestrator now calls all three canon phases against the public extract and halts the release on a non-zero audit exit before the public-repo sync step.
+- New lift gate 15 (`Canon audit on wheel content`): extracts the wheel and runs `canon_audit.sh` against the contents. Halts the release if any forbidden pattern survives. Defense-in-depth verifier for the `bdist_wheel` hook; replays the 0.8.x leak class (wheel shipped maintainer-side vocabulary) directly because that class lacked any wheel-content audit at lift time.
+- `scripts/_release_lib/lift.py` was refactored so the wheel-content pattern allowlist loads maintainer-side patterns from a configurable file path (`FRAME_CHECK_VAULT_PATTERNS_FILE`) rather than enumerating them inline. The public source now ships only shape-based patterns (`F-NNNN-NNN`, `EXP-NNN-data/`).
+
+### Lift: gate 14 retired
+
+- Lift gate 14 (`Wheel bundles every setup.py _DATA_CARRIERS destination`) was authored on the assumption that any apparent absence in the wheel was a defect. The assumption was wrong: an apparent absence may be a deliberate cleanup. The gate is retired in favor of the canon-audit gate at extract time, which fails the release on the presence of leak content rather than its absence.
+
+### Note on 0.8.x
+
+- The 0.8.x line on PyPI bundled the three documents named above. There is no functional defect; the wheel works. The bundled documentation includes maintainer-side content that 0.9.0 corrects. The 0.8.x wheels will be yanked from PyPI after 0.9.0 publishes; existing pinned installs continue to work.
+
 ## [0.8.10] - 2026-05-07
 
 ### Changed
@@ -39,7 +68,7 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 ### Fixed
 
 - `pyproject.toml [project.urls]` re-pointed at canonical `Clarethium/frame-check` URLs so PyPI page links resolve directly. `Homepage` moved to `blog.clarethium.com/frame-check`.
-- `METHODOLOGY.md` §9 citation block: corrected the `master` branch reference (the public mirror's default branch is `master`, not `main`).
+- METHODOLOGY.md §9 citation block: corrected the `master` branch reference (the public mirror's default branch is `master`, not `main`).
 - 45 source files plus 29 generated artifacts: legacy `lluvr/frame-check-mcp` references replaced with direct `Clarethium/frame-check` URLs so adopters do not follow a redirect chain to land at the canonical home.
 
 ## [0.8.6] - 2026-05-07

@@ -1,6 +1,6 @@
 # Anticipated Critiques
 
-**Status:** v1, 2026-04-21. Consolidates the adversarial readings surfaced across STRESS_TEST_ASSESSMENT_v1.md, PUBLISH_READINESS_ASSESSMENT_v1.md, CONSTRUCT_HONESTY_AUDIT_v1.md, `CORRESPONDENCE_STUDY_v1.md §5`, `THRESHOLD_SENSITIVITY_v1.md §3`, and `METHODOLOGY.md`. Written so a reviewer landing cold sees the project's own enumeration of what it expects to be attacked on, and the project's prepared defenses, rather than having to excavate them across twelve documents.
+**Status:** v1, 2026-04-21. Consolidates the adversarial readings surfaced across STRESS_TEST_ASSESSMENT_v1.md, PUBLISH_READINESS_ASSESSMENT_v1.md, CONSTRUCT_HONESTY_AUDIT_v1.md, `CORRESPONDENCE_STUDY_v1.md §5`, `THRESHOLD_SENSITIVITY_v1.md §3`, and METHODOLOGY.md. Written so a reviewer landing cold sees the project's own enumeration of what it expects to be attacked on, and the project's prepared defenses, rather than having to excavate them across twelve documents.
 
 **Audience.** Peer reviewers, skeptical practitioners, adversarial readers, future curators. A reviewer's job is easier when the project has already named the attacks; a curator's job is easier when the defense surface is one page rather than distributed.
 
@@ -24,9 +24,9 @@
 
 **Attack.** The pre-registered validation produced macro-F1 = 0.36 against the union of two labelers, below the pre-registered 0.4 useful-floor. The detector failed its own test.
 
-**Response.** Per pre-registration, verdicts do not retroactively re-scope; the project did not rescue the result by lowering the threshold. What the F1 measures is detector-vs-labeler classification; what the project ships measures reader-aid (surfacing the detector's own limits to the reader rather than asserting labels with false confidence). These are orthogonal questions. The pivot from F1-as-target to reader-aid-as-posture is documented; Track B (reader-aid) is separately pre-registered with its own falsifiable threshold.
+**Response.** The F1 result is published in full at `fvs_eval/validation_study/REPORT_V3_TRACK_A.md`. Per pre-registration, verdicts do not retroactively re-scope. The project did not rescue the result by lowering the threshold. What the F1 measures is detector-vs-labeler classification; what the project ships measures reader-aid (construct-honesty surfacing the detector's own limits to the reader rather than asserting labels with false confidence). These are orthogonal questions. The pivot from F1-as-target to construct-honesty-as-posture is documented and does not constitute post-hoc rescue because Track B (reader-aid) is separately pre-registered (`fvs_eval/reader_aid_study/DESIGN_v1.1.md`) with its own falsifiable threshold.
 
-**Where it lands partially.** Until Track B runs, the pivot is aesthetically coherent but functionally unvalidated. Track B execution is the definitive answer. `[OPEN]`
+**Where it lands partially.** Until Track B runs, the pivot is aesthetically coherent but functionally unvalidated. Track B execution (Zone 3 per `PUBLISH_READINESS_ASSESSMENT_v1.md §4`) is the definitive answer. `[OPEN]`
 
 ---
 
@@ -34,7 +34,7 @@
 
 **Attack.** Naming a posture "construct-honest" does not make it new. Measurement theory has addressed validity, reliability, and lower-bound claims for decades.
 
-**Response.** The novelty claim is narrow: no prior structural-framing tool ships real-time sentence-level attribution paired with per-signal reader-aid surfacing in an MCP contract with `how_to_serialize` agent guidance. Each piece has precedent; the combination at the system-contract level does not (to the best of the authors' knowledge). The defense rests on the COMBINATION being novel, not the individual primitives.
+**Response.** The novelty claim is narrow. `STRESS_TEST_ASSESSMENT_v1.md §1.1` asserts that no prior structural-framing tool ships real-time sentence-level attribution paired with per-signal construct-honesty surfacing in an MCP contract with `how_to_serialize` agent guidance. Each piece has precedent; the combination at the system-contract level does not (to the best of the authors' knowledge). The defense rests on the COMBINATION being novel, not the individual primitives.
 
 **Where it lands.** If a reviewer produces prior work that ships the same combination at the system-contract level, the novelty claim needs revision. The project's obligation is to cite that work, not to withdraw the posture.
 
@@ -44,7 +44,7 @@
 
 **Attack.** A motivated writer can produce prose that systematically avoids the Frame Check vocabulary list while still framing adversarially. The detector can be gamed.
 
-**Response.** True and deliberate. `METHODOLOGY.md §1` and `FRAMING_ANALYSIS.md` honest-limits name this. Semantic framing detection would close the Goodhart surface but is held against per `STRATEGY.md §6` durable decision "Minimize LLM calls." The construct-honest posture is the mitigation: the detector surfaces what it measures (vocabulary-based markers) AND what it does not (semantic intent), so a reader of Frame Check's output knows the Goodhart boundary rather than being told "the document is balanced."
+**Response.** True and deliberate. `METHODOLOGY.md §1` and FRAMING_ANALYSIS.md honest-limits name this. Semantic framing detection would close the Goodhart surface but is held against per `STRATEGY.md §6` durable decision "Minimize LLM calls." The construct-honest posture is the mitigation: the detector surfaces what it measures (vocabulary-based markers) AND what it does not (semantic intent), so a reader of Frame Check's output knows the Goodhart boundary rather than being told "the document is balanced."
 
 **Where it lands.** If the project claims adversarial robustness, the attack lands. The project does not.
 
@@ -132,11 +132,11 @@
 
 ### C4.1 "Observatory has run-pause-run-pause cadence."
 
-**Attack.** Tier B observatory has a stop-resume cadence on record. A longitudinal corpus with undocumented operational gaps is not a citation-grade corpus.
+**Attack.** OBSERVATORY_STATE.md v1.3 documents that Tier B stopped, resumed, stopped again, resumed. A longitudinal data depth with undocumented operational gaps is not a citation-grade corpus.
 
-**Response.** Fully acknowledged. The cadence is logged in the observatory state record; no artifact cites observatory continuity without the reliability caveat. Four options (repair / retire / reframe-Tier-A-as-primary / hybrid) are named with trade-offs; decision pending.
+**Response.** Fully acknowledged. The diagnostic document (OBSERVATORY_STATE.md) is the evidence; no artifact cites observatory continuity without the reliability caveat. Four strategic options (A repair / B retire / C reframe-Tier-A-as-primary / D hybrid) are named with trade-offs; curator + operator decision pending. `DATA_MOAT.md v2` will revise the moat claim based on which option ships.
 
-**Where it lands.** The longitudinal-corpus claim carries a reliability caveat now and will either be validated (repair + diagnosis) or reframed. Until one path ships, citations to the observatory as a continuous asset should be qualified.
+**Where it lands.** The "longitudinal moat" claim in `DATA_MOAT.md §1-§2` carries a reliability caveat now and will either be validated (Option A repair + diagnosis) or reframed (Options C / D). Until one path ships, citations to the observatory as a compounding asset should be qualified.
 
 ---
 
@@ -213,9 +213,16 @@
 
 ## 9. Cross-references
 
-- `docs/VALIDATION_PROGRAM.md`: the full validation program (Track A F1 result, Track B pre-registration, observational + formal plans).
-- `docs/RATERS.md`: reviewer terms and first-promotion target.
-- `GOVERNANCE.md` "Canon promotion": canon-trajectory taxonomy and zero-promotions acknowledgment.
+- STRESS_TEST_ASSESSMENT_v1.md §1.1 through §2.10: the original multi-perspective stress test that surfaced most critiques above.
+- PUBLISH_READINESS_ASSESSMENT_v1.md §2.1 through §2.12: the publish-readiness multi-audience audit.
+- CONSTRUCT_HONESTY_AUDIT_v1.md §1 through §6: the specific voice-signal audit.
+- CORRESPONDENCE_STUDY_v1.md §5: what the AI-coder study does not establish.
+- THRESHOLD_SENSITIVITY_v1.md §3: what the threshold study does not establish.
+- METHODOLOGY.md §1.3, §1.3.1, §6 honest-limits: evidence discipline definitions.
+- `fvs_eval/validation_study/REPORT_V3_TRACK_A.md`: Track A F1=0.36 result published in full.
+- `fvs_eval/reader_aid_study/DESIGN_v1.1.md`: Track B pre-registration.
+- `GOVERNANCE.md §canon-promotion`: canon-trajectory taxonomy and zero-promotions acknowledgment.
+- REVIEWERS.md v0.1: reviewer terms and first-promotion target of 3.
 
 ---
 

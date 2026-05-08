@@ -7,8 +7,3 @@ build/
 .venv/
 .pytest_cache/
 /tmp/
-*.py[cod]
-venv/
-.tox/
-.coverage
-htmlcov/

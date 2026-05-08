@@ -80,7 +80,7 @@ A risk-frame-only document is still narrow; multi-frame coverage is the goal.
 - **The amplification thesis** (HI-062): the risk frame amplifies just as the growth frame does. Extended risk analysis produces progressively darker conclusions. The cure is the same: frame breaks via library alternatives.
 - **Source conditioning** (T-351): grounding in source data is especially important under the risk frame because ungrounded risk analysis generates plausible-sounding threats that may not exist.
 - **Failure Framing** (FVS-007, HI-016): risk framing names what could go wrong; failure framing makes the what-could-go-wrong specific enough to mitigate against. Risk frame without failure framing tends to produce fear rather than judgment; risk identification becomes risk paralysis.
-- **Evidence asymmetry**: risk framing without ground truth generates plausible-sounding threats that may not exist. The reader-aid posture asks how the reader would know if a risk is real, and what evidence would distinguish a real risk from a manufactured one.
+- **The evidence discipline** ([METHODOLOGY.md](https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md) §6): risk framing without ground truth generates plausible-sounding threats that may not exist. Evidence discipline asks how the reader would know if a risk is real, and what evidence would distinguish a real risk from a manufactured one.
 - **The fluency-quality illusion** (FVS-002, HI-012): risk frame can produce fluent-but-thin output where every conceivable risk is listed without probability or severity assessment. Fluent risk catalogs feel analytically thorough; without quantification they often serve avoidance rather than judgment.
 
 ## Cross-family reliability

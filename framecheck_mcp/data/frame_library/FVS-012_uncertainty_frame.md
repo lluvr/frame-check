@@ -4,7 +4,7 @@
 **Version:** 1
 **Curator:** Lovro Lucic
 **Curated:** 2026-04-13
-**Source:** detect_coverage uncertainty dimension in framing.py, EXP-094 confound audit (uncertainty framing applied to research claims is core to the discipline)
+**Source:** detect_coverage uncertainty dimension in framing.py, EXP-094 confound audit (the evidence discipline IS uncertainty framing applied to research claims)
 **Status:** v1, single-curator, reviewers wanted
 
 ## Identification

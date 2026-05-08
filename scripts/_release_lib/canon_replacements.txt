@@ -1,0 +1,45 @@
+evidence discipline==>evidence discipline
+Evidence discipline==>Evidence discipline
+evidence discipline==>evidence discipline
+Evidence discipline==>Evidence discipline
+maintainer-side==>maintainer-side
+Maintainer-side==>Maintainer-side
+maintainer-internal==>maintainer-internal
+Maintainer-internal==>Maintainer-internal
+the validation baseline corpus==>the validation baseline corpus
+The validation baseline corpus==>The validation baseline corpus
+the maintainer-side notebook==>the maintainer-side notebook
+The maintainer-side notebook==>The maintainer-side notebook
+upstream development tree==>upstream development tree
+Upstream development tree==>Upstream development tree
+maintainer-side doc==>maintainer-side doc
+Maintainer-side doc==>Maintainer-side doc
+maintainer-side==>maintainer-side
+Maintainer-side==>Maintainer-side
+Frame Check==>Frame Check
+publication-quality claim==>publication-quality claim
+Publication-quality claim==>Publication-quality claim
+publication-quality==>publication-quality
+Publication-quality==>Publication-quality
+core claim==>core claim
+Core claim==>Core claim
+named-authorship curation==>named-authorship curation
+Named-authorship curation==>Named-authorship curation
+data depth==>data depth
+Data depth==>Data depth
+trust depth==>trust depth
+Trust depth==>Trust depth
+longitudinal data depth==>longitudinal data depth
+controlled experiments==>controlled experiments
+cross-model experiments==>cross-model experiments
+Controlled experiments==>Controlled experiments
+controlled experiments==>controlled experiments
+cross-model experiments==>cross-model experiments
+from controlled experiments (Claude==>from controlled experiments (Claude
+Cross-model default-profile observations from controlled experiments==>Cross-model default-profile observations from controlled experiments
+directional from controlled experiments==>directional from controlled experiments
+EXP-096 internal artifact==>EXP-096 internal artifact
+internal scoring artifact==>internal scoring artifact
+experimental work==>experimental work
+the internal test suite==>the internal test suite
+maintainer-internal references==>maintainer-internal references

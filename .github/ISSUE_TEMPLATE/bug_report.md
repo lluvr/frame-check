@@ -11,7 +11,7 @@ One sentence describing what went wrong.
 **Surface**
 Where did the bug appear? Tick one:
 
-- [ ] Live site at (production paused)
+- [ ] Live site at frame.clarethium.com
 - [ ] Local run (`uvicorn app:app`)
 - [ ] MCP server (via Claude Desktop / Cursor / other client)
 - [ ] Test suite (`run_tests.py` or direct pytest)

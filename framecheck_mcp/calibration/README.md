@@ -31,7 +31,7 @@ the EXP-094 corpus run. Source Network has neither."
 
 ## Relationship to other calibration artifacts
 
-`CALIBRATION_SET.md` (repo root) is a **bug-exposure test spec**:
+CALIBRATION_SET.md (repo root) is a **bug-exposure test spec**:
 claims designed to trigger specific pipeline failures (format
 sensitivity, scale ambiguity, known bugs). It is read by humans and
 run manually.

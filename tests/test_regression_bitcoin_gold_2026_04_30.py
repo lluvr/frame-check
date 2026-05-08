@@ -35,7 +35,7 @@ Findings tracked:
               8 risk content (quantitative vocabulary: drawdown,
               standard deviation). RELATED to the existing fixture
               coverage_via_noncanonical_vocabulary which documents
-              the under-detection contract: substrate intentionally
+              the evidence discipline: substrate intentionally
               operates on canonical regex vocabulary; under-detection
               on domain-specific language is acknowledged and the
               correct response is caveat propagation, NOT regex
@@ -319,9 +319,9 @@ def test_coverage_under_detects_quantitative_risk_vocabulary():
     (per coverage_via_noncanonical_vocabulary fixture's audit). The
     bitcoin doc uses quantitative risk language (drawdown, standard
     deviation, volatility) which is not in the canonical set.
-    Under-detection is the documented behavior; the correct response
-    is caveat propagation in the headline, not regex expansion.
-    Locks current behavior.
+    Under-detection is the documented evidence discipline;
+    the correct response is caveat propagation in the headline,
+    not regex expansion. Locks current behavior.
     """
     p = mcp_server.build_epistemic_payload(DOC)
     cov = p["analysis"]["coverage"]

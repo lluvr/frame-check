@@ -82,7 +82,7 @@ The main study at N=10 supports the wedge claim if:
 
 Anything weaker is reported as falsification of the wedge claim at the load-bearing-shift threshold. Numerical thresholds are pre-registered here so the analysis is not retrofitted to whatever the data shows.
 
-A NEGATIVE result is publishable. Pre-registration commits to publishing whatever the data show. The output of this study is a measurement, not a marketing artifact.
+A NEGATIVE result is publishable. Evidence discipline (METHODOLOGY §1.3) requires that. The output of this study is a measurement, not a marketing artifact.
 
 ## Analysis plan
 
@@ -116,13 +116,13 @@ These exclusions are pre-registered so the result cannot be over-claimed. Hence 
 - The operator who pre-registered this protocol is also the agent_guidance author. There is a structural conflict of interest: the prompts being measured are written by the same person who chose what to measure. The mitigation: the rubric is binary and behavior-derived, not author-judgment-derived. Three independent raters at the main study reduce the residual bias.
 - The without-tool arm is not a "naive agent"; it is the same agent without the tool call. This is the right comparison for the wedge claim (does the tool change behavior?) but it is NOT the right comparison for "does an agent that has never been trained on frame_check produce shaped output?" That stronger claim requires a different study with a model unaware of Frame Check's existence.
 - Single-model, single-temperature, single-prompt-shape. The result generalizes only as far as those constraints. Generalization beyond is conjecture until the cross-model study runs.
-- The published methodology paper (`docs/internal/METHODOLOGY_PAPER_OUTLINE_v2.md` in the public repository) cites this protocol as an empirical foothold, not as a definitive validation.
+- The published methodology paper (docs/internal/METHODOLOGY_PAPER_OUTLINE_v2.md in the public repository) cites this protocol as an empirical foothold, not as a definitive validation.
 
 ## What this protocol becomes in 3-4 years
 
 If the wedge claim survives the main study and replicates at N=30-50 with three-rater AC1 above 0.7, this becomes the empirical bedrock of the methodology paper's "the tool changes agent behavior" claim. Cited in academic work that adopts the methodology. Reproduced by external researchers using the open corpus.
 
-If the claim does not survive, this becomes the document that names what the wedge does NOT do, which is a different kind of legacy artifact: an honest negative result that other researchers cite when designing their own agent-behavior-change measurements. Either outcome is publishable: the pre-registration is what makes that true.
+If the claim does not survive, this becomes the document that names what the wedge does NOT do, which is a different kind of legacy artifact: an honest negative result that other researchers cite when designing their own agent-behavior-change measurements. Either outcome is publishable. The evidence discipline is what makes that true.
 
 ## Operator authorization required
 
