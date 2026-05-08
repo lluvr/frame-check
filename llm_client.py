@@ -3,10 +3,9 @@
 Single source of truth for "where do we send Grok requests?" Two paths:
 
   1. LLM proxy (preferred). When LLM_PROXY_BASE_URL and
-     LLM_PROXY_API_KEY are set, every xAI call routes through the
-     local local LLM proxy. The master
-     XAI_API_KEY lives only inside the proxy process; frame-check
-     never sees it. Honors the secrets-vault proxy_isolated class.
+     LLM_PROXY_API_KEY are set, every xAI call routes through a
+     local LLM proxy. The master XAI_API_KEY lives only inside
+     the proxy process; frame-check never sees it.
 
   2. Direct xAI fallback. When the proxy env is unset but
      XAI_API_KEY is set, falls back to api.x.ai/v1 directly. Used
