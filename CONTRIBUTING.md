@@ -81,16 +81,6 @@ src-layout package per `framecheck_mcp/__init__.py` docstring;
    - `## Generation affordances` with rewrite + counter prompts and
      salient questions
    - `## Worked example`
-   - `## Cross-family reliability` with the four post-stress-test
-     paragraphs in this order: ratification framing line ("Engine-
-     canonical reading (library_v4 ratified...)"), engine-emit
-     disclosure, intra-rater stability paragraph, construct-validity
-     caveat. Discipline tests in `test_v4_2_discipline_boundary.py`
-     enforce all four. For a new frame whose reliability is not yet
-     measured under Step 4, the engine-emit disclosure says "pending
-     Step 4 measurement" verbatim (the discipline test accepts this
-     as an honest acknowledgment until reliability is measured at the
-     next ratification).
 3. Run `python3 run_tests.py` to verify all canonical-runner suites
    pass, including the discipline-boundary tests in
    `test_v4_2_discipline_boundary.py`. The new entry is auto-discovered

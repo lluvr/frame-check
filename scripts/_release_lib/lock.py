@@ -16,7 +16,7 @@ What the lock does NOT cover:
   - Cross-machine coordination. Two operators on two machines could both
     acquire their local lock and both run twine upload; PyPI's
     file-uniqueness gate would reject the second one but only after the
-    first succeeded. The maintainer-side discipline is "one machine handles
+    first succeeded. The internal discipline is "one machine handles
     releases" not enforced by code.
   - Long-running stale processes that were forgotten. A pid is "alive"
     even if the process is hung; the operator runs `release.py unlock

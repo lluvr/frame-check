@@ -1179,12 +1179,10 @@ def _build_divergence_block(
         if fvs_id in present_ids:
             continue
 
-        # Contract §5.3: after library_v3 ratification, no frames
-        # currently flagged provisional. FVS-010 kept library_v1 text
-        # stable with honest_limit disclosure; FVS-020 already excluded
-        # in _library_v3_entries(). The stability field is retained so
-        # future library revisions can flag frames without a contract
-        # change.
+        # Contract §5.3: no frames currently flagged provisional under
+        # library_v3. FVS-020 is excluded in _library_v3_entries(). The
+        # stability field is retained so future library revisions can
+        # flag frames without a contract change.
         stability = "stable"
 
         affects_dims = list(dimensions_affecting(fvs_id))
@@ -1810,11 +1808,8 @@ def _build_divergence_block(
             "Cite cluster readings as 'Frame Check's substrate-"
             "composition of the divergence set on the X dimension'. "
             "(6) Catalog version note: "
-            "the divergence catalog is library_v3 per "
-            "FRAME_DIVERGENCE_CONTRACT_v1 c1.0 contract stability; the "
-            "engine-current working library is library_v4, byte-"
-            "equivalent on the ## Identification sections that drive "
-            "divergence detection. The pin is intentional, not stale. "
+            "the divergence catalog is pinned to library_v3 per "
+            "FRAME_DIVERGENCE_CONTRACT_v1 c1.0 contract stability. "
             "(6.4) Goal-relative ranking (Item 11): when the user "
             "(or agent on behalf of the user) has signalled a goal "
             "via the user_goal parameter (decide / brainstorm / "
@@ -2322,9 +2317,8 @@ def build_epistemic_payload(
     )
     voice = detect_voice(document_text)
     # Request candidate-attribution surfacing to expose scholarly-style
-    # attribution the primary _is_sourced pipeline misses (VISITOR_AUDIT
-    # Failure 3; DETECTION_RULE_AUDIT §5.2). Additive; legacy fields
-    # unchanged.
+    # attribution the primary _is_sourced pipeline misses. Additive;
+    # legacy fields unchanged.
     epist = detect_epistemic_basis(document_text, include_candidates=True)
     temp = temporal_orientation(document_text)
     # Pass raw text to enable text-dependent rules (FVS-006). Rules

@@ -265,14 +265,10 @@ class _CanonSubstitutedBdistWheel(bdist_wheel):
         # import, restore. Path.parent is the repo root because this
         # setup.py lives there.
         #
-        # The helper lives at scripts/_release_lib/extract.py, which is
-        # a maintainer-side script. The public extract pipeline does
-        # NOT ship this script; the public mirror's source is already
-        # canon-substituted at extract time (extract.py phase 6), so
-        # the wheel-time substitution is a no-op when building from
-        # the public extract or from an adopter-side clone of the
-        # public repo. ImportError is the legitimate "skip" signal in
-        # those build contexts; only the dev tree carries the helper.
+        # The helper at scripts/_release_lib/extract.py is not part of
+        # the public package. ImportError is the legitimate "skip"
+        # signal when the helper is absent; the wheel content is already
+        # canon-clean in those contexts.
         repo_root = Path(__file__).resolve().parent
         release_lib = str(repo_root / "scripts" / "_release_lib")
         added = False

@@ -73,10 +73,8 @@ can run independently:
    eight gates: clean state, build, `twine check --strict`,
    install, smoke import, CLI `--version`, conformance driver,
    inventory leak-check). The leak-check enforces shape-based
-   filename patterns and refuses any wheel that ships
-   `data/falsifications/F-NNNN-NNN`, `EXP-NNN-data/`, or any
-   maintainer-side artifact whose filename matches a configured
-   exclusion shape.
+   filename patterns and refuses any wheel that ships an artifact
+   whose filename matches a configured exclusion shape.
 
        python3 scripts/lift_dry_run.py
 

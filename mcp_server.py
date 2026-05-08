@@ -118,7 +118,7 @@ SERVER_NAME = "frame-check"
 # test_server_version_bumped_for_decision_readiness_capability;
 # adding suffixes here would break that pin and the handshake
 # parser shape downstream consumers may rely on.
-SERVER_VERSION = "0.9.1"
+SERVER_VERSION = "0.9.2"
 
 # ── Logging ────────────────────────────────────────────────────────
 #
@@ -584,7 +584,7 @@ def _sanitize_tool_exception(exc: BaseException, error_code: str) -> dict:
     file paths, or internal class hierarchy to any caller.
 
     Callers should still perform their own `log()` before calling this
-    to preserve maintainer-side observability; the sanitizer does NOT
+    to preserve diagnostic observability; the sanitizer does NOT
     double-log, it only builds the response.
     """
     message = _MCP_TOOL_ERROR_MESSAGES.get(

@@ -457,14 +457,13 @@ def test_claims_candidate_hedge_surfaces_academic_forms():
 
 def test_epistemic_candidate_attribution_surfaces_scholarly_forms():
     """Epistemic candidate-miss patterns surface scholarly-style
-    attribution the primary _is_sourced pipeline misses. Operationalizes
-    METHODOLOGY §1.3 under-detection construct for the epistemic signal,
-    extending Phase A coverage-candidate treatment to sourcing.
+    attribution the primary _is_sourced pipeline misses, extending
+    coverage-candidate treatment to the sourcing dimension.
 
-    VISITOR_AUDIT Failure 3 named the class: primary detector misses
-    'observers raise', 'analysts argue', 'some have argued', and similar
-    scholarly passives. Candidate-miss surfaces these with explicit
-    caveat so the reader can inspect.
+    Failure class: primary detector misses 'observers raise', 'analysts
+    argue', 'some have argued', and similar scholarly passives.
+    Candidate-miss surfaces these with explicit caveat so the reader
+    can inspect.
     """
     print("=== epistemic candidate-miss surfaces scholarly attribution ===")
     doc = (
@@ -554,17 +553,16 @@ def test_coverage_v2_attribution_handles_line_wrapped_sentences():
     would miss these sentences; the whitespace-flexible regex search
     must locate them.
 
-    The VISITOR_AUDIT semiconductor-case reconstruction was the empirical
-    evidence that this path must work: its "Analysts argue that
-    restructuring..." sentence crosses a line boundary and was silently
-    dropped from attribution before the fix. This test pins that it
-    stays fixed.
+    The semiconductor-case fixture was the empirical evidence that this
+    path must work: its "Analysts argue that restructuring..." sentence
+    crosses a line boundary and was silently dropped from attribution
+    before the fix. This test pins that it stays fixed.
     """
     print("=== attribution handles line-wrapped sentences ===")
-    # Document with deliberate line wrapping inside sentences, mimicking
-    # the semiconductor-case shape. The candidate trends regex must
-    # surface sentence 2's "restructuring" even though that sentence
-    # starts on one source line and the marker is on the next.
+    # Document with deliberate line wrapping inside sentences. The
+    # candidate trends regex must surface sentence 2's "restructuring"
+    # even though that sentence starts on one source line and the
+    # marker is on the next.
     doc = (
         "Policymakers describe the motivation as economic.\n"
         "Analysts argue that restructuring\n"
@@ -633,9 +631,9 @@ def test_coverage_v2_candidate_miss_surfacing():
     fire, but reader-accessible candidate sentences are surfaced so the
     reader can judge whether the dimension is substantively covered.
 
-    Uses the VISITOR_AUDIT semiconductor essay reconstruction: causes
-    uses "rationale centers on" and "motivation" (primary misses);
-    trends uses "restructuring" and "diversification" (primary misses).
+    Uses the semiconductor-essay fixture: causes uses "rationale
+    centers on" and "motivation" (primary misses); trends uses
+    "restructuring" and "diversification" (primary misses).
     """
     print("=== coverage_v2 candidate-miss surfacing operationalizes under-detection ===")
     doc = (
@@ -1085,11 +1083,11 @@ def test_initialize_carries_server_instructions():
     print("  PASS\n")
 
 
-def test_frame_check_schema_hides_operator_internal_params():
-    """The frame_check tool schema must NOT advertise maintainer-internal
-    parameters that pollute the agent's decision space:
+def test_frame_check_schema_hides_advanced_integrator_params():
+    """The frame_check tool schema must NOT advertise advanced-
+    integrator parameters that pollute the agent's decision space:
       - prefer_contract_version: coverage v1/v2 migration window;
-        operator concern, not agent concern
+        not an agent-per-call concern
       - catalog_version_pin: stability pin for advanced integrators;
         not relevant per-call
       - domain_hint: currently echo-only with no field-level
@@ -1100,7 +1098,7 @@ def test_frame_check_schema_hides_operator_internal_params():
     compatibility preserved). The schema simply stops asking the
     agent to make decisions about them.
     """
-    print("=== frame_check schema hides maintainer-internal params ===")
+    print("=== frame_check schema hides advanced-integrator params ===")
     resp = mcp_server.dispatch({
         "jsonrpc": "2.0", "id": 1, "method": "tools/list",
     })
@@ -1116,7 +1114,7 @@ def test_frame_check_schema_hides_operator_internal_params():
         check(
             hidden not in props,
             f"{hidden!r} must not appear in the agent-facing schema; "
-            f"maintainer-internal parameters pollute the agent's "
+            f"advanced-integrator parameters pollute the agent's "
             f"decision space",
         )
     # Backward compat: the dispatch layer still accepts these
@@ -3542,9 +3540,8 @@ def test_frame_match_carries_adjacent_frames():
         "FVS-004" in adj,
         f"FVS-001 adjacency should include FVS-004; got {adj}",
     )
-    # Non-FVS references (HI-062 in the source file) must be
-    # filtered; nothing in the adjacency list should start with
-    # a non-FVS prefix.
+    # Non-FVS references in source files must be filtered; nothing in
+    # the adjacency list should start with a non-FVS prefix.
     check(
         all(x.startswith("FVS-") for x in adj),
         f"non-FVS references leaked into adjacency: {adj}",
@@ -10512,12 +10509,12 @@ def test_how_to_render_divergence_teaches_corpus_context_layer():
 
 
 def test_how_to_render_divergence_carries_catalog_pin_clarity():
-    """agent_guidance.how_to_render_divergence must include the
-    catalog-pin explanation (library_v3 per FRAME_DIVERGENCE_CONTRACT_v1
-    c1.0 stability; library_v4 is engine-current; pin is intentional).
+    """agent_guidance.how_to_render_divergence must name the catalog
+    pin so the agent can explain the version pin to readers (library_v3
+    per FRAME_DIVERGENCE_CONTRACT_v1 c1.0 stability commitment).
     Without this, a reader following the catalog_version field hits
-    library_v3 in the response and may assume staleness; the agent
-    has nothing to surface to clarify the pin's intent.
+    library_v3 in the response and the agent has nothing to surface
+    to clarify what that pin means.
     """
     baseline = len(_FAILURES)
     print("=== how_to_render_divergence carries catalog-pin clarity ===")
@@ -10526,15 +10523,14 @@ def test_how_to_render_divergence_carries_catalog_pin_clarity():
     )
     text = payload["agent_guidance"]["how_to_render_divergence"]
     check(
-        "library_v3" in text and "library_v4" in text,
-        "how_to_render_divergence must mention both library_v3 (the "
-        "contract-pinned catalog) and library_v4 (the engine-current "
-        "working library) so the agent can explain the pin to readers",
+        "library_v3" in text,
+        "how_to_render_divergence must name library_v3 so the agent "
+        "can explain the catalog pin to readers",
     )
     check(
-        "intentional" in text.lower() or "stability" in text.lower(),
+        "stability" in text.lower(),
         "how_to_render_divergence must name that the catalog pin is "
-        "intentional / stability-driven, not stale",
+        "a stability commitment, not stale",
     )
     _assert_no_new_failures(
         baseline, "test_how_to_render_divergence_carries_catalog_pin_clarity"
@@ -10603,16 +10599,16 @@ def test_divergence_envelope_required_fields():
 
 
 def test_divergence_excludes_fvs_020():
-    """FVS-020 is retired from detection per Step 4 ratification and
-    must NEVER appear in absent_frames."""
-    print("=== FVS-020 never in absent_frames (Step 4 retirement) ===")
+    """FVS-020 is retired from detection scope and must NEVER appear
+    in absent_frames."""
+    print("=== FVS-020 never in absent_frames ===")
     payload = mcp_server.build_epistemic_payload(
         _DOC_SAMPLE, include_divergence=True,
     )
     records = payload["divergence"]["absent_frames"]
     fvs_ids = {r["frame_id"] for r in records}
     check("FVS-020" not in fvs_ids,
-          "FVS-020 must be excluded from divergence output (library_v3 retirement)")
+          "FVS-020 must be excluded from divergence output")
     print("  PASS\n")
 
 
