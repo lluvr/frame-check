@@ -3,7 +3,7 @@ Integration tests for Layer 11: Grounding Decomposition (G/F/P).
 
 Tests the integration between clarethium_measure.grounding_decomposition(),
 the app.py display pipeline, and the framing.framing_portrait() integration.
-Does NOT test detection accuracy (that is covered by the upstream test suite).
+Does NOT test detection accuracy (that is covered by the internal test suite).
 """
 
 import importlib.util

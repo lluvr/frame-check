@@ -32,7 +32,7 @@ Human cognitive defaults and AI training defaults share behavioral geometry. Bot
 
 **When this frame is misleading:** Narrowly scoped technical tasks where the "default" is the correct answer (calculating tax, formatting data, translating text). Default geometry matters when interpretation is required, not when execution is required.
 
-**Honest limits:** The bilateral default coupling is a structural argument from how transformers work (semantic neighborhood activation) combined with how human cognition works (satisficing under uncertainty). The specific claim "defaults from both sides reinforce each other" has not been tested in a controlled experiment measuring the coupling directly. Model-specific default profiles (Claude convergent, etc.) are directional observations from the upstream's cross-model experiments, not rigorously measured personality profiles.
+**Honest limits:** The bilateral default coupling is a structural argument from how transformers work (semantic neighborhood activation) combined with how human cognition works (satisficing under uncertainty). The specific claim "defaults from both sides reinforce each other" has not been tested in a controlled experiment measuring the coupling directly. Model-specific default profiles (Claude convergent, etc.) are directional observations from cross-model experiments, not rigorously measured personality profiles.
 
 ## Generation affordances
 

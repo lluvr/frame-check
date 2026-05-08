@@ -75,7 +75,7 @@ When this frame fires, the document covers many analytical perspectives at very 
 
 **What makes this higher-stakes than market analysis:** When the completeness illusion operates in a market analysis, investors may over-allocate capital. When it operates in an AI safety evaluation, deployment decisions are made based on the impression that the evaluation was thorough. The structural completeness of the safety card may be the evaluation surface where the completeness illusion matters most.
 
-**Source:** CHD pilot validation (EXP-096, 9 documents, 2026-04-14). Vault: internal scoring artifact (EXP-096). The highest-scoring document (11/18, 61%) was a benchmark methodology paper that dedicated a multi-page section to "What is missing," structured by the benchmark's own taxonomy. The lowest-scoring non-marketing document (2/18, 11%) was the most-cited AI benchmark, which presents evaluation results without reflecting on the evaluation instrument.
+**Source:** CHD pilot validation (EXP-096, 9 documents, 2026-04-14). EXP-096 internal artifact (EXP-096). The highest-scoring document (11/18, 61%) was a benchmark methodology paper that dedicated a multi-page section to "What is missing," structured by the benchmark's own taxonomy. The lowest-scoring non-marketing document (2/18, 11%) was the most-cited AI benchmark, which presents evaluation results without reflecting on the evaluation instrument.
 
 ## Branch applicability
 
@@ -117,7 +117,7 @@ Per-family positives (of 15 docs): Claude 11, Gemini 9, Grok 14, GPT-5 5.
 - HI-048 The Depth Illusion case study
 - `detect_coverage` 5-category system in `framing.py` (rule-based detector)
 - M-004 omission mechanism
-- EXP-096 CHD pilot validation (9 documents scored 2026-04-14; vault internal scoring artifact (EXP-096))
+- EXP-096 CHD pilot validation (9 documents scored 2026-04-14; internal scoring artifact (EXP-096))
 - Tesla market analysis worked example (v1 Identification)
 - AI safety evaluation worked example (124-page frontier-lab eval)
 - Observatory daily-topic stream from 2026-04-08 forward (Tier B paused 2026-04-22)

@@ -19,7 +19,7 @@ Sequence:
   7. Conformance driver: 32 / 32 round-trips against the installed
      wheel.
   8. Final inventory check: file count, no operator-path leaks, no
-     maintainer-side doc proxy-leaks, no audit-doc accidents bundled.
+     maintainer-side proxy-leaks, no audit-doc accidents bundled.
   9. URL surface check: every Project-URL in the wheel METADATA
      resolves publicly (HEAD returns < 400). This catches the
      2026-04-27 defect where 0.8.0 published with seven dead
@@ -34,7 +34,7 @@ Sequence:
      markdown content. This catches the 2026-04-28 defect where
      0.8.1 metadata URLs were correct (Path A.1 fix) but the
      wheel-bundled .md files still carried roughly 400 hyperlinks
-     to the private repo and 460 to the paused production site,
+     to the development repo and 460 to the paused production site,
      because step 9 only checks METADATA Project-URLs, not
      embedded link surface in shipped content. Skip with
      --skip-content for offline runs or staged releases.
@@ -384,7 +384,7 @@ def main(argv: list[str] | None = None) -> int:
     if audit_leaks:
         return fail(f"audit/governance docs bundled: {audit_leaks}")
     print(
-        f"  {len(files)} files, 0 leaks, 0 vault refs, "
+        f"  {len(files)} files, 0 leaks, 0 maintainer-side refs, "
         "0 audit-doc accidents"
     )
 
@@ -490,7 +490,7 @@ def main(argv: list[str] | None = None) -> int:
         # that the rewrite pass leaves it alone).
         bad_pats = (
             (
-                "lluvr/frame-check (private repo, 404 to public)",
+                "upstream development repo (not publicly accessible)",
                 re.compile(r"(?<![@\w`/])github\.com/lluvr/frame-check(?!-mcp)"),
             ),
             # frame.clarethium.com production pause was lifted at the

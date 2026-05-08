@@ -72,10 +72,11 @@ can run independently:
    version's source tree (clones the repo, builds the wheel, runs
    eight gates: clean state, build, `twine check --strict`,
    install, smoke import, CLI `--version`, conformance driver,
-   inventory leak-check). The leak-check enforces the maintainer-side doc
-   patterns enumerated in `scripts/lift_dry_run.py` and refuses
-   any wheel that ships `data/falsifications/F-NNNN-NNN`,
-   `EXP-NNN-data/`, or any of the named operator-private docs.
+   inventory leak-check). The leak-check enforces shape-based
+   filename patterns and refuses any wheel that ships
+   `data/falsifications/F-NNNN-NNN`, `EXP-NNN-data/`, or any
+   maintainer-side artifact whose filename matches a configured
+   exclusion shape.
 
        python3 scripts/lift_dry_run.py
 

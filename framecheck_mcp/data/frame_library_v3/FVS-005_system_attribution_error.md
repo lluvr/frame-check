@@ -32,7 +32,7 @@ Users attribute AI behavior to "the model" when four invisible layers jointly pr
 
 **When this frame is misleading:** When discussing properties that genuinely ARE model-specific: context window size, language coverage, base training data, architecture differences. Some properties are model properties. The error is in the default attribution, not in the claim that models have properties.
 
-**Honest limits:** The four-layer model is structural and well-supported by the Claude Code leak evidence and by the upstream's controlled experiments (same model, different system configuration, deterministic behavioral change). The specific claim about how much end-user perception is model-layer vs other-layer has not been quantified in a population study. "Most of what users attribute to the model is not the model" is directionally supported but the fraction is unmeasured.
+**Honest limits:** The four-layer model is structural and well-supported by the Claude Code leak evidence and by controlled experiments (same model, different system configuration, deterministic behavioral change). The specific claim about how much end-user perception is model-layer vs other-layer has not been quantified in a population study. "Most of what users attribute to the model is not the model" is directionally supported but the fraction is unmeasured.
 
 ## Decision-readiness implication
 
@@ -103,12 +103,12 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 - T-422 The Four Layers (wrapper, context, prompt, model)
 - M-002 fifth layer (the body)
 - Claude Code source leak evidence (512K lines of harness code shaping behavior)
-- Vault controlled experiments (same model, different system configuration, deterministic behavioral change)
+- Controlled experiments (same model, different system configuration, deterministic behavioral change)
 - Observatory daily-topic stream from 2026-04-08 forward (Tier B paused 2026-04-22)
 
 **Failure record.** Three failure modes observed in operation:
 1. Frame absent from F-2026-027 mixed_genre_v1. Cross-family AC1 1.000, prevalence 0 percent - same as FVS-003 and FVS-004; frame requires AI-model-commentary content not present in mixed_genre_v1. Detection requires appropriate corpus (model comparisons, AI capability reviews, AI vendor evaluations). Reliability undefined by lack of variability in wrong corpus.
-2. Quantified end-user attribution fraction unmeasured. "Most of what users attribute to the model is not the model" is directionally supported by controlled vault experiments and the Claude Code source leak (512K lines of harness evidence). The specific fraction (how much of perceived model behavior is harness vs context vs prompt vs model) has not been quantified in a population study. Direction is well-supported; magnitude is open.
+2. Quantified end-user attribution fraction unmeasured. "Most of what users attribute to the model is not the model" is directionally supported by controlled experiments and the Claude Code source leak (512K lines of harness evidence). The specific fraction (how much of perceived model behavior is harness vs context vs prompt vs model) has not been quantified in a population study. Direction is well-supported; magnitude is open.
 3. User's own context is the deepest blind spot. Custom instructions, memory entries, project files all shape every response but the user rarely audits these as a system. The user CREATED their accumulated context but does not examine it. Detection of self-system contribution requires introspective discipline; Frame Check can prompt the question but cannot run the audit on the user's behalf.
 
 **Success record.** Two operationalized cases:
@@ -134,7 +134,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 - HI-063 The System Attribution Error origin study
 - T-422 Four Layers structural model
 - Claude Code source leak: 512K lines of harness evidence (quantitative anchor)
-- Vault controlled experiments: same model, different system configuration, deterministic behavioral change
+- Controlled experiments: same model, different system configuration, deterministic behavioral change
 - V4 detection mode: meta (not present in mixed_genre_v1)
 - Observatory fire rate: pending Tier A quarterly export
 - User-reported outcomes: not yet collected (Tier 3 future work)
