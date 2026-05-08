@@ -516,11 +516,11 @@ def _build_temporal_construct(temp: dict) -> dict:
 #
 # The substrate produces three qualitatively different kinds of claim:
 # detector measurements, classifier outputs, and composed patterns.
-# Evidence discipline applies differently at each level: a
-# detector firing is a lower-bound vocabulary claim; a classifier
-# output is a margin-aware classification with no IRR data; a composed
-# pattern's trigger is deterministic but its reading is a single-curator
-# normative claim about what the trigger means.
+# Per-level epistemic accuracy: a detector firing is a lower-bound
+# vocabulary claim; a classifier output is a margin-aware
+# classification with no IRR data; a composed pattern's trigger is
+# deterministic but its reading is a single-curator normative claim
+# about what the trigger means.
 #
 # Each composed entity in the substrate carries a `claim_level` field
 # pointing at one of the three treatments. Agents (and external
@@ -1658,8 +1658,7 @@ def _build_divergence_block(
             "genre relevance) provides the same insights without "
             "LLM cost when this flag is omitted. See "
             "agent_guidance.frame_opportunities_discipline for the "
-            "evidence discipline that applies when "
-            "opportunities are surfaced."
+            "rules that apply when opportunities are surfaced."
         ),
     }
     if include_frame_opportunities and document_text_for_opportunities:
@@ -3067,8 +3066,8 @@ def build_epistemic_payload(
             "claim sentences as if Frame Check surfaced them; the "
             "block is a distribution summary, not a quote list. "
             "candidate_hedge_samples carries up to 10 preview "
-            "sentences for construct-honesty surfacing (hedges the "
-            "primary detector did not recognize); these are clearly "
+            "sentences naming hedges the primary detector did not "
+            "recognize; these are clearly "
             "labeled as candidates and should be cited as such, not "
             "as verified hedges. Verification verdicts (if present) "
             "should be cited with the specific verifier and f1 tier "

@@ -123,7 +123,7 @@ Per-family positives (of 15 docs): Claude 10, Gemini 6, Grok 6, GPT-5 5.
 **Context of testing.** Tested in the V4.2 single-validator pipeline against:
 - fvs_eval/mixed_genre_v1 (n=15, four-family panel; F-2026-027 baseline 2026-04 measured pre-Phase 1C revision; post-revision re-measurement pending)
 - `detect_coverage` uncertainty dimension in `framing.py` (rule-based detector)
-- EXP-094 confound audit (evidence discipline as applied Uncertainty Frame on Frame Check's own research claims)
+- EXP-094 confound audit (Uncertainty Frame applied to Frame Check's own research claims)
 - MCP integration as canonical absent-frame in `_PROMPT_AI_RESPONSE_AUDIT` and `_PROMPT_CHALLENGE_DOCUMENT`
 - Phase 1C revision artifact (2026-04-23): tightened from "presence of hedging language" to "structural organization around uncertainty"
 - Observatory daily-topic stream from 2026-04-08 forward (Tier B paused 2026-04-22)
@@ -134,7 +134,7 @@ Per-family positives (of 15 docs): Claude 10, Gemini 6, Grok 6, GPT-5 5.
 3. Uncertainty paralysis as misuse. When applied to stable factual domains (speed of light, well-established constants, narrowly factual claims), the Uncertainty Frame produces false balance: hedging the unhedgeable. The frame is also misleading when used to delay action on claims that are sufficiently certain for practical purposes. Construct boundaries are documented in honest_limits but detection has no domain-context awareness.
 
 **Success record.** Two operationalized cases:
-1. Evidence discipline at Frame Check (EXP-094 confound audit). The audit IS the Uncertainty Frame applied to Frame Check's own research claims: detection limitations named explicitly, evidence quality stated per claim, contested-experts surfacing, quarterly retro audits calendared. Uncertainty Frame as methodology practice rather than as document analysis target. Operationalized in [METHODOLOGY.md](https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md) §6 evidence discipline.
+1. Self-applied evidence audit at Frame Check (EXP-094 confound audit). The audit IS the Uncertainty Frame applied to Frame Check's own research claims: detection limitations named explicitly, evidence quality stated per claim, contested-experts surfacing, quarterly retro audits calendared. Uncertainty Frame as methodology practice rather than as document analysis target.
 2. MCP integration as canonical absent-frame. FVS-012 cited in MCP prompts as one of the canonical absent-frames for divergence: "FVS-012 (Uncertainty Frame) absent leads to question 'What would have to be true for the conclusion to be wrong?'" (Note: this question is shared with FVS-007 Failure Framing in MCP prompts; the two frames are distinct - FVS-012 names what is unknown; FVS-007 names what would falsify; the shared question form crosses both.) Embedded in agent-facing surface as high-leverage divergence target.
 
 **Lived-experience anchor.** Open. Anchor criteria for this entry: (1) a specific moment where applying the Uncertainty Frame to a confidently-presented projection or estimate revealed false precision or hidden assumption-dependence; (2) the difference between the point-estimate-as-fact reading and the uncertainty-framed reading is concrete (specific numbers, ranges, or assumptions); (3) outcome differential observed (decision deferred for evidence, hedge introduced, claim re-scoped); (4) concrete first-person recall. Held open per FRAME_DIVERGENCE_v2.md P5 honest-scope discipline rather than synthesized.

@@ -147,17 +147,16 @@ PYTEST_SUITES = [
     # coherent and operators running `python3 mcp_server.py
     # --version` from a clone see the version that will ship.
     "test_version_coherence.py",
-    # detector_empirics harness helpers (maintainer-side, not
-    # deploy-risk; placed last in the list to reflect that). The
-    # end-to-end harness run is operator-on-demand (slow: subprocess
-    # MCP per document); these unit tests exercise the helpers
-    # (`_frame_deepening_fires`, `_aggregate`, `_markdown_report`)
-    # with synthetic payloads so a regression is caught at PR time
-    # instead of when the operator next runs the harness and finds
-    # the report malformed. Registered here (rather than left to
-    # plain pytest discovery) because CI uses `python3 run_tests.py`
-    # as the primary invocation path; an unregistered file would
-    # only run via the pytest-smoke secondary job's explicit list.
+    # detector_empirics harness helpers. The end-to-end harness run
+    # is on-demand (slow: subprocess MCP per document); these unit
+    # tests exercise the helpers (`_frame_deepening_fires`,
+    # `_aggregate`, `_markdown_report`) with synthetic payloads so a
+    # regression is caught at PR time instead of when the next
+    # harness run produces a malformed report. Registered here
+    # (rather than left to plain pytest discovery) because CI uses
+    # `python3 run_tests.py` as the primary invocation path; an
+    # unregistered file would only run via the pytest-smoke secondary
+    # job's explicit list.
     "test_detector_empirics.py",
     # Bitcoin/gold stress-test regression scaffold (2026-04-30).
     # Locks the observed `build_epistemic_payload` and

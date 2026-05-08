@@ -14,9 +14,9 @@ matched frames, absent frames, and absence clusters. The substrate
 stays deterministic: aggregation reads existing JSON files; no LLM
 is invoked.
 
-Evidence discipline:
+Honest small-N reporting:
   - The corpus is small (currently 10 entries). Every prevalence
-    statement carries the denominator so the small-N is honest.
+    statement carries the denominator so the small-N is explicit.
   - Outcome data based on expert ratings is not yet available
     (cross_check.json reports n_ratings_discovered=0 today). The
     "outcome signal" surfaced here is peer-difference rate and

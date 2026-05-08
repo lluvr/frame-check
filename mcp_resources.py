@@ -115,7 +115,6 @@ _LIBRARY_DIR = os.path.join(_DATA_ROOT, "data", "frame_library")
 _LIBRARY_V3_DIR = os.path.join(_DATA_ROOT, "data", "frame_library_v3")
 _WORKED_EXAMPLES_DIR = os.path.join(_DATA_ROOT, "data", "worked_examples")
 _TRANSMISSIONS_DIR = os.path.join(_DATA_ROOT, "data", "transmissions")
-_METHODOLOGY_PATH = os.path.join(_DATA_ROOT, "METHODOLOGY.md")
 _CALIBRATION_RESULTS_DIR = os.path.join(
     _DATA_ROOT, "calibration", "results",
 )
@@ -138,15 +137,12 @@ _CORPUS_ENTRIES_DIR = os.path.join(
     _DATA_ROOT, "validation", "decision_readiness", "corpus",
 )
 
-# Frame Divergence v1 spec. Parts are authored canonical references per
-# FRAME_DIVERGENCE_CONTRACT_v1.md §8 (MCP resource URIs). Exposed as:
+# Frame Divergence contract reference per FRAME_DIVERGENCE_CONTRACT_v1.md.
+# Exposed as:
 #   frame-check://spec/frame-divergence/v1         -> generated index
-#   frame-check://spec/frame-divergence/v1/part-1  -> FRAME_DIVERGENCE_v1.md
 #   frame-check://spec/frame-divergence/v1/part-2  -> FRAME_DIVERGENCE_CONTRACT_v1.md
-# Parts 3-4 pending per contract §11; will slot in by the same pattern
-# when authored. Deploys without the spec files (e.g., minimal MCP
-# package builds) simply do not advertise the spec index or parts.
-_SPEC_FD_V1_PART1_PATH = os.path.join(_DATA_ROOT, "FRAME_DIVERGENCE_v1.md")
+# Deploys without the spec file (e.g., minimal MCP package builds)
+# simply do not advertise the spec index or part.
 _SPEC_FD_V1_PART2_PATH = os.path.join(
     _DATA_ROOT, "FRAME_DIVERGENCE_CONTRACT_v1.md"
 )
@@ -222,12 +218,6 @@ def _spec_fd_v1_parts() -> list[tuple[int, str, str]]:
     source of truth rather than hard-coding part numbers twice.
     """
     parts: list[tuple[int, str, str]] = []
-    if os.path.isfile(_SPEC_FD_V1_PART1_PATH):
-        parts.append((
-            1,
-            "Category definition and non-negotiables",
-            _SPEC_FD_V1_PART1_PATH,
-        ))
     if os.path.isfile(_SPEC_FD_V1_PART2_PATH):
         parts.append((
             2,
@@ -1052,19 +1042,6 @@ def _list_resources() -> list[dict]:
             entry["annotations"] = annotations
         resources.append(entry)
 
-    if os.path.isfile(_METHODOLOGY_PATH):
-        resources.append({
-            "uri": f"{RESOURCE_SCHEME}://methodology",
-            "name": "Frame Check Methodology",
-            "description": (
-                "The complete methodology specification. Names every "
-                "detector, the calibration protocol, and the known "
-                "limits. Apache-2.0 / CC-BY-4.0. This is the citation "
-                "target for the measurement contract."
-            ),
-            "mimeType": "text/markdown",
-        })
-
     # Frame Divergence v1 spec (index + available parts). The index
     # is generated content; parts are authored markdown files. Only
     # advertised when at least one part exists on disk.
@@ -1461,21 +1438,6 @@ def _read_resource(uri: str) -> dict:
                 f"No transmission for slug {slug!r}"
             )
         with open(entry_path, "r", encoding="utf-8") as f:
-            text = f.read()
-        return {
-            "contents": [
-                {
-                    "uri": uri,
-                    "mimeType": "text/markdown",
-                    "text": text,
-                }
-            ]
-        }
-
-    if path == "methodology":
-        if not os.path.isfile(_METHODOLOGY_PATH):
-            raise FileNotFoundError("Methodology not available on this deploy")
-        with open(_METHODOLOGY_PATH, "r", encoding="utf-8") as f:
             text = f.read()
         return {
             "contents": [
