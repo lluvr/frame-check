@@ -415,7 +415,7 @@ def _release_page_url(version: str) -> str:
     """Derive the GitHub releases/new URL from `git remote get-url origin`.
 
     Path A.1 split-repo discipline: the public source repo
-    `Clarethium/frame-check-mcp` is the user-visible release target; the
+    `Clarethium/frame-check` is the user-visible release target; the
     upstream development tree `lluvr/frame-check` carries audit-trail-only
     tags. Both are valid call sites for cut_release.py, so the URL
     must reflect whichever repo this script is actually running in

@@ -14,5 +14,5 @@ rendered versions at (production paused).
 Contributing a worked example requires the full repository (build
 step, frontmatter template, and editorial review checklist). See
 the project's CONTRIBUTING guide at
-https://github.com/Clarethium/frame-check-mcp/blob/master/CONTRIBUTING.md
+https://github.com/Clarethium/frame-check/blob/master/CONTRIBUTING.md
 for the full workflow.

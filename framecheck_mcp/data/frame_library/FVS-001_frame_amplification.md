@@ -5,7 +5,7 @@
 **Curator:** Lovro Lucic
 **Curated:** 2026-04-12
 **Source:** HI-061 (Frame Amplification), EXP-094 confound audit, M-004 (Frame Inventory)
-**Status:** v1, single-curator, reviewers wanted; v1 detection rule retired 2026-04-18 per [INDEX.md](https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/INDEX.md) "Detection state taxonomy" (external validation study found unsustainable false-positive rate; frame concept retained; V4.2 LLM-judge replaces v1 rule per [METHODOLOGY.md](https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md) §2.4.1).
+**Status:** v1, single-curator, reviewers wanted; v1 detection rule retired 2026-04-18 per [INDEX.md](https://github.com/Clarethium/frame-check/blob/master/data/frame_library/INDEX.md) "Detection state taxonomy" (external validation study found unsustainable false-positive rate; frame concept retained; V4.2 LLM-judge replaces v1 rule per [METHODOLOGY.md](https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md) §2.4.1).
 
 ## Identification
 
@@ -78,7 +78,7 @@ When this frame fires, the document amplifies one frame at the expense of others
 
 ## Cross-family reliability
 
-**Construct-validity caveat.** `library_consensus_ac1` measures cross-family LLM agreement, NOT agreement with human reader labels. Per [METHODOLOGY.md](https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md) section 1.3, V1 detector macro-F1 against human labelers was 0.157 (chance-level, n=12); library_v4 LLM-judge has not been re-validated against humans. Read AC1 as inter-LLM consensus proxy, not human-validated reliability.
+**Construct-validity caveat.** `library_consensus_ac1` measures cross-family LLM agreement, NOT agreement with human reader labels. Per [METHODOLOGY.md](https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md) section 1.3, V1 detector macro-F1 against human labelers was 0.157 (chance-level, n=12); library_v4 LLM-judge has not been re-validated against humans. Read AC1 as inter-LLM consensus proxy, not human-validated reliability.
 
 ### V4.2 NEW panel (2026-04-24, library_v4 ratified; library_current historical)
 

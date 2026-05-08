@@ -11,8 +11,8 @@ authors:
     given-names: Lovro
     orcid: "https://orcid.org/0009-0008-9976-6933"
     website: "https://blog.clarethium.com"
-repository-code: "https://github.com/Clarethium/frame-check-mcp"
-url: "https://github.com/Clarethium/frame-check-mcp"
+repository-code: "https://github.com/Clarethium/frame-check"
+url: "https://github.com/Clarethium/frame-check"
 abstract: >-
   Frame Check is a structural framing analysis tool and public
   research program. It names which perspectives a document takes,
@@ -40,7 +40,7 @@ references:
       - family-names: Lucic
         given-names: Lovro
         orcid: "https://orcid.org/0009-0008-9976-6933"
-    url: "https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md"
+    url: "https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md"
     license: CC-BY-4.0
     year: 2026
     notes: "Bundled with the frame-check-mcp PyPI wheel as METHODOLOGY.md. Also live at https://frame.clarethium.com/corpus/methodology/."
@@ -50,7 +50,7 @@ references:
       - family-names: Lucic
         given-names: Lovro
         orcid: "https://orcid.org/0009-0008-9976-6933"
-    url: "https://github.com/Clarethium/frame-check-mcp/tree/master/data/frame_library"
+    url: "https://github.com/Clarethium/frame-check/tree/master/data/frame_library"
     license: CC-BY-4.0
     version: "0.2.0"
     year: 2026

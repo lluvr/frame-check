@@ -3026,7 +3026,7 @@ def test_frame_library_matches_carry_clickable_library_url():
     url = first.get("library_url") or ""
     check(
         url.startswith(
-            "https://github.com/Clarethium/frame-check-mcp"
+            "https://github.com/Clarethium/frame-check"
             "/blob/master/data/frame_library/"
         ),
         f"library_url must point at the canonical GitHub markdown "
@@ -3074,7 +3074,7 @@ def test_absent_frames_carry_clickable_library_url():
     url = first.get("library_url") or ""
     check(
         url.startswith(
-            "https://github.com/Clarethium/frame-check-mcp"
+            "https://github.com/Clarethium/frame-check"
             "/blob/master/data/frame_library/"
         )
         and f"{first['frame_id']}_" in url
@@ -3093,7 +3093,7 @@ def test_absent_frames_carry_clickable_library_url():
     co_url = co_absences[0].get("library_url") or ""
     check(
         co_url.startswith(
-            "https://github.com/Clarethium/frame-check-mcp"
+            "https://github.com/Clarethium/frame-check"
             "/blob/master/data/frame_library/"
         )
         and f"{co_absences[0]['fvs_id']}_" in co_url
@@ -3182,7 +3182,7 @@ def test_suggested_next_actions_carries_findings_anchored_actions():
         url = resource_actions[0].get("related_url") or ""
         check(
             url.startswith(
-                "https://github.com/Clarethium/frame-check-mcp"
+                "https://github.com/Clarethium/frame-check"
                 "/blob/master/data/frame_library/"
             )
             and url.endswith(".md"),
@@ -3547,13 +3547,13 @@ def test_frame_match_carries_adjacent_frames():
         # divergence here would mean someone bypassed the helper.
         # URL pattern follows decision_readiness.LIBRARY_PUBLIC_URL_BASE,
         # which switched from frame.clarethium.com/corpus/library to
-        # github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library
+        # github.com/Clarethium/frame-check/blob/master/data/frame_library
         # when production paused 2026-04-23 (Path A.1 decision): GitHub
         # is always resolvable for end-users regardless of hosted-
         # production status, and per-entry filenames stay accurate
         # under entry rename via parse_entry_filenames().
         public_url_prefix = (
-            "https://github.com/Clarethium/frame-check-mcp/blob/master"
+            "https://github.com/Clarethium/frame-check/blob/master"
             "/data/frame_library/"
         )
         check(
