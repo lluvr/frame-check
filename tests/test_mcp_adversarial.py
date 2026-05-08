@@ -611,6 +611,7 @@ def test_E7_stdio_main_loop_emits_parse_error_for_malformed_line():
         try:
             proc.stdin.close()
         except OSError:
+            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=5)
@@ -643,6 +644,7 @@ def test_E8_stdio_main_loop_rejects_jsonrpc_other_than_2_0():
         try:
             proc.stdin.close()
         except OSError:
+            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=5)

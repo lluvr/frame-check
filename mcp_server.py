@@ -1105,6 +1105,7 @@ def _install_version_info() -> dict:
         if result.returncode == 0 and result.stdout.strip():
             info["git_sha"] = result.stdout.strip()
     except (OSError, subprocess.TimeoutExpired):
+        # git probe failed (binary missing, timeout, non-zero exit); fall through to the next source.
         pass
     if info["git_sha"] == "unknown":
         pipeline_version_path = os.path.join(_SCRIPT_DIR, "pipeline_version.txt")
@@ -1114,6 +1115,7 @@ def _install_version_info() -> dict:
             if baked and baked != "unknown":
                 info["git_sha"] = baked
         except OSError:
+            # File missing or unreadable; fall through to the next probe.
             pass
 
     # Check for uncommitted changes. A stale install running against
@@ -1160,6 +1162,7 @@ def _install_version_info() -> dict:
                     with open(full, "rb") as f:
                         h.update(f.read())
                 except OSError:
+                    # File read failed; the entry is skipped.
                     pass
                 h.update(b"\0")
             if root == _CORPUS_ENTRIES_DIR:
