@@ -432,13 +432,12 @@ class TestEfficiencyFrame:
 
 class TestDeferredRulesDoNotFire:
     """Canon-conflict guard: FVS-006, FVS-017, FVS-019 are classified
-    `meta-side | n/a` in `data/frame_library/INDEX.md`. A prior
-    implementation attempt on 2026-04-20 added text-side rules that
-    contradicted the library taxonomy; the rules were reverted pending
-    curator approval of class reclassification per
-    `DETECTION_RULE_AUDIT_v1.md` §10.
+    `meta-side | n/a` in `data/frame_library/INDEX.md`. Adding a
+    text-side rule for these entries would contradict the library
+    taxonomy and requires coordinated curator approval of a class
+    reclassification.
 
-    These tests pin the reverted state so a future re-introduction
+    These tests pin the current state so a future re-introduction
     without coordinated INDEX.md update is caught immediately.
     """
 
@@ -457,8 +456,7 @@ class TestDeferredRulesDoNotFire:
         assert "FVS-006" not in ids, (
             f"FVS-006 must not fire: the entry is meta-side per INDEX.md "
             f"and a text-side rule would contradict canon without curator "
-            f"approval. Got {ids}. See DETECTION_RULE_AUDIT §10 and the "
-            f"frame_library.py deferral comment."
+            f"approval. Got {ids}."
         )
 
     def test_fvs019_does_not_fire_on_coherence_conditions(self):

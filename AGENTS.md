@@ -48,11 +48,11 @@ how relevant they feel to the change in front of you:
 - Strategy memos, roadmap drafts, positioning analyses.
 - Audit deliverables: leakage audits, methodology audits, gap
   inventories, publication-readiness verdicts.
-- Maintainer-internal evaluation trees, ratification logs, library-
+- Internal evaluation trees, ratification logs, library-
   version trajectory exposition.
 - Personal context, working notes, session state, vault references.
 - Files whose presence on the public surface is itself a signal of
-  maintainer-internal state.
+  internal state.
 
 If a change feels valuable but does not match an adopter need on a
 shipped artifact, it does not belong here. The right place for it is
@@ -62,12 +62,12 @@ the operator's upstream development tree.
 
 This repository follows a strict construction-not-redaction
 discipline: public canon is authored for the adopter audience from
-scratch, never produced by sanitizing maintainer-internal sources.
+scratch, never produced by sanitizing internal sources.
 
 Concrete rules for agents:
 
-1. **Do not paste maintainer-internal vocabulary.** Phrases like
-   "maintainer-side X", "the operator's strategy", "construct-honesty
+1. **Do not paste internal vocabulary.** Phrases like
+   "internal X", "the operator's strategy", "construct-honesty
    discipline", "named-authorship curation", "publication-quality", "the
    bet", "(see upstream development tree)" do not belong in this repository
    under any circumstance.
@@ -84,7 +84,7 @@ Concrete rules for agents:
    token `library_v3` is acceptable as a catalog version label
    adopters see in MCP responses. Phrases like "library_v4 ratified
    2026-04-24", "byte-equivalence to library_v3", "library_current
-   historical", "Step 4 ratification" are maintainer-internal canon-
+   historical", "Step 4 ratification" are internal canon-
    development context and do not belong here.
 
 4. **The audit is at `scripts/canon_audit.sh`.** The CI runs it on
@@ -111,8 +111,8 @@ Concrete rules for agents:
 
 ## What changes do NOT belong here
 
-- Any of the maintainer-internal content shapes named above.
-- Tests pinning maintainer-internal behavior or test fixtures
+- Any of the internal content shapes named above.
+- Tests pinning internal behavior or test fixtures
   containing operator vault references (the existing fixtures are
   marked `# canon-exempt:` for the leak-detection assertions; add
   new ones the same way only when the test is genuinely about

@@ -206,7 +206,7 @@ def main() -> int:
         # Sample slugs that are present on this deploy. The library
         # index, methodology, and spec/frame-divergence/v1 part-1
         # were retired from the wheel on 2026-05-08 (the source
-        # documents carried maintainer-internal vocabulary; public-
+        # documents carried internal vocabulary; public-
         # canon-clean reconstruction is queued separately). The
         # kinds are conditional on appearing in the listed resources.
         for r in resources:

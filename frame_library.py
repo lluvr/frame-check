@@ -60,8 +60,7 @@ _FVS_008_GROWTH_CONTENT_RE = re.compile(
 
 # Identity marker patterns for FVS-006 Identity Framing Asymmetry detection.
 # The rule fires when the text uses role-claim language at meaningful density.
-# See DETECTION_RULE_AUDIT_v1.md §4.4 for the proposed rule and honest-
-# limits note: this regex detects the STRUCTURAL signal (identity claim
+# Honest-limits note: this regex detects the STRUCTURAL signal (identity claim
 # density), not the SEMANTIC signal (whether the claimed identity produced
 # behavioral shift). Teaching question frames the gap explicitly.
 IDENTITY_MARKERS_RE = re.compile(
@@ -1152,34 +1151,10 @@ def suggest_frames(
             "Can you look up the specific sources cited? Would the argument survive if the citations were removed?",
         )
 
-    # ── FVS-006, FVS-017, FVS-019 rules DEFERRED ──
-    # DETECTION_RULE_AUDIT §4.4, §4.5, §4.6 proposed text-side detection
-    # rules for these entries. Implementation attempt on 2026-04-20
-    # surfaced three canon conflicts that block unilateral shipping:
-    #
-    # 1. INDEX.md `Class` column lists all three as `meta-side` with
-    #    Detection `n/a`. Adding text-side rules is a library taxonomy
-    #    change, which is a curator decision, not a unilateral edit.
-    # 2. FVS-019 is additionally marked `absorbed` into FVS-002 in
-    #    INDEX.md's v1 publication-state table. A separate text-side
-    #    rule would surface FVS-019 as an independent suggestion even
-    #    though the library's editorial position is "covered by FVS-002."
-    # 3. FVS-017's proposed rule collides with
-    #    `test_balanced_document_produces_no_suggestions`, which asserts
-    #    that a structurally-balanced analytical document produces zero
-    #    suggestions. FVS-017 by design fires on that shape.
-    #
-    # Resolution requires curator decisions on:
-    #   - Class reclassification (meta-side -> text-side) and INDEX.md
-    #     update, for whichever entries the curator accepts.
-    #   - FVS-019 absorption status vs standalone detection.
-    #   - FVS-017 "balanced = false-balance-candidate" design question.
-    #
-    # The proposal drafts in `DETECTION_RULE_AUDIT_v1.md` §4.4-§4.6
-    # remain open for curator review. The regex `IDENTITY_MARKERS_RE`
-    # at module top is retained because a future activation is trivial
-    # once curator approves the class change; same for the text kwarg
-    # on `suggest_frames` below. Neither is load-bearing for any
-    # currently active rule.
+    # FVS-006, FVS-017, FVS-019 do not have active detection rules.
+    # `IDENTITY_MARKERS_RE` and the `text` kwarg on `suggest_frames`
+    # are retained for future activation once curator decisions on
+    # class reclassification and detection scope land. Neither is
+    # load-bearing for any currently active rule.
 
     return suggestions

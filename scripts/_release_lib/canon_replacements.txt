@@ -12,7 +12,7 @@
 #     Safer than producing fluent-but-misleading public canon.
 #   - Substitution is case-sensitive. List both upper and lower variants
 #     when both occur in dev tree.
-#   - Some leaks (maintainer-internal doc filename references, F-NNNN-NNN
+#   - Some leaks (internal doc filename references, F-NNNN-NNN
 #     IDs, web-app module names in comments) are NOT included here.
 #     Mechanical substitution of those classes produces incoherent prose;
 #     they belong in manual rewrite passes.
@@ -20,7 +20,7 @@
 # ── Canon vocabulary (construct-honesty compound forms) ──
 # The §3c PAT_RIGID flags `construct[- ]honesty discipline` only. The
 # other compound forms (posture, defect, audit, surfacing, principle,
-# alignment, machinery, stance, tax) carry the same maintainer-side
+# alignment, machinery, stance, tax) carry the same internal
 # vocabulary load and need the same substitution.
 evidence discipline==>evidence discipline
 Evidence discipline==>Evidence discipline
@@ -45,11 +45,20 @@ Evidence stance==>Evidence stance
 evidence tax==>evidence tax
 Evidence tax==>Evidence tax
 
-# ── Maintainer-side / maintainer-internal ──
-maintainer-side==>maintainer-side
-Maintainer-side==>Maintainer-side
-maintainer-internal==>maintainer-internal
-Maintainer-internal==>Maintainer-internal
+# ── Internal / internal ──
+# Per FM-PCD-2: a sanitization marker like "internal X" is
+# itself a leak (it reveals an internal counterpart). These pairs no
+# longer swap; each occurrence in the source must be REWRITTEN to
+# describe the engineering reason directly. Patterns retained here
+# only as a tripwire if a regression slips one through.
+internal==>internal
+Internal==>Internal
+internal==>internal
+Internal==>Internal
+internal==>internal
+Internal==>Internal
+internal==>internal
+Internal==>Internal
 
 # ── Operator-managed config files phrase (used in requirements.txt
 # style comments). The phrase reveals ownership/authority; rewrite as
@@ -59,16 +68,16 @@ the configuration files==>the configuration files
 # ── Operator's [X] noun phrases ──
 the validation baseline corpus==>the validation baseline corpus
 The validation baseline corpus==>The validation baseline corpus
-the maintainer-side notebook==>the maintainer-side notebook
-The maintainer-side notebook==>The maintainer-side notebook
+the internal notebook==>the internal notebook
+The internal notebook==>The internal notebook
 
 # ── Vault-as-architecture compound forms ──
 upstream development tree==>upstream development tree
 Upstream development tree==>Upstream development tree
-maintainer-side doc==>maintainer-side doc
-Maintainer-side doc==>Maintainer-side doc
-maintainer-side==>maintainer-side
-Maintainer-side==>Maintainer-side
+internal doc==>internal doc
+Internal doc==>Internal doc
+internal==>internal
+Internal==>Internal
 controlled experiments==>controlled experiments
 cross-model experiments==>cross-model experiments
 Controlled experiments==>Controlled experiments
@@ -83,7 +92,7 @@ internal scoring artifact==>internal scoring artifact
 internal scoring artifact==>internal scoring artifact
 experimental work==>experimental work
 the internal test suite==>the internal test suite
-maintainer-internal references==>maintainer-internal references
+internal vault references==>internal references
 
 # ── Strategic vocabulary "moat" compound forms ──
 # Existing entries (kept):
@@ -132,7 +141,7 @@ core claim==>core claim
 Core claim==>Core claim
 
 # ── "Frame Check" → "Frame Check" (collapsing the fork distinction
-# that was a maintainer-internal staging-vs-canonical convention) ──
+# that was a internal staging-vs-canonical convention) ──
 Frame Check==>Frame Check
 
 # ── Operator infrastructure detail in shared module comments ──
@@ -146,8 +155,8 @@ the local LLM proxy==>the local LLM proxy
 local LLM proxy==>local LLM proxy
 
 # ── "the operator's research notebook" replacement targets that
-# previously substituted to "the maintainer-side notebook"; kept as
-# canonical target. Maintainer-side is allowed in the dev tree but
+# previously substituted to "the internal notebook"; kept as
+# canonical target. Internal is allowed in the dev tree but
 # stripped from public canon by the public-canon-clean construction
 # pipeline. The dev tree's canon_audit run sees these as substitution
 # TARGETS not §3c hits because the substitution map is the source of
@@ -156,7 +165,7 @@ local LLM proxy==>local LLM proxy
 # ── caller worker shape leaks in shared comparison.py ──
 # The comparison.py module ships in the wheel; its function names and
 # comments referenced the operator's web-app caller worker. Public
-# adopters do not run an caller; the references are maintainer-internal
+# adopters do not run an caller; the references are internal
 # context. Substitute the leak shape to neutral terms.
 stability_n3_check==>stability_n3_check
 _PROVIDER_GENERATORS==>_PROVIDER_GENERATORS

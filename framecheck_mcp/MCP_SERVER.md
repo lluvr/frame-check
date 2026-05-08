@@ -1136,19 +1136,14 @@ names the gap explicitly. The substrate stays construct-honest
 about its own validation status; the agent inherits the per-level
 treatment rather than over-claiming on the user's behalf.
 
-### Catalog stability and library_v4
+### Catalog stability
 
-Contract c1.0 pins the divergence catalog to `library_v3` (commit
-`9abeb3d`, ratified 2026-04-23). Library_v4 was ratified 2026-04-24
-and is the current working library; its `## Identification`
-sections are byte-equivalent to library_v3 across all 20 entries,
-so the V4.2 engine's cross-family AC1 measurements carry through.
-The pin-to-v3-by-name is a deliberate contract-stability
-commitment; a future contract minor version (c1.1) will add
-library_v4 support as an additive pin option.
+Contract c1.0 pins the divergence catalog to `library_v3`. The pin
+is a deliberate contract-stability commitment; a future contract
+minor version (c1.1) may add additional pin options.
 
-FVS-020 is excluded from divergence emission per library_v3's
-retirement-from-detection-scope decision.
+FVS-020 is excluded from divergence emission as a retirement from
+detection scope; consumers will not see it in `absent_frames`.
 
 ### Rendering modes
 

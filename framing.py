@@ -108,9 +108,8 @@ ANALYTICAL_CATEGORIES = {
         r'limited\s+(?:data|evidence|research)|insufficient\s+(?:data|evidence)|'
         r'long[- ]term\s+(?:safety|outcomes?|effects?|data|implications?)|'
         r'preliminary|inconclusive|unresolved|tentative|'
-        # Track A Signal 1 additions (2026-04-19 per SIGNAL_1_PREREG.md).
-        # Eight terms/phrases from RULE_AUDIT.md §2.8 targeting hedge
-        # and time-distance phrasing the prior regex missed on
+        # Eight additional terms/phrases targeting hedge and
+        # time-distance phrasing the prior regex missed on
         # analytical-text uncertainty framing.
         r'undemonstrated|unproven|theoretically\s+promising|'
         r'years\s+or\s+decades|no\s+credible\s+signs?|'

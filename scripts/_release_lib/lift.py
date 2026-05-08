@@ -20,7 +20,7 @@ Sequence:
      wheel. Round-trip count depends on which optional resources are
      bundled (methodology, spec/frame-divergence/v1 parts).
   8. Final inventory check: file count, no operator-path leaks, no
-     maintainer-side proxy-leaks, no audit-doc accidents bundled.
+     internal proxy-leaks, no audit-doc accidents bundled.
   9. URL surface check: every Project-URL in the wheel METADATA
      resolves publicly (HEAD returns < 400). This catches the
      2026-04-27 defect where 0.8.0 published with seven dead
@@ -142,13 +142,13 @@ def _read_pyproject_version() -> str:
 
 EXPECTED_SERVER_VERSION = _read_pyproject_version()
 
-# Maintainer-side reference patterns that must NOT appear in wheel
+# Internal reference patterns that must NOT appear in wheel
 # content. Two layers:
 #  - Shape-based artifact path patterns (generic; safe to enumerate
 #    publicly): pre-registration artifact IDs and dataset directory
 #    shapes that would proxy-leak internal naming conventions if
 #    bundled.
-#  - Specific filenames (maintainer-internal; loaded from a config file
+#  - Specific filenames (internal; loaded from a config file
 #    pointed at by FRAME_CHECK_VAULT_PATTERNS_FILE so the public source
 #    does not enumerate them per discipline §5c FM-PCD-4).
 _SHAPE_PATTERNS = [
@@ -158,7 +158,7 @@ _SHAPE_PATTERNS = [
 
 
 def _load_extra_patterns() -> list[str]:
-    """Load filename patterns from the maintainer-side config file.
+    """Load filename patterns from the internal config file.
 
     Empty list if the env var is unset or the file is missing. The
     public source intentionally does not enumerate which artifact
@@ -393,11 +393,11 @@ def main(argv: list[str] | None = None) -> int:
     if home_leaks:
         return fail(f"operator-path leaks: {home_leaks}")
     if vault_leaks:
-        return fail(f"maintainer-side proxy-leaks: {vault_leaks}")
+        return fail(f"internal proxy-leaks: {vault_leaks}")
     if audit_leaks:
         return fail(f"audit/governance docs bundled: {audit_leaks}")
     print(
-        f"  {len(files)} files, 0 leaks, 0 maintainer-side refs, "
+        f"  {len(files)} files, 0 leaks, 0 internal refs, "
         "0 audit-doc accidents"
     )
 
@@ -807,13 +807,13 @@ def main(argv: list[str] | None = None) -> int:
     #     map does not yet handle.
     #
     # Either way the lift must halt before twine upload. Replays the
-    # 0.8.x leak class (wheel shipped with maintainer-internal vocabulary
+    # 0.8.x leak class (wheel shipped with internal vocabulary
     # in source comments and adopter-facing markdown) exactly because
     # that class lacked any wheel-content canon audit at lift time.
     step(15, "Canon audit on wheel content")
     audit_script = Path.home() / ".claude/clarethium-internal/canon_audit.sh"
     if not audit_script.exists():
-        # Maintainer-side master is not installed. Soft-warn; the
+        # Internal master is not installed. Soft-warn; the
         # bdist_wheel hook is the primary defense, and the public-extract
         # path's canon audit covers the public mirror surface. The
         # gate is informational without the script.

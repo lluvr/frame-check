@@ -52,10 +52,8 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-# `scripts/_release_lib/extract.py` is upstream-only by design (it lives
-# in `EXCLUDE_PATHS` in itself; the public mirror does not ship the
-# extract logic for the same reason it does not ship `release.py` --
-# maintainer-internal references). The two tests in this file that
+# `scripts/_release_lib/extract.py` is upstream-only by design; it
+# lists itself in `EXCLUDE_PATHS`. The two tests in this file that
 # read INCLUDE_FILES / INCLUDE_DIRS gate on the file's presence so the
 # test ships and skips cleanly on the public mirror, runs upstream
 # where it can do its inventory check.

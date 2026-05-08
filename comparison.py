@@ -296,8 +296,8 @@ def generate_stability_check(topic, responses) -> tuple[dict, float]:
                 # pool. results omits this model_name (caller sees
                 # which models succeeded); total_cost_usd reflects
                 # only the regenerations that completed. Log to
-                # stderr for maintainer-side debugging without breaking
-                # the JSON-RPC channel on stdout.
+                # stderr for diagnostic logging without breaking the
+                # JSON-RPC channel on stdout.
                 import sys
                 print(
                     f"[comparison.compute_number_stability] "

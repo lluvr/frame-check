@@ -563,9 +563,10 @@ def claim_density(text):
 # Returned key "instability_rate" is the honest label (v1.4).
 # Legacy alias "fabrication_rate" removed in v1.4.
 # Cannot detect stable fabrication (consistently wrong numbers).
-# EXP-081c showed ~46% of unstable numbers coincidentally match source
-# material: parametric-memory overlap, not retrieval. Instability
-# overcounts true fabrication by approximately half.
+# Empirical observation: roughly half of unstable numbers
+# coincidentally match source material via parametric-memory overlap
+# rather than retrieval. Instability overcounts true fabrication by
+# approximately that fraction.
 # See module docstring for the under-detection discipline.
 
 def extract_numbers_for_matching(text):
@@ -700,9 +701,10 @@ def temporal_consistency(doc_text, comparison_texts):
 
     Construct: Fraction of unique numbers that appear in only SOME versions
     (instability rate). Instability is a proxy for fabrication, not a
-    direct measurement. EXP-081c showed ~46% of unstable numbers
-    coincidentally match source material (parametric-memory overlap), so
-    instability overcounts true fabrication by approximately half.
+    direct measurement. Empirical observation: roughly half of unstable
+    numbers coincidentally match source material (parametric-memory
+    overlap), so instability overcounts true fabrication by
+    approximately that fraction.
 
     See module docstring for the under-detection discipline. for the audit record.
 

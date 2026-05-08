@@ -6,17 +6,37 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-05-08
+
+### Public canon discipline: residual cleanup + audit pattern extension
+
+A fresh-eyes audit on the published 0.9.1 wheel surfaced two gap classes that the prior pattern set missed:
+
+1. **Residual internal references in shipped Python source and one adopter doc.** Comments in shared MCP modules and several test files named internal audit documents, used sanitization markers, or carried catalog-versioning narrative (commit hash, ratification dates, version-trajectory exposition). Each occurrence has been rewritten to describe the engineering reason directly. The 14-line "Catalog stability and library_v4" block in `docs/MCP_SERVER.md` was rewritten to a 3-line statement: contract pin, future minor-version pin-option path, FVS-020 retirement from detection scope.
+
+2. **Substitution-map shape was wrong.** `scripts/_release_lib/canon_replacements.txt` swapped one sanitization marker for another rather than removing it. Per FM-PCD-2 of the canon discipline, a sanitization marker is itself a leak: the marker reveals an internal counterpart exists. The fix is construction-not-redaction: rewrite each occurrence in the source to be context-neutral, do not swap one marker for another. The map now collapses both forms to a neutral term as a tripwire; the source rewrites are the load-bearing fix.
+
+### Audit pattern coverage extended
+
+`canon_audit.sh` PRIVATE_FILES and RIGID families were extended to catch the audit-document filename shapes, sanitization markers, and ratification-narrative phrasing that slipped through. The audit run on a fresh extract now catches what the prior pattern set missed.
+
+### Note on prior versions
+
+- 0.8.0-0.8.11 and 0.9.0 were deleted from PyPI (not yanked). The version numbers are burned forever. Pinned installs to those versions fail to resolve (404 from the simple-index). Adopters who pinned to a deleted version must upgrade to 0.9.2.
+- 0.9.1 remains on PyPI but is superseded by 0.9.2 and may be deleted following the same policy. Pin `>=0.9.2`.
+- The 0.9.1 CHANGELOG section below carries a now-inaccurate narrative because the deletion happened after 0.9.1 shipped. The wheel content is immutable; this entry supersedes that narrative.
+
 ## [0.9.1] - 2026-05-08
 
 ### Public canon discipline: comprehensive cleanup
 
-This release replaces 0.9.0 (which itself superseded the 0.8.x line) as the first wheel that ships construction-clean public canon: documentation, frame catalog, source-comments, and tests have been authored for the adopter audience rather than redacted from maintainer-internal sources. 0.9.0 was yanked because it still carried operator-research vocabulary in shipped FVS cards and worked-example narrative.
+This release replaces 0.9.0 (which itself superseded the 0.8.x line) as the first wheel that ships construction-clean public canon: documentation, frame catalog, source-comments, and tests have been authored for the adopter audience rather than redacted from internal sources. 0.9.0 was yanked because it still carried operator-research vocabulary in shipped FVS cards and worked-example narrative.
 
 ### Catalog: per-card cleanup
 
 - `data/frame_library/INDEX.md` is rewritten as an adopter-facing data table: the 20 entries with their class, detection state, status, and curation date, plus column semantics. The earlier file additionally carried canon-trajectory rationale and library-version landscape exposition that was not adopter-facing.
 - Per-card `## Cross-family reliability` and `## Vocabulary connections` sections are stripped from the public extract. The numerical reliability values continue to ship live in MCP responses (`library_consensus_ac1` field on each frame match); the per-card prose carrying the operator-research version trajectory does not.
-- Worked-example markdowns (`data/worked_examples/*.md`) had maintainer-internal "Note on detection state" blockquotes scrubbed; the adopter-facing teaching points remain.
+- Worked-example markdowns (`data/worked_examples/*.md`) had internal "Note on detection state" blockquotes scrubbed; the adopter-facing teaching points remain.
 
 ### Wheel: scope unchanged from 0.9.0
 
@@ -42,11 +62,11 @@ The wheel bundles the MCP server contract (`docs/MCP_SERVER.md`), the Frame Dive
 
 ### Note on prior versions
 
-- The 0.8.x line and 0.9.0 are yanked from PyPI. They shipped working code but bundled documentation and per-card content that mixed adopter-facing prose with maintainer-side vocabulary. 0.9.1 is the first construction-clean release. Existing pinned installs continue to work; new installs should pin to `>=0.9.1`.
+- The 0.8.x line and 0.9.0 are yanked from PyPI. They shipped working code but bundled documentation and per-card content that mixed adopter-facing prose with internal vocabulary. 0.9.1 is the first construction-clean release. Existing pinned installs continue to work; new installs should pin to `>=0.9.1`.
 
 ## [0.9.0] - 2026-05-08
 
-Yanked from PyPI; superseded by 0.9.1. The release renamed the public repository (`Clarethium/frame-check-mcp` → `Clarethium/frame-check`) and tightened the wheel-bundle scope, but per-card content in the FVS catalog and worked-example markdowns still carried maintainer-side vocabulary. Adopters who pinned to 0.9.0 should upgrade to 0.9.1.
+Yanked from PyPI; superseded by 0.9.1. The release renamed the public repository (`Clarethium/frame-check-mcp` → `Clarethium/frame-check`) and tightened the wheel-bundle scope, but per-card content in the FVS catalog and worked-example markdowns still carried internal vocabulary. Adopters who pinned to 0.9.0 should upgrade to 0.9.1.
 
 ## [0.8.10] - 2026-05-07
 
