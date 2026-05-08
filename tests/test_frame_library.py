@@ -182,10 +182,9 @@ class TestCompletenessIllusion:
 class TestFrameAmplificationRetired:
     """FVS-001 Frame Amplification v1 detection rule retired 2026-04-18.
 
-    Retirement rationale: METHODOLOGY.md §2.4.1 and
-    fvs_eval/validation_study/RULE_AUDIT.md §2.1. The v1 signal substrate
-    cannot distinguish FVS-001 target cases from similarly-shaped non-
-    cases. The sentinel below asserts the rule does NOT fire on the
+    Retirement rationale: the v1 signal substrate cannot distinguish
+    FVS-001 target cases from similarly-shaped non-cases. The
+    sentinel below asserts the rule does NOT fire on the
     canonical v1 trigger input (high single-dimension density + three
     missing categories). Unintentional resurrection of the rule would
     fail this test.
@@ -589,11 +588,10 @@ political backlash that constrains adoption.
 
         Historical note: the v1 rule fired on this text via the high
         density + missing categories signature. That firing was the
-        exact false-positive pattern documented in
-        fvs_eval/validation_study/RULE_AUDIT.md §2.1 and addressed by
-        the 2026-04-18 retirement: vocabulary concentration is not the
-        same signal as within-session sophistication growth (the frame's
-        actual definition per FVS-001 entry).
+        false-positive pattern that the 2026-04-18 retirement
+        addressed: vocabulary concentration is not the same signal as
+        within-session sophistication growth (the frame's actual
+        definition per FVS-001 entry).
 
         With the rule retired, no frame in the current v1 rule set fires
         on this text. That is consistent with the retirement rationale

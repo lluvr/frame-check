@@ -11,7 +11,7 @@ This is the research-grade calibration work named in
 `REFINEMENT_AUDIT.md:113-137` as the single most valuable next move
 after construct honesty: "Source Network has zero validation against
 an external corpus. clarethium_measure has the 171-test suite plus
-the EXP-094 corpus run. Source Network has neither."
+the hard-topics corpus run. Source Network has neither."
 
 ## Contents
 
@@ -30,11 +30,6 @@ the EXP-094 corpus run. Source Network has neither."
   decomposition of non-matches.
 
 ## Relationship to other calibration artifacts
-
-CALIBRATION_SET.md (repo root) is a **bug-exposure test spec**:
-claims designed to trigger specific pipeline failures (format
-sensitivity, scale ambiguity, known bugs). It is read by humans and
-run manually.
 
 `source_network_corpus.yaml` (this directory) is a **precision/recall
 test set**: claims designed to exercise each verifier on its own

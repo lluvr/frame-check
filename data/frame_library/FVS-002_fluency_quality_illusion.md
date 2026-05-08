@@ -4,8 +4,6 @@
 **Version:** 1
 **Curator:** Lovro Lucic
 **Curated:** 2026-04-12
-**Source:** HI-012 (Fluency-Quality Illusion), EXP-073 (100% LLM agreement at 38% human agreement), M-002 (The 60-Second Pause)
-**Status:** v1, single-curator, reviewers wanted
 
 ## Identification
 
@@ -25,13 +23,13 @@ Both humans and LLMs treat fluency as a proxy for quality. Smooth delivery, conf
 
 **Negative examples:** A rough draft with incomplete sentences and obvious gaps does NOT exhibit the fluency-quality illusion because its lack of polish triggers scrutiny. The illusion specifically requires polish to suppress the scrutiny reflex.
 
-**Adjacent frames:** Frame Amplification (FVS-001, fluency makes amplified content feel more trustworthy), Prompt Attribution Error (FVS-003, users attribute quality to the model when the system prompt produced the fluency; FVS-003 withdrawn per INDEX.md "v1 publication state"), The First Read (M-002, the somatic mechanism by which fluency bypasses conscious evaluation), Failure Framing (FVS-007, the antidote: specific failure criteria expose where fluent prose substitutes for evaluative depth; failure framing's absence permits fluency-quality illusion to operate unchallenged), Completeness Illusion (FVS-010, one form of fluency-quality illusion in which fluent breadth substitutes for evaluative depth; completeness illusion uses fluency to perform analytical thoroughness), Oracle Frame (FVS-013, the reader posture that accepts fluent output as authoritative; fluency-quality illusion supplies the surface signal, oracle mode supplies the reader stance that doesn't challenge it), Authority by Citation (FVS-016, citation form is part of the fluency that creates the illusion; named-source presentation amplifies fluency-induced trust)
+**Adjacent frames:** Frame Amplification (FVS-001, fluency makes amplified content feel more trustworthy), Prompt Attribution Error (FVS-003, users attribute quality to the model when the system prompt produced the fluency; FVS-003 withdrawn per INDEX.md "v1 publication state"), The First Read, Failure Framing (FVS-007, the antidote: specific failure criteria expose where fluent prose substitutes for evaluative depth; failure framing's absence permits fluency-quality illusion to operate unchallenged), Completeness Illusion (FVS-010, one form of fluency-quality illusion in which fluent breadth substitutes for evaluative depth; completeness illusion uses fluency to perform analytical thoroughness), Oracle Frame (FVS-013, the reader posture that accepts fluent output as authoritative; fluency-quality illusion supplies the surface signal, oracle mode supplies the reader stance that doesn't challenge it), Authority by Citation (FVS-016, citation form is part of the fluency that creates the illusion; named-source presentation amplifies fluency-induced trust)
 
 **When this frame is appropriate:** Any evaluation of AI-generated content where the evaluator did not produce the content themselves. Reading AI-generated reports, summaries, analyses, emails, code documentation. Any context where the reader might accept output based on how it reads rather than what it says.
 
 **When this frame is misleading:** When the content is genuinely high quality AND fluent. Not all fluent content is wrong. The illusion is that fluency is used as EVIDENCE of quality rather than as an independent property. A fluent document that is also accurate is not exhibiting the illusion. The frame is diagnostic of the evaluation process, not the content.
 
-**Honest limits:** The claim that fluency causally suppresses scrutiny is supported by the processing fluency literature (Alter and Oppenheimer 2009, Reber and Schwarz 1999) but has not been tested specifically in AI evaluation contexts with controlled experiments. EXP-073's finding (100% LLM agreement at 38% human agreement on quality judgments) suggests LLM evaluators are especially vulnerable to fluency but the human evaluator in that study was N=1. The RLHF amplification claim is structurally argued, not empirically demonstrated for this specific mechanism.
+**Honest limits:** The claim that fluency causally suppresses scrutiny is supported by the processing fluency literature (Alter and Oppenheimer 2009, Reber and Schwarz 1999) but has not been tested specifically in AI evaluation contexts with controlled experiments. 's finding (100% LLM agreement at 38% human agreement on quality judgments) suggests LLM evaluators are especially vulnerable to fluency but the human evaluator in that study was N=1. The RLHF amplification claim is structurally argued, not empirically demonstrated for this specific mechanism.
 
 ## Decision-readiness implication
 
@@ -66,41 +64,3 @@ This entry describes how readers (human or LLM) evaluate documents, not a proper
 **Primary branch:** Both A and B
 **Branch A:** Detected when a document scores high on presentation metrics (voice: promotional or advisory, low epistemic sourcing, high assertion density) relative to substantive metrics (claims unverified, few citations, high hedging-to-evidence ratio). The gap between how the document reads and what it actually says is the fluency-quality signal.
 **Branch B:** In the pre-commit intervention, the fluency-quality illusion is what makes the user accept AI's frame without examination. The write-first step forces the user to articulate their own (less fluent) version, which creates a comparison point where the fluency gap becomes visible.
-
-## Vocabulary connections
-
-- **The first read** (M-002, CLARETHIUM_VOCABULARY): the somatic mechanism. The body reads the fluency before the conscious mind evaluates the content. The first read is the delivery mechanism for the fluency-quality illusion.
-- **The construction trace** (T-356, CLARETHIUM_VOCABULARY): without having generated your own version, evaluation collapses to surface features. The fluency-quality illusion exploits this collapse.
-- **Source conditioning** (T-351, CLARETHIUM_VOCABULARY): the antidote. Providing source material forces the output to ground in real data, which reduces the space available for unsupported fluency.
-
-## Cross-family reliability
-
-
-**Engine-canonical reading (library_v4 ratified 2026-04-24).** library_v4 Identification sections are byte-equivalent to library_v3 per fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md. The V4.2 engine reads only the Identification section per `v4_2_engine.py::_extract_identification`, so cross-family AC1 on library_v4 equals cross-family AC1 on library_v3 by judge-visible byte-equivalence. The library_v3 row in the 'Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence)' subsection above carries the engine-canonical reliability values for this frame. The 'V4.2 NEW panel measurement against library_current' subsection below documents the working-library measurement immediately prior to ratification, retained as historical pre-ratification context.
-
-**Engine-emit disclosure.** `library_consensus_ac1` = **0.350** (tier: **weak**), per fvs_eval/v4/library_v4_reliability.json. Per-corpus reproducible values (regen: fvs_eval/v4/compute_per_corpus_reliability.py; artifact: fvs_eval/v4/library_v4_per_corpus_reliability.json): MG_v3=0.527 (clean library_v4 via Identification byte-equivalence), MG2_v4=0.373 (3-family partial; Anthropic queued). Historical: MG2_v1=0.231 (library_v1), MG2_v2=0.119 (library_v2). Note: ac1_avg is NOT reproducible from these via simple or weighted averaging per fvs_eval/v4_2/RELIABILITY_ARTIFACT_REPRODUCIBILITY_AUDIT_v1.md; rebuild queued for library_v5.
-
-**Intra-rater stability (Grok 4.1 fast).** `detector_intra_rater_ac1` = **0.891** across n=41 docs at temp=0 (3 verdict flip(s); per fvs_eval/v4/grok_intra_rater_ac1.json). Measures single-family consistency, independent of cross-family AC1: low cross-family + high intra-rater is possible (and common).
-
-**Construct-validity caveat.** `library_consensus_ac1` measures cross-family LLM agreement, NOT agreement with human reader labels. Per [METHODOLOGY.md](https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md) section 1.3, V1 detector macro-F1 against human labelers was 0.157 (chance-level, n=12); library_v4 LLM-judge has not been re-validated against humans. Read AC1 as inter-LLM consensus proxy, not human-validated reliability.
-
-### Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence) and earlier variants
-
-- **library_v3 (Step-4 ratified variant, commit `9abeb3d` 2026-04-18):** Gwet's AC1 0.527, kappa 0.366, union 8/15. Under library_v4 ratification (2026-04-24), library_v3's Identification text is the engine-canonical Identification per byte-equivalence; library_v3's cross-family numbers are therefore the engine's reliability claim under library_v4. AC1 delta (library_current historical − library_v3 engine-canonical): -0.22.
-- **library_v2 (earlier variant):** Gwet's AC1 0.457, kappa 0.173, union 8/15.
-
-See fvs_eval/v4_2/LIBRARY_CROSS_FAMILY_BASELINE_v1.md §3 for library-wide tier context and fvs_eval/v4_2/CONSTRUCT_VALIDITY_AUDIT_v1.md §3 for reasoning-coherence profile.
-
-### V4.2 NEW panel measurement against library_current (2026-04-24, historical pre-ratification)
-
-V4.2 NEW panel (2026-04-24 measurement): Claude Haiku 4.5, Gemini 3.1 flash lite, Grok 4.1 fast (V4.2 canonical), GPT-5.4 mini. Corpus: fvs_eval/mixed_genre_v1 n=15. Library reference: the working library state at `data/frame_library/` immediately prior to library_v4 ratification (2026-04-24). This subsection's numbers are historical pre-ratification context. Engine-canonical numbers under library_v4 are in the 'Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence) and earlier variants' subsection above (library_v3 row), per the byte-equivalence statement at the top of this Cross-family section.
-
-| Metric | Value |
-|---|---|
-| Gwet's AC1 (pairwise mean) | 0.303 |
-| Cohen's kappa (pairwise mean) | 0.042 |
-| Raw agreement (pairwise mean) | 0.589 |
-| Union prevalence | 11/15 = 73% |
-| Intersection (all 4 agree positive) | 0/15 |
-
-Per-family positives (of 15 docs): Claude 8, Gemini 3, Grok 0, GPT 6.

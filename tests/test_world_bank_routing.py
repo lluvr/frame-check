@@ -12,6 +12,8 @@ first. These tests lock in that ordering so a future refactor
 cannot silently regress the calibration finding.
 """
 
+import pytest
+
 from source_network import _detect_wb_indicator
 
 

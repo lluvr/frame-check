@@ -29,10 +29,9 @@ source_network.py transitively (because comparison.analyze_model
 imports it at module load) but neither MCP tool entry point reaches
 that code; the bundling is dead-import weight, not runtime leakage.
 
-When `verification_handoff` lands per the architectural reframe
-(FRAME_DIVERGENCE_CONTRACT_v1 c1.0 -> c1.1 minor bump per the
-2026-04-30 cross-agent stress test), the new top-level field
-carries candidate provider hints for the agent to fetch from --
+When `verification_handoff` lands (FRAME_DIVERGENCE_CONTRACT_v1
+c1.0 -> c1.1 minor bump), the new top-level field carries
+candidate provider hints for the agent to fetch from --
 but the SERVER does NOT fetch; the agent does. So this test also
 covers verification_handoff after Phase 1 lands without
 modification.

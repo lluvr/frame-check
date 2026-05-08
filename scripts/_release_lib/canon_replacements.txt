@@ -1,35 +1,74 @@
+# Canon replacements: literal before==>after substitutions applied
+# during public extract (extract.py phase 6) and during wheel build
+# (setup.py:_CanonSubstitutedBdistWheel).
+#
+# Discipline:
+#   - The substitution TARGET must itself be canon-clean. A target that
+#     contains §3c-flagged vocabulary is a leak laundered through the
+#     pipeline (FM-PCD-2). Do not introduce one leak to fix another.
+#   - For strategic vocabulary that requires paragraph rewriting (e.g.,
+#     "the moat is broken when LLM augmentation lands"), the substitute
+#     drops the metaphor and leaves prose that may need manual rewrite.
+#     Safer than producing fluent-but-misleading public canon.
+#   - Substitution is case-sensitive. List both upper and lower variants
+#     when both occur in dev tree.
+#   - Some leaks (maintainer-internal doc filename references, F-NNNN-NNN
+#     IDs, web-app module names in comments) are NOT included here.
+#     Mechanical substitution of those classes produces incoherent prose;
+#     they belong in manual rewrite passes.
+
+# ── Canon vocabulary (construct-honesty compound forms) ──
+# The §3c PAT_RIGID flags `construct[- ]honesty discipline` only. The
+# other compound forms (posture, defect, audit, surfacing, principle,
+# alignment, machinery, stance, tax) carry the same maintainer-side
+# vocabulary load and need the same substitution.
 evidence discipline==>evidence discipline
 Evidence discipline==>Evidence discipline
 evidence discipline==>evidence discipline
 Evidence discipline==>Evidence discipline
+evidence posture==>evidence posture
+Evidence posture==>Evidence posture
+evidence defect==>evidence defect
+Evidence defect==>Evidence defect
+evidence audit==>evidence audit
+Evidence audit==>Evidence audit
+evidence surfacing==>evidence surfacing
+Evidence surfacing==>Evidence surfacing
+evidence principle==>evidence principle
+Evidence principle==>Evidence principle
+evidence alignment==>evidence alignment
+Evidence alignment==>Evidence alignment
+evidence machinery==>evidence machinery
+Evidence machinery==>Evidence machinery
+evidence stance==>evidence stance
+Evidence stance==>Evidence stance
+evidence tax==>evidence tax
+Evidence tax==>Evidence tax
+
+# ── Maintainer-side / maintainer-internal ──
 maintainer-side==>maintainer-side
 Maintainer-side==>Maintainer-side
 maintainer-internal==>maintainer-internal
 Maintainer-internal==>Maintainer-internal
+
+# ── Operator-managed config files phrase (used in requirements.txt
+# style comments). The phrase reveals ownership/authority; rewrite as
+# describing the files themselves rather than the operator role.
+the configuration files==>the configuration files
+
+# ── Operator's [X] noun phrases ──
 the validation baseline corpus==>the validation baseline corpus
 The validation baseline corpus==>The validation baseline corpus
 the maintainer-side notebook==>the maintainer-side notebook
 The maintainer-side notebook==>The maintainer-side notebook
+
+# ── Vault-as-architecture compound forms ──
 upstream development tree==>upstream development tree
 Upstream development tree==>Upstream development tree
 maintainer-side doc==>maintainer-side doc
 Maintainer-side doc==>Maintainer-side doc
 maintainer-side==>maintainer-side
 Maintainer-side==>Maintainer-side
-Frame Check==>Frame Check
-publication-quality claim==>publication-quality claim
-Publication-quality claim==>Publication-quality claim
-publication-quality==>publication-quality
-Publication-quality==>Publication-quality
-core claim==>core claim
-Core claim==>Core claim
-named-authorship curation==>named-authorship curation
-Named-authorship curation==>Named-authorship curation
-data depth==>data depth
-Data depth==>Data depth
-trust depth==>trust depth
-Trust depth==>Trust depth
-longitudinal data depth==>longitudinal data depth
 controlled experiments==>controlled experiments
 cross-model experiments==>cross-model experiments
 Controlled experiments==>Controlled experiments
@@ -38,8 +77,91 @@ cross-model experiments==>cross-model experiments
 from controlled experiments (Claude==>from controlled experiments (Claude
 Cross-model default-profile observations from controlled experiments==>Cross-model default-profile observations from controlled experiments
 directional from controlled experiments==>directional from controlled experiments
-EXP-096 internal artifact==>EXP-096 internal artifact
+internal scoring artifact==>internal scoring artifact
+internal scoring artifact==>internal scoring artifact
+internal scoring artifact==>internal scoring artifact
 internal scoring artifact==>internal scoring artifact
 experimental work==>experimental work
 the internal test suite==>the internal test suite
 maintainer-internal references==>maintainer-internal references
+
+# ── Strategic vocabulary "moat" compound forms ──
+# Existing entries (kept):
+named-authorship curation==>named-authorship curation
+Named-authorship curation==>Named-authorship curation
+data depth==>data depth
+Data depth==>Data depth
+trust depth==>trust depth
+Trust depth==>Trust depth
+longitudinal data depth==>longitudinal data depth
+# Extended entries (added 2026-05-08):
+zero-LLM-cost layer==>zero-LLM-cost layer
+Zero-LLM-cost layer==>Zero-LLM-cost layer
+the zero-LLM-cost layer==>the zero-LLM-cost layer
+The zero-LLM-cost layer==>The zero-LLM-cost layer
+production reliability==>production reliability
+Production reliability==>Production reliability
+hosting reliability==>hosting reliability
+Hosting reliability==>Hosting reliability
+publication discipline==>publication discipline
+Publication discipline==>Publication discipline
+adoption durability==>adoption durability
+Adoption durability==>Adoption durability
+core layer==>core layer
+Core layer==>Core layer
+methodology-as-canon==>methodology-as-canon
+Methodology-as-canon==>Methodology-as-canon
+
+# ── Strategic "the bet" / "the project's canon" ──
+# These are paragraph-level metaphors. Mechanical substitution drops the
+# metaphor; surrounding sentences may read awkwardly and need manual
+# rewriting. Better than letting the leak through.
+the project's canon==>the project's canon
+The project's canon==>The project's canon
+publication-quality==>publication-quality
+Publication-quality==>Publication-quality
+org-wide==>org-wide
+Org-wide==>Org-wide
+
+# ── Compounding-claim vocabulary ──
+publication-quality claim==>publication-quality claim
+Publication-quality claim==>Publication-quality claim
+publication-quality==>publication-quality
+Publication-quality==>Publication-quality
+core claim==>core claim
+Core claim==>Core claim
+
+# ── "Frame Check" → "Frame Check" (collapsing the fork distinction
+# that was a maintainer-internal staging-vs-canonical convention) ──
+Frame Check==>Frame Check
+
+# ── Operator infrastructure detail in shared module comments ──
+# "local LLM proxy" → public-readable
+# description that doesn't expose the maintainer's local dev architecture.
+local LLM proxy==>local LLM proxy
+the local LLM proxy==>the local LLM proxy
+local proxy isolation class==>local proxy isolation class
+local proxy isolation==>local proxy isolation
+the local LLM proxy==>the local LLM proxy
+local LLM proxy==>local LLM proxy
+
+# ── "the operator's research notebook" replacement targets that
+# previously substituted to "the maintainer-side notebook"; kept as
+# canonical target. Maintainer-side is allowed in the dev tree but
+# stripped from public canon by the public-canon-clean construction
+# pipeline. The dev tree's canon_audit run sees these as substitution
+# TARGETS not §3c hits because the substitution map is the source of
+# truth for what's allowed post-substitution.
+
+# ── caller worker shape leaks in shared comparison.py ──
+# The comparison.py module ships in the wheel; its function names and
+# comments referenced the operator's web-app caller worker. Public
+# adopters do not run an caller; the references are maintainer-internal
+# context. Substitute the leak shape to neutral terms.
+stability_n3_check==>stability_n3_check
+_PROVIDER_GENERATORS==>_PROVIDER_GENERATORS
+caller cycle==>caller cycle
+caller's claim_index==>caller's claim_index
+the caller needs==>the caller needs
+the caller==>the caller
+caller==>caller

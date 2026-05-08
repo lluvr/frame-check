@@ -122,10 +122,9 @@ ANALYTICAL_CATEGORIES = {
 
 # Hand-curated representative samples of each category's vocabulary,
 # surfaced to MCP v2 consumers so the detector's lens is visible in
-# the response (see MCP_CONTRACT_V2_PROPOSAL.md §3.3). Keep these in
-# sync with ANALYTICAL_CATEGORIES regexes; they are samples, not
-# exhaustive lists. vocabulary_source field in the MCP v2 response
-# points agents to the full regex.
+# the response. Keep these in sync with ANALYTICAL_CATEGORIES regexes;
+# they are samples, not exhaustive lists. The vocabulary_source field
+# in the MCP v2 response points agents to the full regex.
 ANALYTICAL_VOCAB_SAMPLES = {
     "causes": [
         "because", "due to", "driven by", "caused by", "as a result",
@@ -274,8 +273,8 @@ def _list_substantive_matches(text, pattern, apply_diminisher=False):
          - Catches "no risks" without catching "no doubt that risks"
 
     The returned list preserves match order for reproducibility; consumers
-    needing deduplication should apply it downstream. Added in support of
-    MCP contract v2's markers_matched field (MCP_CONTRACT_V2_PROPOSAL.md).
+    needing deduplication should apply it downstream. Backs the
+    MCP contract v2 markers_matched field.
     """
     if not apply_diminisher:
         return [_normalize_marker(m.group(0)) for m in pattern.finditer(text)]
@@ -400,9 +399,9 @@ def _list_substantive_spans(text, pattern, apply_diminisher=False):
 # this sentence looks adjacent to the dimension; reader judgement on
 # whether the document substantively covers it."
 #
-# Derived from VISITOR_AUDIT's semiconductor essay failure case: the
-# primary causes-regex missed "rationale centers on," "given," and
-# implicit causal reasoning. Candidate patterns target those specific
+# Derived from a semiconductor-essay failure case where the primary
+# causes-regex missed "rationale centers on," "given," and implicit
+# causal reasoning. Candidate patterns target those specific
 # structural hints. Kept conservative; false positives on candidate
 # patterns are a tolerable cost because they are surfaced with an
 # explicit "possibly missed" caveat, not as detections.
@@ -429,13 +428,11 @@ CANDIDATE_PATTERNS = {
         # impacted) or a named stakeholder category (the public,
         # members of a group, individuals-who-do-X).
         #
-        # R2 refinement (2026-04-21, per fvs_eval/CORRESPONDENCE_STUDY_v1.md
-        # §3.R2): exclude adjectival "the public <noun>" forms (the
-        # public web, the public sector, etc.) which are rhetorical
-        # rather than stakeholder-referring. Verified against the
-        # 48-sentence candidate corpus in fvs_eval/verify_refinements.py;
-        # removes 1 false positive (a34240c8e4) while preserving
-        # genuine stakeholder uses.
+        # R2 refinement: exclude adjectival "the public <noun>" forms
+        # (the public web, the public sector, etc.) which are
+        # rhetorical rather than stakeholder-referring. Verified
+        # against a 48-sentence candidate corpus; removes 1 false
+        # positive while preserving genuine stakeholder uses.
         r'\b(people\s+who|groups\s+(?:who|affected)|'
         r'those\s+(?:who|affected|involved|impacted)|'
         r'anyone\s+who|'
@@ -453,15 +450,13 @@ CANDIDATE_PATTERNS = {
         re.IGNORECASE
     ),
     "uncertainty": re.compile(
-        # R1 refinement (2026-04-21, per
-        # fvs_eval/CORRESPONDENCE_STUDY_v1.md §3.R1): exclude rhetorical
-        # "perhaps the [superlative]" constructions (perhaps the most, a
-        # defining, the best). These are stylistic flourishes rather
-        # than epistemic hedges and inflated the uncertainty candidate
-        # rate on the validation corpus (6 of 9 perhaps-triggered rows
-        # were rhetorical). Verified against the 48-sentence candidate
-        # corpus in fvs_eval/verify_refinements.py; removes 3 false
-        # positives while preserving all 3 genuine hedge uses.
+        # R1 refinement: exclude rhetorical "perhaps the [superlative]"
+        # constructions (perhaps the most, a defining, the best). These
+        # are stylistic flourishes rather than epistemic hedges and
+        # inflated the uncertainty candidate rate on the validation
+        # corpus (6 of 9 perhaps-triggered rows were rhetorical).
+        # Verified against a 48-sentence candidate corpus; removes 3
+        # false positives while preserving all 3 genuine hedge uses.
         r'\b(might\s+(?:be|have)|'
         r'perhaps(?!\s+(?:the|a|an)\s+(?:most|least|best|worst|first|'
         r'last|defining|leading|dominant|primary|central|key|main|chief|'
@@ -1322,9 +1317,8 @@ def _is_sourced(sentence):
 # Diagnostic motivating this: arxiv academic papers in the validation corpus
 # (a08_arxiv_gpt3.txt, a09_arxiv_foundation_models.txt) register
 # sourced_pct = 10% and 14% respectively, when a reader would plainly
-# identify them as heavily-sourced. The primary regex misses the attribution
-# styles those documents use. See DETECTION_RULE_AUDIT §5.2 and
-# VISITOR_AUDIT Failure 3.
+# identify them as heavily-sourced. The primary regex misses the
+# attribution styles those documents use.
 #
 # Conservative by design. False positives on candidate patterns are
 # acceptable because each candidate is surfaced with an explicit caveat
@@ -1394,11 +1388,10 @@ def detect_epistemic_basis(text, include_candidates=False):
         caveat and a sample of the candidate pattern that matched.
         Deduplicated by sentence; capped at 20 per document.
 
-    Construct-honest posture: with include_candidates=True, callers can
+    Under-detection posture: with include_candidates=True, callers can
     report both the primary sourced_pct AND a candidate_miss_count so
     the honest signal is "primary detector found N, candidate patterns
-    surface M more the reader should inspect." See METHODOLOGY §1.3
-    and VISITOR_AUDIT Failure 3.
+    surface M more the reader should inspect."
     """
     raw = split_sentences(text)
     sentences = [s for _, s, _ in raw]
@@ -1446,15 +1439,13 @@ def detect_epistemic_basis(text, include_candidates=False):
             m = EPISTEMIC_CANDIDATE_ATTRIBUTION.search(sent)
             if m is None:
                 continue
-            # R3 refinement (2026-04-21, per
-            # fvs_eval/CORRESPONDENCE_STUDY_v1.md §3.R3): exclude
-            # sentences whose only bracket-citation match is a leading
-            # [N] (footnote body). These are not citing sentences; they
-            # are the footnote content itself. On PG-essay-style
-            # corpora, 5 of 32 candidate-attribution rows were footnote
-            # bodies. Sentences starting with [N] that contain another
-            # bracket citation later in the sentence are kept. Verified
-            # against the 48-sentence corpus in verify_refinements.py.
+            # R3 refinement: exclude sentences whose only bracket-
+            # citation match is a leading [N] (footnote body). These
+            # are not citing sentences; they are the footnote content
+            # itself. On PG-essay-style corpora, 5 of 32 candidate-
+            # attribution rows were footnote bodies. Sentences starting
+            # with [N] that contain another bracket citation later in
+            # the sentence are kept.
             stripped = sent.lstrip()
             prefix_match = re.match(r'\[\d{1,3}\]', stripped)
             if prefix_match:
@@ -1589,11 +1580,9 @@ def framing_portrait(coverage, temporal, voice, epistemic, claim_stats,
         )
     else:
         # Analytical is the cascade residual: no prescriptive, promotional,
-        # descriptive, or advisory markers fired. Per METHODOLOGY §1.3.1
-        # and fvs_eval/CONSTRUCT_HONESTY_AUDIT_v1.md (2026-04-21, L3a),
-        # report this as evidence-absence rather than existential
-        # ("Analytical document examining..."), matching Fix A discipline
-        # applied to coverage.
+        # descriptive, or advisory markers fired. Report this as
+        # evidence-absence rather than existential ("Analytical document
+        # examining..."), matching the same discipline applied to coverage.
         parts.append(
             "No directive, promotional, or descriptive voice markers "
             "detected; narration is third-person by default (residual "
@@ -1834,10 +1823,9 @@ def framing_portrait_natural(coverage, temporal, voice, epistemic, claim_stats,
 
     Any change to a clinical part should be mirrored here with the
     same content scope. The two versions must describe the same
-    measurements; only the register differs. Divergence would be a
-    construct-honesty defect. See METHODOLOGY §1.3.1 and
-    fvs_eval/CONSTRUCT_HONESTY_AUDIT_v1.md for the cascade-classifier
-    vocabulary the clinical version encodes precisely.
+    measurements; only the register differs. Divergence between the two
+    surfaces would be a evidence defect; the clinical version
+    encodes the same cascade-classifier vocabulary as the prose version.
     """
     parts = []
     n = voice.get("total_sentences", 0)
@@ -2134,8 +2122,9 @@ def framing_summary(coverage, temporal, claim_stats):
     # not a time-anchor and summarizing it as such misleads downstream
     # consumers. The main template at templates/results.html handles
     # this correctly; summary was the one legacy surface that did not.
-    # Closes the §5.2 "framing_summary temporal leak" flagged in
-    # fvs_eval/CONSTRUCT_HONESTY_AUDIT_v1.md.
+    # Avoids the "framing_summary temporal leak": when no tense
+    # dominates, name the balance rather than synthesizing a
+    # dominant-tense narrative.
     if temporal.get("balanced"):
         parts.append(
             f"Temporal orientation: balanced (no tense dominates; "

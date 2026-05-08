@@ -4,17 +4,12 @@ Shared parsers for the Frame Library canonical index.
 INDEX.md at data/frame_library/INDEX.md and VERSION at
 data/frame_library/VERSION are the source of truth for per-entry
 status (canon / draft / aspirational / retired) and for the library's
-SemVer. Multiple modules need to consume these:
+SemVer.
 
-  - build_corpus_site.py: rendered entry citation blocks carry the
-    status and library version so citers see the stability guarantee.
-  - mcp_server.py: MCP responses decorate frame_library_matches with
-    status and carry the library version in provenance.
-
-Before this module existed, both consumers carried their own parsers
-with the same regex. Any format drift in INDEX.md (column reorder,
-added column, prefix change) would quietly desync the two copies.
-This module is the one place the format is understood.
+mcp_server.py decorates frame_library_matches with status and carries
+the library version in provenance. This module is the one place the
+INDEX.md format is understood, so any consumer that needs status or
+version reads through here.
 
 Responsibilities:
   read_library_version() -> str
@@ -33,11 +28,11 @@ import re
 from pathlib import Path
 
 # Resolve the library directory relative to this module so consumers
-# do not need to pass it. In a fresh repo clone, callers
-# (build_corpus_site, mcp_server) live at the repo root alongside
-# this module and the data/frame_library/ tree. In a pip-installed
-# wheel, the package data is bundled under a `framecheck_mcp/`
-# directory next to this module. Probe for the populated package
+# do not need to pass it. In a fresh repo clone, mcp_server.py lives
+# at the repo root alongside this module and the data/frame_library/
+# tree. In a pip-installed wheel, the package data is bundled under
+# a `framecheck_mcp/` directory next to this module. Probe for the
+# populated package
 # data subtree first; fall back to repo-layout if not found. Probing
 # for the populated subtree (not just the package directory) handles
 # the dev case where `framecheck_mcp/` exists with only __init__.py
@@ -139,12 +134,6 @@ def parse_detection_states() -> dict[str, str]:
       - ``retired``: rule previously wired, retired after validation
                      (FVS-001, FVS-008, FVS-015 as of 2026-04-18;
                      library version bumped to signal the state change)
-
-    Downstream: build_corpus_site renders a "detection rule retired"
-    notice on library HTML entries whose state is ``retired``, so a
-    reader of FVS-001.html sees the status without having to cross-
-    reference INDEX.md or the methodology paper. The v1 external
-    validation study findings are in `fvs_eval/validation_study/REPORT.md`.
 
     Returns a {FVS-XXX: state} map lowercased for consistent key
     comparison. Missing INDEX.md, unreadable file, or empty index

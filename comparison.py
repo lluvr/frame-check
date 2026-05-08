@@ -17,6 +17,7 @@ zero-cost cross-model verification.
 import concurrent.futures
 import os
 import re
+import time
 
 from clarethium_measure import measure
 from claim_analysis import analyze_claims
@@ -68,13 +69,14 @@ def _render_generation_prompt(topic: str) -> str:
 # ================================================================
 #
 # The pricing table and per-call cost computation live in llm_cost
-# as of Stream 2 (2026-04-16). This module re-exports the names
-# under their legacy aliases (_compute_token_cost, _empty_usage,
-# MODEL_PRICING_PER_1K_TOKENS) so existing importers in
-# observatory.py continue to work without change. All future call
-# sites should import directly from llm_cost; these aliases exist
-# only to avoid a cross-file atomic refactor.
+# as of Stream 2. This module re-exports the names under their
+# legacy aliases (_compute_token_cost, _empty_usage,
+# MODEL_PRICING_PER_1K_TOKENS) so existing importers continue to
+# work without change. All future call sites should import directly
+# from llm_cost; these aliases exist only to avoid a cross-file
+# atomic refactor.
 from llm_cost import (
+    MODEL_PRICING_PER_1K_TOKENS,
     compute_cost_usd as _compute_token_cost,
     empty_usage as _empty_usage,
 )
@@ -86,7 +88,7 @@ def generate_gemini(topic):
     Phase 1.6a Prereq 1: returns a tuple (text, usage_dict).
     `text` is the response string or None on failure. `usage_dict`
     contains {input_tokens, output_tokens, cost_usd} for the
-    Observatory worker. On any failure the function returns
+    calling code. On any failure the function returns
     (None, _empty_usage()) so callers can unpack uniformly.
     """
     try:
@@ -192,7 +194,7 @@ def generate_responses(topic):
     usage information from each call is discarded here because
     this function is the legacy compare-page entry point and
     its consumers (the user-facing UI) do not need usage data.
-    The Observatory worker (Phase 1.6b) calls generate_gemini
+    The calling code (Phase 1.6b) calls generate_gemini
     and generate_grok directly so it can capture the usage
     dict for Tier B telemetry.
     """
@@ -308,18 +310,17 @@ def generate_stability_check(topic, responses) -> tuple[dict, float]:
 
 
 # ================================================================
-# Observatory stability check (Phase 1.6a Prereq 6)
+# Stability check
 # ================================================================
 #
-# Stability tracking baked in from day 1. Each Observatory run
-# does N regenerations of the same prompt to the same model and
-# records which numbers were stable across all N runs versus
-# which appeared in only some. With N=3 the signal is meaningful.
+# Stability tracking baked in from day 1. Each run does N
+# regenerations of the same prompt to the same model and records
+# which numbers were stable across all N runs versus which appeared
+# in only some. With N=3 the signal is meaningful.
 #
 # This is a NEW function. The user-facing compare page consumes the
 # existing generate_stability_check above (N=2: original vs one
-# regeneration). The Observatory needs N=3 plus the full schema
-# field set for `observatory_stability_check` events:
+# regeneration). The N=3 path needs the full schema field set:
 #
 #   regeneration_count, total_unique_numbers, stable_count,
 #   partial_count, unique_to_one_count, stability_rate,
@@ -330,34 +331,32 @@ def generate_stability_check(topic, responses) -> tuple[dict, float]:
 # computes the union of unique normalized numbers across all
 # N responses, buckets each unique number by occurrence count
 # (stable / partial / unique_to_one), and aggregates the
-# stable bucket by num_type using the claims_by_type aggregate
-# from Phase 1.5 Item 4. Per-regeneration cost comes from the
-# usage_dict that generate_gemini and generate_grok return
-# in Phase 1.6a Prereq 1.
+# stable bucket by num_type. Per-regeneration cost comes from the
+# usage_dict that generate_gemini and generate_grok return.
 
 # Map provider name to the corresponding generator function.
-# Used by observatory_stability_check to dispatch the parallel
+# Used by stability_check to dispatch the parallel
 # regenerations. Adding a new provider means adding an entry
-# here AND a new generate_* function above; the Observatory
-# topic file references provider names that must match this
+# here AND a new generate_* function above; the topic
+# input references provider names that must match this
 # table.
-_OBSERVATORY_GENERATORS = {
+_PROVIDER_GENERATORS = {
     "gemini": generate_gemini,
     "grok": generate_grok,
 }
 
 
-def observatory_stability_check(topic, provider, n=3):
+def stability_n3_check(topic, provider, n=3):
     """Run N independent regenerations of the same prompt and
     return a schema-shaped dict matching the
-    observatory_stability_check event.
+    stability_n3_check event.
 
     Phase 1.6a Prereq 6.
 
     Args:
         topic: the prompt text to regenerate.
         provider: "gemini" or "grok". Dispatch via
-            _OBSERVATORY_GENERATORS.
+            _PROVIDER_GENERATORS.
         n: regeneration count. Default 3 per Section 8.7
             recommendation. Lower values weaken the signal;
             higher values cost proportionally more.
@@ -365,26 +364,26 @@ def observatory_stability_check(topic, provider, n=3):
     Returns:
         A dict with the eight Section 5 fields plus a
         per-regeneration response_text_signature list that the
-        Observatory worker uses to deduplicate accidental
+        calling code uses to deduplicate accidental
         double-recording. The dict is JSON-serializable.
 
     On failure (provider unknown, all generations crash, etc),
     returns a dict with regeneration_count=0 and the other
-    counts at zero. The Observatory worker treats this as a
+    counts at zero. The calling code treats this as a
     null stability check for the cycle and continues with the
     next topic; it does NOT raise.
 
-    The Observatory worker (observatory.py, Phase 1.6b) does
-    NOT call this function because it needs to share the N
-    generations between the per-model representative analysis
-    (analyze_model) and the stability computation. Instead,
-    the worker calls the generator directly with retry logic,
+    The calling code does NOT call this function directly because
+    it needs to share the N generations between the per-model
+    representative analysis (analyze_model) and the stability
+    computation. Instead, the caller invokes the generator with
+    retry logic,
     then passes the pre-generated texts into
     stability_from_regenerations() below. This function
     remains for ad hoc testing and any future caller that
     wants a generate-and-compute one-shot.
     """
-    generator = _OBSERVATORY_GENERATORS.get(provider)
+    generator = _PROVIDER_GENERATORS.get(provider)
     if generator is None:
         return _empty_stability_result(provider, n)
 
@@ -404,7 +403,7 @@ def observatory_stability_check(topic, provider, n=3):
                     })
             except Exception:
                 # Individual regeneration failures are tolerated;
-                # the loop continues. The Observatory cycle's
+                # the loop continues. The caller cycle's
                 # cost reflects only the regenerations that
                 # actually completed.
                 pass
@@ -416,11 +415,11 @@ def observatory_stability_check(topic, provider, n=3):
 
 
 def stability_from_regenerations(regenerations):
-    """Compute the observatory_stability_check schema dict from
+    """Compute the stability_n3_check schema dict from
     pre-generated regenerations.
 
-    Phase 1.6b split this out of observatory_stability_check
-    so the Observatory worker can share the N generations
+    Phase 1.6b split this out of stability_n3_check
+    so the calling code can share the N generations
     between the representative analyze_model call and the
     stability computation, avoiding 4 LLM calls per
     (topic, model) cycle (1 for analyze_model plus 3 for
@@ -433,7 +432,7 @@ def stability_from_regenerations(regenerations):
 
     Returns:
         The same schema-shaped dict as
-        observatory_stability_check. The separation is purely
+        stability_n3_check. The separation is purely
         about who owns the generation step; the aggregation
         logic is identical.
     """
@@ -507,7 +506,7 @@ def stability_from_regenerations(regenerations):
 
     # Bucket the stable numbers by num_type. Schema field
     # `stable_value_buckets` per Section 5 Tier B
-    # observatory_stability_check.
+    # stability_n3_check.
     stable_value_buckets = {
         "percentage": 0, "dollar": 0, "multiplier": 0,
         "decimal": 0, "integer": 0,
@@ -522,7 +521,7 @@ def stability_from_regenerations(regenerations):
         for r in regenerations
     ]
 
-    # Per-regeneration response signature for the Observatory
+    # Per-regeneration response signature for the caller
     # worker's dedup-check. First 8 hex chars of sha256 of the
     # normalized response text. Used as a key against accidental
     # double-recording, NOT as a way to reconstruct the
@@ -551,7 +550,7 @@ def _empty_stability_result(provider, n):
 
     Returned when the provider is unknown, all regenerations
     failed, or any other early-exit condition. The shape
-    matches the success path so Observatory worker code can
+    matches the success path so calling code code can
     record an event for the failed cycle without branching.
     """
     return {
@@ -643,7 +642,7 @@ def _normalize_for_stability(raw_value):
     both normalize to the same numeric key. The trade-off is
     that two different metrics with the same value collide;
     that is acceptable for stability detection because the
-    Observatory's claim_index tracks which metric a number
+    caller's claim_index tracks which metric a number
     belongs to, and the stability bucket is per-cycle not
     per-metric.
 
@@ -721,7 +720,7 @@ def _infer_num_type(raw_value):
     """Best-effort num_type inference from the display string.
 
     Mirrors the bucketing in claim_analysis.py. The
-    Observatory cycle calls analyze_claims on each
+    caller cycle calls analyze_claims on each
     regeneration; the per-claim numbers list there contains
     cleaned display strings, not the original dicts, so we
     re-derive the type from the string form. The fallback to
@@ -771,7 +770,6 @@ def _extract_number_set(claims):
                 float(val)
                 numbers.add(val)
             except ValueError:
-                # Non-numeric input; skip the cast.
                 pass
     return numbers
 
@@ -791,7 +789,7 @@ def analyze_model(model_name, text, sn_max_claims=15):
     `sn_max_claims` caps how many claims are forwarded to the
     Source Network verifier. Default 15 matches the
     user-facing /compare flow where cost and latency per
-    request are tight. The Observatory worker passes
+    request are tight. The calling code passes
     `sn_max_claims=25` (Phase 1.6e item 2) because its per-
     cycle budget absorbs the extra queries and Section 8.4
     estimates 10 to 20 claims per cycle, so the old 15 cap
@@ -899,7 +897,7 @@ def analyze_model(model_name, text, sn_max_claims=15):
     # so the template can branch on truthiness without surfacing a
     # raw text dump as a claimless block.
     try:
-        from annotator import annotate_document as _annotate
+        from annotator import annotate_document as _annotate  # canon-exempt: optional web-only enrichment
         annotated_html = (
             _annotate(text, ca["claims"]) if ca.get("claims") else ""
         )
@@ -1007,11 +1005,10 @@ def analyze_model(model_name, text, sn_max_claims=15):
             }
             for s in (frame_suggestions or [])
         ],
-        # Raw SourceNetworkResult list for the corpus telemetry
-        # builder. The existing compare-stream serializer omits
-        # this field via serialize_model_for_stream's truncation
-        # logic; it lives in the analyzed dict only for the
-        # tier_a_event compare-mode builders to read.
+        # Raw verifier-result list for downstream telemetry builders.
+        # The compare-stream serializer omits this field via
+        # serialize_model_for_stream's truncation logic; it lives in
+        # the analyzed dict only for compare-mode builders to read.
         "sn_results": sn,
     }
 
@@ -1023,15 +1020,12 @@ def jsonify(obj):
     contain Python sets in fields like 'numbers' that the json module
     cannot encode. This walks the structure and converts in place.
 
-    Phase 1.5: also drops the `sn_results` key from any dict it
-    encounters. analyze_model attaches the raw SourceNetworkResult
-    list to its return value so the corpus telemetry path can
-    derive source name lists for compare-mode events; that
-    dataclass is not JSON-serializable and the field should never
-    flow into a saved compare, an SSE payload, or any other JSON
-    sink. Stripping here keeps the front-end serializers
-    (saved_compare.save, compare_examples.precompute_one,
-    serialize_model_for_stream) in sync with the new return shape
+    Also drops the `sn_results` key from any dict it encounters.
+    analyze_model attaches the raw verifier-result list to its return
+    value so downstream telemetry can derive source name lists for
+    compare-mode events; that dataclass is not JSON-serializable and
+    the field should never flow into a JSON sink. Stripping here
+    keeps front-end serializers in sync with the return shape
     without each having to repeat the strip.
     """
     if isinstance(obj, set):
@@ -1049,11 +1043,10 @@ def serialize_model_for_stream(model_data):
     Wraps jsonify with response-text truncation so the SSE event
     payload stays reasonable. Used by the compare-stream endpoint.
 
-    Strips the `sn_results` key (added in Phase 1.5 for the
-    corpus telemetry path) because SourceNetworkResult is a
-    Python dataclass that json.dumps cannot serialize directly,
-    and because the browser does not need the per-source
-    detail in the SSE payload anyway.
+    Strips the `sn_results` key (added for downstream telemetry)
+    because SourceNetworkResult is a Python dataclass that
+    json.dumps cannot serialize directly, and because the browser
+    does not need the per-source detail in the SSE payload anyway.
     """
     if not model_data:
         return None
@@ -1957,8 +1950,7 @@ def _build_structural_framing_data(
     if a_voice and b_voice and a_voice != b_voice:
         # "analytical" is the residual cascade classification (no
         # prescriptive/promotional/descriptive/advisory markers fired).
-        # Per METHODOLOGY §1.3.1 and fvs_eval/CONSTRUCT_HONESTY_AUDIT_v1.md
-        # L3a, report as evidence-absence rather than existential
+        # Report as evidence-absence rather than existential
         # "presents third-person examination."
         voice_implications = {
             "promotional": "positions the reader as a buyer",

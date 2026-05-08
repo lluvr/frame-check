@@ -4,7 +4,7 @@ Clarethium Measure: AI Output Measurement Tool (v1.5.0)
 
 Decomposes AI-generated text into 10 measurable properties (~6-7 effective
 dimensions; 3 pairs share constructs). 9/10 layers are zero-LLM (pure regex
-+ string matching). See CLARETHIUM_MEASURE_METHODOLOGY.md for field positioning
++ string matching). See module docstring for field positioning
 against SelfCheckGPT, FActScore, MiniCheck, RAGAS.
 Gate 0 (Layer 1a) requires Gemini API and is non-deterministic.
 
@@ -75,15 +75,18 @@ __version__ = "1.5.0"
 
 import argparse
 import json
+import math
 import re
 import statistics
+import sys
+import os
 import time
 
 
 # ================================================================
 # REFERENCE DATA (from 240 validated documents, 5 conditions)
 # ================================================================
-# Corpus: FPR estimation (70), cross-generator (120), EXP-080 (90)
+# Corpus: FPR estimation (70), cross-generator (120), refined corpus (90)
 # All markdown analytical documents, generators: Gemini, xAI, GPT
 
 REFERENCE = {
@@ -100,7 +103,7 @@ REFERENCE = {
         "GAMING_V2": {"mean": 0.873, "sd": 0.116, "N": 20, "mean_matches": 29},
     },
     "source_matching": {
-        # EXP-081, N=24, grok-4-1-fast, 3 topics
+        # Source-matching study, N=24, grok-4-1-fast, 3 topics
         "T1_BASIC":   {"mean_unsourced": 0.018, "N": 6, "mean_numbers": 79},
         "T2_STANDARD": {"mean_unsourced": 0.025, "N": 6, "mean_numbers": 76},
         "T3_REFINED":  {"mean_unsourced": 0.113, "N": 6, "mean_numbers": 86},
@@ -419,13 +422,13 @@ NUMERICAL_PATTERNS = [
     (r'[$€£¥₹]\s*(\d+(?:[.,]\d+)*)\s*(billion|million|thousand|bn|mn|B|M|K)?', 'dollar'),
     (r'(\d+(?:\.\d+)?)\s*[x×](?:\s|$|,)', 'multiplier'),
     (r'(\d+(?:\.\d+)?)\s*-?\s*fold', 'multiplier'),
-    ((r'(\d+(?:,\d{3})*)\s+(?:companies|firms|teams|organizations|employees|'
+    (r'(\d+(?:,\d{3})*)\s+(?:companies|firms|teams|organizations|employees|'
      r'engineers|developers|users|customers|tools|platforms|products|projects|'
      r'systems|failures|incidents|outages|services|applications|repositories|'
-     r'modules|microservices|endpoints|APIs?|databases?|clusters?|regions?)'),
+     r'modules|microservices|endpoints|APIs?|databases?|clusters?|regions?)',
      'entity_count'),
-    ((r'(\d+(?:\.\d+)?)\s*[-–]?\s*(?:\d+(?:\.\d+)?\s*)?'
-     r'(?:days?|weeks?|months?|years?|hours?|minutes?|quarters?|sprints?)'),
+    (r'(\d+(?:\.\d+)?)\s*[-–]?\s*(?:\d+(?:\.\d+)?\s*)?'
+     r'(?:days?|weeks?|months?|years?|hours?|minutes?|quarters?|sprints?)',
      'duration'),
 ]
 
@@ -435,8 +438,8 @@ CAUSAL_MARKERS = [
     r'\bleads? to\b', r'\bresults? in\b', r'\bcauses?\b', r'\bproduces?\b',
     r'\bgenerates?\b', r'\btriggers?\b', r'\bconsequently\b',
     r'\btherefore\b', r'\bthus\b', r'\bhence\b',
-    (r'\bthe (?:primary|main|key|root|fundamental|core|underlying|central) '
-    r'(?:cause|reason|driver|factor|mechanism|force)\b'),
+    r'\bthe (?:primary|main|key|root|fundamental|core|underlying|central) '
+    r'(?:cause|reason|driver|factor|mechanism|force)\b',
     r'\b(?:directly|indirectly) (?:causes?|leads? to|results? in|drives?)\b',
     r'\bis responsible for\b', r'\baccounts? for\b',
     r'\benables?\b', r'\bprevents?\b', r'\binhibits?\b',
@@ -563,7 +566,7 @@ def claim_density(text):
 # EXP-081c showed ~46% of unstable numbers coincidentally match source
 # material: parametric-memory overlap, not retrieval. Instability
 # overcounts true fabrication by approximately half.
-# See CLARETHIUM_MEASURE_METHODOLOGY.md Construct Honesty section (Metric A).
+# See module docstring for the under-detection discipline.
 
 def extract_numbers_for_matching(text):
     """Extract all numbers with type for temporal/source matching."""
@@ -641,7 +644,6 @@ def extract_numbers_for_matching(text):
                     # as the same key.
                     val = str(int(scaled)) if scaled == int(scaled) else str(scaled)
                 except (ValueError, TypeError):
-                    # Non-numeric val (e.g. a spelled-out scale word); leave the original token unchanged.
                     pass
             effective_type = num_type
             if num_type == "integer_comma":
@@ -702,7 +704,7 @@ def temporal_consistency(doc_text, comparison_texts):
     coincidentally match source material (parametric-memory overlap), so
     instability overcounts true fabrication by approximately half.
 
-    See CLARETHIUM_MEASURE_METHODOLOGY.md Construct Honesty section (Metric A) for the audit record.
+    See module docstring for the under-detection discipline. for the audit record.
 
     Args:
         doc_text: Primary document
@@ -756,7 +758,7 @@ def temporal_consistency(doc_text, comparison_texts):
 # presence of emitted numbers), not fabrication. A correctly-derived
 # number (e.g., gross profit = revenue × margin computed from sourced
 # components) is flagged as unsourced because the literal string is not
-# in the source. See CLARETHIUM_MEASURE_METHODOLOGY.md Construct Honesty section (Metric B) for failure
+# in the source. See module docstring for the under-detection discipline. for failure
 # modes and valid uses.
 
 def _add_commas(val):
@@ -1464,9 +1466,8 @@ def quality_profile(profile):
 # STATUS: EXPERIMENTAL (v1.4). Validated on N=90 outputs, 3 frontier models,
 # 3 topics, default + prohibition conditions. P-detection is most accurate.
 # G/F boundary is fuzzy on mixed sentences (classifies by number presence,
-# not primary function). Classification rules are defined in the EXP-095
-# internal codebook (operator-private artifact); the rule set encoded
-# below in _GFP_EXTERNAL_ENTITIES, _GFP_PROJECTION_VERBS, etc. is the
+# not primary function). The rule set encoded below in
+# _GFP_EXTERNAL_ENTITIES, _GFP_PROJECTION_VERBS, etc. is the
 # load-bearing operational definition.
 
 # External entity patterns (P-markers: names/concepts not typically in
@@ -1617,9 +1618,8 @@ def grounding_decomposition(doc_text, source_text):
     Prohibition collapses P to 0% and increases G by 9-22pp.
     Known limitation: derivation checker handles two-step arithmetic but may
     miss three-step derivations. External entity list is fixed (extendable).
-    Classification rules are defined in the EXP-095 internal codebook
-    (operator-private artifact); the operational definition lives in the
-    module's _GFP_* constant tables.
+    The operational definition lives in the module's _GFP_* constant
+    tables.
     """
     sentences = _split_sentences_simple(doc_text)
 
@@ -1633,7 +1633,6 @@ def grounding_decomposition(doc_text, source_text):
             try:
                 source_floats.add(float(val))
             except (ValueError, TypeError):
-                # Non-castable source value; skip from the float set.
                 pass
 
     # Extract source years from FULL source text (not just data section).

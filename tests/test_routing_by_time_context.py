@@ -25,9 +25,12 @@ These tests do not hit the network (the verifier functions return
 no_data early when the guards fire) and do not require API keys.
 """
 
+import pytest
+
 from source_network import (
     ClaimDecomposition,
     _classify_and_route,
+    verify_sec_edgar,
     verify_rest_countries,
 )
 

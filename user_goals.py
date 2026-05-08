@@ -47,120 +47,120 @@ _GOAL_LOAD_BEARING_FRAMES = {
     "decide": [
         (
             "FVS-007",
-            ("When the goal is to decide, failure-framing absence is "
+            "When the goal is to decide, failure-framing absence is "
             "the load-bearing structural gap: a document without "
             "falsification conditions cannot be stress-tested at "
             "decision time, and the decision rests on the document's "
-            "framing rather than on tested grounds.")
+            "framing rather than on tested grounds."
         ),
         (
             "FVS-009",
-            ("When deciding, risk-frame absence leaves downside "
+            "When deciding, risk-frame absence leaves downside "
             "structurally invisible; the reader cannot weigh the "
             "decision against the failures the document does not "
-            "name.")
+            "name."
         ),
         (
             "FVS-014",
-            ("When deciding from forward-looking content, temporal-"
+            "When deciding from forward-looking content, temporal-"
             "anchoring absence means the projections lack a "
             "validity window; the figures may already be expired or "
-            "may shift before the decision matures.")
+            "may shift before the decision matures."
         ),
         (
             "FVS-012",
-            ("Uncertainty-frame absence at decision time leaves the "
+            "Uncertainty-frame absence at decision time leaves the "
             "reader without explicit confidence calibration; "
             "decisions are made against the document's level of "
             "decisiveness rather than the evidence's level of "
-            "support.")
+            "support."
         ),
     ],
     "brainstorm": [
         (
             "FVS-011",
-            ("When brainstorming, stakeholder-frame absence names "
+            "When brainstorming, stakeholder-frame absence names "
             "the missing options most directly: whose perspective "
             "the framing leaves out is exactly the brainstorm "
-            "expansion the document does not yet carry.")
+            "expansion the document does not yet carry."
         ),
         (
             "FVS-001",
-            ("Frame-amplification awareness is load-bearing for "
+            "Frame-amplification awareness is load-bearing for "
             "brainstorming: surfacing which framing the document "
             "amplifies lets the brainstorm name and challenge the "
-            "default reading explicitly.")
+            "default reading explicitly."
         ),
         (
             "FVS-009",
-            ("Risk-frame absence in brainstorming surfaces the "
+            "Risk-frame absence in brainstorming surfaces the "
             "downside-lens option that complements an upside-only "
-            "exploration.")
+            "exploration."
         ),
         (
             "FVS-008",
-            ("Growth-frame absence in brainstorming surfaces the "
+            "Growth-frame absence in brainstorming surfaces the "
             "upside-lens option that complements a downside-only "
-            "exploration.")
+            "exploration."
         ),
     ],
     "persuade": [
         (
             "FVS-017",
-            ("When persuading, false-balance absence (no detected "
+            "When persuading, false-balance absence (no detected "
             "alternative perspective) means the persuasive content "
             "has no opposition surface; an audience that probes "
-            "will find structural one-sidedness.")
+            "will find structural one-sidedness."
         ),
         (
             "FVS-011",
-            ("Stakeholder-frame absence in persuasive content leaves "
+            "Stakeholder-frame absence in persuasive content leaves "
             "the question unanswered: whose interests does this "
             "argument serve? The audience asks; the framing does "
-            "not answer.")
+            "not answer."
         ),
         (
             "FVS-007",
-            ("Persuasion without falsification conditions is "
+            "Persuasion without falsification conditions is "
             "structurally absolute; a persuasion that survives "
             "scrutiny names what would change the position, and "
             "absence of that structure invites the audience to "
-            "supply the falsification themselves.")
+            "supply the falsification themselves."
         ),
         (
             "FVS-009",
-            ("Risk-frame absence in persuasion leaves the audience "
+            "Risk-frame absence in persuasion leaves the audience "
             "to imagine the downside; the persuasion stronger when "
-            "it names the risks it argues are worth bearing.")
+            "it names the risks it argues are worth bearing."
         ),
     ],
     "learn": [
         (
             "FVS-001",
-            ("Learning a topic requires seeing the framing the "
+            "Learning a topic requires seeing the framing the "
             "content amplifies; without that awareness, the reader "
             "absorbs a particular reading as if it were the topic "
-            "itself.")
+            "itself."
         ),
         (
             "FVS-014",
-            ("Learning a topic requires temporal context: when did "
+            "Learning a topic requires temporal context: when did "
             "this hold? When does it expire? Absence of anchoring "
-            "leaves the topic position-less in time.")
+            "leaves the topic position-less in time."
         ),
         (
             "FVS-011",
-            ("Learning a topic requires the stakeholder map: who "
+            "Learning a topic requires the stakeholder map: who "
             "this affects, whose perspective is included, whose is "
             "missing. Absence leaves the topic abstract from the "
-            "people it serves.")
+            "people it serves."
         ),
         (
             "FVS-016",
-            ("Learning requires citable authority: claims that "
+            "Learning requires citable authority: claims that "
             "cannot be traced cannot be verified; absence of "
             "FVS-016 leaves the reader with content but not with "
-            "the means to extend or audit it.")
+            "the means to extend or audit it."
         ),
     ],
     "audit": [],

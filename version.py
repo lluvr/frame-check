@@ -100,7 +100,6 @@ def _detect_pipeline_version() -> str:
             if text:
                 return text
         except OSError:
-            # File read failed; the entry is skipped.
             pass
 
     # Last resort: ask git directly. Works in dev where .git is present
@@ -120,7 +119,6 @@ def _detect_pipeline_version() -> str:
             if sha:
                 return sha
     except (OSError, subprocess.SubprocessError):
-        # git probe failed (binary missing, timeout, non-zero exit); fall through to the next source.
         pass
 
     return "unknown"

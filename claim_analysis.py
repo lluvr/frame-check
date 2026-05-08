@@ -391,15 +391,14 @@ def analyze_claims(doc_text):
         # Candidate-hedge aggregate: count of claims where primary
         # framing is stated_as_fact or prediction BUT candidate-hedge
         # pattern fires. Reader-inspectable under-detection signal.
-        # Operationalizes the construct-honesty posture (METHODOLOGY
-        # §1.3) for the claims signal, completing the trilogy with
-        # coverage (Phase A) and epistemic (Phase A-extended).
+        # Operationalizes the under-detection posture for the claims
+        # signal, completing the trilogy with coverage (Phase A) and
+        # epistemic (Phase A-extended).
         "candidate_hedge_count": sum(
             1 for c in claims if c.get("candidate_hedge_marker") is not None
         ),
-        # Phase 1.5: per-num-type histogram for the Frame Check
-        # Corpus Tier A `claims.by_type` field. Read by
-        # tier_a_event._by_type_counts. PHASE_1_5_GAPS.md Item 4.
+        # Per-num-type histogram for the Frame Check Corpus Tier A
+        # `claims.by_type` field.
         "claims_by_type": claims_by_type,
         "risk_indicators": risk_indicators,
         "risk_level": risk_level,

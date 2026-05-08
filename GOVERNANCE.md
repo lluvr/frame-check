@@ -33,8 +33,7 @@ A decision is not a decision until it lands in an authoritative source. The sour
 
 | Decision type | Authoritative source |
 |---------------|----------------------|
-| FVS library state, canon trajectory, citation form | `data/frame_library/INDEX.md` |
-| v1 publication withdrawals and rationale | `build_corpus_site.py` `_WITHDRAWN` dict |
+| FVS library state, canon trajectory, citation form | per-card prose under `data/frame_library/` |
 | Contribution workflow (PR process, tests, RFC triggers) | `CONTRIBUTING.md` |
 | License | `LICENSE` (corpus: CC-BY-4.0; code: Apache-2.0) |
 | Public release notes | `CHANGELOG.md` |

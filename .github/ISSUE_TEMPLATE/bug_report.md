@@ -52,5 +52,6 @@ distinguish:
 - [ ] The measurement's candidate-miss surfacing is noisy (a
       candidate sentence surfaces that is clearly irrelevant).
 
-See `METHODOLOGY.md §1.3` and `fvs_eval/CONSTRUCT_HONESTY_AUDIT_v1.md`
-for the discipline these distinctions support.
+See the methodology canon at github.com/Clarethium/lodestone for the
+distinction between a detection error and a framing error in the
+reader-facing prose.

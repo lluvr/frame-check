@@ -60,6 +60,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 import traceback
 from typing import Any
 
@@ -109,15 +110,15 @@ SERVER_NAME = "frame-check"
 #
 # Coherence discipline with packaging: this string is the
 # underlying semver M.m.p that PEP 440 pre-release markers in
-# pyproject.toml decorate (`0.8.0` here vs `0.8.0.dev0` in
+# pyproject.toml decorate (e.g., `0.9.0` here vs `0.9.0.dev0` in
 # pyproject during the dev-build window). At lift, pyproject's
 # `.dev0` suffix drops and the two strings align character-for-
-# character. PyPI publish lift sequence: see RELEASE_PREP_v1.md.
+# character.
 # Strict M.m.p form is enforced by
 # test_server_version_bumped_for_decision_readiness_capability;
 # adding suffixes here would break that pin and the handshake
 # parser shape downstream consumers may rely on.
-SERVER_VERSION = "0.9.0"
+SERVER_VERSION = "0.9.1"
 
 # ── Logging ────────────────────────────────────────────────────────
 #
@@ -161,7 +162,6 @@ from mcp_resources import (
     _CALIBRATION_RESULTS_DIR,
     _AGGREGATE_RESULTS_DIR,
     _CORPUS_ENTRIES_DIR,
-    _SPEC_FD_V1_PART1_PATH,
     _SPEC_FD_V1_PART2_PATH,
     _SIGNAL_STRENGTH_THRESHOLDS,
     _signal_strength_for,
@@ -554,11 +554,10 @@ def _tool_error(message: str) -> dict:
 
 
 # Sanitized user-facing messages for unexpected tool-layer failures.
-# Phase 5 item 7-MCP (attacker-hardened error wrappers) per
-# V4_2_GAP_INVENTORY_v1.md. Stable error codes let MCP clients
-# program against the failure modes without parsing exception text;
-# sanitized messages prevent leak of internal state, stack traces,
-# or user document content via exception message interpolation.
+# Stable error codes let MCP clients program against the failure modes
+# without parsing exception text; sanitized messages prevent leak of
+# internal state, stack traces, or user document content via exception
+# message interpolation.
 _MCP_TOOL_ERROR_MESSAGES = {
     "frame_check_internal_error": (
         "Frame Check analysis could not complete. The server logged the "
@@ -1105,7 +1104,6 @@ def _install_version_info() -> dict:
         if result.returncode == 0 and result.stdout.strip():
             info["git_sha"] = result.stdout.strip()
     except (OSError, subprocess.TimeoutExpired):
-        # git probe failed (binary missing, timeout, non-zero exit); fall through to the next source.
         pass
     if info["git_sha"] == "unknown":
         pipeline_version_path = os.path.join(_SCRIPT_DIR, "pipeline_version.txt")
@@ -1115,7 +1113,6 @@ def _install_version_info() -> dict:
             if baked and baked != "unknown":
                 info["git_sha"] = baked
         except OSError:
-            # File missing or unreadable; fall through to the next probe.
             pass
 
     # Check for uncommitted changes. A stale install running against
@@ -1162,7 +1159,6 @@ def _install_version_info() -> dict:
                     with open(full, "rb") as f:
                         h.update(f.read())
                 except OSError:
-                    # File read failed; the entry is skipped.
                     pass
                 h.update(b"\0")
             if root == _CORPUS_ENTRIES_DIR:

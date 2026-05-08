@@ -60,6 +60,8 @@ import json
 import os
 import re
 
+from mcp_log import log
+
 
 # ── Path detection ─────────────────────────────────────────────────
 #
@@ -136,15 +138,13 @@ _CORPUS_ENTRIES_DIR = os.path.join(
     _DATA_ROOT, "validation", "decision_readiness", "corpus",
 )
 
-# Frame Divergence v1 spec. Parts are authored canonical references per
-# FRAME_DIVERGENCE_CONTRACT_v1.md §8 (MCP resource URIs). Exposed as:
+# Frame Divergence v1 spec. Part 2 (the interface contract) is the
+# authored canonical reference per FRAME_DIVERGENCE_CONTRACT_v1.md §8
+# (MCP resource URIs). Exposed as:
 #   frame-check://spec/frame-divergence/v1         -> generated index
-#   frame-check://spec/frame-divergence/v1/part-1  -> FRAME_DIVERGENCE_v1.md
 #   frame-check://spec/frame-divergence/v1/part-2  -> FRAME_DIVERGENCE_CONTRACT_v1.md
-# Parts 3-4 pending per contract §11; will slot in by the same pattern
-# when authored. Deploys without the spec files (e.g., minimal MCP
-# package builds) simply do not advertise the spec index or parts.
-_SPEC_FD_V1_PART1_PATH = os.path.join(_DATA_ROOT, "FRAME_DIVERGENCE_v1.md")
+# Deploys without the spec files (e.g., minimal MCP package builds)
+# simply do not advertise the spec index or parts.
 _SPEC_FD_V1_PART2_PATH = os.path.join(
     _DATA_ROOT, "FRAME_DIVERGENCE_CONTRACT_v1.md"
 )
@@ -183,7 +183,6 @@ def _signal_strength_for(density_per_1kw: float) -> str:
     """Derive signal-strength label from density per 1K words.
 
     Thresholds: none (0), nominal (<3), moderate (<10), substantive (>=10).
-    Thresholds are pre-registered in MCP_CONTRACT_V2_PROPOSAL.md §3.3.
     """
     density = max(0.0, float(density_per_1kw))
     for upper, label in _SIGNAL_STRENGTH_THRESHOLDS:
@@ -213,19 +212,11 @@ def _spec_fd_v1_parts() -> list[tuple[int, str, str]]:
     """List (part_num, part_title, absolute_path) tuples for Frame
     Divergence v1 spec parts present on disk.
 
-    Part 3 (V4.2 integration) and Part 4 (self-red-team and
-    competitive map) are pending per FRAME_DIVERGENCE_CONTRACT_v1.md
-    §11 and will surface here when their files land. The list-based
-    shape lets _list_resources and _read_resource walk the same
-    source of truth rather than hard-coding part numbers twice.
+    The list-based shape lets _list_resources and _read_resource walk
+    the same source of truth rather than hard-coding part numbers
+    twice.
     """
     parts: list[tuple[int, str, str]] = []
-    if os.path.isfile(_SPEC_FD_V1_PART1_PATH):
-        parts.append((
-            1,
-            "Category definition and non-negotiables",
-            _SPEC_FD_V1_PART1_PATH,
-        ))
     if os.path.isfile(_SPEC_FD_V1_PART2_PATH):
         parts.append((
             2,
@@ -247,8 +238,8 @@ def _spec_fd_v1_index_markdown() -> str:
     lines = [
         "# Frame Divergence v1: spec index",
         "",
-        ("Author: Lovro Lucic. Canonical reference for the frame "
-        "divergence category as defined by Frame Check."),
+        "Author: Lovro Lucic. Canonical reference for the frame "
+        "divergence category as defined by Frame Check.",
         "",
         "## Parts",
         "",
@@ -256,18 +247,18 @@ def _spec_fd_v1_index_markdown() -> str:
     scheme = RESOURCE_SCHEME
     part_descriptions = [
         (1, "Category definition and non-negotiables",
-         ("category and sovereignty argument; "
-         "the non-negotiables any implementation must honor")),
+         "category and sovereignty argument; "
+         "the non-negotiables any implementation must honor"),
         (2, "Contract (c1.0)",
-         ("interface contract: operations, inputs, outputs, "
+         "interface contract: operations, inputs, outputs, "
          "faithfulness guarantees, MCP-vs-web tier split, "
-         "versioning commitments")),
+         "versioning commitments"),
         (3, "V4.2 integration",
-         ("per-tier implementation details; pending NEW panel "
-         "re-validation landing")),
+         "per-tier implementation details; pending NEW panel "
+         "re-validation landing"),
         (4, "Self-red-team and competitive map",
-         ("failure scenarios paired with minimum-surviving "
-         "artifacts; adjacent-category positioning")),
+         "failure scenarios paired with minimum-surviving "
+         "artifacts; adjacent-category positioning"),
     ]
     for num, title, blurb in part_descriptions:
         if num in present:
@@ -339,37 +330,29 @@ def _library_entries() -> list[tuple]:
 
 
 def _library_v3_entries() -> list[tuple]:
-    """Same shape as _library_entries() but reads `data/frame_library_v3/`
-    (the Step-4 frozen snapshot from commit `9abeb3d`). library_v3 is
-    the FRAME_DIVERGENCE_CONTRACT_v1 c1.0 pinned catalog; callers of
-    the MCP divergence block get library_v3's 19-entry catalog for
-    contract-stability reasons even though library_v4 is the current
-    engine canonical (per LIBRARY_V3_TO_V4_RATIFICATION_v1.md). Future
-    c1.1 contract will add library_v4 support as an additive pin
-    option. MCP resource handlers (/library/FVS-X) serve `_LIBRARY_DIR`
-    = data/frame_library/ (working library = library_v4 content) for
-    reviewer-facing reads; only the divergence catalog stays on v3 for
-    contract stability.
+    """Catalog used by the MCP divergence block: 19 entries, FVS-020
+    excluded.
 
-    Parallel helper rather than shared implementation to keep the
-    existing `_library_entries()` behavior identical.
+    Reads `data/frame_library_v3/` when present; otherwise falls back
+    to `data/frame_library/` (the working catalog). FVS-020 is always
+    excluded from this list so the divergence block never surfaces
+    it. The fallback keeps the divergence catalog defined whenever
+    the working catalog is shipped, even when only one library
+    directory is present on disk.
 
     Returns list of (fvs_id, title, absolute_md_path, version) tuples.
-    Skips FVS-020 because library_v3 retired it from detection scope
-    per Step 4 ratification; divergence never surfaces FVS-020.
     """
+    src_dir = _LIBRARY_V3_DIR if os.path.isdir(_LIBRARY_V3_DIR) else _LIBRARY_DIR
     out: list[tuple] = []
-    if not os.path.isdir(_LIBRARY_V3_DIR):
+    if not os.path.isdir(src_dir):
         return out
-    for fname in sorted(os.listdir(_LIBRARY_V3_DIR)):
+    for fname in sorted(os.listdir(src_dir)):
         if not re.match(r"^FVS-\d{3}_.+\.md$", fname):
             continue
         fvs_id = fname.split("_", 1)[0]
-        # FVS-020 excluded from divergence emission per library_v3
-        # ratification (Step 4 Path B: retired from detection scope).
         if fvs_id == "FVS-020":
             continue
-        path = os.path.join(_LIBRARY_V3_DIR, fname)
+        path = os.path.join(src_dir, fname)
         title = fvs_id
         version: str | None = None
         try:
@@ -635,10 +618,8 @@ def _library_entry_path(fvs_id: str) -> str | None:
     or None if the entry is not present on this deploy.
 
     Withdrawn entries are still served because the markdown files
-    stay on disk; matching the build_corpus_site convention means
-    an agent that reads frame-check://library/FVS-004 gets the
-    same text whether or not the entry is published on the web
-    surface.
+    stay on disk; an agent that reads frame-check://library/FVS-004
+    gets the same text regardless of canon status.
     """
     if not re.match(r"^FVS-\d{3}$", fvs_id):
         return None

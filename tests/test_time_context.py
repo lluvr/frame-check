@@ -24,8 +24,11 @@ this classifier:
   * UNKNOWN is a first-class value, not a fallback to CURRENT.
 """
 
+import pytest
+
 from time_context import (
     TimePeriodType,
+    TimeContext,
     classify_time,
     HISTORICAL_CUTOFF_YEARS,
 )

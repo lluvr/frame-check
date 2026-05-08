@@ -26,8 +26,8 @@ Module layout (top to bottom):
       claims_extracted -> doc_signals dict for pattern matching)
 
   MCP contract v2 dimension builders:
-    _build_coverage_v2 (MCP_CONTRACT_V2_PROPOSAL.md §3.2 per-
-      dimension coverage evidence + construct block)
+    _build_coverage_v2 (per-dimension coverage evidence +
+      construct block)
     _build_voice_construct (Phase B voice classification-confidence)
     _build_temporal_construct (Phase B temporal distribution)
 
@@ -225,12 +225,11 @@ def _build_provenance(
         # from the site.
         "clarethium_measure_version": CLARETHIUM_VERSION,
         "frame_library_version": _resources_mod._FRAME_LIBRARY_VERSION,
-        # Engine identity (Phase 5 item 8-MCP per V4_2_GAP_INVENTORY_v1.md
-        # gap #22). MCP surface runs only the deterministic Layer A stack
-        # server-side (regex detectors + clarethium_measure verification).
-        # The V4.2 LLM-judge step is delegated to the caller's agent per
-        # FRAME_DIVERGENCE_CONTRACT_v1 §7 "caller_side V4.2" regime; see
-        # docs/internal/ENGINE_TIER_RECOMMENDATIONS_v1.md Rec I.
+        # Engine identity. The MCP surface runs only the deterministic
+        # Layer A stack server-side (regex detectors +
+        # clarethium_measure verification). The V4.2 LLM-judge step is
+        # delegated to the caller's agent per FRAME_DIVERGENCE_CONTRACT_v1
+        # §7 "caller_side V4.2" regime.
         # Saved-analysis readers branch on framing_engine == "layer_a"
         # for the MCP-produced server-side block, same as the web
         # surface uses for its Layer A fallback path. engine_version is
@@ -326,7 +325,6 @@ def _build_coverage_v2(cov: dict) -> dict:
     construct through structure: per-dimension evidence (markers_matched),
     vocabulary samples, and a first-class construct block.
 
-    See MCP_CONTRACT_V2_PROPOSAL.md §3.2 for the full shape specification.
     """
     from framing import ANALYTICAL_VOCAB_SAMPLES
 
@@ -416,7 +414,7 @@ def _build_voice_construct(voice: dict) -> dict:
     Unlike the under-detection construct (coverage/epistemic/claims),
     voice is a cascade classification signal: every document is
     classified; there is no 'not_detected' state. The analogous
-    construct-honesty posture is classification-confidence: expose the
+    evidence posture is classification-confidence: expose the
     margin to the winning rule's thresholds, the runner-up class, and
     a borderline flag when a small feature change could flip the
     classification.
@@ -464,7 +462,7 @@ def _build_voice_construct(voice: dict) -> dict:
             "'classified as analytical (no other voice markers "
             "detected)' rather than 'the document is analytical.' "
             "This mirrors the under-detection discipline applied to "
-            "the coverage signal (see METHODOLOGY §1.3 and §1.3.1)."
+            "the coverage signal."
         ),
     }
 
@@ -473,7 +471,7 @@ def _build_temporal_construct(temp: dict) -> dict:
     """Build the Phase B temporal construct-honesty block for MCP v2.
 
     Temporal is a distribution signal (past/present/future percentages
-    summing to 100). The construct-honesty posture surfaces
+    summing to 100). The evidence posture surfaces
     `dominant_margin` (lead over runner-up tense) and a `balanced` flag
     (no tense reaches 50% and dominant margin < 10 points). A balanced
     document should not be read as time-anchored regardless of the
@@ -575,8 +573,7 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 "inter_rater_reliability": "not_applicable",
                 "validity_data": (
                     "Vocabulary-and-pattern detection with documented "
-                    "under-detection construct (METHODOLOGY §1.3 and "
-                    "§1.3.1). Per-signal construct blocks "
+                    "under-detection construct. Per-signal construct blocks "
                     "(analysis.coverage_v2.construct, "
                     "analysis.epistemic.note, candidate-miss surfacing "
                     "on coverage / epistemic / claims) carry the "
@@ -586,15 +583,15 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 ),
             },
             "caveats": [
-                ("Detector firing is a lower-bound vocabulary claim, "
-                "not an upper-bound document claim."),
-                ("Non-firing may reflect vocabulary the detector does "
+                "Detector firing is a lower-bound vocabulary claim, "
+                "not an upper-bound document claim.",
+                "Non-firing may reflect vocabulary the detector does "
                 "not recognize rather than absence of the dimension "
-                "in the document."),
-                ("Cite as 'Frame Check's detector found markers for "
+                "in the document.",
+                "Cite as 'Frame Check's detector found markers for "
                 "X' or 'no markers detected for X' rather than 'the "
                 "document covers X' or 'the document does not "
-                "address X'."),
+                "address X'.",
             ],
             "how_to_cite": (
                 "Frame Check's detector found markers for X / no "
@@ -618,33 +615,29 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                     "intra-rater AC1 across run-pairs), not at the "
                     "per-emission level. The borderline-vs-decisive "
                     "distinction is a property of the aggregate, not "
-                    "the per-emission. F-2026-035 macro-F1 = 0.732 on "
-                    "the mg_v2 n=26 corpus; per-frame F1 documented "
-                    "in result JSONs. Two named per-frame chronic "
+                    "the per-emission. Two named per-frame chronic "
                     "gaps (FVS-007 over-fire, FVS-001 low-recall) "
-                    "diagnosed at substrate level in "
-                    "FVS_007_001_SHIP_READINESS_v1.md."
+                    "are diagnosed at substrate level."
                 ),
             },
             "caveats": [
-                ("The reasoning text is the engine's rationale for "
+                "The reasoning text is the engine's rationale for "
                 "the binary judgment, not a confidence proxy. Do not "
-                "paraphrase it as 'Frame Check is X% confident'."),
-                ("Per-emission borderline-vs-decisive distinction is "
+                "paraphrase it as 'Frame Check is X% confident'.",
+                "Per-emission borderline-vs-decisive distinction is "
                 "unavailable. Cite the per-frame reliability tier as "
                 "the macro-aggregate evidence; do not treat any "
                 "single emission as decisive without disclosing the "
-                "intra-rater variance."),
-                ("Surface honest_limit caveats verbatim when the "
+                "intra-rater variance.",
+                "Surface honest_limit caveats verbatim when the "
                 "engine emits one. The honest_limit text is per-"
                 "frame and names the operationalization gap in "
-                "single-emission terms."),
-                ("The construct is LLM-judged, not deterministic. "
+                "single-emission terms.",
+                "The construct is LLM-judged, not deterministic. "
                 "Two engine runs on the same document at temperature "
                 "0 can disagree on individual binary judgments at "
-                "rates consistent with F-2026-032's MODERATE-NOISE "
-                "band; aggregate reliability is the load-bearing "
-                "evidence."),
+                "rates within the moderate-noise band; aggregate "
+                "reliability is the load-bearing evidence.",
             ],
             "how_to_cite": (
                 "Frame Check's V4.2 engine judged the document as "
@@ -676,14 +669,14 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 ),
             },
             "caveats": [
-                ("Classifier confidence is margin-to-runner-up, not "
-                "external validity data."),
-                ("Borderline classifications must surface the "
+                "Classifier confidence is margin-to-runner-up, not "
+                "external validity data.",
+                "Borderline classifications must surface the "
                 "runner-up explicitly so the cascade's hesitation is "
-                "visible to the reader."),
-                ("Single-author calibrated; no IRR data; treat the "
+                "visible to the reader.",
+                "Single-author calibrated; no IRR data; treat the "
                 "classification as Frame Check's reading rather than "
-                "a measured property of the document."),
+                "a measured property of the document.",
             ],
             "how_to_cite": (
                 "Frame Check classified as X (confidence Y; "
@@ -718,16 +711,16 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 ),
             },
             "caveats": [
-                ("The trigger match is reproducible; the reading "
+                "The trigger match is reproducible; the reading "
                 "inside is the curator's normative claim about what "
-                "the trigger means."),
-                ("Cite the reading as Frame Check's reading, not as "
-                "a measured property of the document."),
-                ("No inter-rater reliability data on whether other "
+                "the trigger means.",
+                "Cite the reading as Frame Check's reading, not as "
+                "a measured property of the document.",
+                "No inter-rater reliability data on whether other "
                 "readers would compose the same pattern from the "
                 "same triggers; treat the named composition as "
                 "Frame Check's recognition of a structural shape, "
-                "not a verdict on the document."),
+                "not a verdict on the document.",
             ],
             "how_to_cite": (
                 "Frame Check identified pattern X (composed "
@@ -769,20 +762,20 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 ),
             },
             "caveats": [
-                ("Generated content is non-reproducible across "
+                "Generated content is non-reproducible across "
                 "model versions and runs; cite the model_"
                 "provenance fields (provider, model, cost) as the "
-                "audit trail."),
-                ("The frame's general teaching_question_general is "
+                "audit trail.",
+                "The frame's general teaching_question_general is "
                 "the stable catalog reference; the generated_"
                 "question is one document-specific application "
-                "composed by the LLM, not a measurement."),
-                ("Never present LLM-generated content as Frame "
+                "composed by the LLM, not a measurement.",
+                "Never present LLM-generated content as Frame "
                 "Check's measurement; the construct-honest cite "
                 "is 'Frame Check requested an LLM-composed "
                 "question (provider X, model Y, cost Z; "
                 "is_deterministic=false in model_provenance); the "
-                "generated application is: ...'."),
+                "generated application is: ...'.",
             ],
             "how_to_cite": (
                 "Frame Check requested an LLM-composed question "
@@ -803,9 +796,9 @@ def _apply_v2_only_preference(payload: dict) -> None:
     Keeps all other signals (voice, temporal, epistemic, claims) in
     their v1 shape since the v2 redesign for those is deferred to v3.
 
-    Per MCP_CONTRACT_V2_PROPOSAL.md §4.1 Phase 1: additive emission is
-    the default. Phase 2 (future release) adds deprecation notice to v1.
-    Phase 3 (conditional) stops emitting v1 regardless of preference.
+    Phase 1: additive emission is the default. Phase 2 (future
+    release) adds a deprecation notice to v1. Phase 3 (conditional)
+    stops emitting v1 regardless of preference.
     """
     analysis = payload.get("analysis") or {}
     if "coverage" in analysis and "coverage_v2" in analysis:
@@ -1354,10 +1347,10 @@ def _build_divergence_block(
         domain_inferred = domain_hint
 
     limitations: list[str] = [
-        ("V4.2 caller-side composition: absence_basis fields are "
+        "V4.2 caller-side composition: absence_basis fields are "
         "scaffolding for the caller's agent model. Caller's model "
         "determines the final absence verdict per "
-        "FRAME_DIVERGENCE_CONTRACT_v1 §7.1."),
+        "FRAME_DIVERGENCE_CONTRACT_v1 §7.1.",
     ]
     if domain_hint is not None:
         limitations.append(
@@ -1623,8 +1616,9 @@ def _build_divergence_block(
         },
         "v4_2_engine_status": engine_status,
         "v4_2_engine_status_reference": (
-            "V4_2_GAP_INVENTORY_v1.md §5 for full status "
-            "disclosure and remaining Tier 2-4 gaps."
+            "Engine status reflects production-readiness of the V4.2 "
+            "detection layer; the value is informational for callers "
+            "that gate on stability."
         ),
         "domain_inferred": domain_inferred,
         "provisional_count": provisional_count,
@@ -2413,7 +2407,7 @@ def build_epistemic_payload(
                 "coverage_v2 is the forward contract; new integrations "
                 "MUST read coverage_v2. The v1 block is retained during "
                 "the compatibility window and will be removed in a future "
-                "Phase 3 release. See MCP_CONTRACT_V2_PROPOSAL.md."
+                "Phase 3 release."
             ),
         },
         "coverage_v2": _build_coverage_v2(cov),
@@ -2432,8 +2426,7 @@ def build_epistemic_payload(
             # Phase B classification-confidence construct. Parallels
             # the coverage_v2 construct block shape: data fields +
             # first-class construct sub-block with serialize guidance.
-            # See framing.py::detect_voice and
-            # MCP_CONTRACT_V2_PROPOSAL.md §12 (appended).
+            # See framing.py::detect_voice for the cascade.
             "confidence": voice.get("confidence"),
             "margin_to_threshold": voice.get("margin_to_threshold"),
             "runner_up": voice.get("runner_up"),
@@ -2690,12 +2683,9 @@ def build_epistemic_payload(
                 # shape), "present_past" / "present_future"
                 # (directional sub-categorization of FVS-014 only).
                 # The legacy suffix in `name` is preserved for
-                # backward compat with operator-facing UI rendering
-                # at V4_2_GAP_INVENTORY_v1.md and with hand-authored
-                # test fixtures; the enum is the load-bearing wire
-                # field for new agent consumers. See
-                # SCHEMA_SPLIT_PROPOSAL_v1.md for the full
-                # convention enumeration and the rationale.
+                # backward compat with hand-authored test fixtures;
+                # the enum is the load-bearing wire field for new
+                # agent consumers.
                 "pattern_kind": f.get(
                     "pattern_kind", "present_detected"
                 ),
@@ -3067,7 +3057,7 @@ def build_epistemic_payload(
             "claim sentences as if Frame Check surfaced them; the "
             "block is a distribution summary, not a quote list. "
             "candidate_hedge_samples carries up to 10 preview "
-            "sentences for construct-honesty surfacing (hedges the "
+            "sentences for evidence surfacing (hedges the "
             "primary detector did not recognize); these are clearly "
             "labeled as candidates and should be cited as such, not "
             "as verified hedges. Verification verdicts (if present) "
@@ -3189,9 +3179,9 @@ def build_epistemic_payload(
             "integrators who consume this payload should NOT use "
             "coverage gaps, voice classifications, or FVS matches as a "
             "quality score, a truthfulness verdict, or an editing rule "
-            "that suppresses minority framings. The construct-honest "
-            "posture (METHODOLOGY §1.3 and §1.3.1) surfaces what the "
-            "detector measures and what it does not, precisely so that "
+            "that suppresses minority framings. The under-detection "
+            "posture surfaces what the detector measures and what it "
+            "does not, precisely so that "
             "a downstream agent cannot reduce the measurements to a "
             "pass/fail judgment. If you find yourself producing prose "
             "like 'this document is biased' or 'this document lacks "

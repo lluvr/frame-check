@@ -11,40 +11,24 @@ Data artifacts produced by this project are licensed separately under the
 Creative Commons Attribution 4.0 International License (CC-BY-4.0). The
 data artifacts covered by CC-BY-4.0 include:
 
-  - The Frame Vocabulary Standard (data/frame_library/, and the
-    published library pages at /corpus/library/).
-  - The contract-pinned frame-library snapshot (data/frame_library_v3/),
-    required by FRAME_DIVERGENCE_CONTRACT_v1 c1.0 catalog_version_pin.
-  - The Frame Check methodology paper (METHODOLOGY.md and the published
-    page at /corpus/methodology/).
-  - The Frame Check MCP server specification (MCP_SERVER.md).
-  - The Frame Divergence specification (FRAME_DIVERGENCE_v1.md and
-    FRAME_DIVERGENCE_CONTRACT_v1.md).
-  - The V4.2 engine readiness inventory (V4_2_GAP_INVENTORY_v1.md).
+  - The Frame Vocabulary Standard (data/frame_library/).
+  - The Frame Check MCP server specification
+    (docs/MCP_SERVER.md).
+  - The Frame Divergence interface contract
+    (docs/FRAME_DIVERGENCE_CONTRACT_v1.md).
   - The Frame Check transmissions collection (data/transmissions/),
     curated research pieces.
-  - The Frame Check Observatory dataset (published at
-    /corpus/observatory/ and distributed via corpus.clarethium.com).
-  - The Frame Check Source Network calibration dataset (published at
-    /corpus/calibration/), including bundled per-run reports under
-    calibration/results/.
-  - The worked-examples collection (data/worked_examples/, also
-    published at /corpus/worked-examples/).
+  - The Frame Check Source Network calibration dataset, including
+    bundled per-run reports under calibration/results/.
+  - The worked-examples collection (data/worked_examples/).
   - The decision-readiness validation corpus and aggregate findings
     (validation/decision_readiness/corpus/ and aggregate.{json,md}
     files under validation/decision_readiness/results/).
-  - The MCP server publish-readiness audit deliverables produced for
-    each release lift: the leakage audit (LEAKAGE_AUDIT_v1.md), the
-    remediation log (REMEDIATION_LOG_v1.md), the MCP client
-    conformance report (MCP_CLIENT_CONFORMANCE_v1.md), and the
-    publish-readiness verdict (PUBLISH_READINESS_VERDICT_v1.md).
-    These document the standing audit posture of each shipped wheel
-    and travel with the repository as research output.
 
 See https://creativecommons.org/licenses/by/4.0/ for the full CC-BY-4.0
 terms. Where corpus files are distributed independently (for example via
-the daily NDJSON/Parquet exports), a CC-BY-4.0 notice is embedded in the
-export itself; see export_corpus.py for the canonical text.
+NDJSON/Parquet exports), a CC-BY-4.0 notice is embedded in the export
+itself.
 
 Third-party content notices.
 

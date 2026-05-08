@@ -9,6 +9,8 @@ The contract these tests lock in:
     cost. The gate charge never vanishes because measurement failed.
 """
 
+import pytest
+
 import llm_cost
 
 

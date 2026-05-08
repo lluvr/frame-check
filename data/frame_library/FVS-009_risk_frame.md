@@ -4,8 +4,6 @@
 **Version:** 1
 **Curator:** Lovro Lucic
 **Curated:** 2026-04-12
-**Source:** M-004 (Frame Inventory, named as alternative frame), detect_coverage risks dimension in framing.py, FVS-001 worked example (risk as the absent frame), EXP-094 (Mauna Loa analysis)
-**Status:** v1, single-curator, reviewers wanted
 
 ## Identification
 
@@ -74,43 +72,3 @@ A risk-frame-only document is still narrow; multi-frame coverage is the goal.
 **Primary branch:** A (document analysis)
 **Branch A:** Detected via coverage analysis. High coverage of risks dimension, especially when combined with other analytical dimensions (causes, uncertainty), signals a risk-aware document. ABSENCE of risk coverage in a document that claims analytical depth is the more common and more useful signal.
 **Branch B:** The risk frame is one of the alternative frames the user can name in the pre-commit step: "I am approaching this question from a risk perspective."
-
-## Vocabulary connections
-
-- **The amplification thesis** (HI-062): the risk frame amplifies just as the growth frame does. Extended risk analysis produces progressively darker conclusions. The cure is the same: frame breaks via library alternatives.
-- **Source conditioning** (T-351): grounding in source data is especially important under the risk frame because ungrounded risk analysis generates plausible-sounding threats that may not exist.
-- **Failure Framing** (FVS-007, HI-016): risk framing names what could go wrong; failure framing makes the what-could-go-wrong specific enough to mitigate against. Risk frame without failure framing tends to produce fear rather than judgment; risk identification becomes risk paralysis.
-- **The evidence discipline** ([METHODOLOGY.md](https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md) §6): risk framing without ground truth generates plausible-sounding threats that may not exist. Evidence discipline asks how the reader would know if a risk is real, and what evidence would distinguish a real risk from a manufactured one.
-- **The fluency-quality illusion** (FVS-002, HI-012): risk frame can produce fluent-but-thin output where every conceivable risk is listed without probability or severity assessment. Fluent risk catalogs feel analytically thorough; without quantification they often serve avoidance rather than judgment.
-
-## Cross-family reliability
-
-
-**Engine-canonical reading (library_v4 ratified 2026-04-24).** library_v4 Identification sections are byte-equivalent to library_v3 per fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md. The V4.2 engine reads only the Identification section per `v4_2_engine.py::_extract_identification`, so cross-family AC1 on library_v4 equals cross-family AC1 on library_v3 by judge-visible byte-equivalence. The library_v3 row in the 'Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence)' subsection above carries the engine-canonical reliability values for this frame. The 'V4.2 NEW panel measurement against library_current' subsection below documents the working-library measurement immediately prior to ratification, retained as historical pre-ratification context.
-
-**Engine-emit disclosure.** `library_consensus_ac1` = **0.528** (tier: **moderate**), per fvs_eval/v4/library_v4_reliability.json. Per-corpus reproducible values (regen: fvs_eval/v4/compute_per_corpus_reliability.py; artifact: fvs_eval/v4/library_v4_per_corpus_reliability.json): MG_v3=0.395 (clean library_v4 via Identification byte-equivalence), MG2_v4=0.656 (3-family partial; Anthropic queued). Historical: MG2_v1=0.593 (library_v1), MG2_v2=0.605 (library_v2). Note: ac1_avg is NOT reproducible from these via simple or weighted averaging per fvs_eval/v4_2/RELIABILITY_ARTIFACT_REPRODUCIBILITY_AUDIT_v1.md; rebuild queued for library_v5.
-
-**Intra-rater stability (Grok 4.1 fast).** `detector_intra_rater_ac1` = **0.909** across n=41 docs at temp=0 (2 verdict flip(s); per fvs_eval/v4/grok_intra_rater_ac1.json). Measures single-family consistency, independent of cross-family AC1: low cross-family + high intra-rater is possible (and common).
-
-**Construct-validity caveat.** `library_consensus_ac1` measures cross-family LLM agreement, NOT agreement with human reader labels. Per [METHODOLOGY.md](https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md) section 1.3, V1 detector macro-F1 against human labelers was 0.157 (chance-level, n=12); library_v4 LLM-judge has not been re-validated against humans. Read AC1 as inter-LLM consensus proxy, not human-validated reliability.
-
-### Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence) and earlier variants
-
-- **library_v3 (Step-4 ratified variant, commit `9abeb3d` 2026-04-18):** Gwet's AC1 0.395, kappa 0.415, union 12/15. Under library_v4 ratification (2026-04-24), library_v3's Identification text is the engine-canonical Identification per byte-equivalence; library_v3's cross-family numbers are therefore the engine's reliability claim under library_v4. AC1 delta (library_current historical − library_v3 engine-canonical): -0.04.
-- **library_v2 (earlier variant):** Gwet's AC1 0.342, kappa 0.306, union 11/15.
-
-See fvs_eval/v4_2/LIBRARY_CROSS_FAMILY_BASELINE_v1.md §3 for library-wide tier context and fvs_eval/v4_2/CONSTRUCT_VALIDITY_AUDIT_v1.md §3 for reasoning-coherence profile.
-
-### V4.2 NEW panel measurement against library_current (2026-04-24, historical pre-ratification)
-
-V4.2 NEW panel (2026-04-24 measurement): Claude Haiku 4.5, Gemini 3.1 flash lite, Grok 4.1 fast (V4.2 canonical), GPT-5.4 mini. Corpus: fvs_eval/mixed_genre_v1 n=15. Library reference: the working library state at `data/frame_library/` immediately prior to library_v4 ratification (2026-04-24). This subsection's numbers are historical pre-ratification context. Engine-canonical numbers under library_v4 are in the 'Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence) and earlier variants' subsection above (library_v3 row), per the byte-equivalence statement at the top of this Cross-family section.
-
-| Metric | Value |
-|---|---|
-| Gwet's AC1 (pairwise mean) | 0.352 |
-| Cohen's kappa (pairwise mean) | 0.347 |
-| Raw agreement (pairwise mean) | 0.656 |
-| Union prevalence | 13/15 = 87% |
-| Intersection (all 4 agree positive) | 4/15 |
-
-Per-family positives (of 15 docs): Claude 5, Gemini 7, Grok 13, GPT 8.

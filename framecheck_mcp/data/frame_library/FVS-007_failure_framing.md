@@ -4,8 +4,6 @@
 **Version:** 1
 **Curator:** Lovro Lucic
 **Curated:** 2026-04-12
-**Source:** HI-016 (Failure Framing Asymmetry), EXP-025 (negation specificity, 2x2 factorial), EXP-017 (framing x ambiguity gradient)
-**Status:** v1, single-curator, reviewers wanted
 
 ## Identification
 
@@ -31,7 +29,7 @@ Specifying what counts as failure constrains AI output more sharply than specify
 
 **When this frame is misleading:** Narrowly constrained tasks where the success criteria are implicit and well-defined (data formatting, translation, factual lookup). Failure framing adds value only where the interpretation space is open.
 
-**Honest limits:** The specificity effect (d=0.96) is from EXP-025 (2x2 factorial) and is well-supported. The negation main effect null (d=0.18) is from the same experiment. The task-type dependency (d=1.24 open-ended vs d=0.15 constrained) is from EXP-017 (gradient). All are from AI-generated text experiments, not from human decision-making studies. Whether failure framing in the evaluative criteria of a document (rather than in the prompt that produced the document) has the same effect on reader judgment is unmeasured.
+**Honest limits:** The specificity effect (d=0.96) is (2x2 factorial) and is well-supported. The negation main effect null (d=0.18) is from the same experiment. The task-type dependency (d=1.24 open-ended vs d=0.15 constrained) is (gradient). All are from AI-generated text experiments, not from human decision-making studies. Whether failure framing in the evaluative criteria of a document (rather than in the prompt that produced the document) has the same effect on reader judgment is unmeasured.
 
 ## Decision-readiness implication
 
@@ -68,40 +66,3 @@ When this frame fires, the document does not name what would falsify its claims 
 **Primary branch:** A (document analysis)
 **Branch A:** Detected when a document has high assertion density with no epistemic hedging, no limitations section, and no self-referenced failure conditions. The absence of failure framing is itself the detection signal: the document claims without naming what would make the claims wrong.
 **Branch B:** In the pre-commit intervention, the user can add their own failure frame before consulting AI: "I think [X]. My analysis would be wrong if [Y]." This forces the construction trace to include evaluative criteria that the AI's response can be compared against.
-
-## Vocabulary connections
-
-- **The construction trace** (T-356): failure framing is a specific form of construction trace. By naming what would make the analysis wrong, the user constructs the evaluative standard that makes deep evaluation possible.
-- **Source conditioning** (T-351): providing source material is one way to ground failure criteria. "If the numbers do not match the source, the analysis fails" is a concrete failure condition that source conditioning operationalizes.
-
-## Cross-family reliability
-
-
-**Engine-canonical reading (library_v4 ratified 2026-04-24).** library_v4 Identification sections are byte-equivalent to library_v3 per fvs_eval/v4_2/LIBRARY_V3_TO_V4_RATIFICATION_v1.md. The V4.2 engine reads only the Identification section per `v4_2_engine.py::_extract_identification`, so cross-family AC1 on library_v4 equals cross-family AC1 on library_v3 by judge-visible byte-equivalence. The library_v3 row in the 'Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence)' subsection above carries the engine-canonical reliability values for this frame. The 'V4.2 NEW panel measurement against library_current' subsection below documents the working-library measurement immediately prior to ratification, retained as historical pre-ratification context.
-
-**Engine-emit disclosure.** `library_consensus_ac1` = **0.420** (tier: **moderate**), per fvs_eval/v4/library_v4_reliability.json. Per-corpus reproducible values (regen: fvs_eval/v4/compute_per_corpus_reliability.py; artifact: fvs_eval/v4/library_v4_per_corpus_reliability.json): MG_v3=0.534 (clean library_v4 via Identification byte-equivalence), MG2_v4=0.582 (3-family partial; Anthropic queued). Historical: MG2_v1=0.449 (library_v1), MG2_v2=0.674 (library_v2). Note: ac1_avg is NOT reproducible from these via simple or weighted averaging per fvs_eval/v4_2/RELIABILITY_ARTIFACT_REPRODUCIBILITY_AUDIT_v1.md; rebuild queued for library_v5.
-
-**Intra-rater stability (Grok 4.1 fast).** `detector_intra_rater_ac1` = **0.707** across n=41 docs at temp=0 (6 verdict flip(s); per fvs_eval/v4/grok_intra_rater_ac1.json). Measures single-family consistency, independent of cross-family AC1: low cross-family + high intra-rater is possible (and common).
-
-**Construct-validity caveat.** `library_consensus_ac1` measures cross-family LLM agreement, NOT agreement with human reader labels. Per [METHODOLOGY.md](https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md) section 1.3, V1 detector macro-F1 against human labelers was 0.157 (chance-level, n=12); library_v4 LLM-judge has not been re-validated against humans. Read AC1 as inter-LLM consensus proxy, not human-validated reliability.
-
-### Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence) and earlier variants
-
-- **library_v3 (Step-4 ratified variant, commit `9abeb3d` 2026-04-18):** Gwet's AC1 0.534, kappa 0.150, union 8/15. Under library_v4 ratification (2026-04-24), library_v3's Identification text is the engine-canonical Identification per byte-equivalence; library_v3's cross-family numbers are therefore the engine's reliability claim under library_v4. AC1 delta (library_current historical − library_v3 engine-canonical): +0.13.
-- **library_v2 (earlier variant):** Gwet's AC1 0.736, kappa 0.318, union 5/15.
-
-See fvs_eval/v4_2/LIBRARY_CROSS_FAMILY_BASELINE_v1.md §3 for library-wide tier context and fvs_eval/v4_2/CONSTRUCT_VALIDITY_AUDIT_v1.md §3 for reasoning-coherence profile.
-
-### V4.2 NEW panel measurement against library_current (2026-04-24, historical pre-ratification)
-
-V4.2 NEW panel (2026-04-24 measurement): Claude Haiku 4.5, Gemini 3.1 flash lite, Grok 4.1 fast (V4.2 canonical), GPT-5.4 mini. Corpus: fvs_eval/mixed_genre_v1 n=15. Library reference: the working library state at `data/frame_library/` immediately prior to library_v4 ratification (2026-04-24). This subsection's numbers are historical pre-ratification context. Engine-canonical numbers under library_v4 are in the 'Engine-canonical (library_v3 = library_v4 by Identification byte-equivalence) and earlier variants' subsection above (library_v3 row), per the byte-equivalence statement at the top of this Cross-family section.
-
-| Metric | Value |
-|---|---|
-| Gwet's AC1 (pairwise mean) | 0.666 |
-| Cohen's kappa (pairwise mean) | 0.427 |
-| Raw agreement (pairwise mean) | 0.789 |
-| Union prevalence | 7/15 = 47% |
-| Intersection (all 4 agree positive) | 1/15 |
-
-Per-family positives (of 15 docs): Claude 3, Gemini 4, Grok 5, GPT 3.
