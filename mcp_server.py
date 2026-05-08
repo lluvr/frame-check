@@ -1223,7 +1223,7 @@ STARTUP AND TROUBLESHOOTING
 RESOURCES
   Public docs:   https://frame.clarethium.com
   Methodology:   https://frame.clarethium.com/corpus/methodology/
-  Repo:          https://github.com/Clarethium/frame-check-mcp
+  Repo:          https://github.com/Clarethium/frame-check
 """
 
 

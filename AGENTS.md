@@ -8,7 +8,7 @@ or `.cursorrules` is. Read it before making changes.
 
 ## What this repo is
 
-`Clarethium/frame-check-mcp` is the public canonical repository for
+`Clarethium/frame-check` is the public canonical repository for
 the Frame Check structural-framing analyzer plus its MCP server.
 The analyzer modules at the repo root are the load-bearing
 implementation; the MCP plumbing (`mcp_server.py`, `mcp_compose.py`,

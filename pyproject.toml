@@ -47,12 +47,12 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Clarethium/frame-check-mcp"
-Repository = "https://github.com/Clarethium/frame-check-mcp"
-Issues = "https://github.com/Clarethium/frame-check-mcp/issues"
-Changelog = "https://github.com/Clarethium/frame-check-mcp/blob/master/CHANGELOG.md"
-Security = "https://github.com/Clarethium/frame-check-mcp/blob/master/SECURITY.md"
-"Frame Library" = "https://github.com/Clarethium/frame-check-mcp/tree/master/data/frame_library"
+Homepage = "https://github.com/Clarethium/frame-check"
+Repository = "https://github.com/Clarethium/frame-check"
+Issues = "https://github.com/Clarethium/frame-check/issues"
+Changelog = "https://github.com/Clarethium/frame-check/blob/master/CHANGELOG.md"
+Security = "https://github.com/Clarethium/frame-check/blob/master/SECURITY.md"
+"Frame Library" = "https://github.com/Clarethium/frame-check/tree/master/data/frame_library"
 
 [project.scripts]
 frame-check-mcp = "mcp_server:cli"

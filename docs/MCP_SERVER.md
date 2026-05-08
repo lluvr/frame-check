@@ -161,7 +161,7 @@ so the caller's agent runs V4.2 judgment with its own LLM if the
 caller chooses. Zero Frame Check LLM cost per MCP call; vendor
 independence by construction (the caller picks the model).
 
-**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
+**Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md). Breaking change from v1; the canonical first stable release that papers cite.
 
 **Collapsed release.** An earlier plan for a `0.7.1` V1-only
 name-reservation release on PyPI was retired 2026-04-23 in favor of
@@ -888,7 +888,7 @@ When the divergence block is emitted, `agent_guidance` gains two keys:
 Every FVS reference in a `frame_check` or `frame_compare` response
 carries a `library_url` field pointing at the entry's markdown source
 on the public GitHub repository
-(`https://github.com/Clarethium/frame-check-mcp/blob/master/data/frame_library/FVS-XXX_slug.md`).
+(`https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-XXX_slug.md`).
 The URL is always resolvable for end-users in MCP clients regardless
 of the hosted-production status. The earlier form pointed at
 `frame.clarethium.com/corpus/library/...`; the GitHub URL is preferred
@@ -1332,7 +1332,7 @@ The v2 contract carries the construct through structure AND through serializatio
 
 Epistemic / claims / voice / temporal Phase A+B fields are additive; no migration window needed.
 
-See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check-mcp/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
+See [MCP_CONTRACT_V2_PROPOSAL.md](https://github.com/Clarethium/frame-check/blob/master/docs/internal/MCP_CONTRACT_V2_PROPOSAL.md) for the full design rationale (§10 empirical payload-size measurements, §11 Phase A extension, §12 Phase B voice + temporal extension, §12.4 signal-by-signal construct summary).
 
 ## Determinism
 
@@ -1360,7 +1360,7 @@ maintenance pause is communicable without protocol changes:
   any transition.
 
 Always-resolvable mirrors: the public GitHub repository at
-`https://github.com/Clarethium/frame-check-mcp` and the PyPI
+`https://github.com/Clarethium/frame-check` and the PyPI
 package `frame-check-mcp`. Citations resolve against the versioned
 PyPI release (`server_version` field), the brand version
 (`frame_check_version` field, decoupled from the wheel), or the
@@ -1374,7 +1374,7 @@ as Frame Check's, not as your own reading.
 
 ```
 Lucic, L. (YEAR). Frame Check: a research instrument for framing and
-verification in documents. https://github.com/Clarethium/frame-check-mcp
+verification in documents. https://github.com/Clarethium/frame-check
 ```
 
 ## License

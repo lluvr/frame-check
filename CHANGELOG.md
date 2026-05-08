@@ -18,7 +18,7 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ### Fixed
 
-- Bundled documentation (frame catalog, worked examples, wheel-bundled docs) no longer carries broken links to a non-public host. Links that resolve to publicly-bundled paths are rewritten to the canonical `Clarethium/frame-check-mcp` URL; links that do not are dropped from the prose.
+- Bundled documentation (frame catalog, worked examples, wheel-bundled docs) no longer carries broken links to a non-public host. Links that resolve to publicly-bundled paths are rewritten to the canonical `Clarethium/frame-check` URL; links that do not are dropped from the prose.
 
 ### Changed
 
@@ -38,9 +38,9 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ### Fixed
 
-- `pyproject.toml [project.urls]` re-pointed at canonical `Clarethium/frame-check-mcp` URLs so PyPI page links resolve directly. `Homepage` moved to `blog.clarethium.com/frame-check`.
+- `pyproject.toml [project.urls]` re-pointed at canonical `Clarethium/frame-check` URLs so PyPI page links resolve directly. `Homepage` moved to `blog.clarethium.com/frame-check`.
 - `METHODOLOGY.md` §9 citation block: corrected the `master` branch reference (the public mirror's default branch is `master`, not `main`).
-- 45 source files plus 29 generated artifacts: legacy `lluvr/frame-check-mcp` references replaced with direct `Clarethium/frame-check-mcp` URLs so adopters do not follow a redirect chain to land at the canonical home.
+- 45 source files plus 29 generated artifacts: legacy `lluvr/frame-check-mcp` references replaced with direct `Clarethium/frame-check` URLs so adopters do not follow a redirect chain to land at the canonical home.
 
 ## [0.8.6] - 2026-05-07
 
@@ -128,7 +128,7 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ### Fixed
 
-- Republished from the public split repo `Clarethium/frame-check-mcp` to fix the dead Project-URL surface that shipped in 0.8.0.
+- Republished from the public split repo `Clarethium/frame-check` to fix the dead Project-URL surface that shipped in 0.8.0.
 
 ## [0.8.0] - 2026-04-27
 

@@ -3,7 +3,7 @@ title: One LLM, one life decision: what framing your AI imposes when you ask it 
 slug: ai-on-life-decisions-startup-2026
 author: Lovro Lucic
 published: 2026-04-18
-source_document_url: https://github.com/Clarethium/frame-check-mcp/tree/master/data/worked_examples/ai-on-life-decisions-startup-2026
+source_document_url: https://github.com/Clarethium/frame-check/tree/master/data/worked_examples/ai-on-life-decisions-startup-2026
 source_document_title: GPT-5 response to a startup career-change prompt (2026-04-18)
 source_document_author: OpenAI GPT-5 (`gpt-5-2025-08-07`)
 source_document_type: LLM response to a life-decision prompt

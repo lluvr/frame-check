@@ -45,7 +45,7 @@ Frame Check has two release postures:
   released product with version ranges. The operator's private dev
   tree is the authoritative source; the Fly.io image tracks its
   master branch with operator-controlled deploy cadence. The public
-  MCP package source ships from `github.com/Clarethium/frame-check-mcp`
+  MCP package source ships from `github.com/Clarethium/frame-check`
   via a public-extract pipeline.
 - **MCP package** (`frame-check-mcp` on PyPI, planned 0.8.0
   initial release): semver-versioned. Security fixes for the
