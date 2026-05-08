@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # canon_audit.sh — public-canon §3c + §5b audit.
 #
-# Canonical maintainer-side copy. Each Clarethium public repo carries an
+# Canonical operator-side copy. Each Clarethium public repo carries an
 # exact copy at `scripts/canon_audit.sh`. A drift between this file and
 # the per-repo copy is a process bug; sync via:
 #
@@ -29,10 +29,10 @@ VERSION='2026-05-08'
 # the §5b path allowlist. Case-insensitive throughout.
 
 # Rigid shapes — high-confidence, no false-positive cost.
-PAT_RIGID='maintainer-side|maintainer-internal|the operator['\''’]s ([a-z-]+ ){0,4}(strategy|methodology|notes|vault|workspace|tree|dev tree|bet|stake|positioning)\b|\boperator (paper|study|playbook|doctrine|memo|brief)\b|private (operator|fork|tree|upstream|repo)|\(see private|\(internal reference|\(maintainer-side reference|\(see maintainer-side|internal version of|unredacted [a-z]|the full (methodology|version|spec|specification|paper|draft|manuscript|ground.truth)|extracted from the operator['\''’]s|the canonical (source|version|research|methodology) lives|(trust|data|authorship|methodology|adoption|compounding|positioning|named.authorship)[- ]moat|methodology[- ]as[- ]moat|Clarethium-empire|the project['\''’]s empire|empire-grade|empire-wide|(compounding|data|trust|authorship|named-authorship)[- ]claim|construct[- ]honesty discipline|Powerhouse\.localdomain|llucic@'
+PAT_RIGID='operator-side|operator-internal|the operator['\''’]s ([a-z-]+ ){0,4}(strategy|methodology|notes|vault|workspace|tree|dev tree|bet|stake|positioning)\b|\boperator (paper|study|playbook|doctrine|memo|brief)\b|private (operator|fork|tree|upstream|repo)|\(see private|\(internal reference|\(operator-side reference|\(see operator-side|internal version of|unredacted [a-z]|the full (methodology|version|spec|specification|paper|draft|manuscript|ground.truth)|extracted from the operator['\''’]s|the canonical (source|version|research|methodology) lives|(trust|data|authorship|methodology|adoption|compounding|positioning|named.authorship)[- ]moat|methodology[- ]as[- ]moat|Clarethium-empire|the project['\''’]s empire|empire-grade|empire-wide|(compounding|data|trust|authorship|named-authorship)[- ]claim|construct[- ]honesty discipline|Powerhouse\.localdomain|llucic@'
 
 # Vault-as-architecture — the noun and its term-of-art compounds.
-PAT_VAULT='\bvault[- ]faithful\b|\bvault[- ]validated\b|\bbehaviour\b|\bbehavior\b|\bvault[- ]style\b|\bvault['\''’]?s? precision threshold\b|\bprior notes\b|\bin the upstream\b|\bfrom the upstream\b|\bthe operator['\''’]s ([a-z-]+ ){0,4}vault\b'
+PAT_VAULT='\bvault[- ]faithful\b|\bvault[- ]validated\b|\bvault behaviour\b|\bvault behavior\b|\bvault[- ]style\b|\bvault['\''’]?s? precision threshold\b|\bvault notes\b|\bin the vault\b|\bfrom the vault\b|\bthe operator['\''’]s ([a-z-]+ ){0,4}vault\b'
 
 # Bare "vault" — context-dependent. Reported as a soft-finding (review
 # each hit; reject unless it's a domain compound on the allowlist).

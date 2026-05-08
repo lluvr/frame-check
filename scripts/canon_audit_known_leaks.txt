@@ -8,9 +8,9 @@
 # representative line here AND extend the audit's regex. Both ship
 # together.
 
-# ── §3c rigid: maintainer-side / maintainer-internal ──
-This is maintainer-side notes and should not appear in public surface.
-The maintainer-internal evaluation rubric is referenced here.
+# ── §3c rigid: operator-side / operator-internal ──
+This is operator-side notes and should not appear in public surface.
+The operator-internal evaluation rubric is referenced here.
 
 # ── §3c rigid: the operator's [optional adjective] [strategy|...] ──
 # Adjectives intervening between "operator's" and the leak noun do not exempt.
@@ -19,7 +19,7 @@ The maintainer-internal evaluation rubric is referenced here.
 # practitioner" and "the operator's corpus" is generic. Catch shape-shifted
 # leaks like "the operator's research corpus" via the §5a fresh-reader test.
 See the operator's strategy memo for context.
-The work continues in the maintainer-side notebook on disk.
+The work continues in the operator's research vault on disk.
 The work continues in the operator's experimental dev tree.
 Compare against the operator's positioning analysis from last quarter.
 
@@ -36,14 +36,14 @@ The operator study cited prior work.
 Operator doctrine for AI-coupled work.
 
 # ── §3c rigid: private [operator|...] ──
-Mirror from the upstream development tree when stable.
+Mirror from the private upstream when stable.
 Forked into the private fork for auditing.
 
 # ── §3c rigid: meta-reference parentheticals ──
 This is calibrated upstream (see private).
 The decision lives elsewhere (internal reference).
-Threshold tuning applies (maintainer-side reference).
-See the protocol (see maintainer-side studies).
+Threshold tuning applies (operator-side reference).
+See the protocol (see operator-side studies).
 
 # ── §3c rigid: internal version / unredacted / the full X ──
 The internal version of this rubric is more detailed.
@@ -53,7 +53,7 @@ Refer to the full ground-truth corpus for verification.
 The full specification ships separately.
 
 # ── §3c rigid: extracted-from / canonical-lives ──
-Extracted from the maintainer-side notebook.
+Extracted from the operator's research vault.
 The canonical research lives in the upstream tree.
 The canonical methodology lives separately.
 
@@ -70,18 +70,18 @@ Empire-wide rollout planned.
 The Clarethium-empire shape favors composition.
 The project's empire is built on canon.
 
-# ── §3c rigid: evidence discipline ──
-Evidence discipline applies at every layer.
-We follow the evidence discipline strictly.
+# ── §3c rigid: construct-honesty discipline ──
+Construct-honesty discipline applies at every layer.
+We follow the construct honesty discipline strictly.
 
 # ── §3c rigid: Powerhouse.localdomain hostname ──
 Author: lluvr <llucic@Powerhouse.localdomain>
 
 # ── §3c vault-as-architecture ──
-Library is pinned: regex preserved as-is.
-Boundaries are validated against EXP-095 data.
-Behaviour: text before first ## heading is excluded.
-The upstream's precision threshold for entities is total < 5.
-This implementation pins prior notes for posterity.
-Outputs live in JSON files in the upstream EXP-095 directory.
-This baseline comes from the upstream implementation.
+Library is vault-faithful: regex preserved as-is.
+Boundaries are vault-validated against EXP-095 data.
+Vault behaviour: text before first ## heading is excluded.
+The vault's precision threshold for entities is total < 5.
+This implementation pins vault notes for posterity.
+Outputs live in JSON files in the vault EXP-095 directory.
+This baseline comes from the vault implementation.
