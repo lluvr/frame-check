@@ -52,7 +52,6 @@ Repository = "https://github.com/Clarethium/frame-check-mcp"
 Issues = "https://github.com/Clarethium/frame-check-mcp/issues"
 Changelog = "https://github.com/Clarethium/frame-check-mcp/blob/master/CHANGELOG.md"
 Security = "https://github.com/Clarethium/frame-check-mcp/blob/master/SECURITY.md"
-Methodology = "https://github.com/Clarethium/frame-check-mcp/blob/master/METHODOLOGY.md"
 "Frame Library" = "https://github.com/Clarethium/frame-check-mcp/tree/master/data/frame_library"
 
 [project.scripts]
@@ -101,11 +100,8 @@ framecheck_mcp = [
     "data/frame_library_v3/**/*",
     "data/worked_examples/**/*",
     "data/transmissions/**/*",
-    "METHODOLOGY.md",
     "MCP_SERVER.md",
-    "FRAME_DIVERGENCE_v1.md",
     "FRAME_DIVERGENCE_CONTRACT_v1.md",
-    "V4_2_GAP_INVENTORY_v1.md",
     "calibration/results/**/*",
     "validation/decision_readiness/results/**/*",
     "validation/decision_readiness/corpus/**/*",
@@ -122,9 +118,9 @@ framecheck_mcp = [
 #     prevents the warning regardless.
 #
 #   filterwarnings = default: keep the standard filter permissive so
-#     test suites that surface real construct-honesty signals (e.g.
+#     test-suite warnings about real measurement gaps (e.g. the
 #     clarethium_measure UserWarning on non-markdown inputs) stay
-#     visible. Suppressing warnings would hide real measurement gaps.
+#     visible. Suppressing warnings would hide them.
 markers = [
     "timeout: soft timeout hint (enforced only when pytest-timeout plugin is installed)",
     "visual: browser-rendered visual regression tests (require playwright + chromium)",

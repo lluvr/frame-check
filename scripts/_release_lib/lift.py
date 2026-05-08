@@ -110,24 +110,17 @@ def _read_pyproject_version() -> str:
 
 EXPECTED_SERVER_VERSION = _read_pyproject_version()
 
-# Maintainer-side doc references that must NOT appear in any wheel content
-# (these are operator-private docs; bundled refs are proxy-leaks).
-# Two layers:
-#  - Named vault doc filenames (STRATEGY.md, etc.)
-#  - Maintainer-internal artifact directories that are gitignored
-#    (data/falsifications/, EXP-NNN-data/) where bundled path
-#    references would proxy-leak the existence and naming
-#    convention of internal pre-registration artifacts.
+# Documentation-reference patterns that must NOT appear in any
+# wheel content. The patterns capture filename shapes that the
+# release pipeline excludes from the public extract; if such a
+# reference reaches the wheel, it is a stale or broken pointer.
+#
+# Specific filename enumerations (when needed for a particular
+# deployment) load from a maintainer-side config file; the public
+# source carries only the shape patterns below.
 VAULT_DOC_PATTERNS = [
-    r"\bSTRATEGY\.md\b",
-    r"\bTHE_BETS\.md\b",
-    r"\bDATA_MOAT\.md\b",
-    r"\bTHE_POSTURE\.md\b",
-    r"\bCORE_OS\.md\b",
-    r"\bOBSERVATORY_STATE\.md\b",
-    r"\bTERMS_OF_SERVICE_DRAFT\b",
-    # Maintainer-internal artifact paths (gitignored vault content).
-    # The artifact ID alone (e.g. "F-2026-027") is acceptable as a
+    # Per-experiment artifact paths (typically gitignored). The
+    # artifact ID alone (e.g. "F-2026-027") is acceptable as a
     # bare breadcrumb in catalog prose; the path form is the leak.
     r"data/falsifications/F-\d{4}-\d{3}",
     r"\bEXP-\d{3}-data/",
@@ -148,9 +141,7 @@ KNOWN_HARNESS_GAPS = (
     # per-FVS authored `**Teaching question:**` content in the
     # data/frame_library_v3/FVS-*.md bodies; rendering wiring is
     # correct in mcp_server.py, the gap is library content. Parked
-    # for the 0.8.4 operator authoring sprint per
-    # `~/.claude/projects/-home-llucic-frame-check/memory/
-    # project_d3_teaching_questions_parked.md`.
+    # pending the catalog authoring pass.
     "teaching_questions mode adds teaching_question per record",
 )
 

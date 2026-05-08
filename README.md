@@ -73,12 +73,12 @@ rather than asserting verdicts without evidence.
 
 Named-pattern detection is a separate reliability layer from the
 structural profile. Detector F1 = 0.36 against expert labelers in a
-pre-registered validation, below the useful threshold of 0.4. The
-pivot to construct-honesty surfacing (under-detection markers,
-density caveats, confidence states) rather than confident labels is
-the load-bearing claim at v0; a reader-aid study (Track B,
-pre-registered) tests whether this surfacing actually helps a reader
-see framing they would otherwise miss.
+pre-registered validation, below the useful threshold of 0.4. At v0
+the tool surfaces detector signals as candidates with explicit
+under-detection markers, density caveats, and confidence states
+rather than asserting confident labels. A pre-registered reader-aid
+study tests whether this surfacing helps a reader see framing they
+would otherwise miss.
 
 Honest limits and anticipated adversarial readings are catalogued in
 `docs/ANTICIPATED_CRITIQUES.md`.
@@ -104,21 +104,16 @@ on Claude's Bitcoin retirement recommendation. See
 ## Documentation
 
 Browse [`docs/README.md`](docs/README.md) for reading paths organised
-by intent (install + use, evaluate the methodology, understand frame
-divergence, validate the substrate, verify the audit, read the worked
-examples). The full inventory:
+by intent (install + use, evaluate the methodology, validate the
+substrate, read the worked examples). The full inventory:
 
-- `METHODOLOGY.md`: full methodology paper (v0.3.1 draft)
 - `docs/MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
-- `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
-- `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (6 entries)
-- `docs/FRAME_DIVERGENCE_v1.md` (Part 1: definition) + `docs/FRAME_DIVERGENCE_CONTRACT_v1.md` (Part 2: interface contract, c1.0 shipping) + `docs/FRAME_DIVERGENCE_v2.md` (broader architecture, supersedes v1 Parts 3-4)
+- `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`: divergence-block API contract
 - `docs/ANTICIPATED_CRITIQUES.md`: self-enumerated adversarial readings
 - `docs/VALIDATION_PROGRAM.md`: observational + formal validation plans
-- `docs/V4_2_GAP_INVENTORY_v1.md`: self-disclosed engine gap inventory + remediation plan
 - `docs/RATERS.md`: rater protocol for the validation program
-- `docs/internal/MCP_CLIENT_CONFORMANCE_v1.md`: 32/32 conformance round-trips against the installed wheel
-- `docs/internal/`: maintainer-internal supporting documents (audit deliverables, methodology paper outlines, archived design proposals) shipped publicly under evidence discipline
+- `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
+- `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (6 entries)
 
 ## Running tests
 

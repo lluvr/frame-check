@@ -21,7 +21,6 @@ frame-check-mcp/
 ├── data/transmissions/          # Frame divergence transmissions (research artifacts)
 ├── calibration/                 # Calibration corpus + results
 ├── validation/                  # Decision-readiness validation runs
-├── docs/internal/               # Maintainer-internal supporting documents (audit deliverables, design proposals)
 ├── framecheck_mcp/              # Wheel-bundle data carrier (data/calibration/validation copies populated at build time)
 ├── scripts/                     # Build + release infrastructure (extract, lift, orchestrator libs)
 ├── *.py                         # MCP server, framing detectors, claim analysis (flat-modules wheel layout)

@@ -172,19 +172,13 @@ def _build_replacement_table() -> list[tuple[str, str]]:
         for prefix in ("", "data/falsifications/", "../../data/falsifications/"):
             pairs.append((f"`{prefix}{nstr}.md`", nstr))
 
-    # EXP-NNN-data ghost paths: the maintainer-internal scoring
-    # artifact tree is not bundled and not on GitHub. Replace
-    # with prose that names the experiment but not a path.
+    # EXP-NNN-data ghost paths: the scoring artifact tree is not
+    # bundled and not on GitHub. Replace with prose that names the
+    # experiment but not a path.
     pairs.append((
         "`EXP-096-data/scorecards_pass1.md`",
-        "internal scoring artifact (EXP-096)",
+        "scoring artifact (EXP-096)",
     ))
-
-    # STRATEGY.md is the maintainer-side notebook strategy doc. The
-    # references appear only in EXCLUDED files (promotions/,
-    # AUDIT_2026_04_17.md), so the wheel-leak surface is already
-    # zero. We do not modify the EXCLUDED files. No replacement
-    # generated for STRATEGY.md.
 
     # Class A: tracked files. Generate (bare, ../, ../../) prefix
     # forms; ../../../ is promotions/-only and excluded above.

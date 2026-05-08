@@ -158,11 +158,9 @@ from mcp_resources import (
     _LIBRARY_V3_DIR,
     _WORKED_EXAMPLES_DIR,
     _TRANSMISSIONS_DIR,
-    _METHODOLOGY_PATH,
     _CALIBRATION_RESULTS_DIR,
     _AGGREGATE_RESULTS_DIR,
     _CORPUS_ENTRIES_DIR,
-    _SPEC_FD_V1_PART1_PATH,
     _SPEC_FD_V1_PART2_PATH,
     _SIGNAL_STRENGTH_THRESHOLDS,
     _signal_strength_for,
@@ -586,8 +584,8 @@ def _sanitize_tool_exception(exc: BaseException, error_code: str) -> dict:
     file paths, or internal class hierarchy to any caller.
 
     Callers should still perform their own `log()` before calling this
-    to preserve maintainer-side observability; the sanitizer does NOT
-    double-log, it only builds the response.
+    so server-side logs retain the original exception context; the
+    sanitizer does NOT double-log, it only builds the response.
     """
     message = _MCP_TOOL_ERROR_MESSAGES.get(
         error_code,

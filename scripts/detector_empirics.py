@@ -424,10 +424,9 @@ def _markdown_report(per_doc: list[dict], agg: dict) -> str:
     lines.append("")
     lines.append(
         "`(abstain)` = classifier returned `null` (no feature-marker regex "
-        "matched). Per the evidence discipline, abstention is "
-        "preferred over mislabeling. A high abstention rate on a corpus is "
-        "not a defect; it is a measurement of how often the regex-based "
-        "feature surface fires."
+        "matched). Abstention is preferred over mislabeling. A high "
+        "abstention rate on a corpus is not a defect; it is a measurement "
+        "of how often the regex-based feature surface fires."
     )
     lines.append("")
     lines.append("## Voice classification distribution")

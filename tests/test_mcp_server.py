@@ -1085,11 +1085,11 @@ def test_initialize_carries_server_instructions():
     print("  PASS\n")
 
 
-def test_frame_check_schema_hides_operator_internal_params():
-    """The frame_check tool schema must NOT advertise maintainer-internal
+def test_frame_check_schema_hides_advanced_params():
+    """The frame_check tool schema must NOT advertise advanced
     parameters that pollute the agent's decision space:
       - prefer_contract_version: coverage v1/v2 migration window;
-        operator concern, not agent concern
+        a maintainer concern, not an agent concern
       - catalog_version_pin: stability pin for advanced integrators;
         not relevant per-call
       - domain_hint: currently echo-only with no field-level
@@ -1100,7 +1100,7 @@ def test_frame_check_schema_hides_operator_internal_params():
     compatibility preserved). The schema simply stops asking the
     agent to make decisions about them.
     """
-    print("=== frame_check schema hides maintainer-internal params ===")
+    print("=== frame_check schema hides advanced params ===")
     resp = mcp_server.dispatch({
         "jsonrpc": "2.0", "id": 1, "method": "tools/list",
     })
@@ -1116,7 +1116,7 @@ def test_frame_check_schema_hides_operator_internal_params():
         check(
             hidden not in props,
             f"{hidden!r} must not appear in the agent-facing schema; "
-            f"maintainer-internal parameters pollute the agent's "
+            f"advanced parameters pollute the agent's "
             f"decision space",
         )
     # Backward compat: the dispatch layer still accepts these
@@ -1846,10 +1846,6 @@ def test_resources_list_includes_library_and_docs():
         "resources must include at least one library entry",
     )
     check(
-        "frame-check://methodology" in uris,
-        "resources must include methodology",
-    )
-    check(
         "frame-check://calibration/reliability_tiers" in uris,
         "resources must include calibration reliability tiers",
     )
@@ -1977,20 +1973,6 @@ def test_resources_read_worked_example_returns_markdown():
     print("  PASS\n")
 
 
-def test_resources_read_methodology_returns_markdown():
-    print("=== resources/read methodology returns markdown ===")
-    resp = mcp_server.dispatch({
-        "jsonrpc": "2.0", "id": 6, "method": "resources/read",
-        "params": {"uri": "frame-check://methodology"},
-    })
-    contents = resp["result"]["contents"]
-    check(contents[0]["mimeType"] == "text/markdown",
-          "methodology MIME must be markdown")
-    check("Frame Check" in contents[0]["text"],
-          "methodology must mention Frame Check")
-    print("  PASS\n")
-
-
 def test_resources_read_calibration_returns_json():
     print("=== resources/read calibration returns JSON ===")
     resp = mcp_server.dispatch({
@@ -2081,41 +2063,6 @@ def test_resources_read_frame_divergence_index_returns_markdown():
     _assert_no_new_failures(
         baseline,
         "test_resources_read_frame_divergence_index_returns_markdown",
-    )
-    print("  PASS\n")
-
-
-def test_resources_read_frame_divergence_part_1_returns_markdown():
-    """resources/read on Part 1 returns the authored markdown for
-    the category definition and non-negotiables."""
-    baseline = len(_FAILURES)
-    print("=== resources/read Frame Divergence v1 Part 1 ===")
-    if not os.path.isfile(mcp_server._SPEC_FD_V1_PART1_PATH):
-        print("  (Part 1 not on this deploy; skipping)\n")
-        return
-    resp = mcp_server.dispatch({
-        "jsonrpc": "2.0", "id": 12, "method": "resources/read",
-        "params": {
-            "uri": "frame-check://spec/frame-divergence/v1/part-1"
-        },
-    })
-    contents = resp["result"]["contents"]
-    check(
-        contents[0]["mimeType"] == "text/markdown",
-        "Part 1 MIME must be markdown",
-    )
-    text = contents[0]["text"]
-    check(
-        text.startswith("# Frame Divergence v1"),
-        "Part 1 must open with the canonical H1",
-    )
-    check(
-        "Author:" in text and "Lovro Lucic" in text,
-        "Part 1 must carry named authorship per STRATEGY §4",
-    )
-    _assert_no_new_failures(
-        baseline,
-        "test_resources_read_frame_divergence_part_1_returns_markdown",
     )
     print("  PASS\n")
 
@@ -4918,10 +4865,25 @@ def test_content_hash_stable_across_calls():
     resolve to the exact bytes tomorrow as long as the file does
     not change."""
     print("=== content hash is stable across calls ===")
+    # Pick a representative resource from the advertised list; the
+    # hash-stability contract applies uniformly to every resource the
+    # server emits. Using a library entry rather than a hardcoded URI
+    # keeps the test robust against the resource set evolving.
+    list_resp = mcp_server.dispatch({
+        "jsonrpc": "2.0", "id": 56, "method": "resources/list",
+    })
+    library_uris = [
+        r["uri"] for r in list_resp["result"]["resources"]
+        if r["uri"].startswith("frame-check://library/FVS-")
+    ]
+    if not library_uris:
+        print("  (no library resources advertised; skipping)\n")
+        return
+    target_uri = sorted(library_uris)[0]
     for _ in range(3):
         resp = mcp_server.dispatch({
             "jsonrpc": "2.0", "id": 57, "method": "resources/read",
-            "params": {"uri": "frame-check://methodology"},
+            "params": {"uri": target_uri},
         })
         h = resp["result"]["contents"][0]["contentHash"]
         if not hasattr(test_content_hash_stable_across_calls, "first"):
@@ -11213,7 +11175,6 @@ def main() -> int:
     test_resources_list_includes_library_and_docs()
     test_resources_read_library_entry_returns_markdown()
     test_resources_read_worked_example_returns_markdown()
-    test_resources_read_methodology_returns_markdown()
     test_resources_read_calibration_returns_json()
     test_aggregate_resource_listed_when_present()
     test_aggregate_resource_omitted_when_absent()

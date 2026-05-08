@@ -82,7 +82,7 @@ The main study at N=10 supports the wedge claim if:
 
 Anything weaker is reported as falsification of the wedge claim at the load-bearing-shift threshold. Numerical thresholds are pre-registered here so the analysis is not retrofitted to whatever the data shows.
 
-A NEGATIVE result is publishable. Evidence discipline (METHODOLOGY §1.3) requires that. The output of this study is a measurement, not a marketing artifact.
+A NEGATIVE result is publishable. Pre-registration commits to publishing whatever the data show. The output of this study is a measurement, not a marketing artifact.
 
 ## Analysis plan
 
@@ -122,7 +122,7 @@ These exclusions are pre-registered so the result cannot be over-claimed. Hence 
 
 If the wedge claim survives the main study and replicates at N=30-50 with three-rater AC1 above 0.7, this becomes the empirical bedrock of the methodology paper's "the tool changes agent behavior" claim. Cited in academic work that adopts the methodology. Reproduced by external researchers using the open corpus.
 
-If the claim does not survive, this becomes the document that names what the wedge does NOT do, which is a different kind of legacy artifact: an honest negative result that other researchers cite when designing their own agent-behavior-change measurements. Either outcome is publishable. The evidence discipline is what makes that true.
+If the claim does not survive, this becomes the document that names what the wedge does NOT do, which is a different kind of legacy artifact: an honest negative result that other researchers cite when designing their own agent-behavior-change measurements. Either outcome is publishable: the pre-registration is what makes that true.
 
 ## Operator authorization required
 
