@@ -23,7 +23,6 @@ These tests pin:
 
 import sys
 import time
-import urllib.error
 
 import source_network
 

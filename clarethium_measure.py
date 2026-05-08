@@ -75,11 +75,8 @@ __version__ = "1.5.0"
 
 import argparse
 import json
-import math
 import re
 import statistics
-import sys
-import os
 import time
 
 

@@ -60,8 +60,6 @@ import json
 import os
 import re
 
-from mcp_log import log
-
 
 # ── Path detection ─────────────────────────────────────────────────
 #

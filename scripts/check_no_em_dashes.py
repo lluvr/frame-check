@@ -15,7 +15,6 @@ en-dash is found outside the allowlist below.
 Allowlist entries are file-path-suffix-matched plus a substring match
 against the offending line. Both must match for the line to be allowed.
 """
-import re
 import sys
 
 # (file_suffix, line_substring): if BOTH match the offending line is
