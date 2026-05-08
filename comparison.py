@@ -771,6 +771,7 @@ def _extract_number_set(claims):
                 float(val)
                 numbers.add(val)
             except ValueError:
+                # Non-numeric input; skip the cast.
                 pass
     return numbers
 

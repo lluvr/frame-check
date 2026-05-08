@@ -340,6 +340,7 @@ def main() -> int:
         try:
             proc.stdin.close()
         except OSError:
+            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=5)
@@ -350,6 +351,7 @@ def main() -> int:
         try:
             stderr_tail = proc.stderr.read()
         except Exception:
+            # stderr drain failed; the tail message stays empty.
             pass
         proc.stderr.close()
 

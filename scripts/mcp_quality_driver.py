@@ -175,6 +175,7 @@ class Driver:
         try:
             self.proc.stdin.close()  # type: ignore[union-attr]
         except OSError:
+            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             self.proc.wait(timeout=5)
@@ -183,15 +184,18 @@ class Driver:
         try:
             self.proc.stdout.close()  # type: ignore[union-attr]
         except OSError:
+            # stdout already closed or broken; idempotent cleanup proceeds.
             pass
         stderr_tail = ""
         try:
             stderr_tail = self.proc.stderr.read()  # type: ignore[union-attr]
         except Exception:
+            # stderr drain failed; the tail message stays empty.
             pass
         try:
             self.proc.stderr.close()  # type: ignore[union-attr]
         except OSError:
+            # stderr already closed or broken; idempotent cleanup proceeds.
             pass
         return stderr_tail
 
@@ -239,6 +243,7 @@ class Driver:
             }) + "\n")
             self.proc.stdin.flush()  # type: ignore[union-attr]
         except (BrokenPipeError, OSError):
+            # Pipe broken; subsequent read surfaces the failure.
             pass
         time.sleep(_POST_INIT_GRACE_S)
 

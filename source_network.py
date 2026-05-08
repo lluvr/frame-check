@@ -1433,6 +1433,7 @@ def _urlopen_with_deadline(req, per_op_timeout, total_deadline=None):
                     f"thread continues in background\n"
                 )
             except Exception:
+                # stderr write failed (closed pipe, etc.); the raise/control flow below is load-bearing.
                 pass
             raise
     finally:
@@ -1521,6 +1522,7 @@ def _fetch_json(url, total_deadline=None):
                 elif 500 <= exc.code < 600:
                     kind_label = "server_error"
             except Exception:
+                # Exception lacks the expected .code shape; kind_label stays at its default.
                 pass
         provider_health.record_error(provider, kind_label)
         safe_url = url.split("?")[0] if "?" in url else url
@@ -1796,6 +1798,7 @@ def verify_wikipedia(decomp, _cached_article=None):
         raw_cleaned = re.sub(r'[TBMKk]$', '', raw_cleaned).replace(",", "")
         raw_float = float(raw_cleaned)
     except (ValueError, AttributeError):
+        # raw_value not numeric or attribute missing; raw_float stays 0.0 and the raw-scale match is skipped.
         pass
 
     matched_val, context, confidence = None, None, 0
@@ -2454,6 +2457,7 @@ def verify_wolfram(decomp):
             raw_cleaned = re.sub(r'[TBMKk]$', '', raw_cleaned).replace(",", "")
             raw_float = float(raw_cleaned)
         except (ValueError, AttributeError):
+            # raw_value not numeric or attribute missing; raw_float stays 0.0 and the raw-scale match is skipped.
             pass
         if raw_float and raw_float != decomp.value:
             matched_val, context, confidence = _match_in_text(

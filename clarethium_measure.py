@@ -641,6 +641,7 @@ def extract_numbers_for_matching(text):
                     # as the same key.
                     val = str(int(scaled)) if scaled == int(scaled) else str(scaled)
                 except (ValueError, TypeError):
+                    # Non-numeric val (e.g. a spelled-out scale word); leave the original token unchanged.
                     pass
             effective_type = num_type
             if num_type == "integer_comma":
@@ -1632,6 +1633,7 @@ def grounding_decomposition(doc_text, source_text):
             try:
                 source_floats.add(float(val))
             except (ValueError, TypeError):
+                # Non-castable source value; skip from the float set.
                 pass
 
     # Extract source years from FULL source text (not just data section).

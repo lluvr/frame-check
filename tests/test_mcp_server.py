@@ -5366,6 +5366,7 @@ def test_stdio_subprocess_roundtrip():
         try:
             proc.stdin.close()
         except Exception:
+            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=5)
@@ -5374,10 +5375,12 @@ def test_stdio_subprocess_roundtrip():
         try:
             proc.stdout.close()
         except Exception:
+            # stdout already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.stderr.close()
         except Exception:
+            # stderr already closed or broken; idempotent cleanup proceeds.
             pass
     print("  PASS\n")
 
@@ -11032,6 +11035,7 @@ def test_stdio_subprocess_handles_rapid_fire_sequential_requests():
         try:
             proc.stdin.close()
         except Exception:
+            # Pipe already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.wait(timeout=15)
@@ -11043,10 +11047,12 @@ def test_stdio_subprocess_handles_rapid_fire_sequential_requests():
         try:
             proc.stdout.close()
         except Exception:
+            # stdout already closed or broken; idempotent cleanup proceeds.
             pass
         try:
             proc.stderr.close()
         except Exception:
+            # stderr already closed or broken; idempotent cleanup proceeds.
             pass
     _assert_no_new_failures(baseline, "test_stdio_subprocess_handles_rapid_fire_sequential_requests")
     print("  PASS\n")

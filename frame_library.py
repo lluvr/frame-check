@@ -962,6 +962,7 @@ def suggest_frames(
             try:
                 priority += float(density_match.group(1)) * 0.1
             except ValueError:
+                # Non-numeric density string; priority stays at the base 1.0/2.0.
                 pass
         suggestions.append({
             "fvs_id": fvs_id,
