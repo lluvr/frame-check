@@ -419,13 +419,13 @@ NUMERICAL_PATTERNS = [
     (r'[$€£¥₹]\s*(\d+(?:[.,]\d+)*)\s*(billion|million|thousand|bn|mn|B|M|K)?', 'dollar'),
     (r'(\d+(?:\.\d+)?)\s*[x×](?:\s|$|,)', 'multiplier'),
     (r'(\d+(?:\.\d+)?)\s*-?\s*fold', 'multiplier'),
-    (r'(\d+(?:,\d{3})*)\s+(?:companies|firms|teams|organizations|employees|'
+    ((r'(\d+(?:,\d{3})*)\s+(?:companies|firms|teams|organizations|employees|'
      r'engineers|developers|users|customers|tools|platforms|products|projects|'
      r'systems|failures|incidents|outages|services|applications|repositories|'
-     r'modules|microservices|endpoints|APIs?|databases?|clusters?|regions?)',
+     r'modules|microservices|endpoints|APIs?|databases?|clusters?|regions?)'),
      'entity_count'),
-    (r'(\d+(?:\.\d+)?)\s*[-–]?\s*(?:\d+(?:\.\d+)?\s*)?'
-     r'(?:days?|weeks?|months?|years?|hours?|minutes?|quarters?|sprints?)',
+    ((r'(\d+(?:\.\d+)?)\s*[-–]?\s*(?:\d+(?:\.\d+)?\s*)?'
+     r'(?:days?|weeks?|months?|years?|hours?|minutes?|quarters?|sprints?)'),
      'duration'),
 ]
 
@@ -435,8 +435,8 @@ CAUSAL_MARKERS = [
     r'\bleads? to\b', r'\bresults? in\b', r'\bcauses?\b', r'\bproduces?\b',
     r'\bgenerates?\b', r'\btriggers?\b', r'\bconsequently\b',
     r'\btherefore\b', r'\bthus\b', r'\bhence\b',
-    r'\bthe (?:primary|main|key|root|fundamental|core|underlying|central) '
-    r'(?:cause|reason|driver|factor|mechanism|force)\b',
+    (r'\bthe (?:primary|main|key|root|fundamental|core|underlying|central) '
+    r'(?:cause|reason|driver|factor|mechanism|force)\b'),
     r'\b(?:directly|indirectly) (?:causes?|leads? to|results? in|drives?)\b',
     r'\bis responsible for\b', r'\baccounts? for\b',
     r'\benables?\b', r'\bprevents?\b', r'\binhibits?\b',

@@ -586,15 +586,15 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 ),
             },
             "caveats": [
-                "Detector firing is a lower-bound vocabulary claim, "
-                "not an upper-bound document claim.",
-                "Non-firing may reflect vocabulary the detector does "
+                ("Detector firing is a lower-bound vocabulary claim, "
+                "not an upper-bound document claim."),
+                ("Non-firing may reflect vocabulary the detector does "
                 "not recognize rather than absence of the dimension "
-                "in the document.",
-                "Cite as 'Frame Check's detector found markers for "
+                "in the document."),
+                ("Cite as 'Frame Check's detector found markers for "
                 "X' or 'no markers detected for X' rather than 'the "
                 "document covers X' or 'the document does not "
-                "address X'.",
+                "address X'."),
             ],
             "how_to_cite": (
                 "Frame Check's detector found markers for X / no "
@@ -627,24 +627,24 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 ),
             },
             "caveats": [
-                "The reasoning text is the engine's rationale for "
+                ("The reasoning text is the engine's rationale for "
                 "the binary judgment, not a confidence proxy. Do not "
-                "paraphrase it as 'Frame Check is X% confident'.",
-                "Per-emission borderline-vs-decisive distinction is "
+                "paraphrase it as 'Frame Check is X% confident'."),
+                ("Per-emission borderline-vs-decisive distinction is "
                 "unavailable. Cite the per-frame reliability tier as "
                 "the macro-aggregate evidence; do not treat any "
                 "single emission as decisive without disclosing the "
-                "intra-rater variance.",
-                "Surface honest_limit caveats verbatim when the "
+                "intra-rater variance."),
+                ("Surface honest_limit caveats verbatim when the "
                 "engine emits one. The honest_limit text is per-"
                 "frame and names the operationalization gap in "
-                "single-emission terms.",
-                "The construct is LLM-judged, not deterministic. "
+                "single-emission terms."),
+                ("The construct is LLM-judged, not deterministic. "
                 "Two engine runs on the same document at temperature "
                 "0 can disagree on individual binary judgments at "
                 "rates consistent with F-2026-032's MODERATE-NOISE "
                 "band; aggregate reliability is the load-bearing "
-                "evidence.",
+                "evidence."),
             ],
             "how_to_cite": (
                 "Frame Check's V4.2 engine judged the document as "
@@ -676,14 +676,14 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 ),
             },
             "caveats": [
-                "Classifier confidence is margin-to-runner-up, not "
-                "external validity data.",
-                "Borderline classifications must surface the "
+                ("Classifier confidence is margin-to-runner-up, not "
+                "external validity data."),
+                ("Borderline classifications must surface the "
                 "runner-up explicitly so the cascade's hesitation is "
-                "visible to the reader.",
-                "Single-author calibrated; no IRR data; treat the "
+                "visible to the reader."),
+                ("Single-author calibrated; no IRR data; treat the "
                 "classification as Frame Check's reading rather than "
-                "a measured property of the document.",
+                "a measured property of the document."),
             ],
             "how_to_cite": (
                 "Frame Check classified as X (confidence Y; "
@@ -718,16 +718,16 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 ),
             },
             "caveats": [
-                "The trigger match is reproducible; the reading "
+                ("The trigger match is reproducible; the reading "
                 "inside is the curator's normative claim about what "
-                "the trigger means.",
-                "Cite the reading as Frame Check's reading, not as "
-                "a measured property of the document.",
-                "No inter-rater reliability data on whether other "
+                "the trigger means."),
+                ("Cite the reading as Frame Check's reading, not as "
+                "a measured property of the document."),
+                ("No inter-rater reliability data on whether other "
                 "readers would compose the same pattern from the "
                 "same triggers; treat the named composition as "
                 "Frame Check's recognition of a structural shape, "
-                "not a verdict on the document.",
+                "not a verdict on the document."),
             ],
             "how_to_cite": (
                 "Frame Check identified pattern X (composed "
@@ -769,20 +769,20 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 ),
             },
             "caveats": [
-                "Generated content is non-reproducible across "
+                ("Generated content is non-reproducible across "
                 "model versions and runs; cite the model_"
                 "provenance fields (provider, model, cost) as the "
-                "audit trail.",
-                "The frame's general teaching_question_general is "
+                "audit trail."),
+                ("The frame's general teaching_question_general is "
                 "the stable catalog reference; the generated_"
                 "question is one document-specific application "
-                "composed by the LLM, not a measurement.",
-                "Never present LLM-generated content as Frame "
+                "composed by the LLM, not a measurement."),
+                ("Never present LLM-generated content as Frame "
                 "Check's measurement; the construct-honest cite "
                 "is 'Frame Check requested an LLM-composed "
                 "question (provider X, model Y, cost Z; "
                 "is_deterministic=false in model_provenance); the "
-                "generated application is: ...'.",
+                "generated application is: ...'."),
             ],
             "how_to_cite": (
                 "Frame Check requested an LLM-composed question "
@@ -1354,10 +1354,10 @@ def _build_divergence_block(
         domain_inferred = domain_hint
 
     limitations: list[str] = [
-        "V4.2 caller-side composition: absence_basis fields are "
+        ("V4.2 caller-side composition: absence_basis fields are "
         "scaffolding for the caller's agent model. Caller's model "
         "determines the final absence verdict per "
-        "FRAME_DIVERGENCE_CONTRACT_v1 §7.1.",
+        "FRAME_DIVERGENCE_CONTRACT_v1 §7.1."),
     ]
     if domain_hint is not None:
         limitations.append(

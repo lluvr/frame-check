@@ -247,8 +247,8 @@ def _spec_fd_v1_index_markdown() -> str:
     lines = [
         "# Frame Divergence v1: spec index",
         "",
-        "Author: Lovro Lucic. Canonical reference for the frame "
-        "divergence category as defined by Frame Check.",
+        ("Author: Lovro Lucic. Canonical reference for the frame "
+        "divergence category as defined by Frame Check."),
         "",
         "## Parts",
         "",
@@ -256,18 +256,18 @@ def _spec_fd_v1_index_markdown() -> str:
     scheme = RESOURCE_SCHEME
     part_descriptions = [
         (1, "Category definition and non-negotiables",
-         "category and sovereignty argument; "
-         "the non-negotiables any implementation must honor"),
+         ("category and sovereignty argument; "
+         "the non-negotiables any implementation must honor")),
         (2, "Contract (c1.0)",
-         "interface contract: operations, inputs, outputs, "
+         ("interface contract: operations, inputs, outputs, "
          "faithfulness guarantees, MCP-vs-web tier split, "
-         "versioning commitments"),
+         "versioning commitments")),
         (3, "V4.2 integration",
-         "per-tier implementation details; pending NEW panel "
-         "re-validation landing"),
+         ("per-tier implementation details; pending NEW panel "
+         "re-validation landing")),
         (4, "Self-red-team and competitive map",
-         "failure scenarios paired with minimum-surviving "
-         "artifacts; adjacent-category positioning"),
+         ("failure scenarios paired with minimum-surviving "
+         "artifacts; adjacent-category positioning")),
     ]
     for num, title, blurb in part_descriptions:
         if num in present:

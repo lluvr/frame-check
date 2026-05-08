@@ -311,9 +311,9 @@ def main(argv: list[str] | None = None) -> int:
     proc = subprocess.run(
         [
             sys.executable, "-c",
-            "import mcp_server; "
+            ("import mcp_server; "
             "print(mcp_server.SERVER_VERSION); "
-            "print(mcp_server.PROTOCOL_VERSION)",
+            "print(mcp_server.PROTOCOL_VERSION)"),
         ],
         capture_output=True, text=True, env=env,
     )
