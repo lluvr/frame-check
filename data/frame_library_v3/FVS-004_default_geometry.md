@@ -32,7 +32,7 @@ Human cognitive defaults and AI training defaults share behavioral geometry. Bot
 
 **When this frame is misleading:** Narrowly scoped technical tasks where the "default" is the correct answer (calculating tax, formatting data, translating text). Default geometry matters when interpretation is required, not when execution is required.
 
-**Honest limits:** The bilateral default coupling is a structural argument from how transformers work (semantic neighborhood activation) combined with how human cognition works (satisficing under uncertainty). The specific claim "defaults from both sides reinforce each other" has not been tested in a controlled experiment measuring the coupling directly. Model-specific default profiles (Claude convergent, etc.) are directional observations from the upstream's cross-model experiments, not rigorously measured personality profiles.
+**Honest limits:** The bilateral default coupling is a structural argument from how transformers work (semantic neighborhood activation) combined with how human cognition works (satisficing under uncertainty). The specific claim "defaults from both sides reinforce each other" has not been tested in a controlled experiment measuring the coupling directly. Model-specific default profiles (Claude convergent, etc.) are directional observations from cross-model experiments, not rigorously measured personality profiles.
 
 ## Generation affordances
 
@@ -96,13 +96,13 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 - HI-027 The Default Geometry case study (origin)
 - EXP-064 cross-evaluator compression
 - EXP-077/b prompt attribution controlled experiment
-- Cross-model default-profile observations from vault (Claude convergent, GPT expansive, Gemini balancing)
+- Cross-model default-profile observations from internal experiments (Claude convergent, GPT expansive, Gemini balancing)
 - Observatory daily-topic stream from 2026-04-08 forward (Tier B paused 2026-04-22)
 
 **Failure record.** Three failure modes observed in operation:
 1. Frame absent from F-2026-027 mixed_genre_v1. Cross-family AC1 1.000, prevalence 0 percent - frame did not fire on any document. mixed_genre_v1 contains executed content; default-geometry detection requires AI-interaction-pattern content (brainstorming sessions, strategy iteration logs, exploratory dialogue). Detection is meta-level; mixed_genre_v1 is not the appropriate corpus.
 2. Bilateral coupling claim is structural argument, not empirical. "Defaults from both sides reinforce each other without either side recognizing the coupling" is grounded in transformer mechanism (semantic neighborhood activation) plus human cognition (satisficing under uncertainty). Direct controlled measurement of the bilateral coupling has not been run. Claim is plausible; empirical anchor is open.
-3. Model-specific default profiles are directional, not measured. "Claude convergent, GPT expansive, Gemini balancing" are observational from vault cross-model experiments, not rigorously measured personality profiles with effect sizes. The directional claim is supported by repeated observation; quantified profiling is open work.
+3. Model-specific default profiles are directional, not measured. "Claude convergent, GPT expansive, Gemini balancing" are observational from cross-model experiments, not rigorously measured personality profiles with effect sizes. The directional claim is supported by repeated observation; quantified profiling is open work.
 
 **Success record.** Two operationalized cases:
 1. European-expansion worked example (v1 Identification). Document operated from "expansion is the right move" default. Default-geometry counter-frame surfaced the unasked questions: should we expand at all; what are the costs of expansion vs deepening existing markets; what does 12 percent projected growth mean for our capacity to capture it; what happens if we expand and fail. The diagnostic: name the default ("this document assumes expansion is the right move") and cost the default ("what would have to be true for NOT expanding to be the better decision").
@@ -127,7 +127,7 @@ Per-family positives (of 15 docs): Claude 0, Gemini 0, Grok 0, GPT-5 0.
 - HI-027 The Default Geometry origin study
 - EXP-064 cross-evaluator compression
 - EXP-077/b prompt attribution
-- Cross-model default-profile observations: directional from vault (rigorous quantification open)
+- Cross-model default-profile observations: directional from internal experiments (rigorous quantification open)
 - V4 detection mode: meta (not present in mixed_genre_v1)
 - Observatory fire rate: pending Tier A quarterly export
 - User-reported outcomes: not yet collected (Tier 3 future work)

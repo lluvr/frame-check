@@ -154,7 +154,7 @@ SECTION_RE = re.compile(
 def _build_replacement_table() -> list[tuple[str, str]]:
     """Returns a list of (source, target) pairs, applied in order.
 
-    Order matters only for Class B / Class A overlap: vault path
+    Order matters only for Class B / Class A overlap: maintainer-side path
     strips are listed FIRST so a `data/falsifications/F-NNN.md`
     is collapsed before any later rule could touch the surrounding
     backtick context.

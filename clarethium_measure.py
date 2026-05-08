@@ -8,8 +8,7 @@ dimensions; 3 pairs share constructs). 9/10 layers are zero-LLM (pure regex
 against SelfCheckGPT, FActScore, MiniCheck, RAGAS.
 Gate 0 (Layer 1a) requires Gemini API and is non-deterministic.
 
-VERSION HISTORY (Frame Check. See CLARETHIUM_MEASURE_SYNC.md for sync
-policy against the upstream reference implementation):
+VERSION HISTORY:
 
   v1.5.0 (2026-04-17)
     - Layer 11: scope_assessment dict added to grounding_decomposition
@@ -21,15 +20,9 @@ policy against the upstream reference implementation):
 
   v1.4 (2026-04-11)
     - source_fidelity: key rename from fabrication_rate to instability_rate.
-      Legacy alias REMOVED in Frame Check (vault retains deprecated
-      alias; do not overwrite fork with vault).
     - Multi-currency regex ([$€£¥₹]) for dollar/euro/yen/pound/rupee.
     - Scaled-integer extraction pattern ("6 million" outside currency).
     - Paragraph-aware sentence splitter (joins wrapped lines).
-
-  Frame Check diverges from vault in the above items. Vault is the
-  upstream reference implementation. Fork tracks upstream by patches-on-top
-  with this header as the changelog.
 
 CONSTRUCT DEFINITIONS (what each layer actually measures):
   1. Structural Profile. How much the document's surface structure deviates from

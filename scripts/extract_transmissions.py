@@ -1,4 +1,4 @@
-"""Extract published transmissions from clarethium-app's blog vault
+"""Extract published transmissions from clarethium-app's blog source directory
 into frame-check/data/transmissions/ as normalized markdown files
 with YAML frontmatter.
 
@@ -11,7 +11,7 @@ Writes:
 
 Defaults resolve relative to this repo's working copy, assuming
 clarethium-app is a sibling checkout at ../clarethium-app. Override
-with CLI arguments if the upstream lives elsewhere.
+with CLI arguments if the source directory lives elsewhere.
 
 Re-run this script after the author publishes a new transmission
 (by adding a new transmission id to PUBLISHED_IDS in the upstream
@@ -24,7 +24,7 @@ The frontmatter captures the registry fields the blog carries
 (transmission_id, display_title, type, summary, published,
 models, source_url), plus updated and updateNote fields when
 the author has edited a post after publication. The body is
-the original vault content verbatim.
+the original source content verbatim.
 """
 import argparse
 import os
@@ -165,12 +165,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Extract published transmissions from "
-            "clarethium-app's blog vault into this repo's "
+            "clarethium-app's blog source directory into this repo's "
             "data/transmissions directory."
         ),
     )
     parser.add_argument(
-        "--vault",
+        "--source-dir",
         default=DEFAULT_VAULT,
         help=(
             "Absolute path to clarethium-app/src/content/blog. "
@@ -187,11 +187,11 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    registry_path = os.path.join(args.vault, "_registry.ts")
+    registry_path = os.path.join(args.source_dir, "_registry.ts")
     if not os.path.isfile(registry_path):
         print(
             f"ERROR: {registry_path} does not exist. "
-            "Pass --vault explicitly if the blog vault lives "
+            "Pass --source-dir explicitly if the blog source directory lives "
             "elsewhere.",
             file=sys.stderr,
         )
@@ -228,7 +228,7 @@ def main() -> int:
         display_title = titles.get(tid) or tid
         entry_meta = meta.get(tid, {})
         try:
-            md_path = find_markdown_file(args.vault, tid)
+            md_path = find_markdown_file(args.source_dir, tid)
         except FileNotFoundError as e:
             print(f"WARN: {e}", file=sys.stderr)
             skipped += 1

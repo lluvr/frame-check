@@ -75,7 +75,7 @@ When this frame fires, the document covers many analytical perspectives at very 
 
 **What makes this higher-stakes than market analysis:** When the completeness illusion operates in a market analysis, investors may over-allocate capital. When it operates in an AI safety evaluation, deployment decisions are made based on the impression that the evaluation was thorough. The structural completeness of the safety card may be the evaluation surface where the completeness illusion matters most.
 
-**Source:** CHD pilot validation (EXP-096, 9 documents, 2026-04-14). Vault: internal scoring artifact (EXP-096). The highest-scoring document (11/18, 61%) was a benchmark methodology paper that dedicated a multi-page section to "What is missing," structured by the benchmark's own taxonomy. The lowest-scoring non-marketing document (2/18, 11%) was the most-cited AI benchmark, which presents evaluation results without reflecting on the evaluation instrument.
+**Source:** CHD pilot validation (EXP-096, 9 documents, 2026-04-14). EXP-096 internal artifact (EXP-096). The highest-scoring document (11/18, 61%) was a benchmark methodology paper that dedicated a multi-page section to "What is missing," structured by the benchmark's own taxonomy. The lowest-scoring non-marketing document (2/18, 11%) was the most-cited AI benchmark, which presents evaluation results without reflecting on the evaluation instrument.
 
 ## Branch applicability
 

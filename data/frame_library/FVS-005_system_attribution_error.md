@@ -32,7 +32,7 @@ Users attribute AI behavior to "the model" when four invisible layers jointly pr
 
 **When this frame is misleading:** When discussing properties that genuinely ARE model-specific: context window size, language coverage, base training data, architecture differences. Some properties are model properties. The error is in the default attribution, not in the claim that models have properties.
 
-**Honest limits:** The four-layer model is structural and well-supported by the Claude Code leak evidence and by the upstream's controlled experiments (same model, different system configuration, deterministic behavioral change). The specific claim about how much end-user perception is model-layer vs other-layer has not been quantified in a population study. "Most of what users attribute to the model is not the model" is directionally supported but the fraction is unmeasured.
+**Honest limits:** The four-layer model is structural and well-supported by the Claude Code leak evidence and by controlled experiments (same model, different system configuration, deterministic behavioral change). The specific claim about how much end-user perception is model-layer vs other-layer has not been quantified in a population study. "Most of what users attribute to the model is not the model" is directionally supported but the fraction is unmeasured.
 
 ## Decision-readiness implication
 
