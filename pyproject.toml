@@ -81,6 +81,7 @@ py-modules = [
     "prompt_safety",
     "version",
     "entity_classifier",
+    "entity_data",
     "time_context",
     "corpus_intelligence",
     "frame_deepening",
