@@ -1226,24 +1226,6 @@ def _provider_from_url(url: str) -> str:
     return host
 
 
-def _safe_url_for_log(url: str) -> str:
-    """Strip credentials and query string from a URL for stderr logging.
-
-    Drops basic-auth ``user:pass@`` from the netloc and the entire query
-    string (which carries API keys for providers like FRED and Alpha
-    Vantage). Used in error / deadline diagnostics where the bare path
-    is enough context for an operator to identify the call site without
-    leaking credentials into log streams.
-    """
-    try:
-        p = urllib.parse.urlparse(url)
-        host = p.hostname or "unknown"
-        port = f":{p.port}" if p.port else ""
-        return f"{p.scheme}://{host}{port}{p.path}"
-    except Exception:
-        return "<unparseable-url>"
-
-
 # Hard upper bound on _fetch_json wall-clock per request. Mirror of
 # source_network.py (root); see that module for the full architectural
 # rationale (production cold-start Wikipedia stall blocking ~30s past
@@ -1284,9 +1266,8 @@ def _urlopen_with_deadline(req, per_op_timeout, total_deadline=None):
                 full_url = getattr(req, "full_url", str(req))
                 provider = _provider_from_url(full_url)
                 provider_health.record_error(provider, "deadline")
-                safe_url = full_url.split("?")[0] if "?" in full_url else full_url
                 sys.stderr.write(
-                    f"[source-network] urlopen({safe_url[:100]}...): "
+                    f"[source-network] urlopen({provider}): "
                     f"caller-side deadline {deadline:.1f}s exceeded; "
                     f"thread continues in background\n"
                 )
@@ -1329,9 +1310,8 @@ def _fetch_json(url, total_deadline=None):
             import sys
             provider = _provider_from_url(url)
             provider_health.record_error(provider, "deadline")
-            safe_url = _safe_url_for_log(url)
             sys.stderr.write(
-                f"[source-network] _fetch_json({safe_url}...): "
+                f"[source-network] _fetch_json({provider}): "
                 f"caller-side deadline {deadline:.1f}s exceeded; "
                 f"urlopen continues in background\n"
             )
@@ -1353,9 +1333,8 @@ def _fetch_json(url, total_deadline=None):
                 elif 500 <= exc.code < 600:
                     kind_label = "server_error"
         provider_health.record_error(provider, kind_label)
-        safe_url = _safe_url_for_log(url)
         sys.stderr.write(
-            f"[source-network] _fetch_json({safe_url}...): "
+            f"[source-network] _fetch_json({provider}): "
             f"{type(exc).__name__}: {exc}\n"
         )
         return None
@@ -1616,11 +1595,12 @@ def verify_wikipedia(decomp, _cached_article=None):
     # Try matching at the raw scale first (e.g., 27.4 against 27.36 in text),
     # then at normalized scale (e.g., 27.4e12 against large numbers in text).
     # Wikipedia text usually has human-readable numbers matching the raw claim.
-    raw_float = 0.0
-    with contextlib.suppress(ValueError, AttributeError):
+    try:
         raw_cleaned = decomp.raw_value.strip().lstrip("$~").rstrip("%")
         raw_cleaned = re.sub(r'[TBMKk]$', '', raw_cleaned).replace(",", "")
         raw_float = float(raw_cleaned)
+    except (ValueError, AttributeError):
+        raw_float = 0.0
     matched_val, context, confidence = None, None, 0
     compare_against = decomp.value  # which scale the match used
     if raw_float and raw_float != decomp.value:
@@ -2138,11 +2118,12 @@ def verify_wolfram(decomp):
 
     if matched_val is None:
         # Also try raw float match
-        raw_float = 0.0
-        with contextlib.suppress(ValueError, AttributeError):
+        try:
             raw_cleaned = decomp.raw_value.strip().lstrip("$~").rstrip("%")
             raw_cleaned = re.sub(r'[TBMKk]$', '', raw_cleaned).replace(",", "")
             raw_float = float(raw_cleaned)
+        except (ValueError, AttributeError):
+            raw_float = 0.0
         if raw_float and raw_float != decomp.value:
             matched_val, context, confidence = _match_in_text(
                 result, raw_float, decomp.sentence, decomp=decomp
