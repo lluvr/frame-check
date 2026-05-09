@@ -7,7 +7,6 @@ format and VERSION file location. It is consumed by mcp_server.py
 so a future change to INDEX.md must be visible to a test run.
 """
 
-from pathlib import Path
 
 import pytest
 

@@ -96,7 +96,6 @@ Usage:
 """
 from __future__ import annotations
 
-import ast
 import os
 import re
 import shutil
@@ -823,7 +822,6 @@ def main(argv: list[str] | None = None) -> int:
         )
     else:
         import tempfile
-        import shutil as _shutil
         with tempfile.TemporaryDirectory(prefix="lift-canon-audit-") as tmp:
             with zipfile.ZipFile(wheel) as z:
                 z.extractall(tmp)
