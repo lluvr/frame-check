@@ -118,7 +118,7 @@ SERVER_NAME = "frame-check"
 # test_server_version_bumped_for_decision_readiness_capability;
 # adding suffixes here would break that pin and the handshake
 # parser shape downstream consumers may rely on.
-SERVER_VERSION = "0.9.3"
+SERVER_VERSION = "0.9.4"
 
 # ── Logging ────────────────────────────────────────────────────────
 #

@@ -6,6 +6,22 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-05-09
+
+### Public canon: residual operator-document citations scrubbed
+
+Closes the cleanup arc that began with the 0.9.0 lift retiring the operator-side methodology document and the engine gap-inventory from the wheel. Several public-extractable surfaces still cited those documents as load-bearing references and the publish-time CI gate still required one of them. Adopters reading the citable artifacts found dead links and false claims; the publish workflow failed at every tag push.
+
+- `CITATION.cff`: drop the dead URL pointing at a methodology file no longer in the public repo, and the false "bundled with the wheel" claim. Point the methodology citation at `github.com/Clarethium/lodestone` (the published methodology canon under CC-BY-4.0).
+- `.github/workflows/publish.yml`: drop the methodology file from the required-files post-build gate. The wheel has not bundled it since 0.9.0; the gate had been failing CI on every tag push (v0.9.1, v0.9.2, v0.9.3 all failed at this step).
+- `schemas/attribution-1.0.0.json`, `mcp_server.py`, `tests/test_mcp_server.py`: drop the "documented in §9.1" citations of the retired methodology document. The attribution schema's authoring home is the JSON file itself; its versioning policy is documented inline.
+- `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`: drop the versioned methodology resource URI (no implementation; the methodology resource auto-deregisters when the file is absent) and the engine gap-inventory citation in the engine-manifest description.
+- `mcp_compose.py`: drop the gap-inventory citation comment on the engine_status assignment.
+- `.github/ISSUE_TEMPLATE/feature_request.md`: rephrase the methodology checkbox to reference the empirical-studies / calibration-data surface adopters can actually inspect.
+- `data/worked_examples/*` (markdown + JSON): drop the per-bundle citations of the engine gap-inventory and methodology sections in payload metadata and adopter-facing prose.
+
+No code-behaviour change; no test-shape change. The MCP surface continues to advertise `frame-check://methodology` only when the file is present (and gracefully returns the standard 404-style error otherwise). 660 tests pass.
+
 ## [0.9.3] - 2026-05-09
 
 ### Source comment + docstring cleanup
