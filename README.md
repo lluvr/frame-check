@@ -97,8 +97,8 @@ LLM falls short:
 - **Zero per-query cost.** Frame Check's MCP server makes no LLM
   call server-side. The caller's agent does the prose interpretation
   if the user wants that. This means a frame-check on a 10,000-word
-  document costs the user $0.00, not the $0.05–0.50 an LLM call
-  would charge.
+  document costs the user $0.00, not the $0.05 to $0.50 an LLM
+  call would charge.
 - **Explicit absence.** The frame-divergence block names what the
   document does not address by comparing matched frames against the
   Frame Vocabulary Standard catalog. An LLM asked "what's missing"

@@ -11,11 +11,14 @@ The current PyPI line is `0.9.x`. The next stable target is `1.0.0`.
 ## What 0.9.x is
 
 The 0.9 line is the stabilization arc that closes the cleanup work
-the 0.8 line started: public-canon discipline (no internal vocabulary
-in shipped artifacts), CI-driven publishing (FM-PCD-12 preflight,
-Trusted Publishing, sigstore attestation, GitHub release on tag
-push), and the audit + lint + type-check infrastructure that future
-contributions run against.
+the 0.8 line started. CI-driven publishing landed in `0.9.4` with a
+destination-state preflight (refuses to proceed if the GitHub
+repository is archived, disabled, or has a different default
+branch), Trusted Publishing for OIDC-authenticated PyPI uploads,
+sigstore build-provenance attestation, and a GitHub release created
+from the annotated tag on every successful publish. The audit, lint,
+and type-check infrastructure that future contributions run against
+ships in the same line.
 
 0.9.x ships working capability. It is not yet at the v1.0 quality
 bar described below.
@@ -92,7 +95,7 @@ on a reader-task corpus.
 ### Catalog: Frame Vocabulary Standard expansion
 
 The current FVS catalog ships 20 entries (`data/frame_library/`).
-The catalog is intentionally conservative — entries land only when
+The catalog is intentionally conservative: entries land only when
 the rule reaches a useful detection rate against the labelers and
 the entry survives a public adoption pass. Pre-v1.0 candidate
 entries live in the methodology canon at `Clarethium/lodestone` and
@@ -106,28 +109,27 @@ get promoted into the public catalog when ratified.
 - A comparison section in README that names what Frame Check gives
   an adopter that a plain LLM call does not.
 
-### Decoupling completion
+### Cut a release end-to-end via the new pipeline
 
-The 2026-05-09 incident (FM-PCD-6 in
-`PUBLIC_CANON_DISCIPLINE.md`) revealed that the operator dev tree
-that bundled the web surface and the MCP source was a structural
-risk for the publish path. The current pipeline replaces that with
-CI-driven tag-push publishing from this repository alone. v1.0
-confirms: the legacy operator-tree orchestrator is retired, the
-release has cut from this repo at least once, and the
-`RELEASING.md` flow has executed end-to-end including PyPI
-Trusted Publishing.
+`0.9.4` shipped via the prior orchestrator path. The CI-driven
+pipeline in `.github/workflows/publish.yml` is in place but has
+not yet executed end-to-end (the PyPI Trusted Publishing
+registration is the one-time manual gate before the first
+CI-driven publish). v1.0 confirms: at least one release cut and
+published from this repository alone via tag push, with the
+sigstore attestation, GitHub release, and Trusted Publishing
+upload all green.
 
 ## Past v1.0 (open questions)
 
-- **Multi-language MCP wrappers** (TypeScript, Go) — contingent on
+- **Multi-language MCP wrappers** (TypeScript, Go): contingent on
   adopter demand surfaced through GitHub discussions.
-- **Framing-check on PR diffs** — agentic CI integration where the
+- **Framing-check on PR diffs**: agentic CI integration where the
   detector runs on the document content of pull requests.
-- **Streaming MCP transport** — the current stdio JSON-RPC line-
+- **Streaming MCP transport**: the current stdio JSON-RPC line-
   delimited protocol is enough for desktop clients; remote / web
   MCP transports are an open question.
-- **Independent rater rounds** — beyond the existing `docs/RATERS.md`
+- **Independent rater rounds**: beyond the existing `docs/RATERS.md`
   protocol, expand to a multi-rater consortium with public
   attribution.
 

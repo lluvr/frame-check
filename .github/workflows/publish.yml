@@ -4,9 +4,10 @@
 #
 #   1. World-state preflight: verify the destination repository is
 #      writable (not archived / disabled / renamed) right before any
-#      irreversible step. Closes FM-PCD-12 (the 2026-05-09 incident
-#      where 0.9.4 published from a stale operator dev-tree to PyPI
-#      three hours after this repo had been archived).
+#      irreversible step. Refuses to proceed if the destination state
+#      has shifted between when the tag was authored and when CI
+#      begins; protects against the publish-past-archive class of
+#      incident.
 #   2. Build the wheel under a fresh CI environment so the artifact
 #      is reproducible from public source alone (no operator tree
 #      involved).
@@ -49,12 +50,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # FM-PCD-12: an irreversible publish must not proceed if the
-          # destination world has shifted between when the tag was
-          # pushed and when CI begins. Specifically refuse when the
-          # repo is archived, disabled, or its default branch has
-          # changed from `master`. This is the regression test for
-          # the 2026-05-09 incident.
+          # An irreversible publish must not proceed if the destination
+          # state has shifted between when the tag was pushed and when
+          # CI begins. Specifically refuse when the repo is archived,
+          # disabled, or its default branch has changed from `master`.
+          # The class of incident this gate closes is the one where a
+          # release proceeds against a destination whose state the
+          # contributor (or the prior orchestrator) cannot have known.
           set -euo pipefail
           echo "Fetching destination repo state for ${GITHUB_REPOSITORY}..."
           state=$(gh api "repos/${GITHUB_REPOSITORY}" --jq '{archived,disabled,default_branch,visibility}')
