@@ -1522,7 +1522,7 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
     for num_val, raw_str, context in candidates:
         if claim_value == 0:
             continue
-        ratio = num_val / claim_value if claim_value != 0 else 0
+        ratio = num_val / claim_value
         if ratio == 0:
             continue
         diff = abs(ratio - 1.0)
