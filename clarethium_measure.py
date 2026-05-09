@@ -331,8 +331,8 @@ def extract_section_bodies(text):
     """Extract section body text only (excludes headings)."""
     sections = []
     lines = text.split("\n")
-    current_heading = None
-    current_body = []
+    current_heading: str | None = None
+    current_body: list[str] = []
     for line in lines:
         stripped = line.strip()
         if stripped.startswith("## ") or stripped.startswith("### "):
@@ -461,7 +461,7 @@ def split_sentences(text):
     results = []
     current_heading = ""
     para_idx = 0
-    pending = []
+    pending: list[str] = []
 
     def _flush():
         nonlocal para_idx
@@ -615,7 +615,7 @@ def extract_numbers_for_matching(text):
     # Track character ranges claimed by earlier (higher-priority) patterns
     # to prevent decimal/integer patterns from extracting sub-tokens of
     # already-captured percentages/dollars (e.g., "2.58%" -> phantom "2.5")
-    claimed_ranges = []
+    claimed_ranges: list[tuple[int, int]] = []
 
     for pattern, num_type in patterns:
         for m in re.finditer(pattern, text):
@@ -1888,11 +1888,12 @@ def measure(doc_text, source=None, comparisons=None, topic=None):
             UserWarning
         )
 
+    layers_run: list[str] = []
     profile = {
         "metadata": {
             "version": "1.4",
             "has_markdown_structure": _has_md,
-            "layers_run": [],
+            "layers_run": layers_run,
             "scope": (
                 "Primary: markdown analytical docs. Cross-domain tested (v1.2): "
                 "product specs, research summaries, code docs. "
@@ -1924,53 +1925,53 @@ def measure(doc_text, source=None, comparisons=None, topic=None):
 
     # Layer 1: Structural Profile (always)
     profile["structural"] = structural_profile(doc_text, topic)
-    profile["metadata"]["layers_run"].append("structural")
+    layers_run.append("structural")
 
     # Layer 2: Claim Density (always)
     profile["claim_density"] = claim_density(doc_text)
-    profile["metadata"]["layers_run"].append("claim_density")
+    layers_run.append("claim_density")
 
     # Layer 3: Temporal Consistency (if comparisons provided)
     if comparisons:
         profile["temporal_instability"] = temporal_consistency(doc_text, comparisons)
-        profile["metadata"]["layers_run"].append("temporal_instability")
+        layers_run.append("temporal_instability")
 
     # Layer 4: Source Matching (if source provided)
     if source:
         profile["source_fidelity"] = source_matching(doc_text, source)
-        profile["metadata"]["layers_run"].append("source_fidelity")
+        layers_run.append("source_fidelity")
 
     # Layer 5: Entity Provenance (if source provided)
     if source:
         profile["entity_provenance"] = entity_provenance(doc_text, source)
-        profile["metadata"]["layers_run"].append("entity_provenance")
+        layers_run.append("entity_provenance")
 
     # Layer 6: Vocabulary Proximity (if source provided)
     if source:
         profile["vocabulary_proximity"] = vocabulary_proximity(doc_text, source)
-        profile["metadata"]["layers_run"].append("vocabulary_proximity")
+        layers_run.append("vocabulary_proximity")
 
     # Layer 7: Presentation Features (always)
     profile["presentation"] = presentation_features(doc_text)
-    profile["metadata"]["layers_run"].append("presentation")
+    layers_run.append("presentation")
 
     # Layer 8: Epistemic Calibration (if source provided)
     if source:
         profile["epistemic_calibration"] = epistemic_calibration(doc_text, source)
-        profile["metadata"]["layers_run"].append("epistemic_calibration")
+        layers_run.append("epistemic_calibration")
 
     # Layer 9: Information Novelty (always)
     profile["information_novelty"] = information_novelty(doc_text)
-    profile["metadata"]["layers_run"].append("information_novelty")
+    layers_run.append("information_novelty")
 
     # Layer 10: Quality Profile (always, computed from other layers)
     profile["quality_profile"] = quality_profile(profile)
-    profile["metadata"]["layers_run"].append("quality_profile")
+    layers_run.append("quality_profile")
 
     # Layer 11: Grounding Decomposition (if source provided)
     if source:
         profile["grounding_decomposition"] = grounding_decomposition(doc_text, source)
-        profile["metadata"]["layers_run"].append("grounding_decomposition")
+        layers_run.append("grounding_decomposition")
 
     return profile
 
