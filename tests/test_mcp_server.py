@@ -38,6 +38,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 import mcp_server
+import contextlib
 
 
 _FAILURES: list[str] = []
@@ -5358,22 +5359,16 @@ def test_stdio_subprocess_roundtrip():
             "subprocess unknown-resource error must carry code -32602",
         )
     finally:
-        try:
+        with contextlib.suppress(Exception):
             proc.stdin.close()
-        except Exception:
-            pass
         try:
             proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
             proc.kill()
-        try:
+        with contextlib.suppress(Exception):
             proc.stdout.close()
-        except Exception:
-            pass
-        try:
+        with contextlib.suppress(Exception):
             proc.stderr.close()
-        except Exception:
-            pass
     print("  PASS\n")
 
 
@@ -11017,10 +11012,8 @@ def test_stdio_subprocess_handles_rapid_fire_sequential_requests():
                         f"rapid-fire determinism: request {i} deviated from first-B baseline",
                     )
     finally:
-        try:
+        with contextlib.suppress(Exception):
             proc.stdin.close()
-        except Exception:
-            pass
         try:
             proc.wait(timeout=15)
         except subprocess.TimeoutExpired:
@@ -11028,14 +11021,10 @@ def test_stdio_subprocess_handles_rapid_fire_sequential_requests():
         # Drain + close stdout/stderr to avoid ResourceWarning on the
         # pipes (the existing test_stdio_subprocess_roundtrip leaks
         # these; we do not want new tests to add to that count).
-        try:
+        with contextlib.suppress(Exception):
             proc.stdout.close()
-        except Exception:
-            pass
-        try:
+        with contextlib.suppress(Exception):
             proc.stderr.close()
-        except Exception:
-            pass
     _assert_no_new_failures(baseline, "test_stdio_subprocess_handles_rapid_fire_sequential_requests")
     print("  PASS\n")
 

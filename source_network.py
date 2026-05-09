@@ -28,6 +28,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from concurrent.futures import TimeoutError as _FuturesTimeoutError
 from dataclasses import dataclass, field
 from typing import Optional
+import contextlib
 
 
 
@@ -1441,7 +1442,7 @@ def _urlopen_with_deadline(req, per_op_timeout, total_deadline=None):
             # "_FuturesTimeoutError" not the suppressed diagnostic
             # exception class. getattr(req, "full_url", str(req))
             # also handles the string-URL case defensively.
-            try:
+            with contextlib.suppress(Exception):
                 import sys
                 full_url = getattr(req, "full_url", str(req))
                 provider = _provider_from_url(full_url)
@@ -1452,8 +1453,6 @@ def _urlopen_with_deadline(req, per_op_timeout, total_deadline=None):
                     f"caller-side deadline {deadline:.1f}s exceeded; "
                     f"thread continues in background\n"
                 )
-            except Exception:
-                pass
             raise
     finally:
         pool.shutdown(wait=False)
@@ -1533,15 +1532,13 @@ def _fetch_json(url, total_deadline=None):
         provider = _provider_from_url(url)
         kind_label = "other"
         if isinstance(exc, urllib.error.HTTPError):
-            try:
+            with contextlib.suppress(Exception):
                 if exc.code == 429:
                     kind_label = "rate_limited"
                 elif exc.code in (403, 401):
                     kind_label = "auth"
                 elif 500 <= exc.code < 600:
                     kind_label = "server_error"
-            except Exception:
-                pass
         provider_health.record_error(provider, kind_label)
         safe_url = _safe_url_for_log(url)
         sys.stderr.write(
@@ -1811,13 +1808,10 @@ def verify_wikipedia(decomp, _cached_article=None):
     # then at normalized scale (e.g., 27.4e12 against large numbers in text).
     # Wikipedia text usually has human-readable numbers matching the raw claim.
     raw_float = 0.0
-    try:
+    with contextlib.suppress(ValueError, AttributeError):
         raw_cleaned = decomp.raw_value.strip().lstrip("$~").rstrip("%")
         raw_cleaned = re.sub(r'[TBMKk]$', '', raw_cleaned).replace(",", "")
         raw_float = float(raw_cleaned)
-    except (ValueError, AttributeError):
-        pass
-
     matched_val, context, confidence = None, None, 0
     compare_against = decomp.value  # which scale the match used
     if raw_float and raw_float != decomp.value:
@@ -2454,12 +2448,10 @@ def verify_wolfram(decomp):
     if matched_val is None:
         # Also try raw float match
         raw_float = 0.0
-        try:
+        with contextlib.suppress(ValueError, AttributeError):
             raw_cleaned = decomp.raw_value.strip().lstrip("$~").rstrip("%")
             raw_cleaned = re.sub(r'[TBMKk]$', '', raw_cleaned).replace(",", "")
             raw_float = float(raw_cleaned)
-        except (ValueError, AttributeError):
-            pass
         if raw_float and raw_float != decomp.value:
             matched_val, context, confidence = _match_in_text(
                 result, raw_float, decomp.sentence, decomp=decomp
@@ -3971,7 +3963,7 @@ def verify_claims_source_network(
             # rendering path to extract sentence + heading; build it
             # the same way _verify_one does (no provider calls, just
             # decomposition).
-            try:
+            with contextlib.suppress(Exception):
                 decomp = decompose_claim(
                     claim, topic=topic, doc_text=doc_text,
                     doc_primary_entity=doc_primary_entity,
@@ -3985,13 +3977,6 @@ def verify_claims_source_network(
                     confidence=0.0,
                     detail="Verification budget exhausted before this claim was processed.",
                 ))
-            except Exception:
-                # Defensive: if decomposition itself fails on this
-                # claim, omit silently rather than raising. The
-                # behavior matches the existing per-claim exception
-                # handler above.
-                pass
-
     # Step 4: Check derivations using verified base values
     # (in-process computation; cheap; runs even when budget exhausted)
     check_derivations(results)

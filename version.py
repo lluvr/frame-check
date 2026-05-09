@@ -73,6 +73,7 @@ suggesting that every other surface changed.
 import os
 import subprocess
 from pathlib import Path
+import contextlib
 
 FRAME_CHECK_VERSION = "1.0.0"
 
@@ -95,17 +96,14 @@ def _detect_pipeline_version() -> str:
     here = Path(__file__).resolve().parent
     baked = here / "pipeline_version.txt"
     if baked.is_file():
-        try:
+        with contextlib.suppress(OSError):
             text = baked.read_text(encoding="utf-8").strip()
             if text:
                 return text
-        except OSError:
-            pass
-
     # Last resort: ask git directly. Works in dev where .git is present
     # and the git binary is installed. Times out fast so a missing or
     # broken git installation cannot delay startup noticeably.
-    try:
+    with contextlib.suppress(OSError, subprocess.SubprocessError):
         result = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
             cwd=here,
@@ -118,9 +116,6 @@ def _detect_pipeline_version() -> str:
             sha = result.stdout.strip()
             if sha:
                 return sha
-    except (OSError, subprocess.SubprocessError):
-        pass
-
     return "unknown"
 
 

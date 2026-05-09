@@ -18,6 +18,7 @@ import subprocess
 import sys
 import time
 from typing import Any
+import contextlib
 
 WHEEL_TARGET = "/tmp/fc-target"
 SCRIPT = f"{WHEEL_TARGET}/mcp_server.py"
@@ -335,20 +336,16 @@ def main() -> int:
         record("notification suppressed; subsequent ping responds", ok)
 
     finally:
-        try:
+        with contextlib.suppress(OSError):
             proc.stdin.close()
-        except OSError:
-            pass
         try:
             proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
             proc.kill()
         proc.stdout.close()
         stderr_tail = ""
-        try:
+        with contextlib.suppress(Exception):
             stderr_tail = proc.stderr.read()
-        except Exception:
-            pass
         proc.stderr.close()
 
     # Summary
