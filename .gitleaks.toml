@@ -28,6 +28,23 @@ title = "Frame Check gitleaks configuration"
 # these, do not replace.
 useDefault = true
 
+# ── Global allowlist ───────────────────────────────────────────────
+# Path-based suppression that applies to every rule (built-in and
+# custom). Keep this minimal; per-rule allowlists below are preferred
+# for fine-grained suppression of specific value shapes.
+[allowlist]
+description = "Test fixtures intentionally containing PII-shaped strings"
+paths = [
+  # tests/test_pii_detector.py contained clearly-fake fixtures used
+  # to validate the PII detector itself (ghp_AbCdEf..., sk-proj-1234...,
+  # sequential-character patterns that no real credential would have).
+  # The file was removed from the tree in a later cleanup, but
+  # gitleaks scans git history by default and would otherwise flag
+  # the historical commits indefinitely. The fixtures were never live
+  # credentials.
+  '''(^|/)test_pii_detector\.py$''',
+]
+
 [[rules]]
 id = "fred-api-key"
 description = "FRED Federal Reserve API key (32-char hex, env-var anchored)"

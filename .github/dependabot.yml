@@ -1,0 +1,54 @@
+# Dependabot configuration for frame-check-mcp.
+#
+# - pip ecosystem: bumps the build/test dependencies declared in
+#   pyproject.toml [project.dependencies] and [project.optional-dependencies].
+# - github-actions ecosystem: bumps action versions in
+#   .github/workflows/*.yml so the publish + canon-audit + tests + CodeQL
+#   workflows do not fall behind upstream security fixes.
+#
+# Security updates: GitHub opens vulnerability-driven PRs automatically
+# once the Dependabot security-updates feature is enabled at the repo
+# level (independent of this file).
+
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      patch-and-minor:
+        update-types:
+          - "patch"
+          - "minor"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      actions:
+        update-types:
+          - "patch"
+          - "minor"
+          - "major"
