@@ -1,11 +1,10 @@
 """Tool and prompt schema definitions for the Frame Check MCP server.
 
-Extracted from `mcp_server.py` 2026-04-29 as Step 3 of the
-mcp_server decomposition (Item 4 of the 0.8.4 follow-up plan).
 The schema layer carries the static definitions that the MCP
 protocol surfaces under tools/list and prompts/list, plus the
 small helpers that translate user-intent prompt arguments into
-MCP-parameter values.
+MCP-parameter values. `mcp_server.py` re-exports the public symbols
+for backward compatibility.
 
 What lives here:
 
@@ -87,13 +86,12 @@ _SPEC_VERSION = "FRAME_DIVERGENCE_v1_c1.0"
 
 # ── Prompt argument valid-value sets ──────────────────────────────
 #
-# Per-prompt argument valid values (substrate-side composition L5
-# interface UX). Each sovereignty prompt accepts user-intent
-# arguments that translate to MCP-parameter values inside the prompt
-# body. The user types in their own vocabulary (depth: quick/thorough,
-# goal: decide/explore/audit/challenge/learn, questions: yes/no);
-# the prompt body then directs the agent to call frame_check with
-# the corresponding MCP-layer values.
+# Per-prompt argument valid values. Each sovereignty prompt accepts
+# user-intent arguments that translate to MCP-parameter values inside
+# the prompt body. The user types in their own vocabulary (depth:
+# quick/thorough, goal: decide/explore/audit/challenge/learn,
+# questions: yes/no); the prompt body then directs the agent to call
+# frame_check with the corresponding MCP-layer values.
 _PROMPT_DEPTH_VALUES = {"quick", "thorough"}
 _PROMPT_GOAL_VALUES = {"decide", "explore", "audit", "challenge", "learn"}
 _PROMPT_QUESTIONS_VALUES = {"yes", "no"}
@@ -333,7 +331,7 @@ _PROMPT_AI_RESPONSE_AUDIT = (
     "situational relevance; never prescribe from the context.\n"
     "3. \"Say 'expand' for the full structural readout.\"\n\n"
     "On expand: walk the deep analysis (coverage with density per "
-    "category and the under-detection caveat, voice with "
+    "category and the lower-bound caveat, voice with "
     "confidence + runner-up, temporal with balanced flag, "
     "epistemic with sourced_pct, all FVS matches with "
     "teaching_question and affects_dimensions, decision-readiness "
@@ -500,7 +498,7 @@ _PROMPT_EXPLAIN_FRAMING = (
     "relevance; never prescribes from the context.\n"
     "3. \"Say 'expand' for the full structural readout.\"\n\n"
     "On expand: walk every section. Coverage with density "
-    "per category and the under-detection caveat. Voice with "
+    "per category and the lower-bound caveat. Voice with "
     "confidence + runner-up + balanced flag if applicable. "
     "Temporal with balanced flag. Epistemic with sourced_pct. "
     "All FVS matches with teaching_question and "
@@ -530,9 +528,9 @@ _PROMPT_EXPLAIN_FRAMING = (
 # ── Prompt registry ───────────────────────────────────────────────
 
 # Standard user-intent argument specs shared across the four
-# sovereignty prompts (substrate-side composition L5 interface UX).
-# All three arguments are optional with defaults; omitting them
-# preserves prior behavior (thorough / audit / no questions).
+# sovereignty prompts. All three arguments are optional with
+# defaults; omitting them preserves prior behavior (thorough /
+# audit / no questions).
 _USER_INTENT_PROMPT_ARGS = [
     {
         "name": "depth",

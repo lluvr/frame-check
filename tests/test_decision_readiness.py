@@ -750,9 +750,9 @@ def test_real_detector_output_flows_into_fired_library_entries():
     voice = {"voice": "promotional", "total_sentences": 12}
     temporal = {"present_dominant": True}
     epistemic = {"sourced_pct": 10}
-    # Run the real detector. Move D-FVS-008 (2026-04-27) requires text
-    # alongside the structural signal; pass minimal growth-vocab text so
-    # the FVS-008 rule fires on this trends-dominant business-domain input.
+    # Run the real detector. FVS-008 requires text alongside the
+    # structural signal; pass minimal growth-vocab text so the rule
+    # fires on this trends-dominant business-domain input.
     business_growth_text = (
         "Revenue grew by 30 percent year over year. Market expansion "
         "drove customer adoption across the new segments."

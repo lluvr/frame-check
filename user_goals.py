@@ -1,12 +1,11 @@
 """User goal awareness for divergence ranking.
 
-Item 11 of the substrate-side composition roadmap. The user (or
-agent on behalf of the user) signals a goal: decide, brainstorm,
-persuade, learn, audit. The divergence ranking shifts accordingly:
-deciding emphasizes falsification, brainstorming emphasizes
-perspective diversity, persuading emphasizes counter-perspectives,
-learning emphasizes full taxonomy, auditing applies the existing
-catalog/coverage/genre logic without goal override.
+The user (or agent on behalf of the user) signals a goal: decide,
+brainstorm, persuade, learn, audit. The divergence ranking shifts
+accordingly: deciding emphasizes falsification, brainstorming
+emphasizes perspective diversity, persuading emphasizes counter-
+perspectives, learning emphasizes full taxonomy, auditing applies
+the catalog/coverage/genre logic without goal override.
 
 The substrate stays deterministic: per-goal maps are curated text
 and the relevance lookup is exact-match against canon FVS IDs. No

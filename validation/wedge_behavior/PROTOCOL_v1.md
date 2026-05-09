@@ -82,7 +82,7 @@ The main study at N=10 supports the wedge claim if:
 
 Anything weaker is reported as falsification of the wedge claim at the load-bearing-shift threshold. Numerical thresholds are pre-registered here so the analysis is not retrofitted to whatever the data shows.
 
-A NEGATIVE result is publishable. Evidence discipline (METHODOLOGY §1.3) requires that. The output of this study is a measurement, not a marketing artifact.
+A NEGATIVE result is publishable. Pre-registered analysis requires reporting the measurement that obtains, not the measurement that confirms the hypothesis. The output of this study is a measurement, not a marketing artifact.
 
 ## Analysis plan
 

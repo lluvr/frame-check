@@ -390,10 +390,9 @@ def analyze_claims(doc_text):
         "total_claims": total,
         # Candidate-hedge aggregate: count of claims where primary
         # framing is stated_as_fact or prediction BUT candidate-hedge
-        # pattern fires. Reader-inspectable under-detection signal.
-        # Operationalizes the under-detection posture for the claims
-        # signal, completing the trilogy with coverage (Phase A) and
-        # epistemic (Phase A-extended).
+        # pattern fires. Reader-inspectable lower-bound signal,
+        # parallel to the candidate-attribution surfacing in coverage
+        # and epistemic.
         "candidate_hedge_count": sum(
             1 for c in claims if c.get("candidate_hedge_marker") is not None
         ),

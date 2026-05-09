@@ -18,12 +18,12 @@ from typing import Any
 
 
 # Growth-context vocabulary discriminator for FVS-008 (Growth Frame)
-# detection. Move D-FVS-008 (2026-04-27): the structural signal alone
-# (trends/causes covered + risks missing + voice not descriptive) over-fires
-# on analytical documents that use directional-change vocabulary in
-# non-business contexts (e.g., "scaling laws" in a literature review,
-# "evolution" in institutional governance analysis, "growth" of a population
-# or field). The frame's CONSTRUCT is business-growth framing specifically
+# detection. The structural signal alone (trends/causes covered +
+# risks missing + voice not descriptive) over-fires on analytical
+# documents that use directional-change vocabulary in non-business
+# contexts (e.g., "scaling laws" in a literature review, "evolution"
+# in institutional governance analysis, "growth" of a population or
+# field). The frame's CONSTRUCT is business-growth framing specifically
 # (organizing information around growth metrics, market expansion, upward
 # trajectory). This regex requires explicit business-growth vocabulary
 # alongside the structural signal so the rule fires only when the document
@@ -971,12 +971,12 @@ def suggest_frames(
         })
 
     # ── Growth Frame (FVS-008) ──
-    # Move D-FVS-008 (2026-04-27): the structural signal alone (trends/causes
-    # covered + risks missing + voice not descriptive) is too coarse: it fires
-    # on any analytical document with directional-change vocabulary (trends
-    # regex matches "evolution", "shift", "emerging", "transformation",
-    # "expand" generically). Two adversarial fixtures provided cross-domain
-    # worked examples of the over-fire (epistemic_via_paraphrased_sourcing
+    # The structural signal alone (trends/causes covered + risks missing
+    # + voice not descriptive) is too coarse: it fires on any analytical
+    # document with directional-change vocabulary (the trends regex
+    # matches "evolution", "shift", "emerging", "transformation",
+    # "expand" generically). Two adversarial fixtures provided cross-
+    # domain worked examples of the over-fire (epistemic_via_paraphrased_sourcing
     # and cross_domain_stakeholder); validation corpus showed 9 of 28 docs
     # with the same over-fire signature, none of them substantively about
     # business growth. The frame's CONSTRUCT is business-growth framing

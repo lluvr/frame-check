@@ -1069,11 +1069,12 @@ def detect_voice(text):
         (runner-up is nearly activating). Reader-aid consumers should
         weigh both classes when borderline.
 
-    The under-detection construct of Fix A does not apply to voice
-    (there is no "not_detected" state; every document is classified).
-    The classification-confidence construct is the analogous posture
-    for classification signals: expose the margin so the reader can
-    tell decisive calls from close calls.
+    The lower-bound detection posture used for coverage / epistemic /
+    claims does not apply to voice (there is no "not_detected" state;
+    every document is classified). The classification-confidence
+    construct is the analogous posture for classification signals:
+    expose the margin so the reader can tell decisive calls from
+    close calls.
 
     Insufficient-input return shape matches the happy-path schema so
     downstream consumers (templates, MCP payloads, tests) do not need
@@ -1321,7 +1322,7 @@ def _is_sourced(sentence):
 #
 # Conservative by design. False positives on candidate patterns are
 # acceptable because each candidate is surfaced with an explicit caveat
-# naming the under-detection construct, not as a detection.
+# naming the lower-bound detection posture, not as a detection.
 EPISTEMIC_CANDIDATE_ATTRIBUTION = re.compile(
     # Bracketed citation: [Smith et al., 2023], [12], [Author 2020]
     r'\[(?:[A-Z][a-zA-Z]+(?:\s+(?:et\s+al\.?|and\s+[A-Z][a-zA-Z]+))?'
@@ -1387,10 +1388,10 @@ def detect_epistemic_basis(text, include_candidates=False):
         caveat and a sample of the candidate pattern that matched.
         Deduplicated by sentence; capped at 20 per document.
 
-    Under-detection posture: with include_candidates=True, callers can
+    Lower-bound posture: with include_candidates=True, callers can
     report both the primary sourced_pct AND a candidate_miss_count so
-    the honest signal is "primary detector found N, candidate patterns
-    surface M more the reader should inspect."
+    the surfaced signal is "primary detector found N, candidate
+    patterns surface M more the reader should inspect."
     """
     raw = split_sentences(text)
     sentences = [s for _, s, _ in raw]
@@ -1807,12 +1808,12 @@ def framing_portrait_natural(coverage, temporal, voice, epistemic, claim_stats,
                               verification=None, grounding=None):
     """Natural-language synthesis of the framing signals.
 
-    Parallel to `framing_portrait` (the clinical / construct-honest
-    version) but written in professional-but-readable prose for the
-    default UI render. The evidence discipline is preserved
-    in plain words: where the clinical version emits
-    "residual analytical classification", the natural version emits
-    "what's left by elimination rather than what's positively detected".
+    Parallel to `framing_portrait` (the clinical version) but written
+    in professional-but-readable prose for the default UI render. The
+    cascade-aware discipline is preserved in plain words: where the
+    clinical version emits "residual analytical classification", the
+    natural version emits "what's left by elimination rather than what's
+    positively detected".
 
     Both portraits are generated on every request. The template
     renders natural by default and exposes clinical in an expandable
@@ -1823,8 +1824,8 @@ def framing_portrait_natural(coverage, temporal, voice, epistemic, claim_stats,
     Any change to a clinical part should be mirrored here with the
     same content scope. The two versions must describe the same
     measurements; only the register differs. Divergence between the two
-    surfaces would be a evidence defect; the clinical version
-    encodes the same cascade-classifier vocabulary as the prose version.
+    surfaces would be a defect; the clinical version encodes the same
+    cascade-classifier vocabulary as the prose version.
     """
     parts = []
     n = voice.get("total_sentences", 0)
@@ -1872,7 +1873,7 @@ def framing_portrait_natural(coverage, temporal, voice, epistemic, claim_stats,
             f"({voice['you_pct']}% addressed to the reader)."
         )
     else:
-        # Cascade-residual analytical. The evidence discipline
+        # Cascade-residual analytical. The cascade-aware discipline
         # shifts from "residual classification" terminology to plain
         # words: "what's left by elimination rather than positively
         # detected". Same content, readable register.

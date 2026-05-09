@@ -1,11 +1,10 @@
 """Resource discovery and reads for the Frame Check MCP server.
 
-Extracted from `mcp_server.py` 2026-04-29 as Step 2 of the
-mcp_server decomposition (Item 4 of the 0.8.4 follow-up plan).
-The resources layer sits one above `mcp_log` in the layer cake:
-it depends on `mcp_log` for stderr diagnostics and on the path
-helpers it computes from its own `__file__`, but does not import
-any of the higher layers (compose, schema, protocol, cli).
+Sits one layer above `mcp_log` in the module layer cake: depends on
+`mcp_log` for stderr diagnostics and on path helpers it computes
+from its own `__file__`, but does not import any of the higher
+layers (compose, schema, protocol, cli). `mcp_server.py` re-exports
+the public symbols for backward compatibility.
 
 What lives here:
 

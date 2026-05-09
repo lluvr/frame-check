@@ -6,6 +6,36 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-05-09
+
+### Source comment + docstring cleanup
+
+Docstrings and comments inside shared MCP modules and several test files are rewritten to describe the engineering reality directly. The cleanup removes references to internal-only labels (cross-module composition step numbers, structural-rule revision tags) and a handful of paragraph-level phrases that signaled an internal counterpart. Each occurrence is rewritten in place; no vocabulary swap. After the pass, the extracted public tree audits clean.
+
+### Wheel-build per-card cleanup
+
+The 0.9.3 lift surfaced a parallel gap: wheel-bundled FVS-NNN library cards still carried `## Cross-family reliability` and `## Vocabulary connections` sections (operator-research version trajectory, evaluation paths, ratification narrative). The public extract pipeline already stripped these via `_clean_library_card`; the wheel-build hook applied only the literal canon-substitution map. The two surfaces had drifted. The hook now runs `_clean_library_card` on every wheel-bundled card, replaces `INDEX.md` with the public adopter index, and drops `README.md` (curator-discipline guide). RECORD regeneration handles the dropped paths so pip install verifies the post-cleanup file set.
+
+### README adopter-pass
+
+`README.md` is rewritten to describe the actual 0.9.x wheel content. The Documentation section lists what ships in the wheel today (`MCP_SERVER.md`, `FRAME_DIVERGENCE_CONTRACT_v1.md`, the FVS catalog under `data/frame_library/`, `data/worked_examples/`, governance / contributing / security / citation files) and points at `Clarethium/lodestone` for methodology canon. The repo-only web-app section is removed; the wheel's `METADATA` field is generated from `README.md`, so the README is part of the adopter surface.
+
+### Wire-text rename in candidate surfacing
+
+The reader-inspectable candidate-attribution layer in coverage / epistemic / claims is now named the "lower-bound detection posture" in adopter-facing surfaces. The interface is unchanged: `candidate_sentences[]` continues to surface where the primary detector did not fire but secondary patterns did, and the caveat language in MCP responses ("primary detector found N; candidate patterns surface M more the reader should inspect") is unchanged. Only the prose label moved.
+
+### Audit pattern coverage extended
+
+The `canon_audit.sh` RIGID family is extended to catch composition-step references, decomposition-step labels, structural-rule revision labels, and a small set of internal-vocabulary phrases that the prior pattern set missed. The audit run on a fresh extract returns zero hits.
+
+### Test relaxation: methodology resource is optional
+
+`test_resources_list_includes_library_and_docs` no longer requires `frame-check://methodology` in the resources/list response. The wheel does not bundle the methodology document; the resource auto-deregisters when the file is absent. The frame catalog and calibration tiers remain mandatory advertised resources.
+
+### Note on prior versions
+
+- 0.9.2 will be deleted from PyPI following the same policy as 0.8.x and 0.9.0/0.9.1: the wheel content is immutable, the construction pass landed in 0.9.3, and the version number is burned. Pin `>=0.9.3`.
+
 ## [0.9.2] - 2026-05-08
 
 ### Public canon discipline: residual cleanup + audit pattern extension

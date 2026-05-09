@@ -1,13 +1,12 @@
 """Named structural patterns over present-frame + absent-frame
 combinations, with corpus prevalence as empirical anchoring.
 
-Item 4 of the substrate-side composition roadmap, built on Items 2
-(genre classifier), 3 (per-genre absence ranking), and 5/6/7
-(corpus context). Where the divergence block previously surfaced
-absences and clusters separately, named patterns surface
-recognized structural shapes that combine present and absent
-frames into a single named composition with curated prose and
-empirical anchoring from the corpus.
+Builds on the genre classifier, per-genre absence ranking, and
+corpus-context primitives. Where the divergence block surfaces
+absences and clusters separately, named patterns surface recognized
+structural shapes that combine present and absent frames into a
+single named composition with curated prose and empirical anchoring
+from the corpus.
 
 Substrate stays deterministic: pattern matching is set membership;
 no LLM is invoked. Corpus prevalence is a count over per-document

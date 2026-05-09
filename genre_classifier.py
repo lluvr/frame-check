@@ -1,11 +1,9 @@
 """Structural genre classification for the MCP analysis surface.
 
-Item 2 of the substrate-side composition roadmap. Foundational
-primitive for Item 3 (per-genre absence ranking) and Item 4 (pattern
-composition with prevalence). The classifier emits a genre with
-confidence and runner-up in the same construct-honest shape as
-voice: bounded label set, deterministic features, margin-aware
-confidence reporting.
+Foundational primitive that per-genre absence ranking and pattern
+composition build on. The classifier emits a genre with confidence
+and runner-up using the same shape as voice: bounded label set,
+deterministic features, margin-aware confidence reporting.
 
 Genre set (bounded, structural):
   - recommendation: gives a pick or suggests action
@@ -263,11 +261,10 @@ def _score_genres(
 # Per-genre load-bearing absence maps. For each structural genre,
 # an ordered list of FVS IDs (most load-bearing first) plus a
 # curated one-sentence reason naming the structural relevance.
-# Item 3 of the substrate-side composition roadmap: when a document
-# is classified into a genre, absences that are load-bearing for
-# that genre rise to the top of the divergence reading; absences
-# that are catalog-canon but not load-bearing for THIS genre stay
-# below.
+# When a document classifies into a genre, absences that are load-
+# bearing for that genre rise to the top of the divergence reading;
+# absences that are catalog-canon but not load-bearing for THIS
+# genre stay below.
 #
 # The reasons are reading-form, not verdict-form: they describe what
 # the framing fails to do at the structural level, not what the

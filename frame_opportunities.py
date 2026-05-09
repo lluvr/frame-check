@@ -1,10 +1,9 @@
 """LLM-augmented frame-opportunity composition.
 
-Item 12 of the substrate-side composition roadmap. The strategic
-reservation: this module breaks the zero-LLM-cost layer that the
-deterministic substrate has held until now. It is opt-in only
-(via include_frame_opportunities=true on the frame_check tool); the
-default behavior is preserved deterministic substrate composition.
+This module is opt-in only (via include_frame_opportunities=true
+on the frame_check tool) and is the only path that calls an LLM;
+default frame_check responses preserve the deterministic
+substrate composition with zero LLM cost per query.
 
 Where the deterministic substrate gives the agent abstract teaching
 questions ("What would have to be true for this analysis to be
@@ -277,16 +276,16 @@ def _generate_one_opportunity(
             "output_tokens": output_tokens,
             "is_deterministic": False,
         },
-        # Per-level construct treatment (substrate-side composition
-        # L5): opt-in LLM-composed content is the fourth claim
-        # kind. Cite per agent_guidance.claim_level_treatments
-        # [agent_generated]. The generated_question is one possible
-        # application of the absent frame's general teaching
-        # question; teaching_question_general remains the stable
-        # catalog reference. The is_deterministic=False flag in
-        # model_provenance is the per-opportunity construct-honest
-        # signal; claim_level=agent_generated is the structural
-        # signal at the per-level discipline.
+        # Per-level construct treatment: opt-in LLM-composed content
+        # is the fourth claim kind. Cite per
+        # agent_guidance.claim_level_treatments[agent_generated]. The
+        # generated_question is one possible application of the
+        # absent frame's general teaching question;
+        # teaching_question_general remains the stable catalog
+        # reference. The is_deterministic=False flag in
+        # model_provenance is the per-opportunity construct signal;
+        # claim_level=agent_generated is the structural signal at the
+        # per-level discipline.
         "claim_level": "agent_generated",
     }
 
