@@ -59,8 +59,6 @@ import json
 import os
 import re
 
-from mcp_log import log
-
 
 # ── Path detection ─────────────────────────────────────────────────
 #
@@ -95,10 +93,13 @@ RESOURCE_SCHEME = "frame-check"
 # {fvs_id, library_resource_uri, public_url}. A test in
 # test_decision_readiness.py pins LIBRARY_RESOURCE_SCHEME ==
 # RESOURCE_SCHEME so the two cannot drift.
-from decision_readiness import (
+from decision_readiness import (  # noqa: F401  (re-exported via __all__)
     library_entry_ref as _library_entry_ref,
     dimensions_affecting as _dimensions_affecting,
 )
+# These two are re-exported as private names so mcp_compose can import
+# them from a single source of truth (this module). Listed in
+# __all__ at the end of the module.
 
 # Frame library status + version readers (single source of truth
 # for INDEX.md row format and VERSION file location).
@@ -106,6 +107,42 @@ from frame_library_index import (
     read_library_version as _read_frame_library_version,
     parse_entry_statuses as _parse_frame_statuses,
 )
+
+
+# ── Public surface ────────────────────────────────────────────────
+#
+# Declares the names downstream callers (mcp_server, mcp_compose,
+# tests under ``tests/``) read out of this module via ``from
+# mcp_resources import <name>``. Listing them in ``__all__`` makes
+# the re-export pattern (``_library_entry_ref``, ``_dimensions_affecting``,
+# ``_read_frame_library_version``, ``_parse_frame_statuses`` are all
+# imported here for downstream consumption rather than internal use)
+# visible to ``ruff F401`` and ``CodeQL py/unused-import`` so those
+# checks no longer flag the imports as dead.
+__all__ = [
+    "RESOURCE_SCHEME",
+    "_LIBRARY_DIR", "_LIBRARY_V3_DIR", "_WORKED_EXAMPLES_DIR",
+    "_TRANSMISSIONS_DIR", "_METHODOLOGY_PATH",
+    "_CALIBRATION_RESULTS_DIR", "_AGGREGATE_RESULTS_DIR",
+    "_CORPUS_ENTRIES_DIR", "_SPEC_FD_V1_PART2_PATH",
+    "_SIGNAL_STRENGTH_THRESHOLDS",
+    "_signal_strength_for", "_content_hash",
+    "_ensure_caches", "_parse_frame_adjacency",
+    "_spec_fd_v1_parts", "_spec_fd_v1_index_markdown",
+    "_library_entries", "_library_v3_entries",
+    "_worked_example_entries", "_transmission_entries",
+    "_transmission_path", "_transmissions_readme_path",
+    "_worked_example_path", "_library_entry_path",
+    "_library_index_path", "_worked_examples_readme_path",
+    "_calibration_runs", "_calibration_run_path",
+    "_best_calibration_run", "_corpus_entry_slugs",
+    "_find_corpus_entry_path", "_find_corpus_pair_path",
+    "_find_latest_aggregate", "_list_resources", "_read_resource",
+    "_library_entry_ref", "_dimensions_affecting",
+    "_read_frame_library_version", "_parse_frame_statuses",
+    "_FRAME_STATUSES", "_FRAME_LIBRARY_VERSION",
+    "_FRAME_VERSIONS", "_FRAME_ADJACENCY",
+]
 
 
 # ── Bundled-corpus path constants ─────────────────────────────────

@@ -60,7 +60,6 @@ from __future__ import annotations
 import json
 import os
 import sys
-import time
 import traceback
 from typing import Any
 
@@ -286,6 +285,81 @@ from mcp_compose import (
     _summarize_per_document,
     build_compare_payload,
 )
+
+
+# ── Public surface ────────────────────────────────────────────────
+#
+# ``mcp_server`` is a protocol-handling module that also re-exports
+# the public symbols of the decomposed compose / schema / resources /
+# log layers. External callers (tests under ``tests/``, conformance
+# tooling under ``scripts/``, downstream pip-install consumers reading
+# ``mcp_server.<name>``) historically dotted into this module for any
+# Frame Check internal; the decomposition (2026-04-29) preserved that
+# surface by re-importing names here. ``__all__`` declares the full
+# re-export set so static analyzers (CodeQL ``py/unused-import``,
+# ruff F401) recognize the imports as intentional public API rather
+# than dead code.
+__all__ = [
+    # Local protocol constants and handlers
+    "PROTOCOL_VERSION", "SERVER_NAME", "SERVER_VERSION",
+    "ERR_PARSE", "ERR_INVALID_REQUEST", "ERR_METHOD_NOT_FOUND",
+    "ERR_INVALID_PARAMS", "ERR_INTERNAL",
+    "handle_initialize", "handle_resources_list", "handle_resources_read",
+    "handle_prompts_list", "handle_prompts_get", "handle_tools_list",
+    "handle_tools_call", "dispatch", "main", "cli",
+    "_install_version_info", "_call_frame_compare",
+    "_sanitize_tool_exception", "_MCP_TOOL_ERROR_MESSAGES",
+    "_SCRIPT_DIR", "_PKG_DATA_DIR",
+    # Re-exported from mcp_log
+    "log", "_sanitize_log_message",
+    # Re-exported from mcp_resources
+    "RESOURCE_SCHEME", "_LIBRARY_DIR", "_LIBRARY_V3_DIR",
+    "_WORKED_EXAMPLES_DIR", "_TRANSMISSIONS_DIR", "_METHODOLOGY_PATH",
+    "_CALIBRATION_RESULTS_DIR", "_AGGREGATE_RESULTS_DIR",
+    "_CORPUS_ENTRIES_DIR", "_SPEC_FD_V1_PART2_PATH",
+    "_SIGNAL_STRENGTH_THRESHOLDS", "_signal_strength_for",
+    "_content_hash", "_ensure_caches", "_parse_frame_adjacency",
+    "_spec_fd_v1_parts", "_spec_fd_v1_index_markdown",
+    "_library_entries", "_library_v3_entries",
+    "_worked_example_entries", "_transmission_entries",
+    "_transmission_path", "_transmissions_readme_path",
+    "_worked_example_path", "_library_entry_path",
+    "_library_index_path", "_worked_examples_readme_path",
+    "_calibration_runs", "_calibration_run_path",
+    "_best_calibration_run", "_corpus_entry_slugs",
+    "_find_corpus_entry_path", "_find_corpus_pair_path",
+    "_find_latest_aggregate", "_list_resources", "_read_resource",
+    "_read_frame_library_version", "_parse_frame_statuses",
+    "_library_entry_ref", "_dimensions_affecting",
+    # Re-exported from mcp_schema
+    "MAX_DOCUMENT_CHARS", "MAX_SOURCE_CHARS",
+    "_DOMAIN_HINT_ENUM", "_DIVERGENCE_RENDERING_ENUM",
+    "_SPEC_VERSION", "_PROMPT_DEPTH_VALUES", "_PROMPT_GOAL_VALUES",
+    "_PROMPT_QUESTIONS_VALUES", "_prompt_messages",
+    "_translate_prompt_arguments", "_populate_prompt_body",
+    "_PROMPT_SELF_AUDIT", "_PROMPT_AI_RESPONSE_AUDIT",
+    "_PROMPT_CHALLENGE_DOCUMENT", "_PROMPT_EXPLAIN_FRAMING",
+    "_USER_INTENT_PROMPT_ARGS", "_PROMPTS",
+    "_FRAME_CHECK_TOOL", "_FRAME_COMPARE_TOOL", "_TOOLS",
+    # Re-exported from mcp_compose
+    "PRODUCTION_STATUS", "PRODUCTION_STATUS_NOTE",
+    "_build_provenance", "_frame_corpus_context_or_none",
+    "_dimension_corpus_context_or_none", "_corpus_summary_or_none",
+    "_build_document_signals", "_build_coverage_v2",
+    "_build_voice_construct", "_build_temporal_construct",
+    "_CLAIM_LEVEL_DETECTOR", "_CLAIM_LEVEL_CLASSIFIER",
+    "_CLAIM_LEVEL_LLM_CLASSIFIER", "_CLAIM_LEVEL_COMPOSED",
+    "_CLAIM_LEVEL_AGENT_GENERATED", "_CLAIM_LEVEL_TREATMENTS",
+    "_apply_v2_only_preference", "_signal_strength_for_absent_frame",
+    "_DIMENSION_CLUSTER_READINGS", "_CLUSTER_MIN_ABSENT",
+    "_CLUSTER_MIN_CANON_FRACTION", "_CLUSTER_MIN_DOCUMENT_WORDS",
+    "_CLUSTER_TIER_ORDER", "_extract_teaching_question",
+    "_build_absence_clusters", "_build_divergence_block",
+    "_compress_agent_guidance_to_load_bearing",
+    "_build_suggested_next_actions", "build_epistemic_payload",
+    "_per_document_core", "_summarize_per_document",
+    "build_compare_payload",
+]
 
 
 # ── JSON-RPC envelope helpers ──────────────────────────────────────
