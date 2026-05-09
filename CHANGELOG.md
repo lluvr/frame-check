@@ -10,7 +10,7 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ### Public canon: residual operator-document citations scrubbed
 
-Closes the cleanup arc that began with the 0.9.0 lift retiring the operator-side methodology document and the engine gap-inventory from the wheel. Several public-extractable surfaces still cited those documents as load-bearing references and the publish-time CI gate still required one of them. Adopters reading the citable artifacts found dead links and false claims; the publish workflow failed at every tag push.
+Closes the cleanup arc that began with 0.9.0 retiring the in-tree methodology document and the engine gap-inventory file from the wheel. Several adopter-facing surfaces still cited those documents as load-bearing references and the publish-time CI gate still required one of them. Adopters reading the citable artifacts found dead links and false claims; the publish workflow failed at every tag push.
 
 - `CITATION.cff`: drop the dead URL pointing at a methodology file no longer in the public repo, and the false "bundled with the wheel" claim. Point the methodology citation at `github.com/Clarethium/lodestone` (the published methodology canon under CC-BY-4.0).
 - `.github/workflows/publish.yml`: drop the methodology file from the required-files post-build gate. The wheel has not bundled it since 0.9.0; the gate had been failing CI on every tag push (v0.9.1, v0.9.2, v0.9.3 all failed at this step).
