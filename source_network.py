@@ -1320,20 +1320,28 @@ _PROVIDER_DOMAINS = (
 def _provider_from_url(url: str) -> str:
     """Map a URL to a provider label by hostname suffix match.
 
-    Strict suffix match (``host == domain`` or
-    ``host.endswith('.' + domain)``) so an attacker-controlled hostname
-    such as ``alphavantage.evil.com`` cannot be misclassified as the
-    legitimate provider. Unknown hosts return the bare hostname.
+    Returns one of the eleven closed-enum values: the ten provider
+    labels declared in ``_PROVIDER_DOMAINS`` (``brave`` /
+    ``coingecko`` / ``wikipedia`` / ``fred`` / ``alpha_vantage`` /
+    ``world_bank`` / ``rest_countries`` / ``wolfram`` / ``sec_edgar`` /
+    ``github``) or ``"unknown"``. Strict suffix match (``host ==
+    domain`` or ``host.endswith('.' + domain)``) so an attacker-
+    controlled hostname such as ``alphavantage.evil.com`` cannot be
+    misclassified as the legitimate provider. The closed-enum return
+    contract is load-bearing for log sanitation: callers pass the
+    return value to ``sys.stderr.write`` for ops diagnostics, and
+    the closed enum guarantees no URL-derived material (path, query
+    string, basic-auth credentials) reaches the log.
     """
     try:
-        host = urllib.parse.urlparse(url).hostname or "unknown"
+        host = urllib.parse.urlparse(url).hostname or ""
     except Exception:
         return "unknown"
     host = host.lower()
     for domain, label in _PROVIDER_DOMAINS:
         if host == domain or host.endswith("." + domain):
             return label
-    return host
+    return "unknown"
 
 
 # Hard upper bound on the wall-clock time _fetch_json can spend on a
