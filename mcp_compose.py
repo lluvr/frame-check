@@ -1,13 +1,11 @@
 """Composition helpers for the Frame Check MCP server.
 
-Extracted from `mcp_server.py` 2026-04-29 as Steps 4a + 4b + 4c of the
-mcp_server decomposition (Item 4 of the 0.8.4 follow-up plan). The
-compose layer carries every response-building helper that turns
-detector output into the MCP epistemic payload structure. After
-Step 4c, mcp_server.py retains only the JSON-RPC envelope, method
-handlers, dispatch loop, CLI version / test modes, and the test-mode
-module-attribute proxy; everything from raw analyzer output to the
-final tool-response dict lives here.
+The compose layer carries every response-building helper that turns
+detector output into the MCP epistemic payload structure.
+`mcp_server.py` retains only the JSON-RPC envelope, method handlers,
+dispatch loop, CLI version / test modes, and the test-mode module-
+attribute proxy; everything from raw analyzer output to the final
+tool-response dict lives here.
 
 Module layout (top to bottom):
 
@@ -31,7 +29,7 @@ Module layout (top to bottom):
     _build_voice_construct (Phase B voice classification-confidence)
     _build_temporal_construct (Phase B temporal distribution)
 
-  Per-level construct treatment (substrate-side composition L5):
+  Per-level construct treatment:
     _CLAIM_LEVEL_DETECTOR / _CLASSIFIER / _LLM_CLASSIFIER /
       _COMPOSED / _AGENT_GENERATED (level identifiers)
     _CLAIM_LEVEL_TREATMENTS (claim_type / validation_status /
@@ -409,12 +407,12 @@ def _build_coverage_v2(cov: dict) -> dict:
 
 
 def _build_voice_construct(voice: dict) -> dict:
-    """Build the Phase B voice construct-honesty block for MCP v2.
+    """Build the Phase B voice construct block for MCP v2.
 
-    Unlike the under-detection construct (coverage/epistemic/claims),
+    Unlike the lower-bound detection posture (coverage/epistemic/claims),
     voice is a cascade classification signal: every document is
     classified; there is no 'not_detected' state. The analogous
-    evidence posture is classification-confidence: expose the
+    construct posture is classification-confidence: expose the
     margin to the winning rule's thresholds, the runner-up class, and
     a borderline flag when a small feature change could flip the
     classification.
@@ -439,7 +437,7 @@ def _build_voice_construct(voice: dict) -> dict:
             "or runner_up_margin > -2 (small feature change could "
             "flip the classification); 'high' otherwise. This is the "
             "classification-confidence construct: the analogue for "
-            "categorical signals of the under-detection construct "
+            "categorical signals of the lower-bound detection posture "
             "used for presence/absence signals (coverage, epistemic, "
             "claims)."
         ),
@@ -468,10 +466,10 @@ def _build_voice_construct(voice: dict) -> dict:
 
 
 def _build_temporal_construct(temp: dict) -> dict:
-    """Build the Phase B temporal construct-honesty block for MCP v2.
+    """Build the Phase B temporal construct block for MCP v2.
 
     Temporal is a distribution signal (past/present/future percentages
-    summing to 100). The evidence posture surfaces
+    summing to 100). The construct posture surfaces
     `dominant_margin` (lead over runner-up tense) and a `balanced` flag
     (no tense reaches 50% and dominant margin < 10 points). A balanced
     document should not be read as time-anchored regardless of the
@@ -510,7 +508,7 @@ def _build_temporal_construct(temp: dict) -> dict:
     }
 
 
-# ── Per-level construct treatment (substrate-side composition L5) ────
+# ── Per-level construct treatment ────────────────────────────────────
 #
 # The substrate produces three qualitatively different kinds of claim:
 # detector measurements, classifier outputs, and composed patterns.
@@ -573,7 +571,7 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
                 "inter_rater_reliability": "not_applicable",
                 "validity_data": (
                     "Vocabulary-and-pattern detection with documented "
-                    "under-detection construct. Per-signal construct blocks "
+                    "lower-bound detection posture. Per-signal construct blocks "
                     "(analysis.coverage_v2.construct, "
                     "analysis.epistemic.note, candidate-miss surfacing "
                     "on coverage / epistemic / claims) carry the "
@@ -1095,11 +1093,10 @@ def _build_absence_clusters(
             "canon_coverage_fraction": round(coverage_fraction, 2),
             "signal_strength": cluster_signal,
             # Per-level construct treatment: the cluster is a
-            # substrate-side composition (canon-graph set membership
-            # over absent_frames; threshold-firing). Trigger is
-            # deterministic; the reading text below is curator-
-            # authored. Cite per agent_guidance.claim_level_treatments
-            # [composed_pattern].
+            # composed_pattern (canon-graph set membership over
+            # absent_frames; threshold-firing). Trigger is deterministic;
+            # the reading text below is curator-authored. Cite per
+            # agent_guidance.claim_level_treatments[composed_pattern].
             "claim_level": _CLAIM_LEVEL_COMPOSED,
             "reading": reading,
             "corpus_context": dim_corpus_ctx,
@@ -1222,10 +1219,9 @@ def _build_divergence_block(
 
         # corpus_context for this absent frame: empirical evidence
         # of how this frame behaves across the validation corpus.
-        # Substrate-side cite-back (Item 7 of the substrate-side
-        # composition roadmap): the agent reading an absent frame
-        # gets prevalence, typical co-absences, and corpus_resource
-        # _uris pointing at corpus entries where THIS frame fires.
+        # Cite-back: the agent reading an absent frame gets
+        # prevalence, typical co-absences, and corpus_resource_uris
+        # pointing at corpus entries where THIS frame fires.
         # The agent can chain to those entries to see the frame in
         # use and contrast with the current document's absence.
         # None when corpus unavailable.
@@ -1257,10 +1253,10 @@ def _build_divergence_block(
             "frame_title": title,
             "stability": stability,
             "signal_strength": signal,
-            # Per-level construct treatment (substrate-side composition
-            # L5): the absent_frame record is a non-firing of the V1
-            # detector. Cite per agent_guidance.claim_level_treatments
-            # [detector_measurement]. signal_strength inside the record
+            # Per-level construct treatment: the absent_frame record
+            # is a non-firing of the V1 detector. Cite per
+            # agent_guidance.claim_level_treatments[detector_measurement].
+            # signal_strength inside the record
             # is itself a classifier_output (canon-graph + coverage
             # weakness composition); the agent reading the tier should
             # honor classifier_output discipline (margin / runner-up /
@@ -1650,8 +1646,7 @@ def _build_divergence_block(
             "genre relevance) provides the same insights without "
             "LLM cost when this flag is omitted. See "
             "agent_guidance.frame_opportunities_discipline for the "
-            "evidence discipline that applies when "
-            "opportunities are surfaced."
+            "rules that apply when opportunities are surfaced."
         ),
     }
     if include_frame_opportunities and document_text_for_opportunities:
@@ -1706,8 +1701,8 @@ def _build_divergence_block(
                 result["unavailable_reason"]
             )
 
-    # Apply compose_budget slicing (substrate-side composition L5
-    # interface UX): bound the substrate's output volume so an agent
+    # Apply compose_budget slicing: bound the substrate's output
+    # volume so an agent
     # with a tight working-memory budget can request a compact reading
     # without losing structural shape. The envelope's tier_counts
     # remain PRE-slice (they reflect what the substrate found) so the
@@ -2039,7 +2034,7 @@ def _compress_agent_guidance_to_load_bearing(
             "Whether the document is correct, balanced, or rigorous. "
             "Whether the framing is appropriate for the user's goal. "
             "Verdicts, rankings, or pass/fail judgments. The "
-            "construct-honest posture is structural-shape only."
+            "posture is structural-shape only."
         ),
         "how_to_cite_faithfully": (
             "Name Frame Check explicitly as the source of "
@@ -2426,8 +2421,8 @@ def build_epistemic_payload(
             "runner_up": voice.get("runner_up"),
             "runner_up_margin": voice.get("runner_up_margin"),
             "construct": _build_voice_construct(voice),
-            # Per-level construct treatment (substrate-side composition
-            # L5): voice is a 7-rule cascade classifier with margin-
+            # Per-level construct treatment: voice is a 7-rule
+            # cascade classifier with margin-
             # aware confidence. Cite per
             # agent_guidance.claim_level_treatments[classifier_output];
             # honor the existing construct.how_to_serialize for the
@@ -2464,17 +2459,16 @@ def build_epistemic_payload(
         },
         # Per-frame deepening: surgical additions to FVS-014
         # (temporal_scope), FVS-011 (stakeholder_map), and
-        # FVS-007/009 (falsification_conditions). Items 8 / 9 / 10
-        # of the substrate-side composition roadmap. Each sub-field
+        # FVS-007/009 (falsification_conditions). Each sub-field
         # is None when the document is too short for the analysis
         # to be meaningful (under 100 words).
         "frame_deepening": {
             "temporal_scope": temporal_scope_data,
             "stakeholder_map": stakeholder_map_data,
             "falsification_conditions": falsification_data,
-            # Per-level construct treatment (substrate-side
-            # composition L5): each sub-field is a regex/feature
-            # detector emitting structural document evidence
+            # Per-level construct treatment: each sub-field is a
+            # regex/feature detector emitting structural document
+            # evidence
             # (years referenced, stakeholder roles, falsification
             # statements). The detector-measurement discipline
             # applies to the cited evidence inside each sub-field
@@ -2515,7 +2509,7 @@ def build_epistemic_payload(
             "unsupported_numeric": epist.get("unsupported_numeric"),
             "total_sentences": epist.get("total_sentences"),
             # Candidate-attribution surfacing extends the Fix A
-            # under-detection construct from coverage (Phase A) to
+            # lower-bound detection posture from coverage (Phase A) to
             # the epistemic signal. Sentences where EPISTEMIC_CANDIDATE_
             # ATTRIBUTION fires but the primary _is_sourced pipeline
             # did not. Each carries an explicit caveat. See
@@ -2654,8 +2648,7 @@ def build_epistemic_payload(
                 "corpus_context": _frame_corpus_context_or_none(
                     f.get("fvs_id", "")
                 ),
-                # Per-level construct treatment (substrate-side
-                # composition L5): a frame_library_matches entry is
+                # Per-level construct treatment: a frame_library_matches entry is
                 # a V1 detector firing on the document. Cite per
                 # agent_guidance.claim_level_treatments
                 # [detector_measurement]. The detector uses
@@ -2777,8 +2770,7 @@ def build_epistemic_payload(
         }
         readiness = _cdr(synth_display)
         if readiness is not None:
-            # Per-level construct treatment (substrate-side
-            # composition L5): each per-dimension reading is a
+            # Per-level construct treatment: each per-dimension reading is a
             # substrate composition over multiple measurements
             # with a curated signal_text. Trigger conditions are
             # deterministic (multi-feature scoring per dimension);
@@ -2952,7 +2944,7 @@ def build_epistemic_payload(
             "classifier_output (a deterministic cascade or scoring "
             "classifier with margin-aware confidence; surface "
             "runner_up when borderline; no IRR data); "
-            "composed_pattern (a substrate-side composition with "
+            "composed_pattern (a deterministic composition with "
             "deterministic trigger and a curator-authored reading; "
             "trigger is reproducible, reading is single-author "
             "normative claim about what the trigger means; no IRR "
@@ -3138,8 +3130,7 @@ def build_epistemic_payload(
         ),
         "frame_opportunities_discipline": (
             "frame_opportunities is the opt-in LLM-augmented "
-            "composition layer (Item 12 of the substrate-side "
-            "composition roadmap). When the caller passes "
+            "composition layer. When the caller passes "
             "include_frame_opportunities=true, divergence."
             "frame_opportunities.opportunities carries 0-3 "
             "document-specific questions composed by the LLM from "
@@ -3416,8 +3407,7 @@ def _summarize_per_document(doc: dict, text: str) -> dict:
             "runner_up": doc["voice"].get("runner_up"),
             "runner_up_margin": doc["voice"].get("runner_up_margin"),
             "construct": _build_voice_construct(doc["voice"]),
-            # Per-level construct treatment (substrate-side
-            # composition L5): parity with the frame_check tool
+            # Per-level construct treatment: parity with the frame_check tool
             # response so a client can handle both surfaces
             # uniformly. See agent_guidance.claim_level_treatments
             # in the frame_check payload (same payload shape on
@@ -3489,8 +3479,7 @@ def _summarize_per_document(doc: dict, text: str) -> dict:
                 "affects_dimensions": _dimensions_affecting(
                     f.get("fvs_id", "")
                 ),
-                # Per-level construct treatment (substrate-side
-                # composition L5): parity with frame_check. Each
+                # Per-level construct treatment: parity with frame_check. Each
                 # frame match is a V1 detector firing.
                 "claim_level": _CLAIM_LEVEL_DETECTOR,
                 # pattern_kind: parity with the frame_check builder.

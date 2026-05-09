@@ -47,11 +47,11 @@ def _epistemic(sourced_pct=50):
 
 class TestGrowthFrame:
 
-    # Move D-FVS-008 (2026-04-27): the structural rule now requires
-    # growth-context vocabulary in `text` alongside the structural signal.
-    # These tests pass minimal growth-vocab text (revenue + market growth)
-    # so the structural rule still fires; the test assertions remain
-    # focused on the structural conditions.
+    # The structural rule requires growth-context vocabulary in
+    # `text` alongside the structural signal. These tests pass
+    # minimal growth-vocab text (revenue + market growth) so the
+    # structural rule still fires; the test assertions remain focused
+    # on the structural conditions.
     GROWTH_VOCAB_TEXT = (
         "The company's revenue grew by 35 percent year over year. "
         "Market expansion accelerated through new customer adoption."
@@ -98,13 +98,11 @@ class TestGrowthFrame:
         assert "FVS-008" not in ids, "Growth Frame should NOT be suggested for descriptive voice"
 
     def test_not_suggested_without_growth_vocabulary(self):
-        """Move D-FVS-008 content discriminator: structural signal alone
-        is no longer sufficient. A document with trends/causes covered +
-        risks missing + analytical voice but NO business-growth vocabulary
+        """FVS-008 content discriminator: structural signal alone is
+        not sufficient. A document with trends/causes covered + risks
+        missing + analytical voice but NO business-growth vocabulary
         (e.g., literature review using 'scaling laws', institutional
-        analysis using 'evolution') must NOT trigger FVS-008. Cross-domain
-        evidence: epistemic_via_paraphrased_sourcing/audit.md and
-        cross_domain_stakeholder/audit.md.
+        analysis using 'evolution') must NOT trigger FVS-008.
         """
         cov = _coverage({"trends", "causes"}, {"risks", "stakeholders", "uncertainty"})
         non_growth_text = (
@@ -124,11 +122,11 @@ class TestGrowthFrame:
         )
 
     def test_not_suggested_when_text_is_none(self):
-        """Move D-FVS-008: when no text is passed, the discriminator cannot
-        be evaluated, so FVS-008 falls through (consistent with the
-        function's standing 'text-dependent rules don't fire when text is
-        None' discipline). Pinned so callers know they must pass text to
-        get FVS-008 detection.
+        """When no text is passed, the FVS-008 discriminator cannot be
+        evaluated, so the rule falls through (consistent with the
+        function's standing 'text-dependent rules don't fire when
+        text is None' discipline). Pinned so callers know they must
+        pass text to get FVS-008 detection.
         """
         cov = _coverage({"trends", "causes"}, {"risks", "stakeholders", "uncertainty"})
         result = suggest_frames(cov, _voice("analytical"), _temporal(), _epistemic())

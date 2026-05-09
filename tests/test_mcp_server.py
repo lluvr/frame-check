@@ -410,9 +410,9 @@ def test_claims_hedged_count_reflects_primary_hedging():
 
 def test_claims_candidate_hedge_surfaces_academic_forms():
     """Claims candidate-hedge patterns surface academic/conditional
-    hedging the primary HEDGE_RE does not recognize. Completes the
-    construct-honesty trilogy (coverage, epistemic, claims) under the
-    Fix A under-detection construct.
+    hedging the primary HEDGE_RE does not recognize. Provides a
+    reader-inspectable lower-bound across coverage, epistemic, and
+    claims.
 
     Hedge forms the primary misses include 'arguably', 'broadly
     speaking', 'subject to', 'tentatively', 'in principle', 'on the
@@ -624,12 +624,12 @@ def test_coverage_v2_markers_whitespace_normalized():
 
 def test_coverage_v2_candidate_miss_surfacing():
     """Not-detected dimensions in coverage_v2 should carry
-    candidate_sentences when CANDIDATE_PATTERNS fire, operationalizing
-    the under-detection construct from METHODOLOGY §1.3.
+    candidate_sentences when CANDIDATE_PATTERNS fire, providing a
+    reader-inspectable lower-bound signal.
 
-    This is the Phase A breakthrough feature: primary detector did not
-    fire, but reader-accessible candidate sentences are surfaced so the
-    reader can judge whether the dimension is substantively covered.
+    Primary detector did not fire, but reader-accessible candidate
+    sentences are surfaced so the reader can judge whether the
+    dimension is substantively covered.
 
     Uses the semiconductor-essay fixture: causes uses "rationale
     centers on" and "motivation" (primary misses); trends uses
@@ -1830,10 +1830,12 @@ def test_initialize_advertises_resources_capability():
 
 
 def test_resources_list_includes_library_and_docs():
-    """resources/list must advertise at least the library, the
-    methodology, and the calibration tiers. Omitting any breaks
-    the 'Frame Check as canonical reference' contract."""
-    print("=== resources/list includes library, methodology, calibration ===")
+    """resources/list must advertise at least the library and the
+    calibration tiers. Omitting either breaks the 'Frame Check as
+    canonical reference' contract. The methodology resource is
+    optional (its presence depends on whether the methodology
+    document is bundled in the wheel for a given audience)."""
+    print("=== resources/list includes library + calibration ===")
     resp = mcp_server.dispatch({
         "jsonrpc": "2.0", "id": 2, "method": "resources/list",
     })
@@ -1842,10 +1844,6 @@ def test_resources_list_includes_library_and_docs():
     check(
         any(u.startswith("frame-check://library/FVS-") for u in uris),
         "resources must include at least one library entry",
-    )
-    check(
-        "frame-check://methodology" in uris,
-        "resources must include methodology",
     )
     check(
         "frame-check://calibration/reliability_tiers" in uris,
@@ -6139,10 +6137,10 @@ def test_how_to_render_divergence_teaches_cluster_first_composition():
 
 
 def test_frame_library_matches_carry_corpus_context():
-    """Item 5 of the substrate-side composition roadmap: per-frame
-    corpus_context is attached to every matched frame in
-    frame_library_matches. The substrate composes catalog assertion
-    with empirical anchoring from Frame Check's validation corpus.
+    """Per-frame corpus_context is attached to every matched frame
+    in frame_library_matches. The substrate composes catalog
+    assertion with empirical anchoring from Frame Check's validation
+    corpus.
 
     Pins:
       - corpus_context attached to each match
@@ -6294,11 +6292,10 @@ def test_absence_clusters_carry_corpus_context():
 
 
 def test_analysis_carries_structural_genre_classification():
-    """Item 2 of the substrate-side composition roadmap: every
-    frame_check response carries a `genre` field in the analysis
-    block. The genre classifier composes voice + claim distribution
-    + text-feature regexes into a bounded-set classification with
-    construct-honest confidence reporting.
+    """Every frame_check response carries a `genre` field in the
+    analysis block. The genre classifier composes voice + claim
+    distribution + text-feature regexes into a bounded-set
+    classification with calibrated confidence reporting.
 
     Pins:
       - genre key present on every analysis response
@@ -6315,8 +6312,8 @@ def test_analysis_carries_structural_genre_classification():
     analysis = payload["analysis"]
     check(
         "genre" in analysis,
-        "analysis.genre must be present (Item 2 of the substrate-"
-        "side composition roadmap; foundational for Items 3 + 4)",
+        "analysis.genre must be present; the genre field is the "
+        "foundation for genre-conditioned absence ranking",
     )
     g = analysis.get("genre", {})
     expected_classes = {
@@ -6720,11 +6717,11 @@ def test_composition_discipline_names_genre():
 
 
 def test_absent_frames_carry_genre_relevance_for_classified_genre():
-    """Item 3 of the substrate-side composition roadmap: when the
-    document is classified into a structural genre, absent frames
-    that are load-bearing for that genre's reasoning carry a
-    genre_relevance dict with priority and reason. Pins the field
-    shape and the per-genre map's coverage of canonical frames.
+    """When the document is classified into a structural genre,
+    absent frames that are load-bearing for that genre's reasoning
+    carry a genre_relevance dict with priority and reason. Pins the
+    field shape and the per-genre map's coverage of canonical
+    frames.
     """
     baseline = len(_FAILURES)
     print("=== absent_frames carry genre_relevance for classified genre ===")
@@ -6926,11 +6923,10 @@ def test_how_to_render_divergence_teaches_genre_relevance():
 
 
 def test_divergence_carries_frame_patterns():
-    """Item 4 of the substrate-side composition roadmap: when the
-    document signal matches a curated structural pattern (e.g.,
-    'recommendation-without-falsification', 'growth-without-risk'),
-    the substrate surfaces the pattern as a named composition with
-    curated reading and corpus prevalence.
+    """When the document signal matches a curated structural
+    pattern (e.g., 'recommendation-without-falsification',
+    'growth-without-risk'), the substrate surfaces the pattern as a
+    named composition with curated reading and corpus prevalence.
 
     Pins:
       - frame_patterns key on every divergence response
@@ -6959,8 +6955,7 @@ def test_divergence_carries_frame_patterns():
     div = payload["divergence"]
     check(
         "frame_patterns" in div,
-        "divergence.frame_patterns must be present (Item 4 of the "
-        "substrate-side composition roadmap)",
+        "divergence.frame_patterns must be present",
     )
     patterns = div.get("frame_patterns", [])
     check(
@@ -7138,11 +7133,11 @@ def test_how_to_render_divergence_teaches_frame_patterns():
 
 
 def test_analysis_carries_frame_deepening_block():
-    """Items 8/9/10 of the substrate-side composition roadmap:
-    every frame_check response carries an `analysis.frame_deepening`
-    block with three sub-fields (temporal_scope, stakeholder_map,
-    falsification_conditions). Each is None when the document is
-    too short for the analysis to be meaningful (under 100 words).
+    """Every frame_check response carries an
+    `analysis.frame_deepening` block with three sub-fields
+    (temporal_scope, stakeholder_map, falsification_conditions).
+    Each is None when the document is too short for the analysis to
+    be meaningful (under 100 words).
 
     Pins:
       - frame_deepening key on every analysis response
@@ -7171,8 +7166,7 @@ def test_analysis_carries_frame_deepening_block():
     analysis = payload["analysis"]
     check(
         "frame_deepening" in analysis,
-        "analysis.frame_deepening must be present (Items 8/9/10 of "
-        "the substrate-side composition roadmap)",
+        "analysis.frame_deepening must be present",
     )
     fd = analysis.get("frame_deepening", {})
     expected_keys = {
@@ -7309,8 +7303,8 @@ def test_falsification_conditions_extracts_explicit_statements():
     """The falsification_conditions detector must extract explicit
     'would be wrong if' / 'fails when' / 'depends on' statements
     when present, surface them as candidate previews, and emit a
-    construct-honest reading naming whether the document carries
-    falsification structure.
+    reading naming whether the document carries falsification
+    structure.
     """
     baseline = len(_FAILURES)
     print("=== falsification_conditions extracts explicit statements ===")
@@ -7653,10 +7647,9 @@ def test_full_payload_abstains_construct_honestly_on_off_methodology():
 
 
 def test_user_goal_attaches_goal_relevance_to_absent_frames():
-    """Item 11 of the substrate-side composition roadmap: when the
-    user signals a goal (decide / brainstorm / persuade / learn /
-    audit), absent_frames load-bearing for that goal carry a
-    goal_relevance dict with priority and reason. Pins the field
+    """When the user signals a goal (decide / brainstorm / persuade
+    / learn / audit), absent_frames load-bearing for that goal carry
+    a goal_relevance dict with priority and reason. Pins the field
     shape and the per-goal map's coverage of canonical frames.
     """
     baseline = len(_FAILURES)

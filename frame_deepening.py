@@ -1,6 +1,5 @@
 """Per-frame deepening of three load-bearing FVS areas.
 
-Items 8, 9, and 10 of the substrate-side composition roadmap.
 Each detection is a deterministic surgical addition to a specific
 FVS area: temporal anchoring (FVS-014), stakeholder mapping
 (FVS-011), and falsification conditions (FVS-007 / FVS-009). The

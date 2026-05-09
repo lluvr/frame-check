@@ -1,11 +1,9 @@
 """Stderr logging primitives for the Frame Check MCP server.
 
-Extracted from `mcp_server.py` 2026-04-29 as Step 1 of the
-mcp_server decomposition (RELEASE_v0.8.3_PUBLISH_SEQUENCE follow-up
-plan, Item 4). The logging surface is the bottom layer of the
-module-decomposition layer cake: it has zero internal dependencies
-on other Frame Check modules, so it extracts cleanly first and
-serves as a proof-of-concept that the re-export pattern works.
+The logging surface has zero internal dependencies on other Frame
+Check modules so it sits cleanly at the bottom of the layer cake;
+`mcp_server.py` re-exports the public symbols for backward
+compatibility.
 
 Stdout is reserved for the JSON-RPC channel on the MCP server;
 any diagnostic that prints to stdout breaks the client connection

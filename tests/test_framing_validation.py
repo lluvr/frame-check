@@ -153,10 +153,10 @@ class TestVoiceDetection:
 
 
 class TestVoiceClassificationConfidence:
-    """Phase B voice construct: classification confidence, runner-up,
-    borderline flag. The under-detection construct from Fix A does not
-    apply to classification signals (no not_detected state); this is
-    the analogous evidence posture for voice.
+    """Voice construct: classification confidence, runner-up,
+    borderline flag. The lower-bound posture used elsewhere does not
+    apply to classification signals (no not_detected state); for
+    voice the analogous posture is calibrated confidence reporting.
 
     Shape:
       voice: the classifier's pick

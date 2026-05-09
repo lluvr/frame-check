@@ -474,7 +474,7 @@ quick triage.
 }
 ```
 
-### Absence clusters (substrate-side composition)
+### Absence clusters
 
 `divergence.absence_clusters` is the substrate's first composition layer over the divergence set. Where the agent previously had to discover dimension-level themes by reading across the `absent_frames` list ("these four absent frames cluster on the counterfactual dimension"), the substrate now surfaces the cluster directly with a dimension-specific, evidence-anchored reading.
 
@@ -503,7 +503,7 @@ The substrate stays deterministic. The cluster builder operates only on canon-gr
 
 ### Structural genre classification
 
-Item 2 of the substrate-side composition roadmap. Foundational primitive that Item 3 (per-genre absence ranking) and Item 4 (pattern composition with prevalence) build on. The classifier emits a structural genre label with confidence and runner-up in the same construct-honest shape as voice: bounded label set, deterministic features, margin-aware confidence reporting.
+Foundational primitive that per-genre absence ranking and pattern composition build on. The classifier emits a structural genre label with confidence and runner-up using the same shape as voice: bounded label set, deterministic features, margin-aware confidence reporting.
 
 Bounded genre set. The classifier picks among six structural genres:
 
@@ -541,11 +541,11 @@ Genre is a structural reading of how the document positions its content; not a v
 
 ### Genre-relative absence ranking
 
-Item 3 of the substrate-side composition roadmap. Built on Item 2 (genre classifier). When a document classifies into a structural genre, absences that are load-bearing for that genre's reasoning are promoted within their `signal_strength` tier. The substrate carries a curated per-genre map: for each genre, an ordered list of FVS IDs with one-sentence reasons naming the structural relevance.
+Built on the genre classifier. When a document classifies into a structural genre, absences that are load-bearing for that genre's reasoning are promoted within their `signal_strength` tier. The substrate carries a curated per-genre map: for each genre, an ordered list of FVS IDs with one-sentence reasons naming the structural relevance.
 
 The ranking is reading-form. The reason for each genre-relevant absence describes what the framing does not do, not what the document is. The agent surfacing the absence cites the reason as the structural basis for the entry's priority.
 
-Per-genre load-bearing maps live in `genre_classifier._GENRE_LOAD_BEARING_ABSENCES`. Each genre has at least three entries; recommendation has four. Adding a new genre to the classifier requires adding a matching map entry (paired with the scoring function and construct text from Item 2).
+Per-genre load-bearing maps live in `genre_classifier._GENRE_LOAD_BEARING_ABSENCES`. Each genre has at least three entries; recommendation has four. Adding a new genre to the classifier requires adding a matching map entry (paired with the scoring function and construct text from the classifier itself).
 
 `absent_frames` records carry a new optional field:
 
@@ -563,7 +563,7 @@ Sort order on `absent_frames` is now: `signal_strength` tier first (`high` befor
 
 ### Named structural patterns
 
-Item 4 of the substrate-side composition roadmap. Where clusters surface dimension-level themes over absences alone, named patterns surface RECOGNIZED structural shapes that combine present and absent frames into a single named composition with curated reading and corpus prevalence as empirical anchoring.
+Where clusters surface dimension-level themes over absences alone, named patterns surface RECOGNIZED structural shapes that combine present and absent frames into a single named composition with curated reading and corpus prevalence as empirical anchoring.
 
 The substrate carries a curated pattern catalog in `frame_patterns._PATTERNS`. Each pattern carries:
 
@@ -660,7 +660,7 @@ The deepening block surfaces under `analysis.frame_deepening`:
 
 ### Frame opportunities (opt-in LLM-augmented composition)
 
-Item 12 of the substrate-side composition roadmap. The strategic reservation: this layer breaks the zero-LLM-cost layer that the deterministic substrate has held until now. It is opt-in only via `include_frame_opportunities=true` on the `frame_check` tool; the default behavior is preserved deterministic substrate composition.
+This layer is the only path that calls an LLM. It is opt-in only via `include_frame_opportunities=true` on the `frame_check` tool; the default behavior preserves the deterministic substrate composition with zero LLM cost per query.
 
 Where the deterministic substrate gives the agent abstract teaching questions ("What would have to be true for this analysis to be wrong?"), this layer generates document-specific questions composed from the absent frame's perspective + the document's content + the user's goal. Example: instead of the abstract teaching question, the agent receives "Given the document's recommendation for Regenerative Agriculture is based on 'right now' opportunities and 2026 market sizes, how might this advice be reconsidered if 2026 data is historical by the time the decision matures?"
 
@@ -694,17 +694,17 @@ Surface shape (when enabled):
   ],
   "total_cost_usd": 0.000282,
   "available": true,
-  "note": "Frame-opportunity composition is opt-in via include_frame_opportunities=true. The deterministic substrate (clusters, patterns, absences with goal and genre relevance) provides the same insights without LLM cost when this flag is omitted. See agent_guidance.frame_opportunities_discipline for the evidence discipline that applies when opportunities are surfaced."
+  "note": "Frame-opportunity composition is opt-in via include_frame_opportunities=true. The deterministic substrate (clusters, patterns, absences with goal and genre relevance) provides the same insights without LLM cost when this flag is omitted. See agent_guidance.frame_opportunities_discipline for the rules that apply when opportunities are surfaced."
 }
 ```
 
 When the flag is omitted or set to `false`, the same key is still present but carries `opportunities=[]`, `total_cost_usd=0.0`, and `available=null` (the substrate did not invoke the LLM). When the flag is `true` but the LLM is unavailable (no API key, library not installed), `available=false` with an `unavailable_reason` field; the deterministic substrate continues to provide clusters, patterns, and absent_frames.
 
-The `agent_guidance.frame_opportunities_discipline` field carries the construct-honesty rules for surfacing opportunities to the user: name the LLM provenance, surface the cost, keep the general teaching question alongside the generated one, never present LLM content as Frame Check's measurement, and handle graceful degradation as a feature (the deterministic substrate still works) rather than an error.
+The `agent_guidance.frame_opportunities_discipline` field carries the rules for surfacing opportunities to the user: name the LLM provenance, surface the cost, keep the general teaching question alongside the generated one, never present LLM content as Frame Check's measurement, and handle graceful degradation as a feature (the deterministic substrate still works) rather than an error.
 
 ### Genre-segmented corpus prevalence
 
-Item E of the substrate-side composition polish (post-roadmap). The corpus aggregator now classifies each corpus document by structural genre at lazy-load time and surfaces per-genre counts in `corpus_summary`. Per-frame `corpus_context` carries `fires_in_by_genre` (each genre with `fires_in_count`, `genre_total`, `rate`). Per-pattern `corpus_context` carries `genre_segmented_prevalence` when the pattern has a genre constraint, alongside the full-corpus prevalence for reference.
+The corpus aggregator classifies each corpus document by structural genre at lazy-load time and surfaces per-genre counts in `corpus_summary`. Per-frame `corpus_context` carries `fires_in_by_genre` (each genre with `fires_in_count`, `genre_total`, `rate`). Per-pattern `corpus_context` carries `genre_segmented_prevalence` when the pattern has a genre constraint, alongside the full-corpus prevalence for reference.
 
 The motivation: a claim like "fires in 3 of 10 corpus documents" mixes recommendation, analysis, narrative, and press-release docs into a single denominator. The expert reading this asks "10 of what? Is the rate the same across genres?" Without segmentation, statistical claims are thin. With segmentation, the same data reads "fires in 1 of 5 recommendation-genre corpus documents (20%)"; the comparison is now like-vs-like, and small-N is honestly named.
 
@@ -749,11 +749,11 @@ Per-pattern `corpus_context` with segmented prevalence:
 }
 ```
 
-Construct honesty: both the full-corpus and genre-segmented prevalence are surfaced. The agent should prefer the segmented denominator when interpreting the rate; the full-corpus number stays for reference (and for scaling: as the corpus grows, segmented Ns become statistically meaningful while the full-corpus N grows too). The `small_n_caveat` names that both numbers are still small-N today.
+Both the full-corpus and genre-segmented prevalence are surfaced. The agent should prefer the segmented denominator when interpreting the rate; the full-corpus number stays for reference (and for scaling: as the corpus grows, segmented Ns become statistically meaningful while the full-corpus N grows too). The `small_n_caveat` names that both numbers are still small-N today.
 
 ### Goal-aware divergence ranking
 
-Item 11 of the substrate-side composition roadmap. The user (or agent on behalf of the user) signals a goal: `decide`, `brainstorm`, `persuade`, `learn`, `audit`. The divergence ranking shifts accordingly: deciding emphasizes falsification, brainstorming emphasizes perspective diversity, persuading emphasizes counter-perspectives, learning emphasizes full taxonomy, auditing applies the existing catalog/coverage/genre logic without goal override.
+The user (or agent on behalf of the user) signals a goal: `decide`, `brainstorm`, `persuade`, `learn`, `audit`. The divergence ranking shifts accordingly: deciding emphasizes falsification, brainstorming emphasizes perspective diversity, persuading emphasizes counter-perspectives, learning emphasizes full taxonomy, auditing applies the catalog/coverage/genre logic without goal override.
 
 The substrate stays deterministic. Per-goal maps are curated text in `user_goals._GOAL_LOAD_BEARING_FRAMES`; the relevance lookup is exact-match against canon FVS IDs; no LLM is invoked.
 
@@ -782,9 +782,9 @@ The `audit` goal is the default-equivalent posture: no goal-specific override is
 
 ### Corpus context (empirical anchoring)
 
-Items 5, 6, and 7 of the substrate-side composition roadmap. Frame Check ships with a small validation corpus (10 documents today) under `validation/decision_readiness/corpus/` plus aggregate findings under `validation/decision_readiness/results/{date}-{hash}/aggregate.json`. The corpus carries empirical signal that previously did not surface through the MCP response: per-frame firing rates, co-fire patterns, co-absence patterns, per-dimension peer-difference rates, and cross-question outlier findings. The substrate now exposes this signal as `corpus_context` blocks attached to matched frames, absent frames, and absence clusters.
+Frame Check ships with a small validation corpus (10 documents today) under `validation/decision_readiness/corpus/` plus aggregate findings under `validation/decision_readiness/results/{date}-{hash}/aggregate.json`. The corpus carries empirical signal: per-frame firing rates, co-fire patterns, co-absence patterns, per-dimension peer-difference rates, and cross-question outlier findings. The substrate exposes this signal as `corpus_context` blocks attached to matched frames, absent frames, and absence clusters.
 
-Evidence discipline. The corpus is small. Every prevalence statement carries the denominator (`fires in N of M corpus documents`) so the small-N is honest. Outcome data based on expert ratings is not yet available (current `cross_check.json` reports `n_ratings_discovered: 0`); the outcome-shaped signals surfaced are peer-pair-difference rates and cross-question outlier findings from validation runs, named as such in `envelope.corpus_summary.small_n_caveat`. When the corpus is unavailable (e.g., wheel without bundled corpus), every `corpus_context` field is `None` rather than a fabricated value.
+Small-N discipline. The corpus is small. Every prevalence statement carries the denominator (`fires in N of M corpus documents`) so the small-N is honest. Outcome data based on expert ratings is not yet available (current `cross_check.json` reports `n_ratings_discovered: 0`); the outcome-shaped signals surfaced are peer-pair-difference rates and cross-question outlier findings from validation runs, named as such in `envelope.corpus_summary.small_n_caveat`. When the corpus is unavailable (e.g., wheel without bundled corpus), every `corpus_context` field is `None` rather than a fabricated value.
 
 Per-frame `corpus_context` (attached to each entry in `frame_library_matches` and `divergence.absent_frames`):
 
@@ -994,7 +994,7 @@ bodies and structure their default response around it. The compact
 default response is ONE insight + ONE question + closing + expand
 invitation; the deep measurement walk is the expand path.
 
-### User-intent interface (substrate-side composition L5 interface UX)
+### User-intent interface
 
 The MCP tool parameters (`include_divergence`, `user_goal`, `include_frame_opportunities`, `compose_budget`, etc.) are developer-facing API surface. The end user invoking the substrate via Claude Desktop or another MCP client never types these directly; they invoke a sovereignty prompt by name (or natural language) and the calling agent translates user-intent to MCP parameter values.
 
@@ -1020,7 +1020,7 @@ Backwards-compatible: omitting `depth/goal/questions` from the prompt invocation
 
 The third layer of the interface UX is agent guidance for natural-language mapping. Every `frame_check` response carries `agent_guidance.how_to_map_user_intent`: when the user types natural language ("I'm trying to figure out whether to ship this") rather than structured arguments, the agent reads this key to translate user-intent vocabulary into the prompt argument space (depth/goal/questions). Concrete user-phrase → argument mappings are documented per axis (decide / explore / audit / challenge / learn for goal; quick / thorough for depth; yes / no for questions). The discipline named in the guidance: surface chosen options briefly to the user before invoking; default to safe values on ambiguity; honor explicit prompt arguments verbatim over inference. This makes the user-intent vocabulary travel with every response so agents stop guessing.
 
-### Per-level construct treatment (substrate-side composition L5)
+### Per-level construct treatment
 
 Substrate-side composition shipped twelve roadmap items plus
 post-roadmap polish, each adding a new layer of substrate output
@@ -1058,7 +1058,7 @@ value. Three levels:
   surfaces confidence and runner-up explicitly when borderline; the
   classification is named as Frame Check's reading rather than a
   measured property of the document.
-- **`composed_pattern`**: a substrate-side composition over
+- **`composed_pattern`**: a deterministic composition over
   detector and classifier outputs. The trigger conditions are
   deterministic (canon-graph set membership for `absence_clusters`;
   multi-frame plus doc-signal discriminators for `frame_patterns`;
@@ -1107,7 +1107,7 @@ value. Three levels:
       "deterministic": true,
       "methodology_documented": true,
       "inter_rater_reliability": "not_applicable",
-      "validity_data": "Vocabulary-and-pattern detection with documented under-detection construct (METHODOLOGY §1.3 / §1.3.1). Per-signal construct blocks carry the detector-specific caveats. IRR is not applicable to algorithmic detectors; reproducibility is the validity claim and is documented per signal."
+      "validity_data": "Vocabulary-and-pattern detection with documented lower-bound detection posture. Per-signal construct blocks carry the detector-specific caveats. IRR is not applicable to algorithmic detectors; reproducibility is the validity claim and is documented per signal."
     },
     "caveats": ["...", "...", "..."],
     "how_to_cite": "Frame Check's detector found markers for X / no markers detected for X."
@@ -1121,16 +1121,14 @@ Why this exists. External evaluation needs a clear epistemic claim
 chain to evaluate. The methodology paper needs per-level construct
 treatment as its central argument. A teaching surface that adapts
 to user state (first-time vs proficient) needs per-level metadata
-to decide which claims to surface with which discipline. All three
-compounding loops (external evaluators, academic citation, user
-sovereignty as graduation rather than dependency) need the
-substrate to know what kind of claim it makes at each layer. This
-is the L5 of substrate-side composition: not composing the
-substrate further, composing the substrate's epistemic discipline
-so the substrate knows what kind of claim it makes at each layer.
+to decide which claims to surface with which discipline. The
+substrate carries five claim levels (`detector_measurement`,
+`classifier_output`, `llm_classifier_output`, `composed_pattern`,
+`agent_generated`); each carries its own validation posture and
+how-to-cite guidance.
 
-The evidence discipline is preserved at every level. IRR
-status is reported honestly (`not_yet_measured` for classifiers and
+The epistemic discipline is preserved at every level. IRR status
+is reported honestly (`not_yet_measured` for classifiers and
 composed patterns, since no IRR pilot has shipped). Validity data
 names the gap explicitly. The substrate stays construct-honest
 about its own validation status; the agent inherits the per-level
@@ -1180,23 +1178,23 @@ calling agent gets this directive in-band.
 
 ## Evidence posture across the five analytical signals
 
-The MCP payload carries per-signal construct-honesty treatment with an explicit `construct` sub-block that agent framework serializers can quote verbatim. Each signal has a construct that fits its signal shape (presence/absence vs classification vs distribution); none of the signals is restated with false certainty by agents following the `how_to_serialize` guidance.
+The MCP payload carries a per-signal `construct` sub-block that agent framework serializers can quote verbatim. Each signal has a construct that fits its signal shape (presence/absence vs classification vs distribution); none of the signals is restated with false certainty by agents following the `how_to_serialize` guidance.
 
 Signal-by-signal:
 
 | Signal | Construct | Key v2 fields |
 |--------|-----------|---------------|
-| Coverage | under-detection | `coverage_v2.dimensions[cat].{status, markers_matched, candidate_sentences}` + first-class `construct` block |
-| Epistemic | under-detection | `epistemic.candidate_attribution_sentences` + per-entry caveat |
-| Claims | under-detection | `claims_extracted.candidate_hedge_count` + per-claim `candidate_hedge_marker` |
+| Coverage | lower-bound | `coverage_v2.dimensions[cat].{status, markers_matched, candidate_sentences}` + first-class `construct` block |
+| Epistemic | lower-bound | `epistemic.candidate_attribution_sentences` + per-entry caveat |
+| Claims | lower-bound | `claims_extracted.candidate_hedge_count` + per-claim `candidate_hedge_marker` |
 | Voice | classification-confidence | `voice.{confidence, margin_to_threshold, runner_up, runner_up_margin, construct}` |
 | Temporal | distribution-with-dominant | `temporal.{dominant_margin, balanced, construct}` |
 
-Coverage, epistemic, and claims share the **under-detection construct**: the primary regex is a lower-bound detection signal; `not_detected` is a claim about vocabulary, not about the document. Candidate-miss patterns surface sentences the reader may recognize as covering the dimension despite the primary regex missing the form. Each candidate carries an explicit caveat.
+Coverage, epistemic, and claims share a **lower-bound detection** posture: the primary regex is a lower-bound detection signal; `not_detected` is a claim about vocabulary, not about the document. Candidate-miss patterns surface sentences the reader may recognize as covering the dimension despite the primary regex missing the form. Each candidate carries an explicit caveat.
 
-Voice uses the **classification-confidence construct**: the 7-rule cascade picks a winner, but a document at a threshold boundary could flip with a small feature change. `margin_to_threshold` names how decisively the winner crossed; `runner_up` names the next cascade class; `confidence` flags borderline calls. Agents are directed to say "classified as X, borderline; Y nearly fired" rather than "the document is X" when confidence is borderline.
+Voice uses a **classification-confidence** construct: the 7-rule cascade picks a winner, but a document at a threshold boundary could flip with a small feature change. `margin_to_threshold` names how decisively the winner crossed; `runner_up` names the next cascade class; `confidence` flags borderline calls. Agents are directed to say "classified as X, borderline; Y nearly fired" rather than "the document is X" when confidence is borderline.
 
-Temporal uses the **distribution-with-dominant construct**: past/present/future percentages sum to ~100%, and `dominant` picks the highest. But a 38/35/27 split reads `past-dominant` while being effectively balanced. `dominant_margin` reports the lead; `balanced` flags distributions where the dominant label should not be read as time-anchoring.
+Temporal uses a **distribution-with-dominant** construct: past/present/future percentages sum to ~100%, and `dominant` picks the highest. But a 38/35/27 split reads `past-dominant` while being effectively balanced. `dominant_margin` reports the lead; `balanced` flags distributions where the dominant label should not be read as time-anchoring.
 
 ### Coverage v1 and v2 shapes (compatibility window)
 
@@ -1307,7 +1305,7 @@ The MCP server emits both legacy v1 and new v2 shapes for the **coverage** signa
 
 ### Why the five-signal treatment matters
 
-Agent frameworks that serialize MCP tool responses often paraphrase raw fields into user-facing prose. Without construct-honesty scaffolding, those paraphrases tend to overclaim: `"missing": ["trends"]` becomes "the document does not address trends"; `"voice": "prescriptive"` becomes "the document is prescriptive." The first drops the vocabulary-based detection caveat; the second drops the classification confidence.
+Agent frameworks that serialize MCP tool responses often paraphrase raw fields into user-facing prose. Without per-signal construct scaffolding, those paraphrases tend to overclaim: `"missing": ["trends"]` becomes "the document does not address trends"; `"voice": "prescriptive"` becomes "the document is prescriptive." The first drops the vocabulary-based detection caveat; the second drops the classification confidence.
 
 The v2 contract carries the construct through structure AND through serialization guidance (`how_to_serialize`). Agents that iterate `analysis[signal].construct.how_to_serialize` get consistent guidance regardless of which signal they are restating.
 
