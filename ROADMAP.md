@@ -30,12 +30,13 @@ A `1.0.0` release commits to:
 - **Strict typing on the public wheel surface.** ``mypy --strict``
   passes against `mcp_server`, `mcp_compose`, `mcp_resources`,
   `mcp_schema`, `framing`, `comparison`, `clarethium_measure`. The
-  current incremental ``[tool.mypy]`` config in `pyproject.toml`
-  raises to strict at the v1.0 cut.
-- **Zero ruff lints.** The current PR-time `quality` job runs ruff
-  with select families (E, F, B, ISC) and is informational. At v1.0
-  it becomes blocking with no remaining lints across the codebase
-  (the tail of E402, B007, B028 closes).
+  lenient ``[tool.mypy]`` config already passes clean on this surface
+  and is strict-blocking at PR time; the strict pass shows ~348
+  remaining errors (mostly ``[type-arg]`` and ``[no-untyped-def]``)
+  that close at v1.0.
+- **Zero ruff lints.** Done as of `0.9.x`. The PR-time `quality`
+  job runs ruff with select families (E, F, B, ISC) and the gate is
+  strict-blocking. New violations fail PR.
 - **Coverage floor.** Per-module line coverage on the public wheel
   surface holds above a target the v1.0 cut declares (currently the
   `pytest-cov` report runs at PR time, no enforced floor). The
