@@ -15,6 +15,7 @@ zero-cost cross-model verification.
 """
 
 import concurrent.futures
+import contextlib
 import os
 import re
 
@@ -391,20 +392,13 @@ def stability_n3_check(topic, provider, n=3):
     with concurrent.futures.ThreadPoolExecutor(max_workers=min(n, 4)) as pool:
         futures = [pool.submit(generator, topic) for _ in range(n)]
         for future in concurrent.futures.as_completed(futures):
-            try:
+            with contextlib.suppress(Exception):
                 text, usage = future.result()
                 if text is not None:
                     regenerations.append({
                         "text": text,
                         "usage": usage or _empty_usage(),
                     })
-            except Exception:
-                # Individual regeneration failures are tolerated;
-                # the loop continues. The caller cycle's
-                # cost reflects only the regenerations that
-                # actually completed.
-                pass
-
     if not regenerations:
         return _empty_stability_result(provider, n)
 
@@ -763,11 +757,9 @@ def _extract_number_set(claims):
             val = re.sub(r'^[$~]', '', val)
             val = re.sub(r'[%xXBMK]$', '', val)
             val = val.replace(",", "").strip()
-            try:
+            with contextlib.suppress(ValueError):
                 float(val)
                 numbers.add(val)
-            except ValueError:
-                pass
     return numbers
 
 

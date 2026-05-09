@@ -51,6 +51,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
 import mcp_server  # noqa: E402
+import contextlib
 
 
 _DOC_SAMPLE = (
@@ -608,10 +609,8 @@ def test_E7_stdio_main_loop_emits_parse_error_for_malformed_line():
         assert line1["id"] is None
         assert line2["result"]["serverInfo"]["name"] == mcp_server.SERVER_NAME
     finally:
-        try:
+        with contextlib.suppress(OSError):
             proc.stdin.close()
-        except OSError:
-            pass
         try:
             proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
@@ -640,10 +639,8 @@ def test_E8_stdio_main_loop_rejects_jsonrpc_other_than_2_0():
         assert line["error"]["code"] == mcp_server.ERR_INVALID_REQUEST
         assert line["id"] == 1
     finally:
-        try:
+        with contextlib.suppress(OSError):
             proc.stdin.close()
-        except OSError:
-            pass
         try:
             proc.wait(timeout=5)
         except subprocess.TimeoutExpired:

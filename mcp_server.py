@@ -57,6 +57,7 @@ License: Apache-2.0. See LICENSE at repo root.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import sys
@@ -1171,25 +1172,20 @@ def _install_version_info() -> dict:
     # Without step 2, every containerized or pip-installed run
     # reports git_sha=unknown even though the build knew the SHA.
     info["git_sha"] = "unknown"
-    try:
+    with contextlib.suppress(OSError, subprocess.TimeoutExpired):
         result = subprocess.run(
             ["git", "-C", _SCRIPT_DIR, "rev-parse", "--short", "HEAD"],
             capture_output=True, text=True, timeout=2, check=False,
         )
         if result.returncode == 0 and result.stdout.strip():
             info["git_sha"] = result.stdout.strip()
-    except (OSError, subprocess.TimeoutExpired):
-        pass
     if info["git_sha"] == "unknown":
         pipeline_version_path = os.path.join(_SCRIPT_DIR, "pipeline_version.txt")
-        try:
+        with contextlib.suppress(OSError):
             with open(pipeline_version_path, "r", encoding="utf-8") as f:
                 baked = f.read().strip()
             if baked and baked != "unknown":
                 info["git_sha"] = baked
-        except OSError:
-            pass
-
     # Check for uncommitted changes. A stale install running against
     # a repo with uncommitted work should surface that state.
     try:
@@ -1230,11 +1226,9 @@ def _install_version_info() -> dict:
                 rel = os.path.relpath(full, _CORPUS_ENTRIES_DIR)
                 h.update(rel.encode("utf-8"))
                 h.update(b"\0")
-                try:
+                with contextlib.suppress(OSError):
                     with open(full, "rb") as f:
                         h.update(f.read())
-                except OSError:
-                    pass
                 h.update(b"\0")
             if root == _CORPUS_ENTRIES_DIR:
                 slug_count = sum(

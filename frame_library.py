@@ -15,6 +15,7 @@ of a growing market. The suggestions are hypotheses, not verdicts.
 
 import re
 from typing import Any
+import contextlib
 
 
 # Growth-context vocabulary discriminator for FVS-008 (Growth Frame)
@@ -955,10 +956,8 @@ def suggest_frames(
         priority = 2.0 if pattern_kind == "absence_detected" else 1.0
         density_match = re.search(r'\(([\d.]+)/1Kw\)', signal)
         if density_match:
-            try:
+            with contextlib.suppress(ValueError):
                 priority += float(density_match.group(1)) * 0.1
-            except ValueError:
-                pass
         suggestions.append({
             "fvs_id": fvs_id,
             "name": name,

@@ -78,6 +78,7 @@ import json
 import re
 import statistics
 import time
+import contextlib
 
 
 # ================================================================
@@ -634,15 +635,13 @@ def extract_numbers_for_matching(text):
                 # the original "6 million" text for display.
                 scale = m.group(2).lower() if m.lastindex and m.lastindex >= 2 else ""
                 multiplier = _SCALE_MULTIPLIERS.get(scale, 1)
-                try:
+                with contextlib.suppress(ValueError, TypeError):
                     scaled = float(val) * multiplier
                     # Render integers without a trailing .0 so the
                     # downstream claimed_values normalisation in
                     # analyze_claims treats "6000000.0" and "6000000"
                     # as the same key.
                     val = str(int(scaled)) if scaled == int(scaled) else str(scaled)
-                except (ValueError, TypeError):
-                    pass
             effective_type = num_type
             if num_type == "integer_comma":
                 effective_type = "integer"
@@ -1635,10 +1634,8 @@ def grounding_decomposition(doc_text, source_text):
     for nd in src_nums_filtered:
         val = nd.get("value") if isinstance(nd, dict) else None
         if val is not None:
-            try:
+            with contextlib.suppress(ValueError, TypeError):
                 source_floats.add(float(val))
-            except (ValueError, TypeError):
-                pass
 
     # Extract source years from FULL source text (not just data section).
     # Two passes: standalone years (\b2025\b) and prefixed years
