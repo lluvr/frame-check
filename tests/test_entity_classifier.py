@@ -10,10 +10,9 @@ the rules, these tests fail loudly rather than silently
 regressing the calibration-surfaced bug.
 """
 
-import pytest
 
 from entity_classifier import (
-    EntityType, Classification, classify_subject,
+    EntityType, classify_subject,
 )
 
 
@@ -154,7 +153,6 @@ class TestCompanyClassification:
 
     def test_resolver_failure_falls_through_cleanly(self, monkeypatch):
         # Force _find_cik to raise; classifier must not propagate.
-        import entity_classifier
 
         def _boom(subject):
             raise RuntimeError("network down")

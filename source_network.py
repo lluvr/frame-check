@@ -29,7 +29,6 @@ from concurrent.futures import TimeoutError as _FuturesTimeoutError
 from dataclasses import dataclass, field
 from typing import Optional
 
-from clarethium_measure import split_sentences
 
 
 # ================================================================

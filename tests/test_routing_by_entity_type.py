@@ -27,14 +27,6 @@ import pytest
 from source_network import (
     ClaimDecomposition,
     _classify_and_route,
-    verify_wikipedia,
-    verify_sec_edgar,
-    verify_alpha_vantage,
-    verify_fred,
-    verify_coingecko,
-    verify_world_bank,
-    verify_rest_countries,
-    verify_wolfram,
 )
 
 
