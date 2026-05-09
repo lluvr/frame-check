@@ -364,17 +364,17 @@ __all__ = [
 
 # ── JSON-RPC envelope helpers ──────────────────────────────────────
 
-def _send(message: dict) -> None:
+def _send(message: dict[str, Any]) -> None:
     """Write one JSON-RPC message to stdout, line-delimited."""
     print(json.dumps(message), flush=True)
 
 
-def _response(req_id: Any, result: dict) -> dict:
+def _response(req_id: Any, result: dict[str, Any]) -> dict[str, Any]:
     return {"jsonrpc": "2.0", "id": req_id, "result": result}
 
 
-def _error(req_id: Any, code: int, message: str, data: Any = None) -> dict:
-    err: dict = {"code": code, "message": message}
+def _error(req_id: Any, code: int, message: str, data: Any = None) -> dict[str, Any]:
+    err: dict[str, Any] = {"code": code, "message": message}
     if data is not None:
         err["data"] = data
     return {"jsonrpc": "2.0", "id": req_id, "error": err}
@@ -404,7 +404,7 @@ ERR_INTERNAL = -32603
 
 # ── MCP method handlers ───────────────────────────────────────────
 
-def handle_initialize(_params: dict) -> dict:
+def handle_initialize(_params: dict[str, Any]) -> dict[str, Any]:
     """Handshake. Advertise the three MCP primitives this server
     supports: tools (frame_check, frame_compare), resources
     (library, worked examples, methodology, calibration) and
@@ -468,7 +468,7 @@ def handle_initialize(_params: dict) -> dict:
 
 
 
-def handle_resources_list(_params: dict) -> dict:
+def handle_resources_list(_params: dict[str, Any]) -> dict[str, Any]:
     """Enumerate every resource this deploy can serve. Each entry
     carries the content hash of the served text so a client can
     detect drift against a previously cited resource without a
@@ -526,7 +526,7 @@ def handle_resources_list(_params: dict) -> dict:
     }
 
 
-def handle_resources_read(params: dict) -> dict:
+def handle_resources_read(params: dict[str, Any]) -> dict[str, Any]:
     """Return the content of a specific resource URI. Unknown or
     unresolvable URIs surface as JSON-RPC errors rather than empty
     results so the client can distinguish 'resource does not exist'
@@ -566,7 +566,7 @@ def handle_resources_read(params: dict) -> dict:
 # starts to read like a verdict engine.
 
 
-def handle_prompts_list(_params: dict) -> dict:
+def handle_prompts_list(_params: dict[str, Any]) -> dict[str, Any]:
     """Advertise every prompt this server exposes. Clients use the
     list to offer named prompts to end users (slash-commands in a
     chat UI, command-palette entries, etc.)."""
@@ -582,7 +582,7 @@ def handle_prompts_list(_params: dict) -> dict:
     }
 
 
-def handle_prompts_get(params: dict) -> dict:
+def handle_prompts_get(params: dict[str, Any]) -> dict[str, Any]:
     """Return the populated messages for a named prompt. Arguments
     are user-intent values (depth, goal, questions) that get
     translated into MCP-parameter values inside the prompt body via
@@ -610,11 +610,11 @@ def handle_prompts_get(params: dict) -> dict:
     raise ValueError(f"Unknown prompt: {name}")
 
 
-def handle_tools_list(_params: dict) -> dict:
+def handle_tools_list(_params: dict[str, Any]) -> dict[str, Any]:
     return {"tools": _TOOLS}
 
 
-def _tool_error(message: str) -> dict:
+def _tool_error(message: str) -> dict[str, Any]:
     """Standard isError response shape used by handle_tools_call. MCP
     distinguishes 'tool-level errors' (isError: true in the result)
     from 'protocol errors' (JSON-RPC error object). Tool-level errors
@@ -645,7 +645,7 @@ _MCP_TOOL_ERROR_MESSAGES = {
 }
 
 
-def _sanitize_tool_exception(exc: BaseException, error_code: str) -> dict:
+def _sanitize_tool_exception(exc: BaseException, error_code: str) -> dict[str, Any]:
     """Map an unexpected tool-layer exception to a sanitized isError
     response. The full exception (type, message, traceback) is logged
     server-side via `log()`; the client receives only the stable error
@@ -678,7 +678,7 @@ def _sanitize_tool_exception(exc: BaseException, error_code: str) -> dict:
     }
 
 
-def handle_tools_call(params: dict) -> dict:
+def handle_tools_call(params: dict[str, Any]) -> dict[str, Any]:
     tool_name = params.get("name")
     raw_arguments = params.get("arguments")
 
@@ -949,7 +949,7 @@ def handle_tools_call(params: dict) -> dict:
     }
 
 
-def _call_frame_compare(arguments: dict) -> dict:
+def _call_frame_compare(arguments: dict[str, Any]) -> dict[str, Any]:
     """Argument validation + dispatch for the frame_compare tool.
     Separated from handle_tools_call so the frame_check validation
     stays short and the compare path can grow its own guards (e.g.
@@ -1026,7 +1026,7 @@ _HANDLERS = {
 }
 
 
-def dispatch(request: dict) -> dict | None:
+def dispatch(request: dict[str, Any]) -> dict[str, Any] | None:
     """Return the response dict for a JSON-RPC request, or None for
     notifications (no response expected).
 
@@ -1150,7 +1150,7 @@ def main() -> int:
 
 # ── CLI version mode ──────────────────────────────────────────────
 
-def _install_version_info() -> dict:
+def _install_version_info() -> dict[str, Any]:
     """Gather one-line install fingerprint for `--version`.
 
     Returns a dict with SERVER_VERSION, git SHA, FVS library version,
@@ -1163,7 +1163,7 @@ def _install_version_info() -> dict:
     import hashlib
     import platform
 
-    info: dict = {
+    info: dict[str, Any] = {
         "server_version": SERVER_VERSION,
         "protocol_version": PROTOCOL_VERSION,
         "script_path": os.path.abspath(__file__),
@@ -1472,7 +1472,7 @@ def _cli_test() -> int:
     # tests already cover.
     print("=== resources/read samples (first 120 chars of each) ===")
     sample_uris: list[str] = []
-    seen_families: set = set()
+    seen_families: set[str] = set()
     for r in resources:
         family = r["uri"].rsplit("/", 1)[0]
         if family in seen_families:
@@ -1552,7 +1552,7 @@ def cli() -> int:
 # proxy object. Reading `mcp_server._FRAME_ADJACENCY` resolves
 # `__getattr__("_FRAME_ADJACENCY")` which forwards to
 # `mcp_resources._FRAME_ADJACENCY` (the live value).
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:
     if name in {
         "_FRAME_STATUSES",
         "_FRAME_LIBRARY_VERSION",
