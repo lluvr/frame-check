@@ -10,22 +10,24 @@ current architecture.
 A tag matching `v*` (annotated) triggers `.github/workflows/publish.yml`,
 which runs five jobs in sequence:
 
-1. **`preflight`** — verifies the destination repository state. Fails
+1. **`preflight`**: verifies the destination repository state. Fails
    if the repo is archived, disabled, or its default branch has
-   changed. Closes the FM-PCD-6 incident class.
-2. **`build`** — checkouts at full depth, bakes the git SHA into
+   changed between when the tag was authored and when CI begins,
+   closing the class of incident where a release proceeds against a
+   destination whose state the contributor cannot have known.
+2. **`build`**: checkouts at full depth, bakes the git SHA into
    `pipeline_version.txt`, runs the version-sync gate (pyproject vs
    `mcp_server.SERVER_VERSION`) and the tag-vs-pyproject gate, builds
    the wheel via `python -m build --wheel`, validates wheel contents
    (FVS-001 + FRAME_DIVERGENCE_CONTRACT_v1.md must be present), runs
    the smoke test against the installed wheel in a clean venv, and
    produces a sigstore build-provenance attestation for the wheel.
-3. **`publish-to-testpypi`** — runs only for pre-release tags
+3. **`publish-to-testpypi`**: runs only for pre-release tags
    (`vX.Y.Zrc1`, `vX.Y.Z.dev0`, `vX.Y.ZaN`, `vX.Y.ZbN`). Uploads to
    TestPyPI via Trusted Publishing (OIDC).
-4. **`publish-to-pypi`** — runs only for final tags (no rc / dev / a
+4. **`publish-to-pypi`**: runs only for final tags (no rc / dev / a
    / b suffix). Uploads to PyPI via Trusted Publishing.
-5. **`github-release`** — creates a GitHub release with the wheel
+5. **`github-release`**: creates a GitHub release with the wheel
    attached. The release body is the annotated tag message, which by
    convention carries the matching `CHANGELOG.md` section so
    `git show vX.Y.Z` and the GitHub release page show identical
@@ -195,7 +197,7 @@ narrative consistent with [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## Reproducibility
 
-The wheel is built from the tag commit alone; no operator-tree
+The wheel is built from the tag commit alone; no developer-machine
 state contributes. To reproduce a release locally:
 
 ```bash
