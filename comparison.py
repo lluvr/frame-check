@@ -279,7 +279,6 @@ def generate_stability_check(topic, responses) -> tuple[dict, float]:
 
                     stable = nums1 & nums2
                     changed_gen1 = nums1 - nums2  # in gen1 but not gen2
-                    all_unique = nums1 | nums2
 
                     results[model_name] = {
                         "stable": sorted(stable),

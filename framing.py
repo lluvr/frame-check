@@ -1594,8 +1594,6 @@ def framing_portrait(coverage, temporal, voice, epistemic, claim_stats,
     # The portrait notes contradictions (important) but does not restate counts.
     _verification_led = False
     if verification:
-        v_total = verification.get("total", 0)
-        v_verified = verification.get("verified", 0)
         v_contra = verification.get("contradicted", 0)
         if v_contra > 0:
             _verification_led = True

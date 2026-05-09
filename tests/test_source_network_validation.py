@@ -166,8 +166,6 @@ class TestSECEdgarNonRevenueMetrics:
         # Whether exact/close/contradicted depends on the true value,
         # but it should NOT be compared against revenue.
         assert r.source_value is not None, "Expected a source value from SEC EDGAR"
-        # If it matched, the source text should NOT mention revenue concepts
-        source_text = (r.source_text or "").lower()
         # Sanity: the matched value should be in the same order of
         # magnitude as the claim (tens of billions), not hundreds
         # of billions (which would indicate revenue was matched).

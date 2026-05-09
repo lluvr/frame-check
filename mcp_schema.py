@@ -59,6 +59,27 @@ layer is structurally independent. The protocol layer
 from __future__ import annotations
 
 
+# ── Public surface ────────────────────────────────────────────────
+#
+# This module's public symbols are consumed by mcp_server (which
+# re-exports them as part of its public-API contract) and by tests.
+# Declaring ``__all__`` makes the consumption pattern visible to
+# static analyzers (CodeQL ``py/unused-global-variable``, ruff F401)
+# so the cross-module references are recognized as live.
+__all__ = [
+    "MAX_DOCUMENT_CHARS", "MAX_SOURCE_CHARS",
+    "_DOMAIN_HINT_ENUM", "_DIVERGENCE_RENDERING_ENUM",
+    "_SPEC_VERSION", "_PROMPT_DEPTH_VALUES", "_PROMPT_GOAL_VALUES",
+    "_PROMPT_QUESTIONS_VALUES", "_USER_INTENT_PROMPT_ARGS",
+    "_PROMPT_SELF_AUDIT", "_PROMPT_AI_RESPONSE_AUDIT",
+    "_PROMPT_CHALLENGE_DOCUMENT", "_PROMPT_EXPLAIN_FRAMING",
+    "_PROMPTS",
+    "_FRAME_CHECK_TOOL", "_FRAME_COMPARE_TOOL", "_TOOLS",
+    "_prompt_messages", "_translate_prompt_arguments",
+    "_populate_prompt_body",
+]
+
+
 # ── Input-size limits ─────────────────────────────────────────────
 #
 # Defensive ceilings against pathological multi-GB inputs. The prior

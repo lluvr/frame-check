@@ -458,7 +458,6 @@ def classify_genre(
                 "the regex set does not recognize."
             ),
         }
-    has_claims = bool(claims and claims.get("total_claims", 0) > 0)
 
     raw = _score_genres(text, voice, claims)
     total = sum(raw.values())
