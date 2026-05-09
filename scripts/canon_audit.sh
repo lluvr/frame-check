@@ -38,7 +38,7 @@
 
 set -u
 
-VERSION='2026-05-08-comprehensive'
+VERSION='2026-05-09-touchstone-research-ids'
 
 # ── Path allowlist (§5b) ────────────────────────────────────────────
 EXCLUDES=(
@@ -55,6 +55,7 @@ EXCLUDES=(
   --exclude-dir=dist
   --exclude-dir=tests/fixtures
   --exclude-dir=tests/data
+  --exclude=leak_classes.*.yaml
   --exclude-dir=corpus
   --exclude-dir=transmissions
   --exclude-dir=worked_examples
@@ -141,16 +142,24 @@ VAULT_BARE_ALLOWLIST='password vault|bank vault|secrets vault|secrets-vault|hash
 # (e.g., a comment in a frame catalog entry that happens to contain
 # the word "consensus"). Specific allowlist lines for known benign
 # uses of `consensus` (the English word) and `mirror` (mirror image).
-WEB_APP_MODULE_ALLOWLIST='consensus (verdict|went|on|across|exists|doesn|that|but|mechanism|proxy|and|is|using|now)|scientific consensus|expert consensus|reader consensus|rater consensus|cross-(provider|family) consensus|cross-provider consensus|library_consensus|Re-compute consensus|_consensus|^# Consensus|verifier consensus|inter-LLM consensus|consensus research|the consensus|broke the consensus|mirror (image|the methodology|review)|examples?\.md|reframe (the question|the document)|architectural reframe|consistency check|\bobservatory\b\s+(state|topics|daemon|paused|offline)|telemetry\.|telemetry tagging|telemetry events|telemetry schema|telemetry path|downstream telemetry|corpus telemetry|telemetry queries|structural telemetry|telemetry_opt_in|telemetry pipeline|telemetry patterns|production telemetry|verification.*telemetry|telemetry and audit|Tier B telemetry|to telemetry|record telemetry|surface in|saved_analyses / saved_compare|"reframe", "topic_generation"|verification, consensus|telemetry\)|for telemetry pass|:[[:space:]]*#[[:space:]]+Consensus[[:space:]]*$|domain_baselines\.py'
+WEB_APP_MODULE_ALLOWLIST='consensus (verdict|went|on|across|exists|doesn|that|but|mechanism|proxy|and|is|using|now)|scientific consensus|expert consensus|reader consensus|rater consensus|cross-(provider|family) consensus|cross-provider consensus|library_consensus|Re-compute consensus|_consensus|^# Consensus|verifier consensus|inter-LLM consensus|consensus research|the consensus|broke the consensus|community consensus|editor body consensus|path to consensus|by .* consensus|consensus or strong|mirror (image|the methodology|review)|examples?\.md|reframe (the question|the document)|architectural reframe|consistency check|\bobservatory\b\s+(state|topics|daemon|paused|offline)|telemetry\.|telemetry tagging|telemetry events|telemetry schema|telemetry path|downstream telemetry|corpus telemetry|telemetry queries|structural telemetry|telemetry_opt_in|telemetry pipeline|telemetry patterns|production telemetry|verification.*telemetry|telemetry and audit|Tier B telemetry|to telemetry|record telemetry|surface in|saved_analyses / saved_compare|"reframe", "topic_generation"|verification, consensus|telemetry\)|for telemetry pass|:[[:space:]]*#[[:space:]]+Consensus[[:space:]]*$|domain_baselines\.py'
 
 # Strategic-extended allowlist: specific contexts where the bigram is
 # legitimate (quoted excerpts, methodology paper).
 STRATEGIC_EXTENDED_ALLOWLIST='NVIDIA['\''’]s competitive moat|moat continues to strengthen|competitive moat through CUDA|economic moat|wide moat|narrow moat'
 
-# Research-IDs allowlist: F-2026-NNN cited from a public registry
-# would be allowed; no such registry exists yet, so any hit is a leak.
-# Inline exempt with `# canon-exempt: <reason>` is the escape.
-RESEARCH_IDS_ALLOWLIST='^$' # nothing allowlisted; use inline exempts
+# Research-IDs allowlist: a research ID is permitted iff it has a
+# public resolver (a directory or document in a public Clarethium
+# repo that defines the ID). The Touchstone benchmarks ship under
+# `benchmarks/exp_081_discrimination/` and `benchmarks/exp_095_grounding/`
+# in the Clarethium/touchstone public repo and are the public
+# resolvers for EXP-081 and EXP-095 respectively, so those IDs are
+# legitimate public canon and are allowlisted globally. Adding a new
+# ID here requires that the ID is referenced from a directory or
+# document the public can resolve. Other research IDs without a
+# public resolver remain leaks; inline `# canon-exempt: <reason>` is
+# the per-line escape for one-off cases.
+RESEARCH_IDS_ALLOWLIST='\bEXP-081\b|\bEXP-095\b'
 
 # ── Self-test ───────────────────────────────────────────────────────
 self_test() {
