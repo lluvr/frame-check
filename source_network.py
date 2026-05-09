@@ -294,8 +294,7 @@ _SENTENCE_STARTERS = {
     "Common", "Side", "Effect", "Effects", "Treatment", "Treatments",
     "Patients", "Participants", "Subjects", "Doctors", "Physicians",
     "Americans", "Europeans", "Asians", "Africans",
-    "Net", "Gross", "Operating",
-    "Approximately", "Roughly", "Nearly", "Almost", "Over", "Under",
+    "Net", "Gross", "Roughly", "Nearly", "Almost", "Over", "Under",
     "Less", "More", "Fewer", "Higher", "Lower",
     # Generic acronyms that are metrics/concepts, not entities
     "ROI", "ROE", "ROA", "EBITDA", "GAAP", "CAGR", "YOY", "QOQ",

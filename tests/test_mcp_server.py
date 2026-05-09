@@ -2583,18 +2583,18 @@ def test_explain_framing_prompt_mentions_aggregate_and_corpus():
     text = resp["result"]["messages"][0]["content"]["text"]
     check(
         "frame-check://aggregate/latest" in text,
-        f"explain_framing should mention aggregate URI; without "
-        f"it agents cannot discover the corpus-level findings",
+        "explain_framing should mention aggregate URI; without "
+        "it agents cannot discover the corpus-level findings",
     )
     check(
         "frame-check://corpus/" in text,
-        f"explain_framing should mention corpus URI pattern",
+        "explain_framing should mention corpus URI pattern",
     )
     # Honest framing: aggregate is experimental, not verdict
     check(
         "experimental" in text.lower(),
-        f"prompt should name aggregate as experimental research "
-        f"data so agents don't overstate authority",
+        "prompt should name aggregate as experimental research "
+        "data so agents don't overstate authority",
     )
     print("  PASS\n")
 
@@ -2612,14 +2612,14 @@ def test_ai_response_audit_prompt_mentions_aggregate_optional():
     text = resp["result"]["messages"][0]["content"]["text"]
     check(
         "frame-check://aggregate/latest" in text,
-        f"ai_response_audit should mention aggregate URI for "
-        f"optional broader-pattern context",
+        "ai_response_audit should mention aggregate URI for "
+        "optional broader-pattern context",
     )
     # Mention should be optional/conditional to preserve task focus
     check(
         "optional" in text.lower() or "when the user asks" in text.lower(),
-        f"aggregate mention should be framed as optional context "
-        f"so agents don't dilute audit task focus on every call",
+        "aggregate mention should be framed as optional context "
+        "so agents don't dilute audit task focus on every call",
     )
     print("  PASS\n")
 
@@ -2654,11 +2654,11 @@ def test_corpus_per_pair_comparisons_listed_as_mcp_resources():
     ]
     check(
         len(peer_uris) > 0,
-        f"expected at least one peer URI in resources/list; got none",
+        "expected at least one peer URI in resources/list; got none",
     )
     check(
         len(diff_uris) > 0,
-        f"expected at least one diff URI in resources/list; got none",
+        "expected at least one diff URI in resources/list; got none",
     )
     print(
         f"  PASS  ({len(peer_uris)} peer + {len(diff_uris)} diff "
@@ -2738,7 +2738,7 @@ def test_corpus_diff_pair_read_returns_json():
     contents = resp["result"]["contents"]
     check(
         contents[0]["mimeType"] == "application/json",
-        f"diff pair MIME should be application/json",
+        "diff pair MIME should be application/json",
     )
     payload = json.loads(contents[0]["text"])
     check(
@@ -5035,7 +5035,7 @@ def test_resources_list_drops_unreadable_not_hashless():
         uris = [r["uri"] for r in resources]
         check(
             victim_uri not in uris,
-            f"unreadable URI must be dropped from list; still present",
+            "unreadable URI must be dropped from list; still present",
         )
         hashless = [r["uri"] for r in resources if "contentHash" not in r]
         check(
@@ -6220,7 +6220,7 @@ def test_absent_frames_carry_corpus_context():
     absent = payload["divergence"].get("absent_frames", [])
     check(
         len(absent) >= 1,
-        f"absent_frames must be non-empty for this fixture",
+        "absent_frames must be non-empty for this fixture",
     )
     for record in absent[:5]:
         check(
@@ -9306,7 +9306,7 @@ def test_pattern_corpus_context_carries_genre_segmented_prevalence():
             )
             check(
                 cc["matches_in_genre_count"] <= cc["genre_total"],
-                f"matches_in_genre_count must not exceed genre_total",
+                "matches_in_genre_count must not exceed genre_total",
             )
     if not found_segmented:
         print("  SKIP  (no pattern with genre trigger fired)\n")
@@ -10420,9 +10420,9 @@ def test_envelope_carries_corpus_summary():
     check(
         "expert ratings" in summary["small_n_caveat"].lower()
         or "outcome" in summary["small_n_caveat"].lower(),
-        f"small_n_caveat must name that outcome data based on expert "
-        f"ratings is not yet available; without this the substrate's "
-        f"prevalence statements may be misread as outcome rates",
+        "small_n_caveat must name that outcome data based on expert "
+        "ratings is not yet available; without this the substrate's "
+        "prevalence statements may be misread as outcome rates",
     )
     _assert_no_new_failures(
         baseline, "test_envelope_carries_corpus_summary"

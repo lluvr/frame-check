@@ -388,16 +388,11 @@ ERR_INVALID_PARAMS = -32602
 ERR_INTERNAL = -32603
 
 
-# Library-index parsers live in frame_library_index so the MCP server
-# and the corpus builder both consume the same canonical source of
-# truth for INDEX.md row format and VERSION file location. Before
-# unification, both carried duplicate regex copies, a silent
-# drift risk if the INDEX.md format changed. See
-# frame_library_index.py.
-from frame_library_index import (
-    read_library_version as _read_frame_library_version,
-    parse_entry_statuses as _parse_frame_statuses,
-)
+# ``_read_frame_library_version`` and ``_parse_frame_statuses`` are
+# already imported above via the ``from mcp_resources import (...)``
+# block (mcp_resources re-exports them from frame_library_index, the
+# canonical source of truth for INDEX.md row format and VERSION file
+# location). No second import here.
 
 
 # Resources (library, methodology, calibration, Frame Divergence

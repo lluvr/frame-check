@@ -129,3 +129,96 @@ markers = [
 filterwarnings = [
     "default",
 ]
+
+[tool.mypy]
+# Type-check configuration. The current discipline is incremental:
+# the codebase has organic type coverage and is moving toward
+# ``--strict`` over time. Settings here pin a baseline that catches
+# real bugs (untyped dict access typos, name redefinitions,
+# incompatible overrides) without blocking on the larger annotation
+# debt that ``strict`` would surface.
+#
+# Goal at v1.0: this section's ``strict = true`` flips on for
+# ``mcp_server``, ``mcp_compose``, ``mcp_resources``, ``mcp_schema``,
+# ``framing``, ``comparison``, ``clarethium_measure`` (the public
+# wheel surface). Modules under ``tests/`` and adapter scripts can
+# stay at the relaxed default.
+python_version = "3.10"
+ignore_missing_imports = true
+follow_imports = "silent"
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_no_return = true
+warn_unreachable = true
+no_implicit_optional = true
+check_untyped_defs = true
+# Exclude the wheel-build duplicate of source_network.py: it is a
+# placeholder for the future src-layout refactor; mypy would
+# complain about the duplicated module name.
+exclude = [
+    "framecheck_mcp/source_network\\.py",
+    "build/",
+]
+
+# Per-module overrides. The script-style validation harnesses under
+# ``calibration/`` and ``validation/`` are ad-hoc analysis code, not
+# library API; relax checks there.
+[[tool.mypy.overrides]]
+module = [
+    "calibration.*",
+    "validation.*",
+]
+ignore_errors = true
+
+[tool.ruff]
+# Project ruff configuration. The defaults are mostly fine; this
+# section pins the explicit settings the existing audit and CI
+# baseline depend on.
+line-length = 100
+target-version = "py310"
+extend-exclude = [
+    "framecheck_mcp/source_network.py",  # build-staging duplicate
+    "build/",
+]
+
+[tool.ruff.lint]
+# Select rule families that are stable and high-signal for this
+# codebase. Detailed selection (rather than ``select = ["ALL"]``) to
+# avoid noise from style-opinion rules that don't match the existing
+# codebase voice. Each family expands as the codebase moves toward
+# v1.0:
+#   E, F   -- pycodestyle errors + pyflakes (real-bug class)
+#   B      -- flake8-bugbear (real-bug-prone patterns; B023 / B904
+#             commonly fire on legitimate scoping / re-raise idioms
+#             so the per-rule ignores below pin them off)
+#   ISC    -- implicit-string-concatenation (cleaned up at v0.9.4)
+# Future additions to weigh: SIM (idiomatic-Python), UP (pyupgrade),
+# RET (return-style), RUF (ruff-specific). Each adds ~50-100 fixable
+# rewrites and ~10 design questions; introduce one at a time after
+# the codebase voice is settled.
+select = [
+    "E", "F",
+    "B",
+    "ISC",
+]
+ignore = [
+    # Long lines: the regex tables in source_network / clarethium_measure
+    # and the prompt strings in mcp_compose are intentionally one-line
+    # and re-flowing them would split atomic strings across multiple
+    # adjacent literals (the very pattern ISC catches).
+    "E501",
+    # Ambiguous variable names (l, I, O); the existing test suite
+    # uses single-letter loop vars in a few places. Not load-bearing.
+    "E741",
+    # B023 (function-uses-loop-variable) fires on legitimate pattern
+    # binding closures inside the regex / pattern-table builders;
+    # both sites are intentional.
+    "B023",
+    # B904 (raise-without-from-inside-except) fires on a couple of
+    # error-translation sites where the original exception is
+    # intentionally elided to keep the public message shape clean.
+    "B904",
+    # B905 (zip-without-explicit-strict) — zip semantics here are
+    # always equal-length by construction.
+    "B905",
+]

@@ -2083,9 +2083,9 @@ def framing_summary(coverage, temporal, claim_stats):
     # Coverage
     if not coverage["covered"]:
         parts.append(
-            f"No structural markers detected for any of the five "
-            f"analytical dimensions (causes, risks, stakeholders, "
-            f"trends, uncertainty)."
+            "No structural markers detected for any of the five "
+            "analytical dimensions (causes, risks, stakeholders, "
+            "trends, uncertainty)."
         )
     elif coverage["missing"]:
         parts.append(

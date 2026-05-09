@@ -720,7 +720,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         # production_status == "paused": no current check.
         # Future polish could verify N expected rewrites happened.
-        print(f"  (no checks defined for PRODUCTION_STATUS = 'paused')")
+        print("  (no checks defined for PRODUCTION_STATUS = 'paused')")
 
     # Gate 14 (was: "Wheel bundles every setup.py _DATA_CARRIERS
     # destination") was retired on 2026-05-08. The gate's premise

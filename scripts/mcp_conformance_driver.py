@@ -353,7 +353,7 @@ def main() -> int:
     total = len(results)
     print(f"\n=== summary: {passed}/{total} passed ===")
     if stderr_tail.strip():
-        print(f"\n--- server stderr tail ---")
+        print("\n--- server stderr tail ---")
         print(stderr_tail[-1500:])
 
     return 0 if passed == total else 1

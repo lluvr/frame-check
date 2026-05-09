@@ -1132,7 +1132,8 @@ def test_aggregate_outlier_counts_by_llm_emits_sorted_keys():
     non_comparable_per_llm all emit keys in alphabetical order.
     """
     print("=== aggregate_outlier_counts_by_llm emits sorted keys ===")
-    import sys, pathlib
+    import sys
+    import pathlib
     harness_path = pathlib.Path(__file__).parent.parent / "validation" / "decision_readiness"
     if not (harness_path / "aggregate_corpus_findings.py").exists():
         # The harness is upstream-only: `validation/decision_readiness/`
