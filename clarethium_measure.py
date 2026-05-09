@@ -1669,7 +1669,6 @@ def grounding_decomposition(doc_text, source_text):
                 sourced.append(nd)
             else:
                 val = nd.get("value") if isinstance(nd, dict) else None
-                raw = nd.get("raw", "") if isinstance(nd, dict) else str(nd)
                 if val is not None:
                     try:
                         fval = float(val)
