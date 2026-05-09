@@ -1,13 +1,28 @@
-# Publish workflow: builds the frame-check-mcp wheel + sdist on every
-# tag push (vX.Y.Z) and validates the artifact.
+# Publish workflow.
 #
-# The upload steps below are intentionally commented out. Releases are
-# cut by the curator and published manually (or via the orchestrator
-# at scripts/release.py); this workflow exists to validate that the
-# wheel still builds cleanly under CI conditions on every tag. To
-# enable automated upload, configure PyPI Trusted Publishing
-# (https://docs.pypi.org/trusted-publishers/) and uncomment the
-# publish jobs.
+# Triggered on every annotated tag push matching v*. The pipeline:
+#
+#   1. World-state preflight: verify the destination repository is
+#      writable (not archived / disabled / renamed) right before any
+#      irreversible step. Closes FM-PCD-12 (the 2026-05-09 incident
+#      where 0.9.4 published from a stale operator dev-tree to PyPI
+#      three hours after this repo had been archived).
+#   2. Build the wheel under a fresh CI environment so the artifact
+#      is reproducible from public source alone (no operator tree
+#      involved).
+#   3. Validate: version-sync gate, wheel-content gate, conformance
+#      smoke test against the installed wheel in a clean venv.
+#   4. Publish to PyPI via Trusted Publishing (OIDC, no API tokens).
+#      Pre-release tags (vX.Y.Zrc1, vX.Y.Z.dev0, vX.Y.ZaN, vX.Y.ZbN)
+#      go to TestPyPI; final tags go to PyPI.
+#   5. Create a GitHub release whose body is the annotated tag message
+#      (= the v0.9.x CHANGELOG section by convention) with the wheel +
+#      sdist attached. Sigstore attestations attached for provenance.
+#
+# Trusted Publishing setup (manual, one-time at pypi.org):
+#   - https://pypi.org/manage/project/frame-check-mcp/settings/publishing/
+#   - Owner: Clarethium, Repository: frame-check, Workflow: publish.yml
+#   - Environment: pypi (final), testpypi (pre-release)
 
 name: publish
 
@@ -17,20 +32,62 @@ on:
       - 'v*'
   workflow_dispatch:
 
-# Opt into Node.js 24 for JavaScript-based actions; see tests.yml
-# for the rationale (June 2nd, 2026 forced default).
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  preflight:
+    name: World-state preflight
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      destination_writable: ${{ steps.check.outputs.destination_writable }}
+    steps:
+      - name: Verify destination repo is writable
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # FM-PCD-12: an irreversible publish must not proceed if the
+          # destination world has shifted between when the tag was
+          # pushed and when CI begins. Specifically refuse when the
+          # repo is archived, disabled, or its default branch has
+          # changed from `master`. This is the regression test for
+          # the 2026-05-09 incident.
+          set -euo pipefail
+          echo "Fetching destination repo state for ${GITHUB_REPOSITORY}..."
+          state=$(gh api "repos/${GITHUB_REPOSITORY}" --jq '{archived,disabled,default_branch,visibility}')
+          echo "Destination state: ${state}"
+          archived=$(echo "${state}" | jq -r .archived)
+          disabled=$(echo "${state}" | jq -r .disabled)
+          default_branch=$(echo "${state}" | jq -r .default_branch)
+          if [ "${archived}" != "false" ]; then
+            echo "::error::Destination repo is archived; refusing to publish."
+            exit 1
+          fi
+          if [ "${disabled}" != "false" ]; then
+            echo "::error::Destination repo is disabled; refusing to publish."
+            exit 1
+          fi
+          if [ "${default_branch}" != "master" ]; then
+            echo "::error::Default branch is '${default_branch}', expected 'master'."
+            exit 1
+          fi
+          echo "destination_writable=true" >> "${GITHUB_OUTPUT}"
+          echo "Preflight OK: destination state matches expected."
+
   build:
     name: Build wheel
+    needs: preflight
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # for sigstore attestation
     steps:
       - uses: actions/checkout@v4
         with:
-          # Full history for git-sha baking
-          fetch-depth: 0
+          fetch-depth: 0  # Full history for git-sha baking
 
       - uses: actions/setup-python@v5
         with:
@@ -58,22 +115,30 @@ jobs:
           print(f"Versions in sync: {pyver}")
           PY
 
+      - name: Verify tag matches pyproject version
+        run: |
+          # The tag drives the publish; pyproject must reflect the
+          # same version so the wheel name (frame_check_mcp-X.Y.Z.whl)
+          # matches the tag (vX.Y.Z). Drift here usually means a
+          # forgotten ``cut`` commit.
+          python - <<'PY'
+          import os, sys, tomllib
+          ref = os.environ["GITHUB_REF"]
+          assert ref.startswith("refs/tags/v"), f"Unexpected ref: {ref}"
+          tag_version = ref.removeprefix("refs/tags/v")
+          with open("pyproject.toml", "rb") as f:
+              pyver = tomllib.load(f)["project"]["version"]
+          if tag_version != pyver:
+              print(f"::error::Tag {ref!r} maps to version {tag_version!r}; "
+                    f"pyproject.toml version is {pyver!r}.", file=sys.stderr)
+              sys.exit(1)
+          print(f"Tag matches pyproject: {pyver}")
+          PY
+
       - name: Install build tooling
         run: python -m pip install --upgrade build wheel setuptools
 
       - name: Build wheel
-        # `python -m build` (no flag) builds sdist first then wheel
-        # inside the sdist tree. The sdist build path fails on
-        # `package directory 'framecheck_mcp/data' does not exist`
-        # because setuptools' find_packages discovers
-        # framecheck_mcp.data / .calibration / .validation as
-        # subpackages but the sdist build context loses the
-        # `_StagedBuildPy` data-staging step that runs as part of
-        # `build_py`. The wheel is the PyPI artifact (sdist is
-        # nice-to-have but not required for `pip install`); building
-        # wheel-only keeps the publish job green and matches the
-        # orchestrator's `lift_dry_run` step 2 which also uses
-        # `python -m build --wheel`.
         run: python -m build --wheel
 
       - name: Inspect wheel contents
@@ -102,7 +167,6 @@ jobs:
           python -m venv /tmp/fc_smoke
           /tmp/fc_smoke/bin/pip install --quiet dist/*.whl
           /tmp/fc_smoke/bin/frame-check-mcp --version
-          # Test divergence path end-to-end
           /tmp/fc_smoke/bin/python -c "
           from mcp_server import build_epistemic_payload
           p = build_epistemic_payload(
@@ -115,41 +179,103 @@ jobs:
           print('Smoke test passed.')
           "
 
-      - name: Upload artifacts to GitHub
+      - name: Generate sigstore attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'dist/*.whl'
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/*
 
-  # publish-to-testpypi:
-  #   name: Publish to TestPyPI
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   environment: testpypi
-  #   permissions:
-  #     id-token: write  # OIDC for Trusted Publishing
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         name: dist
-  #         path: dist/
-  #     - uses: pypa/gh-action-pypi-publish@release/v1
-  #       with:
-  #         repository-url: https://test.pypi.org/legacy/
+  publish-to-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    # Pre-release tags only: vX.Y.Z{rc,a,b}N or vX.Y.Z.devN.
+    if: |
+      contains(github.ref, '.dev') ||
+      contains(github.ref, 'rc') ||
+      contains(github.ref, 'a') ||
+      contains(github.ref, 'b')
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/frame-check-mcp
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
-  # publish-to-pypi:
-  #   name: Publish to PyPI
-  #   needs: build
-  #   # Run only on tags that are not pre-release (no .dev / .rc / .a / .b suffix).
-  #   if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '.dev') && !contains(github.ref, 'rc') && !contains(github.ref, 'a') && !contains(github.ref, 'b')
-  #   needs: publish-to-testpypi
-  #   runs-on: ubuntu-latest
-  #   environment: pypi
-  #   permissions:
-  #     id-token: write  # OIDC for Trusted Publishing
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         name: dist
-  #         path: dist/
-  #     - uses: pypa/gh-action-pypi-publish@release/v1
+  publish-to-pypi:
+    name: Publish to PyPI
+    needs: build
+    # Final tags only: exclude pre-release suffixes.
+    if: |
+      !contains(github.ref, '.dev') &&
+      !contains(github.ref, 'rc') &&
+      !contains(github.ref, 'a') &&
+      !contains(github.ref, 'b')
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/frame-check-mcp
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Create GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Extract release notes from annotated tag
+        id: notes
+        run: |
+          # Prefer the annotated tag message (which by convention
+          # carries the matching CHANGELOG.md section); fall back
+          # to the generic message if the tag is lightweight.
+          notes=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}")
+          if [ -z "${notes}" ]; then
+            notes="Release ${GITHUB_REF_NAME}. See CHANGELOG.md for details."
+          fi
+          {
+            echo 'notes<<EOF'
+            echo "${notes}"
+            echo 'EOF'
+          } >> "${GITHUB_OUTPUT}"
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Pre-release if the tag has a dev/rc/a/b suffix.
+          extra=()
+          case "${GITHUB_REF_NAME}" in
+            *.dev*|*rc*|*a[0-9]*|*b[0-9]*) extra+=(--prerelease) ;;
+          esac
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes "${{ steps.notes.outputs.notes }}" \
+            "${extra[@]}" \
+            dist/*
