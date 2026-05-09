@@ -58,6 +58,8 @@ layer is structurally independent. The protocol layer
 
 from __future__ import annotations
 
+from typing import Any
+
 
 # ── Public surface ────────────────────────────────────────────────
 #
@@ -120,7 +122,7 @@ _PROMPT_QUESTIONS_VALUES = {"yes", "no"}
 
 # ── Prompt-message shape ──────────────────────────────────────────
 
-def _prompt_messages(text: str) -> list:
+def _prompt_messages(text: str) -> list[dict[str, Any]]:
     """Wrap a single prompt body string in the MCP prompts/get
     messages shape. A single user-role message with text content is
     the minimum the client needs to populate a chat context.
@@ -134,7 +136,9 @@ def _prompt_messages(text: str) -> list:
 
 # ── User-intent argument translation ───────────────────────────────
 
-def _translate_prompt_arguments(args: dict | None) -> dict:
+def _translate_prompt_arguments(
+    args: dict[str, Any] | None,
+) -> dict[str, str]:
     """Translate user-intent prompt arguments into MCP-parameter
     placeholder values that get interpolated into the prompt body.
 
@@ -213,7 +217,7 @@ def _translate_prompt_arguments(args: dict | None) -> dict:
     }
 
 
-def _populate_prompt_body(body: str, args: dict | None) -> str:
+def _populate_prompt_body(body: str, args: dict[str, Any] | None) -> str:
     """Substitute `<<PLACEHOLDER>>` tokens in the prompt body with
     values derived from the user-intent arguments. Substrate-side
     composition L5 interface UX: the user types in their own
