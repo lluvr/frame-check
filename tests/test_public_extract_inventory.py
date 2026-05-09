@@ -357,8 +357,8 @@ def test_every_test_in_run_tests_py_suites_exists_or_is_documented_skip():
     assert not missing, (
         f"{len(missing)} run_tests.py-declared test file(s) missing "
         f"at repo root:\n  - " + "\n  - ".join(missing) + "\n"
-        f"Either restore the files, remove the entries from "
-        f"SUITES / PYTEST_SUITES, or (if upstream-only and "
-        f"intentionally not in this checkout) document the "
-        f"structural-skip path."
+        "Either restore the files, remove the entries from "
+        "SUITES / PYTEST_SUITES, or (if upstream-only and "
+        "intentionally not in this checkout) document the "
+        "structural-skip path."
     )

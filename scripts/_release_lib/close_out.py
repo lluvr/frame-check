@@ -230,8 +230,8 @@ def bump_pyproject(current: str, next_version: str) -> str:
     )
     if new_text == text:
         raise SystemExit(
-            f"FATAL: pyproject.toml [project] version line did not change. "
-            f"Current line may not match expected pattern."
+            "FATAL: pyproject.toml [project] version line did not change. "
+            "Current line may not match expected pattern."
         )
     return new_text
 
@@ -339,13 +339,13 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  2. Rewrite pyproject.toml [project] version: {version} -> {next_version}")
         print(f"  3. Rewrite mcp_server.py SERVER_VERSION: "
               f"{current_server_version} -> {new_server_version}")
-        print(f"  4. Stage CHANGELOG.md + pyproject.toml + mcp_server.py")
+        print("  4. Stage CHANGELOG.md + pyproject.toml + mcp_server.py")
         print(f"  5. Create commit: 'Cut v{version} release'")
         print(f"  6. Create annotated tag v{version} with first lines:")
         for line in tag_message.splitlines()[:10]:
             print(f"       {line}")
         print()
-        print(f"Next step (drives twine + public-repo sync + tag push + Zenodo):")
+        print("Next step (drives twine + public-repo sync + tag push + Zenodo):")
         print(f"  python3 scripts/release.py release {version}")
         return 0
 
@@ -359,7 +359,7 @@ def main(argv: list[str] | None = None) -> int:
           f"{current_server_version} -> {new_server_version}")
     MCP_SERVER.write_text(new_mcp_server_text, encoding="utf-8")
 
-    print(f"[4/5] Creating release commit")
+    print("[4/5] Creating release commit")
     run(["git", "add", "CHANGELOG.md", "pyproject.toml", "mcp_server.py"])
     commit_message = (
         f"Cut v{version} release: CHANGELOG [Unreleased] -> [{version}] - {today}; "
@@ -398,16 +398,16 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Release v{version} cut locally (commit + tag created).")
     print(f"  Next dev version: {next_version}")
     print()
-    print(f"Next step: drive the publish through the orchestrator:")
+    print("Next step: drive the publish through the orchestrator:")
     print(f"  python3 scripts/release.py release {version}")
     print()
-    print(f"DO NOT push the cut commit or tag manually before twine.")
-    print(f"The orchestrator runs twine + public-repo sync + tag push + gh")
-    print(f"release create + Zenodo poll + CITATION back-fill + origin master/")
-    print(f"tag push inside its lock + state machine. Manual `git push` /")
-    print(f"`git push --tags` ahead of twine recreates the 2026-04-29 v0.8.3")
-    print(f"24-hour gap (origin advertises a tag for an artifact PyPI does")
-    print(f"not yet have).")
+    print("DO NOT push the cut commit or tag manually before twine.")
+    print("The orchestrator runs twine + public-repo sync + tag push + gh")
+    print("release create + Zenodo poll + CITATION back-fill + origin master/")
+    print("tag push inside its lock + state machine. Manual `git push` /")
+    print("`git push --tags` ahead of twine recreates the 2026-04-29 v0.8.3")
+    print("24-hour gap (origin advertises a tag for an artifact PyPI does")
+    print("not yet have).")
     return 0
 
 

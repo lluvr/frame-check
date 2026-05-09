@@ -80,6 +80,37 @@ jobs:
       - name: Run test suite
         run: python3 run_tests.py
 
+  quality:
+    # Quality-gate job: ruff (style + bug-prone-pattern lints) and
+    # mypy (type-check the public wheel surface). Both are run with
+    # the configuration in pyproject.toml ``[tool.ruff]`` /
+    # ``[tool.mypy]``. The current config is incremental (relaxed
+    # base, strict surface targeted at v1.0); the goal is to keep the
+    # quality bar visible on every PR rather than to gate-merge while
+    # the codebase moves toward strict compliance.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true  # informational only until v1.0
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install quality tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy
+      - name: Ruff lint
+        run: ruff check .
+      - name: Mypy type-check (public wheel surface)
+        run: |
+          mypy mcp_server.py mcp_compose.py mcp_resources.py \
+               mcp_schema.py framing.py comparison.py \
+               clarethium_measure.py
+
   pytest-smoke:
     # Secondary job: direct pytest invocation. Some suites
     # (test_circuit_breaker.py, test_phase1_load.py, test_construct_honesty_voice.py)

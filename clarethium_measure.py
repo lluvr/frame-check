@@ -2002,7 +2002,7 @@ def print_profile(profile):
 
     # Structural
     s = profile["structural"]
-    print(f"\n  STRUCTURAL PROFILE (style classification, not quality)")
+    print("\n  STRUCTURAL PROFILE (style classification, not quality)")
     print(f"  {'─' * 58}")
     if "gate_0" in s:
         g0 = s["gate_0"]
@@ -2040,7 +2040,7 @@ def print_profile(profile):
             print(f"  Stable: {ft['stable_count']}  "
                   f"(may include fixed-point confabulation; unknown fraction)")
         else:
-            print(f"  No numbers found.")
+            print("  No numbers found.")
 
     # Source fidelity
     if "source_fidelity" in profile:
@@ -2092,7 +2092,7 @@ def print_profile(profile):
                   f"({ec['grounded_assertions']}/{ec['total_assertions']} grounded)")
             print(f"  Overclaiming: {ec['overclaiming_rate']:.1%}")
         else:
-            print(f"  No assertion sentences found.")
+            print("  No assertion sentences found.")
         if ec.get("overclaiming_details"):
             for d in ec["overclaiming_details"][:3]:
                 print(f"    UNGROUNDED [{', '.join(d['markers'])}]: "
@@ -2112,7 +2112,7 @@ def print_profile(profile):
 
     # Presentation
     pf = profile["presentation"]
-    print(f"\n  PRESENTATION FEATURES (descriptive)")
+    print("\n  PRESENTATION FEATURES (descriptive)")
     print(f"  {'─' * 58}")
     print(f"  TTR: {pf['type_token_ratio']:.3f}    "
           f"FK grade: {pf['fk_grade_level']:.1f}    "
@@ -2132,7 +2132,7 @@ def print_profile(profile):
             print(f"  Substance:    {qp['substance_index']:.3f}  "
                   f"({qp['n_substance_layers']} layers: {comps})")
         else:
-            print(f"  Substance:    insufficient data (need source material)")
+            print("  Substance:    insufficient data (need source material)")
         if qp["presentation_index"] is not None:
             comps = ', '.join(f'{k}={v:.2f}'
                               for k, v in qp['presentation_components'].items())
@@ -2143,7 +2143,7 @@ def print_profile(profile):
 
     # Limits
     print(f"\n  {'─' * 58}")
-    print(f"  CANNOT DETECT:")
+    print("  CANNOT DETECT:")
     for limit in meta["cannot_detect"]:
         print(f"    - {limit}")
     print(f"\n  {meta['thresholds_note'][:80]}...")
