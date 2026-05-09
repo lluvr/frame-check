@@ -447,7 +447,8 @@ def handle_resources_list(_params: dict) -> dict:
     # lets a single response advertise the schema applied across all
     # entries; consumers can negotiate evolution without inspecting
     # every resource individually. Bump on additive changes (minor)
-    # or breaking changes (major); document in METHODOLOGY.md §9.1.
+    # or breaking changes (major); the schema lives at
+    # `schemas/attribution-1.0.0.json`.
     return {
         "resources": out,
         "_meta": {

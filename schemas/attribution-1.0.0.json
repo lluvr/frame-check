@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Clarethium/frame-check/blob/master/schemas/attribution-1.0.0.json",
   "title": "Frame Check MCP attribution schema",
-  "description": "Per-resource and envelope-level attribution metadata exposed on every resources/list response from the frame-check-mcp server. Schema is documented in METHODOLOGY.md §9.1. Keys live under the reverse-DNS prefix `clarethium.com/` per MCP spec 2025-06-18 _meta key naming. Additive minor bumps (1.x.0) preserve consumer compatibility; breaking changes bump the major.",
+  "description": "Per-resource and envelope-level attribution metadata exposed on every resources/list response from the frame-check-mcp server. Keys live under the reverse-DNS prefix `clarethium.com/` per MCP spec 2025-06-18 _meta key naming. Additive minor bumps (1.x.0) preserve consumer compatibility; breaking changes bump the major.",
   "version": "1.0.0",
   "definitions": {
     "spdxLicense": {

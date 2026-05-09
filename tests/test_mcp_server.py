@@ -1857,7 +1857,7 @@ def test_resources_list_includes_library_and_docs():
 
 def test_resources_list_carries_attribution_schema_v1_0_0():
     """Every resources/list entry must carry the attribution _meta
-    contract documented in METHODOLOGY.md §9.1 (schema version
+    contract per `schemas/attribution-1.0.0.json` (schema version
     1.0.0). The envelope carries an attribution-schema-version pin;
     every analytical artifact carries license / license-uri / author
     / year under the clarethium.com/ reverse-DNS prefix; corpus

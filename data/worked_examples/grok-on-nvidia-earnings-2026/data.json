@@ -679,5 +679,5 @@
     }
   },
   "frame_check_payload_refreshed_at_utc": "2026-04-24T10:58:52Z",
-  "frame_check_payload_refresh_reason": "FVS-001 V1 detection rule retired 2026-04-18 (frame_library.py:212-219) per METHODOLOGY.md §2.4.1; original capture (2026-04-18T09:18:18Z) preceded the retirement and listed FVS-001 in frame_library_matches. Refresh propagates the rule retirement and the library_v3 -> library_v4 engine pin migration (LIBRARY_V3_TO_V4_RATIFICATION_v1.md). Source bytes, summary bytes, and SHA-256 hashes are unchanged; the document-capture moment captured_at_utc is preserved."
+  "frame_check_payload_refresh_reason": "FVS-001 V1 detection rule retired 2026-04-18 (frame_library.py:212-219); original capture (2026-04-18T09:18:18Z) preceded the retirement and listed FVS-001 in frame_library_matches. Refresh propagates the rule retirement and the library_v3 -> library_v4 engine pin migration. Source bytes, summary bytes, and SHA-256 hashes are unchanged; the document-capture moment captured_at_utc is preserved."
 }
