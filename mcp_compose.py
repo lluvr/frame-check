@@ -1240,7 +1240,9 @@ def _build_divergence_block(
         # absences load-bearing for that goal carry priority +
         # reason. None when no goal is set or goal is 'audit'.
         from user_goals import get_goal_relevance as _get_goal_rel
-        frame_goal_relevance = _get_goal_rel(fvs_id, user_goal)
+        frame_goal_relevance = (
+            _get_goal_rel(fvs_id, user_goal) if user_goal else None
+        )
 
         # genre_relevance for this absent frame: substrate-side
         # composition Item 3. When the document is classified into
@@ -1252,7 +1254,9 @@ def _build_divergence_block(
         # genre's load-bearing list. Substrate stays deterministic;
         # the relevance map is curated per genre.
         from genre_classifier import get_genre_relevance as _get_gr
-        frame_genre_relevance = _get_gr(fvs_id, document_genre)
+        frame_genre_relevance = (
+            _get_gr(fvs_id, document_genre) if document_genre else None
+        )
 
         record = {
             "frame_id": fvs_id,
@@ -1382,11 +1386,14 @@ def _build_divergence_block(
     # as load-bearing (e.g., "recommendation-without-falsification",
     # "growth-without-risk"). Stays deterministic.
     from frame_patterns import match_patterns as _match_patterns
-    matched_ids_set = {
-        m.get("fvs_id") for m in (frame_library_matches or [])
-        if isinstance(m, dict) and m.get("fvs_id")
+    matched_ids_set: set[str] = {
+        m["fvs_id"] for m in (frame_library_matches or [])
+        if isinstance(m, dict) and isinstance(m.get("fvs_id"), str)
     }
-    absent_ids_set = {r["frame_id"] for r in absent_records}
+    absent_ids_set: set[str] = {
+        r["frame_id"] for r in absent_records
+        if isinstance(r.get("frame_id"), str)
+    }
     # doc_signals are passed through so pattern triggers can use
     # frame_deepening + epistemic discriminators beyond raw FVS
     # membership. Without these, patterns fire on most documents in
@@ -1423,6 +1430,9 @@ def _build_divergence_block(
             None,
         )
         if trigger is None:
+            p["corpus_context"] = None
+            continue
+        if not isinstance(trigger, dict):
             p["corpus_context"] = None
             continue
         from corpus_intelligence import (
@@ -1682,13 +1692,13 @@ def _build_divergence_block(
         # pattern readings) into the LLM prompt so the generated
         # questions consume the substrate's own composition rather
         # than treating absent frames in isolation.
-        cluster_readings = [
-            c.get("reading") for c in absence_clusters
-            if c.get("reading")
+        cluster_readings: list[str] = [
+            c["reading"] for c in absence_clusters
+            if isinstance(c.get("reading"), str)
         ]
-        pattern_readings = [
-            p.get("reading") for p in triggered_patterns
-            if p.get("reading")
+        pattern_readings: list[str] = [
+            p["reading"] for p in triggered_patterns
+            if isinstance(p.get("reading"), str)
         ]
         result = _generate_opps(
             candidates,
@@ -3288,10 +3298,11 @@ def build_epistemic_payload(
     # When divergence is off, the action list still includes the
     # findings-based reprompts and the always-present prompt
     # followup.
+    divergence_block = payload.get("divergence")
     agent_guidance["suggested_next_actions"] = (
         _build_suggested_next_actions(
             analysis,
-            payload.get("divergence"),
+            divergence_block if isinstance(divergence_block, dict) else None,
         )
     )
     agent_guidance["how_to_render_suggested_next_actions"] = (
