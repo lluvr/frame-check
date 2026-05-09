@@ -898,9 +898,15 @@ def extract_entities(text):
             entities.append({"type": "ATTRIBUTED", "value": name,
                              "context": body[ctx_start:ctx_end].strip()})
 
-    # Parenthetical citations
+    # Parenthetical citations.
+    # Inner word repetition uses ``[a-zA-Z]+`` (not ``[A-Z]?[a-zA-Z]+``)
+    # so the pattern is unambiguous: there is exactly one way to split
+    # any matching string into its words. The optional uppercase prefix
+    # in the prior form created exponential backtracking on adversarial
+    # inputs of the form ``(A/ AA AA AA ...`` (CodeQL py/redos). Matched
+    # set is unchanged for real-world citation strings.
     for m in re.finditer(
-            r'\(([A-Z][a-zA-Z/]+(?:\s+[A-Z]?[a-zA-Z]+)*)'
+            r'\(([A-Z][a-zA-Z/]+(?:\s+[a-zA-Z]+)*)'
             r'[,\s]+(\d{4})\)', body):
         cite = f"{m.group(1)} {m.group(2)}"
         if "source" in cite.lower():

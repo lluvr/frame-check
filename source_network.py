@@ -1304,35 +1304,55 @@ class _ProviderHealth:
 provider_health = _ProviderHealth()
 
 
+_PROVIDER_DOMAINS = (
+    ("brave.com", "brave"),
+    ("coingecko.com", "coingecko"),
+    ("wikipedia.org", "wikipedia"),
+    ("stlouisfed.org", "fred"),
+    ("alphavantage.co", "alpha_vantage"),
+    ("worldbank.org", "world_bank"),
+    ("restcountries.com", "rest_countries"),
+    ("wolframalpha.com", "wolfram"),
+    ("sec.gov", "sec_edgar"),
+    ("github.com", "github"),
+)
+
+
 def _provider_from_url(url: str) -> str:
-    """Map a URL to a provider label. Best-effort: hostname-based
-    string matching. Unknown hosts return the bare hostname."""
+    """Map a URL to a provider label by hostname suffix match.
+
+    Strict suffix match (``host == domain`` or
+    ``host.endswith('.' + domain)``) so an attacker-controlled hostname
+    such as ``alphavantage.evil.com`` cannot be misclassified as the
+    legitimate provider. Unknown hosts return the bare hostname.
+    """
     try:
         host = urllib.parse.urlparse(url).hostname or "unknown"
     except Exception:
         return "unknown"
     host = host.lower()
-    if "brave" in host:
-        return "brave"
-    if "coingecko" in host:
-        return "coingecko"
-    if "wikipedia" in host:
-        return "wikipedia"
-    if "stlouisfed" in host or "fred" in host:
-        return "fred"
-    if "alphavantage" in host:
-        return "alpha_vantage"
-    if "worldbank" in host:
-        return "world_bank"
-    if "restcountries" in host:
-        return "rest_countries"
-    if "wolframalpha" in host:
-        return "wolfram"
-    if "sec.gov" in host:
-        return "sec_edgar"
-    if "github" in host:
-        return "github"
+    for domain, label in _PROVIDER_DOMAINS:
+        if host == domain or host.endswith("." + domain):
+            return label
     return host
+
+
+def _safe_url_for_log(url: str) -> str:
+    """Strip credentials and query string from a URL for stderr logging.
+
+    Drops basic-auth ``user:pass@`` from the netloc and the entire query
+    string (which carries API keys for providers like FRED and Alpha
+    Vantage). Used in error / deadline diagnostics where the bare path
+    is enough context for an operator to identify the call site without
+    leaking credentials into log streams.
+    """
+    try:
+        p = urllib.parse.urlparse(url)
+        host = p.hostname or "unknown"
+        port = f":{p.port}" if p.port else ""
+        return f"{p.scheme}://{host}{port}{p.path}"
+    except Exception:
+        return "<unparseable-url>"
 
 
 # Hard upper bound on the wall-clock time _fetch_json can spend on a
@@ -1495,7 +1515,7 @@ def _fetch_json(url, total_deadline=None):
             import sys
             provider = _provider_from_url(url)
             provider_health.record_error(provider, "deadline")
-            safe_url = url.split("?")[0] if "?" in url else url
+            safe_url = _safe_url_for_log(url)
             sys.stderr.write(
                 f"[source-network] _fetch_json({safe_url}...): "
                 f"caller-side deadline {deadline:.1f}s exceeded; "
@@ -1524,7 +1544,7 @@ def _fetch_json(url, total_deadline=None):
             except Exception:
                 pass
         provider_health.record_error(provider, kind_label)
-        safe_url = url.split("?")[0] if "?" in url else url
+        safe_url = _safe_url_for_log(url)
         sys.stderr.write(
             f"[source-network] _fetch_json({safe_url}...): "
             f"{type(exc).__name__}: {exc}\n"

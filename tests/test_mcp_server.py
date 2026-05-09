@@ -3745,7 +3745,7 @@ def test_transmissions_resources_available():
     check(
         "result" in resp
         and resp["result"]["contents"][0]["mimeType"] == "text/markdown"
-        and "blog.clarethium.com" in resp["result"]["contents"][0]["text"],
+        and "https://blog.clarethium.com" in resp["result"]["contents"][0]["text"],
         "transmissions index must point at the canonical blog URL",
     )
     # Read the first individual transmission
