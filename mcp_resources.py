@@ -142,6 +142,8 @@ __all__ = [
     "_read_frame_library_version", "_parse_frame_statuses",
     "_FRAME_STATUSES", "_FRAME_LIBRARY_VERSION",
     "_FRAME_VERSIONS", "_FRAME_ADJACENCY",
+    "_get_frame_statuses", "_get_frame_library_version",
+    "_get_frame_versions", "_get_frame_adjacency",
 ]
 
 
@@ -202,6 +204,36 @@ _FRAME_STATUSES: dict | None = None
 _FRAME_LIBRARY_VERSION: str | None = None
 _FRAME_VERSIONS: dict | None = None
 _FRAME_ADJACENCY: dict | None = None
+
+
+def _get_frame_statuses() -> dict | None:
+    """Return the live ``_FRAME_STATUSES`` cache.
+
+    Accessor wrapper so consumers (mcp_compose, mcp_server) can read
+    the post-``_ensure_caches`` value without importing the module
+    object solely for late attribute lookup. ``from mcp_resources
+    import _FRAME_STATUSES`` would capture ``None`` at import time;
+    ``_get_frame_statuses()`` always returns the current value.
+    """
+    return _FRAME_STATUSES
+
+
+def _get_frame_library_version() -> str | None:
+    """Return the live ``_FRAME_LIBRARY_VERSION`` cache. See
+    ``_get_frame_statuses`` for the late-binding rationale."""
+    return _FRAME_LIBRARY_VERSION
+
+
+def _get_frame_versions() -> dict | None:
+    """Return the live ``_FRAME_VERSIONS`` cache. See
+    ``_get_frame_statuses`` for the late-binding rationale."""
+    return _FRAME_VERSIONS
+
+
+def _get_frame_adjacency() -> dict | None:
+    """Return the live ``_FRAME_ADJACENCY`` cache. See
+    ``_get_frame_statuses`` for the late-binding rationale."""
+    return _FRAME_ADJACENCY
 
 
 # ── Signal-strength classification (shared by resources + compose) ─

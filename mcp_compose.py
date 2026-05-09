@@ -111,10 +111,13 @@ from mcp_resources import (
     _library_entry_ref,
     _library_v3_entries,
     _dimensions_affecting,
+    _get_frame_statuses,
+    _get_frame_library_version,
+    _get_frame_versions,
+    _get_frame_adjacency,
 )
 from mcp_schema import _SPEC_VERSION
 from mcp_log import log
-import mcp_resources as _resources_mod
 
 # Corpus intelligence aggregator. Reads the validation corpus
 # (10 entries today) once at first query, builds per-frame and
@@ -125,7 +128,11 @@ import mcp_resources as _resources_mod
 # is unavailable (e.g., wheel without bundled corpus), every
 # context lookup returns None and the MCP response simply omits
 # the corpus_context fields rather than carrying empty placeholders.
-import corpus_intelligence as _corpus_intel
+from corpus_intelligence import (
+    get_frame_corpus_context,
+    get_dimension_corpus_context,
+    get_corpus_summary,
+)
 
 
 # ── Provenance: hosting state disclosure ──────────────────────────
@@ -222,7 +229,7 @@ def _build_provenance(
         # clients can verify the measurement contract separately
         # from the site.
         "clarethium_measure_version": CLARETHIUM_VERSION,
-        "frame_library_version": _resources_mod._FRAME_LIBRARY_VERSION,
+        "frame_library_version": _get_frame_library_version(),
         # Engine identity. The MCP surface runs only the deterministic
         # Layer A stack server-side (regex detectors +
         # clarethium_measure verification). The V4.2 LLM-judge step is
@@ -254,7 +261,7 @@ def _frame_corpus_context_or_none(fvs_id: str) -> dict | None:
     Centralizes the path arguments so call sites stay terse."""
     if not fvs_id:
         return None
-    return _corpus_intel.get_frame_corpus_context(
+    return get_frame_corpus_context(
         fvs_id, _CORPUS_ENTRIES_DIR, _AGGREGATE_RESULTS_DIR,
     )
 
@@ -265,7 +272,7 @@ def _dimension_corpus_context_or_none(dimension: str) -> dict | None:
     dimension-level evidence."""
     if not dimension:
         return None
-    return _corpus_intel.get_dimension_corpus_context(
+    return get_dimension_corpus_context(
         dimension, _CORPUS_ENTRIES_DIR, _AGGREGATE_RESULTS_DIR,
     )
 
@@ -274,7 +281,7 @@ def _corpus_summary_or_none() -> dict | None:
     """Return whole-corpus summary for the divergence envelope, or
     None if unavailable. Carries the small-N caveat so the agent
     surfacing prevalence stays construct-honest."""
-    return _corpus_intel.get_corpus_summary(
+    return get_corpus_summary(
         _CORPUS_ENTRIES_DIR, _AGGREGATE_RESULTS_DIR,
     )
 
@@ -2601,7 +2608,7 @@ def build_epistemic_payload(
                 # wide version in provenance. None when the entry
                 # predates per-entry versioning.
                 "library_entry_version": (
-                    (_resources_mod._FRAME_VERSIONS or {}).get(f.get("fvs_id", ""))
+                    (_get_frame_versions() or {}).get(f.get("fvs_id", ""))
                 ),
                 "teaching_question": f.get("question"),
                 "definition": f.get("definition"),
@@ -2610,7 +2617,7 @@ def build_epistemic_payload(
                 # stable but name/identification may revise; 'canon'
                 # means full stability. Agents surfacing this match to
                 # a user should communicate the status.
-                "status": (_resources_mod._FRAME_STATUSES or {}).get(f.get("fvs_id", ""), "draft"),
+                "status": (_get_frame_statuses() or {}).get(f.get("fvs_id", ""), "draft"),
                 # Related FVS entries the curator named as adjacent
                 # to this one. Each carries its MCP resource URI so
                 # an agent can pull the adjacent entry in one
@@ -2620,7 +2627,7 @@ def build_epistemic_payload(
                 # non-FVS vocabularies.
                 "adjacent_frames": [
                     _library_entry_ref(adj_id)
-                    for adj_id in (_resources_mod._FRAME_ADJACENCY or {}).get(
+                    for adj_id in (_get_frame_adjacency() or {}).get(
                         f.get("fvs_id", ""), []
                     )
                 ],
@@ -3459,16 +3466,16 @@ def _summarize_per_document(doc: dict, text: str) -> dict:
                     if f.get("fvs_id") else None
                 ),
                 "library_entry_version": (
-                    (_resources_mod._FRAME_VERSIONS or {}).get(f.get("fvs_id", ""))
+                    (_get_frame_versions() or {}).get(f.get("fvs_id", ""))
                 ),
                 "teaching_question": f.get("question"),
                 "status": (
-                    (_resources_mod._FRAME_STATUSES or {}).get(f.get("fvs_id"))
-                    if _resources_mod._FRAME_STATUSES is not None else None
+                    (_get_frame_statuses() or {}).get(f.get("fvs_id"))
+                    if _get_frame_statuses() is not None else None
                 ),
                 "adjacent_frames": [
                     _library_entry_ref(adj_id)
-                    for adj_id in (_resources_mod._FRAME_ADJACENCY or {}).get(
+                    for adj_id in (_get_frame_adjacency() or {}).get(
                         f.get("fvs_id", ""), []
                     )
                 ],
