@@ -17,6 +17,7 @@ Seven components:
 """
 
 import re
+from typing import Any, cast
 
 from clarethium_measure import split_sentences
 
@@ -701,6 +702,7 @@ def detect_coverage(text, include_attribution=False, include_candidates=False):
         # distinct_sentences_detected reports the full count
         # pre-truncation for honest reporting.
         if include_attribution and spans is not None:
+            assert sentence_spans is not None  # narrowed by include_attribution
             sentence_markers: dict[int, list[str]] = {}
             sentence_order: list[int] = []
             for marker, start, _end in spans:
@@ -784,8 +786,12 @@ def detect_coverage(text, include_attribution=False, include_candidates=False):
     #
     # Only computed when >=2 categories are addressed (a single
     # addressed category has no reference point for imbalance).
-    addressed_densities = [
-        c["density_per_1kw"] for c in categories.values() if c["covered"]
+    # ``categories`` is loosely typed at construction; the
+    # density_per_1kw value is always a number at runtime, so a cast
+    # is sound and lets max / min type-check against floats.
+    addressed_densities: list[float] = [
+        cast(float, c["density_per_1kw"])
+        for c in categories.values() if c["covered"]
     ]
     if len(addressed_densities) >= 2 and max(addressed_densities) > 0:
         coverage_balance = round(
@@ -1397,12 +1403,14 @@ def detect_epistemic_basis(text, include_candidates=False):
     sentences = [s for _, s, _ in raw]
     n = len(sentences)
     if n == 0:
-        result = {"sourced": 0, "sourced_pct": 0, "numeric_sentences": 0,
-                  "unsupported_numeric": 0, "total_sentences": 0}
+        empty_result: dict[str, Any] = {
+            "sourced": 0, "sourced_pct": 0, "numeric_sentences": 0,
+            "unsupported_numeric": 0, "total_sentences": 0,
+        }
         if include_candidates:
-            result["candidate_attribution_sentences"] = []
-            result["candidate_attribution_count"] = 0
-        return result
+            empty_result["candidate_attribution_sentences"] = []
+            empty_result["candidate_attribution_count"] = 0
+        return empty_result
 
     # Cache the per-sentence checks so each sentence is evaluated once.
     # Without this, _is_sourced runs twice (sourced count + unsupported
@@ -1417,7 +1425,7 @@ def detect_epistemic_basis(text, include_candidates=False):
         if n_flag and not s_flag
     )
 
-    result = {
+    result: dict[str, Any] = {
         "sourced": sourced,
         "sourced_pct": round(sourced / n * 100),
         "numeric_sentences": numeric,

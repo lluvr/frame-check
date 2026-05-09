@@ -1055,20 +1055,20 @@ def _list_resources() -> list[dict]:
         # transmission_id and published date close the description
         # so the identity pair an agent needs to cite (id plus
         # date) is visible in the resource list itself.
-        parts: list[str] = []
+        tx_parts: list[str] = []
         type_tag = meta.get("type")
         if type_tag:
-            parts.append(f"[{type_tag}]")
+            tx_parts.append(f"[{type_tag}]")
         summary = meta.get("summary")
         if summary:
-            parts.append(summary.rstrip(".") + ".")
+            tx_parts.append(summary.rstrip(".") + ".")
         tid = meta.get("transmission_id")
         pub = meta.get("published")
         if tid and pub:
-            parts.append(f"({tid}, published {pub}.)")
+            tx_parts.append(f"({tid}, published {pub}.)")
         elif tid:
-            parts.append(f"({tid}.)")
-        description = " ".join(parts) or (
+            tx_parts.append(f"({tid}.)")
+        description = " ".join(tx_parts) or (
             "Published research transmission from "
             "blog.clarethium.com."
         )
@@ -1087,17 +1087,17 @@ def _list_resources() -> list[dict]:
         annotations: dict = {}
         if isinstance(pub, str) and pub:
             annotations["lastModified"] = pub
-        entry: dict = {
+        tx_entry: dict = {
             "uri": f"{RESOURCE_SCHEME}://transmissions/{slug}",
             "name": title,
             "description": description,
             "mimeType": "text/markdown",
         }
         if entry_meta:
-            entry["_meta"] = entry_meta
+            tx_entry["_meta"] = entry_meta
         if annotations:
-            entry["annotations"] = annotations
-        resources.append(entry)
+            tx_entry["annotations"] = annotations
+        resources.append(tx_entry)
 
     if os.path.isfile(_METHODOLOGY_PATH):
         resources.append({
