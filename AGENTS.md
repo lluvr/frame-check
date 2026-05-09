@@ -36,7 +36,7 @@ extend, and verify Frame Check. The scope is fixed:
   `GOVERNANCE.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`,
   `RELEASING.md`, `ROADMAP.md`, `CHANGELOG.md`, `LICENSE`,
   `NOTICE`, `CITATION.cff`, `AGENTS.md` (this file), and the `docs/` tree
-  (MCP_SERVER, FRAME_DIVERGENCE_CONTRACT, RATERS, VALIDATION_PROGRAM).
+  (MCP_SERVER, COOKBOOK, FRAME_DIVERGENCE_CONTRACT, RATERS, VALIDATION_PROGRAM).
 - The Frame Vocabulary Standard catalog at `data/frame_library/`,
   the worked examples at `data/worked_examples/`, the transmissions
   at `data/transmissions/`, and calibration corpora.

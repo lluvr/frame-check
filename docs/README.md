@@ -13,6 +13,10 @@ you find the one that matches your need.
 2. [MCP_SERVER.md](MCP_SERVER.md): full reference: tool surface (`frame_check`,
    `frame_compare`), resource scheme (`frame-check://`), prompt templates,
    provenance contract, cost discipline ($0.00 per query).
+3. [COOKBOOK.md](COOKBOOK.md): five concrete recipes for common adopter tasks
+   (frame-check before agent commit, divergence at decision points,
+   source-grounded verification, two-LLM structural comparison, custom FVS
+   rule contribution).
 
 ### "I want to evaluate the methodology"
 
@@ -64,6 +68,7 @@ framing signatures.
 
 ## Artifacts in this directory
 
+- [COOKBOOK.md](COOKBOOK.md): five recipes for common adopter tasks.
 - [FRAME_DIVERGENCE_CONTRACT_v1.md](FRAME_DIVERGENCE_CONTRACT_v1.md): the
   adopter-facing wire contract for the `divergence` block (c1.0 shipping).
 - [MCP_SERVER.md](MCP_SERVER.md): full MCP server reference.
