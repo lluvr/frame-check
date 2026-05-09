@@ -89,7 +89,7 @@ jobs:
           print(f'Top-level py modules: {len(py_modules)}')
           pkg_files = [f for f in files if f.startswith('framecheck_mcp/')]
           print(f'framecheck_mcp/ items: {len(pkg_files)}')
-          required = ['framecheck_mcp/data/frame_library/FVS-001_frame_amplification.md', 'framecheck_mcp/METHODOLOGY.md', 'framecheck_mcp/FRAME_DIVERGENCE_CONTRACT_v1.md']
+          required = ['framecheck_mcp/data/frame_library/FVS-001_frame_amplification.md', 'framecheck_mcp/FRAME_DIVERGENCE_CONTRACT_v1.md']
           missing = [r for r in required if r not in files]
           if missing:
               import sys

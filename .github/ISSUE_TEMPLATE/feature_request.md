@@ -19,7 +19,7 @@ Tick all that apply:
       `frame_library.py`)
 - [ ] MCP server (`mcp_server.py` contract; MCP resources)
 - [ ] Corpus / library (FVS entries)
-- [ ] Methodology (METHODOLOGY.md, empirical studies)
+- [ ] Methodology (empirical studies, calibration data)
 - [ ] caller or verification pipeline
 - [ ] Governance or documentation
 

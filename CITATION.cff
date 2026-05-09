@@ -40,10 +40,10 @@ references:
       - family-names: Lucic
         given-names: Lovro
         orcid: "https://orcid.org/0009-0008-9976-6933"
-    url: "https://github.com/Clarethium/frame-check/blob/master/METHODOLOGY.md"
+    url: "https://github.com/Clarethium/lodestone"
     license: CC-BY-4.0
     year: 2026
-    notes: "Bundled with the frame-check-mcp PyPI wheel as METHODOLOGY.md. Also live at https://frame.clarethium.com/corpus/methodology/."
+    notes: "The methodology that grounds Frame Check's analyses is the Clarethium operator methodology canon, published as the Clarethium/lodestone repository under CC-BY-4.0."
   - type: data
     title: "Frame Vocabulary Standard"
     authors:

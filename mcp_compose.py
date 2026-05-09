@@ -3250,7 +3250,7 @@ def build_epistemic_payload(
             domain_hint=domain_hint,
             rendering=divergence_rendering,
             catalog_version_pin=catalog_version_pin,
-            engine_status="beta",  # per V4_2_GAP_INVENTORY §5 after Tier 1 complete
+            engine_status="beta",
             cov_missing=cov_missing_for_signal,
             user_context_present=bool(user_context),
             document_genre=document_genre,
