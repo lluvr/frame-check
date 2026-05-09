@@ -83,6 +83,43 @@ see framing they would otherwise miss.
 Honest limits and the methodology that generates them live in the
 public canon at github.com/Clarethium/lodestone.
 
+## Why this and not just an LLM
+
+An MCP-compatible AI client can already analyse a document by
+prompting an LLM. Frame Check earns its install footprint where the
+LLM falls short:
+
+- **Determinism.** The structural layer returns the same numbers for
+  the same input across runs, deploys, and model versions. An LLM
+  asked "what frames does this document use" gives a different
+  answer each time and a different answer per model. Citable
+  research needs the deterministic shape; opinions can layer on top.
+- **Zero per-query cost.** Frame Check's MCP server makes no LLM
+  call server-side. The caller's agent does the prose interpretation
+  if the user wants that. This means a frame-check on a 10,000-word
+  document costs the user $0.00, not the $0.05–0.50 an LLM call
+  would charge.
+- **Explicit absence.** The frame-divergence block names what the
+  document does not address by comparing matched frames against the
+  Frame Vocabulary Standard catalog. An LLM asked "what's missing"
+  hallucinates plausible-sounding gaps; Frame Check enumerates
+  catalog entries that did not fire on the text and says so.
+- **Calibrated detection.** The named-pattern layer reports detector
+  F1 = 0.36 against expert labelers in a pre-registered validation,
+  below the useful threshold of 0.4. That number is in this README,
+  in the API responses (`engine_status: beta`), and the wheel ships
+  the under-detection-marker pivot rather than confident labels.
+  Honest calibration matters more than confident output.
+- **Source verification.** Numeric claims with provider coverage get
+  cross-checked against SEC EDGAR / FRED / World Bank / Alpha
+  Vantage / Wolfram Alpha at provider pricing tiers (zero or
+  user-keyed). An LLM asked "is this number right" cannot fetch
+  primary sources; Frame Check does.
+
+The wedge is not the LLM's job. Frame Check makes it possible for
+the LLM to lean on a deterministic, source-grounded measurement
+layer instead of being asked to do that work in-band.
+
 ## Worked example
 
 Same prompt, four frontier LLMs, four materially different framing
