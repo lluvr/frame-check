@@ -43,6 +43,9 @@ VERSION='2026-05-08-comprehensive'
 # ── Path allowlist (§5b) ────────────────────────────────────────────
 EXCLUDES=(
   --exclude-dir=.git
+  --exclude-dir=.claude
+  --exclude-dir=.ruff_cache
+  --exclude-dir=.mypy_cache
   --exclude-dir=node_modules
   --exclude-dir=.venv
   --exclude-dir=venv
