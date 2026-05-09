@@ -18,6 +18,7 @@ import concurrent.futures
 import contextlib
 import os
 import re
+from typing import Any
 
 from clarethium_measure import measure
 from claim_analysis import analyze_claims
@@ -456,7 +457,7 @@ def stability_from_regenerations(regenerations):
     # and `num_type` (from the first regeneration that saw it,
     # because num_type for the same numeric value is stable
     # by definition).
-    occurrences = {}
+    occurrences: dict[str, dict[str, Any]] = {}
     for regen_idx, ca in enumerate(per_regen_claims):
         # Walk the per-claim numbers, normalize, and bucket
         # by num_type. We use the same _extract_number_set
@@ -487,8 +488,8 @@ def stability_from_regenerations(regenerations):
 
     n_completed = len(regenerations)
     total_unique_numbers = len(occurrences)
-    stable_count = sum(1 for e in occurrences.values() if e["count"] == n_completed)
-    unique_to_one_count = sum(1 for e in occurrences.values() if e["count"] == 1)
+    stable_count = sum(e["count"] == n_completed for e in occurrences.values())
+    unique_to_one_count = sum(e["count"] == 1 for e in occurrences.values())
     partial_count = total_unique_numbers - stable_count - unique_to_one_count
     if total_unique_numbers > 0:
         stability_rate = round(stable_count / total_unique_numbers, 4)
