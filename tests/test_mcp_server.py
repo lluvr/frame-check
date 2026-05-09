@@ -37,8 +37,8 @@ os.environ.setdefault("GEMINI_API_KEY", "test-dummy-key")
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import mcp_server
-import contextlib
+import mcp_server  # noqa: E402
+import contextlib  # noqa: E402
 
 
 _FAILURES: list[str] = []

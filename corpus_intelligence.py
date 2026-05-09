@@ -218,7 +218,7 @@ def _initialize(
     # bucketed under "_unclassified" so the agent can see how much
     # of the corpus is in unsegmentable territory.
     per_genre_counts: dict[str, int] = {}
-    for slug, genre in per_document_genre.items():
+    for genre in per_document_genre.values():
         bucket = genre or "_unclassified"
         per_genre_counts[bucket] = per_genre_counts.get(bucket, 0) + 1
 
@@ -515,7 +515,7 @@ def count_corpus_pattern_matches(
     # appear as empty sets. Reconstruct full document list from the
     # union of fired + absent slug membership.
     all_slugs: set[str] = set()
-    for fvs_id, frame_stats in per_frame.items():
+    for frame_stats in per_frame.values():
         all_slugs.update(frame_stats["corpus_entries_fired"])
         all_slugs.update(frame_stats["corpus_entries_absent"])
     for slug in all_slugs:

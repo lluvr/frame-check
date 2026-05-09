@@ -170,7 +170,7 @@ def gate_0(doc_text, topic_task, gem_client=None, n_baselines=3):
         import warnings
         warnings.warn(
             "gate_0 requires _config module with Gemini API access. "
-            "Skipping baseline generation.", UserWarning
+            "Skipping baseline generation.", UserWarning, stacklevel=2
         )
         return None
 
@@ -201,7 +201,7 @@ def gate_0(doc_text, topic_task, gem_client=None, n_baselines=3):
         import warnings
         warnings.warn(
             "gate_0: Gemini API calls failed; no baselines generated. "
-            "Skipping gate_0.", UserWarning
+            "Skipping gate_0.", UserWarning, stacklevel=2
         )
         return None
 
@@ -1885,7 +1885,7 @@ def measure(doc_text, source=None, comparisons=None, topic=None):
             "No markdown headings found (## or ###). "
             "Clarethium Measure is validated on markdown analytical documents. "
             "Results may not be meaningful for unstructured text.",
-            UserWarning
+            UserWarning, stacklevel=2
         )
 
     layers_run: list[str] = []

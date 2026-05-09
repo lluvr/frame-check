@@ -93,7 +93,7 @@ RESOURCE_SCHEME = "frame-check"
 # {fvs_id, library_resource_uri, public_url}. A test in
 # test_decision_readiness.py pins LIBRARY_RESOURCE_SCHEME ==
 # RESOURCE_SCHEME so the two cannot drift.
-from decision_readiness import (  # noqa: F401  (re-exported via __all__)
+from decision_readiness import (  # noqa: F401, E402  (re-exported via __all__; module-level after section comment)
     library_entry_ref as _library_entry_ref,
     dimensions_affecting as _dimensions_affecting,
 )
@@ -103,7 +103,7 @@ from decision_readiness import (  # noqa: F401  (re-exported via __all__)
 
 # Frame library status + version readers (single source of truth
 # for INDEX.md row format and VERSION file location).
-from frame_library_index import (
+from frame_library_index import (  # noqa: E402
     read_library_version as _read_frame_library_version,
     parse_entry_statuses as _parse_frame_statuses,
 )

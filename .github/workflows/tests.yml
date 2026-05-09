@@ -81,15 +81,18 @@ jobs:
 
   quality:
     # Quality-gate job: ruff (style + bug-prone-pattern lints) and
-    # mypy (type-check the public wheel surface). Both are run with
-    # the configuration in pyproject.toml ``[tool.ruff]`` /
-    # ``[tool.mypy]``. The current config is incremental (relaxed
-    # base, strict surface targeted at v1.0); the goal is to keep the
-    # quality bar visible on every PR rather than to gate-merge while
-    # the codebase moves toward strict compliance.
+    # mypy (type-check the public wheel surface). Configuration in
+    # pyproject.toml ``[tool.ruff]`` / ``[tool.mypy]``.
+    #
+    # ruff is strict-blocking (zero lints across the codebase under
+    # the configured select families). The lenient ``[tool.mypy]``
+    # config is also strict-blocking on the public wheel surface
+    # (mcp_server, mcp_compose, mcp_resources, mcp_schema, framing,
+    # comparison, clarethium_measure). The ``mypy --strict`` pass
+    # (the v1.0 contract gate) runs as an informational ``|| true``
+    # step until the remaining ~348 errors close.
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    continue-on-error: true  # informational only until v1.0
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -103,19 +106,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff mypy
       - name: Ruff lint
-        # `|| true` keeps the step green while the codebase moves
-        # toward zero remaining ruff lints. Drop the `|| true` when
-        # the tail of E402 / B007 / B028 is closed (target: v1.0).
-        run: ruff check . || true
+        # Strict-blocking. The codebase passes the configured
+        # ``[tool.ruff.lint]`` select families (E, F, B, ISC) with
+        # zero remaining lints; a new violation should fail PR.
+        run: ruff check .
       - name: Mypy type-check (public wheel surface)
-        # Same incremental posture as ruff: surface signal without
-        # gating PRs while the ~45 mypy errors close. Drop the
-        # `|| true` when ``mypy --strict`` passes on the public
-        # surface (target: v1.0).
+        # The lenient ``[tool.mypy]`` config passes clean on the
+        # public wheel surface. ``mypy --strict`` (the v1.0
+        # contract gate) still surfaces ~348 errors mostly in
+        # ``[type-arg]`` and ``[no-untyped-def]`` families;
+        # ``|| true`` stays until the strict path is closed.
         run: |
           mypy mcp_server.py mcp_compose.py mcp_resources.py \
                mcp_schema.py framing.py comparison.py \
-               clarethium_measure.py || true
+               clarethium_measure.py
+          mypy --strict mcp_server.py mcp_compose.py \
+               mcp_resources.py mcp_schema.py framing.py \
+               comparison.py clarethium_measure.py || true
 
   pytest-smoke:
     # Secondary job: direct pytest invocation. Some suites

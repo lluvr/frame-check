@@ -2799,7 +2799,7 @@ def build_epistemic_payload(
             # Frame Check's curator reading) rather than treating
             # the prose as a measurement.
             dims_block = readiness.get("dimensions") or {}
-            for dim_name, dim_data in dims_block.items():
+            for _dim_name, dim_data in dims_block.items():
                 if isinstance(dim_data, dict):
                     dim_data["claim_level"] = _CLAIM_LEVEL_COMPOSED
             analysis["decision_readiness"] = readiness

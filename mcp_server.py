@@ -128,7 +128,7 @@ SERVER_VERSION = "0.9.4"
 # `mcp_server._sanitize_log_message` continue to resolve without
 # modification. New code should import directly from `mcp_log`
 # (`from mcp_log import log`).
-from mcp_log import (
+from mcp_log import (  # noqa: E402
     log,
     _sanitize_log_message,
 )
@@ -151,7 +151,7 @@ from mcp_log import (
 # which late-imports mcp_resources and forwards the lookup. Compose
 # code that reads the caches uses the ``_get_frame_*`` accessor
 # functions also exported from mcp_resources.
-from mcp_resources import (
+from mcp_resources import (  # noqa: E402
     RESOURCE_SCHEME,
     _LIBRARY_DIR,
     _LIBRARY_V3_DIR,
@@ -205,7 +205,7 @@ from mcp_resources import (
 # definitions for tools/list, prompts/list, and prompts/get
 # dispatch, plus MAX_DOCUMENT_CHARS / MAX_SOURCE_CHARS for input
 # validation in handle_tools_call.
-from mcp_schema import (
+from mcp_schema import (  # noqa: E402
     MAX_DOCUMENT_CHARS,
     MAX_SOURCE_CHARS,
     _DOMAIN_HINT_ENUM,
@@ -251,7 +251,7 @@ from mcp_schema import (
 # `from mcp_server import SERVER_VERSION` in mcp_compose would
 # re-load mcp_server as a second module). See mcp_compose.py module
 # docstring for the import-cycle note.
-from mcp_compose import (
+from mcp_compose import (  # noqa: E402
     PRODUCTION_STATUS,
     PRODUCTION_STATUS_NOTE,
     _build_provenance,
