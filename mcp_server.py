@@ -144,14 +144,13 @@ from mcp_log import (
 # still here, tests that read `mcp_server.<symbol>`) continue to
 # resolve.
 #
-# Module-attribute access pattern for mutable cache state: the four
-# caches `_FRAME_STATUSES`, `_FRAME_LIBRARY_VERSION`, `_FRAME_VERSIONS`,
-# `_FRAME_ADJACENCY` are populated lazily by `_ensure_caches`. They
-# are MUTATED post-import. Compose code reads them via the
-# `_resources_mod` reference below so attribute lookup happens late
-# (at the point of read, not at import time). A direct
-# `from mcp_resources import _FRAME_VERSIONS` would capture None.
-import mcp_resources as _resources_mod
+# Mutable cache state (``_FRAME_STATUSES``, ``_FRAME_LIBRARY_VERSION``,
+# ``_FRAME_VERSIONS``, ``_FRAME_ADJACENCY``) lives in mcp_resources
+# and is populated lazily by ``_ensure_caches``. External callers that
+# dot ``mcp_server._FRAME_VERSIONS`` resolve via ``__getattr__`` below,
+# which late-imports mcp_resources and forwards the lookup. Compose
+# code that reads the caches uses the ``_get_frame_*`` accessor
+# functions also exported from mcp_resources.
 from mcp_resources import (
     RESOURCE_SCHEME,
     _LIBRARY_DIR,
@@ -1551,7 +1550,14 @@ def __getattr__(name: str):
         "_FRAME_VERSIONS",
         "_FRAME_ADJACENCY",
     }:
-        return getattr(_resources_mod, name)
+        # Local import keeps module-level imports of mcp_resources
+        # to a single ``from mcp_resources import ...`` form (avoids
+        # the dual ``import X`` + ``from X import Y`` pattern that
+        # CodeQL py/import-and-import-from flags). The function-scope
+        # import is paid only when external callers dot into the
+        # module for these four cache names.
+        import mcp_resources
+        return getattr(mcp_resources, name)
     raise AttributeError(
         f"module {__name__!r} has no attribute {name!r}"
     )
