@@ -33,10 +33,10 @@ extend, and verify Frame Check. The scope is fixed:
   `lift_dry_run.py`, `mcp_conformance_driver.py`,
   `_release_lib/`).
 - Adopter-facing documentation: `README.md`, `CONTRIBUTING.md`,
-  `GOVERNANCE.md`, `SECURITY.md`, `CHANGELOG.md`, `LICENSE`,
-  `NOTICE`, `CITATION.cff`, `AGENTS.md` (this file), and the
-  `docs/` tree (MCP_SERVER, FRAME_DIVERGENCE_CONTRACT, RATERS,
-  VALIDATION_PROGRAM).
+  `GOVERNANCE.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`,
+  `RELEASING.md`, `ROADMAP.md`, `CHANGELOG.md`, `LICENSE`,
+  `NOTICE`, `CITATION.cff`, `AGENTS.md` (this file), and the `docs/` tree
+  (MCP_SERVER, FRAME_DIVERGENCE_CONTRACT, RATERS, VALIDATION_PROGRAM).
 - The Frame Vocabulary Standard catalog at `data/frame_library/`,
   the worked examples at `data/worked_examples/`, the transmissions
   at `data/transmissions/`, and calibration corpora.
