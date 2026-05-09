@@ -2037,7 +2037,6 @@ def verify_rest_countries(decomp):
     pop = c.get("population", 0)
     area = c.get("area", 0)
     name = c.get("name", {}).get("common", country)
-    iso = c.get("cca3", "")
 
     # Try matching against population or area
     for label, source_val in [("population", pop), ("area", area)]:
@@ -2065,20 +2064,6 @@ def verify_rest_countries(decomp):
 
 
 # ── World Bank ──
-
-_WORLDBANK_INDICATORS = {
-    "gdp": "NY.GDP.MKTP.CD",
-    "gdp_per_capita": "NY.GDP.PCAP.CD",
-    "population": "SP.POP.TOTL",
-    "life_expectancy": "SP.DYN.LE00.IN",
-    "inflation": "FP.CPI.TOTL.ZG",
-    "unemployment": "SL.UEM.TOTL.ZS",
-    "poverty": "SI.POV.DDAY",
-    "co2": "EN.ATM.CO2E.PC",
-    "literacy": "SE.ADT.LITR.ZS",
-    "internet": "IT.NET.USER.ZS",
-}
-
 
 def _detect_wb_indicator(sentence, metric):
     """Detect which World Bank indicator to query.
@@ -2957,7 +2942,6 @@ def verify_sec_edgar(decomp):
     fp = best_filing.get("fp", "FY")
     form = best_filing.get("form", "10-K")
     filed = best_filing.get("filed", "")
-    end_date = best_filing.get("end", "")
     val_display = best_val / 1e9 if best_val >= 1e9 else best_val / 1e6
     val_unit = "B" if best_val >= 1e9 else "M"
 
@@ -3200,7 +3184,6 @@ def _classify_and_route(decomp):
     from time_context import classify_time
 
     sentence_lower = decomp.sentence.lower()
-    heading_lower = decomp.heading.lower()
 
     classification = classify_subject(decomp.subject)
     # Attach to decomp so downstream consumers (the SourceNetworkResult
@@ -3386,14 +3369,6 @@ _GROWTH_RE = re.compile(
     r'(?:grew|growth|increase[ds]?|decline[ds]?|rose|fell|'
     r'change[ds]?|up|down)\s+'
     r'(?:by\s+|of\s+)?'
-    r'(\d+(?:\.\d+)?)\s*%',
-    re.IGNORECASE
-)
-
-_SHARE_RE = re.compile(
-    r'(?:account(?:s|ed)?\s+for|represent(?:s|ed)?|'
-    r'compris(?:es?|ed|ing)|held?|captured?)\s+'
-    r'(?:approximately\s+|about\s+|roughly\s+|nearly\s+)?'
     r'(\d+(?:\.\d+)?)\s*%',
     re.IGNORECASE
 )
