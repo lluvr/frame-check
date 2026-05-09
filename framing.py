@@ -1681,8 +1681,8 @@ def framing_portrait(coverage, temporal, voice, epistemic, claim_stats,
         densities = {k: cv["density_per_1kw"] for k, cv in cats.items()
                      if cv.get("covered")}
         if len(densities) >= 2:
-            max_cat = max(densities, key=densities.get)
-            min_cat = min(densities, key=densities.get)
+            max_cat = max(densities, key=lambda k: densities[k])
+            min_cat = min(densities, key=lambda k: densities[k])
             if densities[max_cat] > 2.0 and densities[min_cat] > 0 and \
                densities[max_cat] > 3 * densities[min_cat]:
                 parts.append(
@@ -1967,8 +1967,8 @@ def framing_portrait_natural(coverage, temporal, voice, epistemic, claim_stats,
         densities = {k: cv["density_per_1kw"] for k, cv in cats.items()
                      if cv.get("covered")}
         if len(densities) >= 2:
-            max_cat = max(densities, key=densities.get)
-            min_cat = min(densities, key=densities.get)
+            max_cat = max(densities, key=lambda k: densities[k])
+            min_cat = min(densities, key=lambda k: densities[k])
             if densities[max_cat] > 2.0 and densities[min_cat] > 0 and \
                densities[max_cat] > 3 * densities[min_cat]:
                 parts.append(
@@ -2102,8 +2102,8 @@ def framing_summary(coverage, temporal, claim_stats):
     cats = coverage["categories"]
     densities = {k: cv["density_per_1kw"] for k, cv in cats.items() if cv["covered"]}
     if len(densities) >= 2:
-        max_cat = max(densities, key=densities.get)
-        min_cat = min(densities, key=densities.get)
+        max_cat = max(densities, key=lambda k: densities[k])
+        min_cat = min(densities, key=lambda k: densities[k])
         # Require the dominant category to have meaningful density (>2.0/1Kw)
         # and be 3x+ the weakest. Avoids flagging tiny differences.
         if densities[max_cat] > 2.0 and densities[min_cat] > 0 and \
@@ -2223,8 +2223,8 @@ def framing_headline(coverage, temporal, voice, epistemic, claim_stats,
     densities = {k: cv["density_per_1kw"] for k, cv in cats.items()
                  if cv.get("covered")}
     if len(densities) >= 2:
-        max_cat = max(densities, key=densities.get)
-        min_cat = min(densities, key=densities.get)
+        max_cat = max(densities, key=lambda k: densities[k])
+        min_cat = min(densities, key=lambda k: densities[k])
         if densities[max_cat] > 2.0 and densities[min_cat] > 0 and \
            densities[max_cat] > 3 * densities[min_cat]:
             return (

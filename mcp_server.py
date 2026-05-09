@@ -598,9 +598,13 @@ def handle_prompts_get(params: dict) -> dict:
         args = {}
     for p in _PROMPTS:
         if p["name"] == name:
-            populated_body = _populate_prompt_body(p["body"], args)
+            body = p["body"]
+            description = p["description"]
+            assert isinstance(body, str)
+            assert isinstance(description, str)
+            populated_body = _populate_prompt_body(body, args)
             return {
-                "description": p["description"],
+                "description": description,
                 "messages": _prompt_messages(populated_body),
             }
     raise ValueError(f"Unknown prompt: {name}")
@@ -955,16 +959,26 @@ def _call_frame_compare(arguments: dict) -> dict:
     a_text = arguments.get("document_a_text")
     b_text = arguments.get("document_b_text")
 
-    for label, text in (("document_a_text", a_text), ("document_b_text", b_text)):
-        if not isinstance(text, str) or not text.strip():
-            return _tool_error(
-                f"{label} is required and must be a non-empty string."
-            )
-        if len(text) > MAX_DOCUMENT_CHARS:
-            return _tool_error(
-                f"{label} exceeds the {MAX_DOCUMENT_CHARS}-character "
-                f"limit. Truncate the document before calling."
-            )
+    # Two unrolled guards rather than a loop so the static checker can
+    # narrow ``a_text`` and ``b_text`` to ``str`` for the call below.
+    if not isinstance(a_text, str) or not a_text.strip():
+        return _tool_error(
+            "document_a_text is required and must be a non-empty string."
+        )
+    if len(a_text) > MAX_DOCUMENT_CHARS:
+        return _tool_error(
+            f"document_a_text exceeds the {MAX_DOCUMENT_CHARS}-character "
+            f"limit. Truncate the document before calling."
+        )
+    if not isinstance(b_text, str) or not b_text.strip():
+        return _tool_error(
+            "document_b_text is required and must be a non-empty string."
+        )
+    if len(b_text) > MAX_DOCUMENT_CHARS:
+        return _tool_error(
+            f"document_b_text exceeds the {MAX_DOCUMENT_CHARS}-character "
+            f"limit. Truncate the document before calling."
+        )
 
     a_label = (arguments.get("document_a_label") or "Document A").strip()
     b_label = (arguments.get("document_b_label") or "Document B").strip()
