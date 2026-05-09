@@ -76,7 +76,7 @@ def _render_generation_prompt(topic: str) -> str:
 # work without change. All future call sites should import directly
 # from llm_cost; these aliases exist only to avoid a cross-file
 # atomic refactor.
-from llm_cost import (
+from llm_cost import (  # noqa: E402
     compute_cost_usd as _compute_token_cost,
     empty_usage as _empty_usage,
 )
@@ -458,7 +458,7 @@ def stability_from_regenerations(regenerations):
     # because num_type for the same numeric value is stable
     # by definition).
     occurrences: dict[str, dict[str, Any]] = {}
-    for regen_idx, ca in enumerate(per_regen_claims):
+    for _regen_idx, ca in enumerate(per_regen_claims):
         # Walk the per-claim numbers, normalize, and bucket
         # by num_type. We use the same _extract_number_set
         # logic as the user-facing stability check so the two

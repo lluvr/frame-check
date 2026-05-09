@@ -1859,7 +1859,7 @@ def verify_wikipedia(decomp, _cached_article=None):
 # source_network and entity_classifier. Re-imported here so existing
 # call sites that read these names from source_network keep resolving
 # without an attribute migration.
-from entity_data import (
+from entity_data import (  # noqa: E402
     _COUNTRY_NAMES_RE,
     _COUNTRY_ABBREV_RE,
     _COUNTRY_CANONICAL,
@@ -2042,7 +2042,7 @@ def verify_world_bank(decomp):
 # _CRYPTO_NAMES lives in entity_data.py (shared with entity_classifier).
 # Re-imported here so existing reads of ``source_network._CRYPTO_NAMES``
 # keep resolving.
-from entity_data import _CRYPTO_NAMES
+from entity_data import _CRYPTO_NAMES  # noqa: E402
 
 _CRYPTO_RE = re.compile(
     r'\b(bitcoin|btc|ethereum|eth|solana|sol|cardano|ada|'
@@ -2248,7 +2248,7 @@ def verify_alpha_vantage(decomp):
         "price": ("AnalystTargetPrice", "Target Price"),
     }
 
-    for metric_key, (field_name, label) in metrics.items():
+    for _metric_key, (field_name, label) in metrics.items():
         if field_name not in data or data[field_name] in ("None", "0", ""):
             continue
         try:

@@ -511,7 +511,7 @@ class TestNoSuggestions:
 # End-to-end detection: real text through full pipeline
 # ================================================================
 
-from framing import detect_coverage, detect_voice, temporal_orientation, detect_epistemic_basis
+from framing import detect_coverage, detect_voice, temporal_orientation, detect_epistemic_basis  # noqa: E402
 
 
 def _detect_frames(text):

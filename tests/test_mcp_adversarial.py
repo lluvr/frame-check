@@ -51,7 +51,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
 import mcp_server  # noqa: E402
-import contextlib
+import contextlib  # noqa: E402
 
 
 _DOC_SAMPLE = (
@@ -829,9 +829,10 @@ def test_G1_tools_call_frame_check_is_byte_deterministic():
     pat = _re.compile(
         r'"analysis_(latency_ms|timestamp_utc|run_at)":\s*[^,\n]+'
     )
-    norm = lambda s: pat.sub(
-        '"analysis_\\1": NORMALIZED', s,
-    )
+    def norm(s):
+        return pat.sub(
+            '"analysis_\\1": NORMALIZED', s,
+        )
     assert norm(a_text) == norm(b_text)
 
 

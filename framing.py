@@ -532,7 +532,7 @@ def _compute_sentence_spans(text):
     sentences = split_sentences(text)
     spans = []
     search_from = 0
-    for idx, (heading, sent, para_idx) in enumerate(sentences):
+    for idx, (heading, sent, _para_idx) in enumerate(sentences):
         probe = sent[:60] if len(sent) > 60 else sent
         pos = -1
         length = 0

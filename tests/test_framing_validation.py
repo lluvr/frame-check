@@ -790,7 +790,7 @@ class TestEpistemicBasis:
 # sentences that wrap across lines were split at line breaks,
 # and short fragments were silently dropped.
 
-from clarethium_measure import split_sentences
+from clarethium_measure import split_sentences  # noqa: E402
 
 
 class TestSplitSentencesParagraphJoining:
