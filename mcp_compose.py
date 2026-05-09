@@ -100,6 +100,8 @@ without benefit.
 
 from __future__ import annotations
 
+from typing import Any
+
 import time
 
 from mcp_resources import (
@@ -155,7 +157,7 @@ def _build_provenance(
     analysis_layer: str,
     elapsed_ms: int,
     determinism_note: str | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Build the provenance block shared by every MCP tool response.
 
     Keeping construction in one place means a version bump,
@@ -256,7 +258,7 @@ def _build_provenance(
 
 # ── Corpus-context helpers ────────────────────────────────────────
 
-def _frame_corpus_context_or_none(fvs_id: str) -> dict | None:
+def _frame_corpus_context_or_none(fvs_id: str) -> dict[str, Any] | None:
     """Return per-frame corpus_context or None if unavailable.
     Centralizes the path arguments so call sites stay terse."""
     if not fvs_id:
@@ -266,7 +268,7 @@ def _frame_corpus_context_or_none(fvs_id: str) -> dict | None:
     )
 
 
-def _dimension_corpus_context_or_none(dimension: str) -> dict | None:
+def _dimension_corpus_context_or_none(dimension: str) -> dict[str, Any] | None:
     """Return per-dimension corpus_context or None if unavailable.
     Used by the cluster builder so each cluster can carry empirical
     dimension-level evidence."""
@@ -277,7 +279,7 @@ def _dimension_corpus_context_or_none(dimension: str) -> dict | None:
     )
 
 
-def _corpus_summary_or_none() -> dict | None:
+def _corpus_summary_or_none() -> dict[str, Any] | None:
     """Return whole-corpus summary for the divergence envelope, or
     None if unavailable. Carries the small-N caveat so the agent
     surfacing prevalence stays construct-honest."""
@@ -288,7 +290,7 @@ def _corpus_summary_or_none() -> dict | None:
 
 # ── Document signals aggregator ───────────────────────────────────
 
-def _build_document_signals(analysis: dict) -> dict:
+def _build_document_signals(analysis: dict[str, Any]) -> dict[str, Any]:
     """Assemble doc_signals dict for pattern matching. Pulls from
     frame_deepening (temporal_scope, stakeholder_map,
     falsification_conditions), epistemic (sourced_pct), voice
@@ -322,7 +324,7 @@ def _build_document_signals(analysis: dict) -> dict:
 
 # ── MCP contract v2 dimension builders ────────────────────────────
 
-def _build_coverage_v2(cov: dict) -> dict:
+def _build_coverage_v2(cov: dict[str, Any]) -> dict[str, Any]:
     """Build the MCP contract v2 coverage payload from detect_coverage output.
 
     cov is the dict returned by framing.detect_coverage (v1 shape, unchanged).
@@ -413,7 +415,7 @@ def _build_coverage_v2(cov: dict) -> dict:
     }
 
 
-def _build_voice_construct(voice: dict) -> dict:
+def _build_voice_construct(voice: dict[str, Any]) -> dict[str, Any]:
     """Build the Phase B voice construct block for MCP v2.
 
     Unlike the lower-bound detection posture (coverage/epistemic/claims),
@@ -472,7 +474,7 @@ def _build_voice_construct(voice: dict) -> dict:
     }
 
 
-def _build_temporal_construct(temp: dict) -> dict:
+def _build_temporal_construct(temp: dict[str, Any]) -> dict[str, Any]:
     """Build the Phase B temporal construct block for MCP v2.
 
     Temporal is a distribution signal (past/present/future percentages
@@ -566,7 +568,7 @@ _CLAIM_LEVEL_AGENT_GENERATED = "agent_generated"
 # (no inter-rater reliability pilot on the classifier or pattern
 # catalog; no precision/recall against labeled gold-standard) so the
 # agent does not over-claim on the user's behalf.
-_CLAIM_LEVEL_TREATMENTS: dict = {
+_CLAIM_LEVEL_TREATMENTS: dict[str, Any] = {
         _CLAIM_LEVEL_DETECTOR: {
             "claim_type": (
                 "Deterministic feature/regex detector firing or "
@@ -793,7 +795,7 @@ _CLAIM_LEVEL_TREATMENTS: dict = {
 }
 
 
-def _apply_v2_only_preference(payload: dict) -> None:
+def _apply_v2_only_preference(payload: dict[str, Any]) -> None:
     """Remove the legacy v1 coverage block when the client prefers v2.
 
     Leaves coverage_v2 as the only coverage field. Intended for clients
@@ -1139,7 +1141,7 @@ def _build_divergence_block(
     include_frame_opportunities: bool = False,
     document_signals: dict | None = None,
     compose_budget: str = "full",
-) -> dict:
+) -> dict[str, Any]:
     """Build the FRAME_DIVERGENCE_CONTRACT_v1 Part 2 `divergence` block.
 
     Signature is minimal but takes enough document signal (cov_missing)
@@ -1652,7 +1654,7 @@ def _build_divergence_block(
     # each opportunity carries is_deterministic=False; total cost
     # is tracked; LLM unavailability degrades gracefully (empty
     # opportunities list with available=False).
-    frame_opportunities_block: dict = {
+    frame_opportunities_block: dict[str, Any] = {
         "opportunities": [],
         "total_cost_usd": 0.0,
         "available": None,
@@ -1949,8 +1951,8 @@ def _build_divergence_block(
 # ── Compose-budget helper ─────────────────────────────────────────
 
 def _compress_agent_guidance_to_load_bearing(
-    full_guidance: dict, level: str = "minimal",
-) -> dict:
+    full_guidance: dict[str, Any], level: str = "minimal",
+) -> dict[str, Any]:
     """Compress agent_guidance to load-bearing prescriptions only.
 
     Used when compose_budget is "standard" (the default) or "minimal"
@@ -2124,7 +2126,7 @@ def _compress_agent_guidance_to_load_bearing(
 # ── Suggested next actions ────────────────────────────────────────
 
 def _build_suggested_next_actions(
-    analysis: dict,
+    analysis: dict[str, Any],
     divergence: dict | None,
 ) -> list[dict]:
     """Derive 2-4 specific next-action suggestions from this call's
@@ -2283,7 +2285,7 @@ def build_epistemic_payload(
     user_goal: str | None = None,
     include_frame_opportunities: bool = False,
     compose_budget: str = "full",
-) -> dict:
+) -> dict[str, Any]:
     """Run Frame Check's deterministic analyzers on the document and
     return the full epistemic payload: analysis, agent_guidance,
     provenance.
@@ -3342,7 +3344,7 @@ def build_epistemic_payload(
 
 # Compare path: per-document helpers + builder.
 
-def _per_document_core(text: str) -> dict:
+def _per_document_core(text: str) -> dict[str, Any]:
     """Run the per-document deterministic analyzers and return the
     dict shape comparison.py's _build_structural_framing_data
     expects (coverage, voice, epistemic, temporal, claim_count,
@@ -3385,7 +3387,7 @@ def _per_document_core(text: str) -> dict:
     }
 
 
-def _summarize_per_document(doc: dict, text: str) -> dict:
+def _summarize_per_document(doc: dict[str, Any], text: str) -> dict[str, Any]:
     """Shape the per-document analysis for the compare payload.
     Smaller than the single-document frame_check payload because the
     point of compare is the cross-document signal; per-document
@@ -3517,7 +3519,7 @@ def _summarize_per_document(doc: dict, text: str) -> dict:
 def build_compare_payload(
     doc_a_text: str, doc_b_text: str,
     a_name: str = "Document A", b_name: str = "Document B",
-) -> dict:
+) -> dict[str, Any]:
     """Run Frame Check's structural comparison on two documents and
     return the three-section epistemic payload.
 

@@ -55,6 +55,8 @@ via re-exports in `mcp_server.py`.
 
 from __future__ import annotations
 
+from typing import Any
+
 import json
 import os
 import re
@@ -206,7 +208,7 @@ _FRAME_VERSIONS: dict | None = None
 _FRAME_ADJACENCY: dict | None = None
 
 
-def _get_frame_statuses() -> dict | None:
+def _get_frame_statuses() -> dict[str, Any] | None:
     """Return the live ``_FRAME_STATUSES`` cache.
 
     Accessor wrapper so consumers (mcp_compose, mcp_server) can read
@@ -224,13 +226,13 @@ def _get_frame_library_version() -> str | None:
     return _FRAME_LIBRARY_VERSION
 
 
-def _get_frame_versions() -> dict | None:
+def _get_frame_versions() -> dict[str, Any] | None:
     """Return the live ``_FRAME_VERSIONS`` cache. See
     ``_get_frame_statuses`` for the late-binding rationale."""
     return _FRAME_VERSIONS
 
 
-def _get_frame_adjacency() -> dict | None:
+def _get_frame_adjacency() -> dict[str, Any] | None:
     """Return the live ``_FRAME_ADJACENCY`` cache. See
     ``_get_frame_statuses`` for the late-binding rationale."""
     return _FRAME_ADJACENCY
@@ -470,7 +472,7 @@ def _worked_example_entries() -> list[tuple]:
         slug = fname[:-3]
         path = os.path.join(_WORKED_EXAMPLES_DIR, fname)
         title = slug
-        metadata: dict = {
+        metadata: dict[str, Any] = {
             "source_document_url": None,
             "source_document_title": None,
             "hook": None,
@@ -524,7 +526,7 @@ def _transmission_entries() -> list[tuple]:
             continue
         slug = fname[:-3]
         path = os.path.join(_TRANSMISSIONS_DIR, fname)
-        metadata: dict = {
+        metadata: dict[str, Any] = {
             "transmission_id": None,
             "type": None,
             "summary": None,
@@ -566,7 +568,7 @@ def _transmission_entries() -> list[tuple]:
 
 # ── Cache primitives ──────────────────────────────────────────────
 
-def _parse_frame_adjacency() -> dict:
+def _parse_frame_adjacency() -> dict[str, Any]:
     """Parse the **Adjacent frames:** line from every library entry
     and return {fvs_id: [adjacent_fvs_id, ...]} with a stable order.
 
@@ -585,7 +587,7 @@ def _parse_frame_adjacency() -> dict:
     Cached at module scope by _ensure_caches so the parse runs at
     most once per server process.
     """
-    adjacency: dict = {}
+    adjacency: dict[str, Any] = {}
     valid_ids = {
         fvs_id for fvs_id, _t, _p, _v in _library_entries()
     }
@@ -605,7 +607,7 @@ def _parse_frame_adjacency() -> dict:
             adjacency[fvs_id] = []
             continue
         line = m.group(1)
-        found: list = []
+        found: list[Any] = []
         for match in re.finditer(r'\bFVS-(\d{3})\b', line):
             ref_id = f"FVS-{match.group(1)}"
             if ref_id == fvs_id:
@@ -965,7 +967,7 @@ def _list_resources() -> list[dict]:
         # distinguish current from stale entries without reading
         # each file.
         version_note = f"v{version}. " if version else ""
-        entry: dict = {
+        entry: dict[str, Any] = {
             "uri": f"{RESOURCE_SCHEME}://library/{fvs_id}",
             "name": f"{fvs_id}: {title}",
             "description": (
@@ -1078,16 +1080,16 @@ def _list_resources() -> list[dict]:
         # the slug, so the metadata reflects the curator's explicit
         # choice. published date is exposed as an MCP-spec annotation
         # (lastModified) for drift-detection at the protocol level.
-        entry_meta: dict = {}
+        entry_meta: dict[str, Any] = {}
         source_url = meta.get("source_url")
         if isinstance(source_url, str) and source_url.startswith(
             "https://blog.clarethium.com/"
         ):
             entry_meta["clarethium.com/citation-uri"] = source_url
-        annotations: dict = {}
+        annotations: dict[str, Any] = {}
         if isinstance(pub, str) and pub:
             annotations["lastModified"] = pub
-        tx_entry: dict = {
+        tx_entry: dict[str, Any] = {
             "uri": f"{RESOURCE_SCHEME}://transmissions/{slug}",
             "name": title,
             "description": description,
@@ -1397,7 +1399,7 @@ def _list_resources() -> list[dict]:
     return resources
 
 
-def _read_resource(uri: str) -> dict:
+def _read_resource(uri: str) -> dict[str, Any]:
     """Resolve a URI to its content in the shape resources/read
     returns. Raises ValueError for unknown URIs and FileNotFoundError
     when the resource is advertised but unreadable at call time
