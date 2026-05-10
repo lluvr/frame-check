@@ -82,9 +82,11 @@ jobs:
         # the others verify compatibility). The 65% floor is on
         # production code only (tests/ + setup.py + run_tests.py
         # excluded via [tool.coverage.run] omit in pyproject.toml).
-        # Current is 69% with the source_network.py 10% module
-        # dragging the average down; v1.0 contract raises to 80% on
-        # the public wheel surface per ROADMAP.md.
+        # Current global is ~69%; per-module 80% on the seven-module
+        # wheel surface is a tracked v1.0.x follow-up (see ROADMAP.md
+        # "Deferred from v1.0 to v1.0.x"; comparison.py at 20.9% is
+        # the largest single drag and needs provider-mocked tests
+        # for the LLM-network-dependent paths).
         run: |
           if [ "${{ matrix.python-version }}" = "3.12" ]; then
             python3 run_tests.py \
@@ -98,13 +100,11 @@ jobs:
     # mypy (type-check the public wheel surface). Configuration in
     # pyproject.toml ``[tool.ruff]`` / ``[tool.mypy]``.
     #
-    # ruff is strict-blocking (zero lints across the codebase under
-    # the configured select families). The lenient ``[tool.mypy]``
-    # config is also strict-blocking on the public wheel surface
-    # (mcp_server, mcp_compose, mcp_resources, mcp_schema, framing,
-    # comparison, clarethium_measure). The ``mypy --strict`` pass
-    # (the v1.0 contract gate) runs as an informational ``|| true``
-    # step until the remaining ~348 errors close.
+    # All three checks are strict-blocking as of v1.0.0:
+    #   - ruff: zero lints across the configured select families.
+    #   - lenient mypy: zero errors on the seven-module wheel surface.
+    #   - ``mypy --strict``: zero errors on the same surface (the v1.0
+    #     contract gate; CHANGELOG [1.0.0] names this commitment).
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -130,17 +130,16 @@ jobs:
           mypy mcp_server.py mcp_compose.py mcp_resources.py \
                mcp_schema.py framing.py comparison.py \
                clarethium_measure.py
-      - name: Mypy --strict (v1.0 progress meter)
-        # Strict pass surfaces the v1.0-contract progress as a
-        # count, not as a 295-line wall of errors. Currently 295
-        # remaining (mostly ``[no-untyped-call]`` cascading from
-        # ``[no-untyped-def]``); the count drops as untyped
-        # callees get annotated. Informational until v1.0.
+      - name: Mypy --strict (v1.0 wheel-surface contract)
+        # Strict-blocking. The v1.0 contract commits to
+        # ``mypy --strict`` clean on the seven-module wheel surface;
+        # the count was 152 at the start of the v1.0 cut and is 0
+        # at v1.0.0. A regression is a contract violation and must
+        # fail PR.
         run: |
           mypy --strict mcp_server.py mcp_compose.py \
                mcp_resources.py mcp_schema.py framing.py \
-               comparison.py clarethium_measure.py 2>&1 \
-            | tail -3 || true
+               comparison.py clarethium_measure.py
 
   pytest-smoke:
     # Secondary job: direct pytest invocation. Some suites
