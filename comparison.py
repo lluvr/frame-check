@@ -348,7 +348,7 @@ _PROVIDER_GENERATORS = {
 }
 
 
-def stability_n3_check(topic, provider, n=3):
+def stability_n3_check(topic: str, provider: str, n: int = 3) -> dict[str, Any]:
     """Run N independent regenerations of the same prompt and
     return a schema-shaped dict matching the
     stability_n3_check event.
@@ -409,7 +409,9 @@ def stability_n3_check(topic, provider, n=3):
     return stability_from_regenerations(regenerations)
 
 
-def stability_from_regenerations(regenerations):
+def stability_from_regenerations(
+    regenerations: list[dict[str, Any]],
+) -> dict[str, Any]:
     """Compute the stability_n3_check schema dict from
     pre-generated regenerations.
 
@@ -540,7 +542,7 @@ def stability_from_regenerations(regenerations):
     }
 
 
-def _empty_stability_result(provider, n):
+def _empty_stability_result(provider: str, n: int) -> dict[str, Any]:
     """Schema-shaped null result for failed stability checks.
 
     Returned when the provider is unknown, all regenerations
@@ -621,7 +623,7 @@ _NUMERIC_TOKEN_RE = re.compile(
 )
 
 
-def _normalize_for_stability(raw_value):
+def _normalize_for_stability(raw_value: str | None) -> str | None:
     """Normalize a per-claim display string into a stable key.
 
     Extracts the leading numeric pattern (with optional scale
@@ -711,7 +713,7 @@ def _normalize_for_stability(raw_value):
     return canonical
 
 
-def _infer_num_type(raw_value):
+def _infer_num_type(raw_value: str | None) -> str:
     """Best-effort num_type inference from the display string.
 
     Mirrors the bucketing in claim_analysis.py. The
