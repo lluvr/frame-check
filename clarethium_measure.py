@@ -155,7 +155,12 @@ def extract_headings_simple(text: str) -> list[str]:
     return headings
 
 
-def gate_0(doc_text, topic_task, gem_client=None, n_baselines=3):
+def gate_0(
+    doc_text: str,
+    topic_task: str,
+    gem_client: Any | None = None,
+    n_baselines: int = 3,
+) -> float | None:
     """Heading-baseline Jaccard overlap. Lower = more non-default.
 
     Requires Gemini API for baseline generation (~$0.01/doc).
@@ -258,7 +263,7 @@ _MECH_RE = re.compile("|".join(MECHANISM_PATTERNS), re.IGNORECASE)
 _BUZZ_RE = re.compile("|".join(BUZZWORD_PATTERNS), re.IGNORECASE)
 
 
-def mechanism_ratio(text):
+def mechanism_ratio(text: str) -> dict[str, Any]:
     """Causal reasoning / buzzword density ratio.
 
     Construct: Ratio of causal language to filler language.
@@ -328,7 +333,7 @@ _REG_COMPILED = {
 MIN_RELIABLE_MATCHES = 10
 
 
-def extract_section_bodies(text):
+def extract_section_bodies(text: str) -> list[str]:
     """Extract section body text only (excludes headings)."""
     sections = []
     lines = text.split("\n")
@@ -348,7 +353,7 @@ def extract_section_bodies(text):
     return sections
 
 
-def assertion_ratio(text):
+def assertion_ratio(text: str) -> dict[str, Any]:
     """Epistemic assertion fraction of total register matches.
 
     Construct: Proportion of epistemic language that is assertive vs
@@ -385,7 +390,9 @@ def assertion_ratio(text):
     }
 
 
-def structural_profile(doc_text, topic=None):
+def structural_profile(
+    doc_text: str, topic: str | None = None,
+) -> dict[str, Any]:
     """All structural layers. Gate 0 only if topic provided."""
     profile = {}
 
@@ -500,7 +507,7 @@ def split_sentences(text: str) -> list[tuple[str, str, int]]:
     return results
 
 
-def extract_numerical_claims(text):
+def extract_numerical_claims(text: str) -> list[dict[str, Any]]:
     """Extract sentences with digit-formatted numbers. Zero LLM.
     Note: misses numbers expressed as words or relative claims."""
     sentences = split_sentences(text)
@@ -521,7 +528,7 @@ def extract_numerical_claims(text):
     return claims
 
 
-def extract_causal_claims(text):
+def extract_causal_claims(text: str) -> list[dict[str, Any]]:
     """Extract sentences with causal assertions. Zero LLM."""
     sentences = split_sentences(text)
     combined = '|'.join(CAUSAL_MARKERS)
@@ -537,7 +544,7 @@ def extract_causal_claims(text):
     return claims
 
 
-def claim_density(text):
+def claim_density(text: str) -> dict[str, Any]:
     """Numerical + causal claim density per 1K words."""
     words = len(re.findall(r'\b\w+\b', text))
     numerical = extract_numerical_claims(text)
@@ -670,7 +677,7 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
 YEAR_RANGE = (1990, 2035)
 
 
-def _is_year(val):
+def _is_year(val: Any) -> bool:
     try:
         n = int(val)
         return YEAR_RANGE[0] <= n <= YEAR_RANGE[1]
@@ -678,7 +685,7 @@ def _is_year(val):
         return False
 
 
-def _is_word_count(num, text):
+def _is_word_count(num: dict[str, Any], text: str) -> bool:
     for m in re.finditer(re.escape(num["raw"]), text):
         start = max(0, m.start() - 60)
         context = text[start:m.end() + 20].lower()
