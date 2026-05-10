@@ -89,7 +89,7 @@ def compute_cost_usd(provider, model, input_tokens, output_tokens):
     )
 
 
-def empty_usage():
+def empty_usage() -> dict[str, float]:
     """Uniform shape for failed or no-op calls.
 
     Callers prefer a stable dict over None so downstream code can

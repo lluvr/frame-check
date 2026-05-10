@@ -12,6 +12,8 @@ confidence uniformity across the document.
 """
 
 import re
+from typing import Any
+
 from clarethium_measure import (
     extract_numerical_claims,
     extract_numbers_for_matching,
@@ -93,7 +95,7 @@ CANDIDATE_HEDGE_RE = re.compile(
 )
 
 
-def analyze_claims(doc_text):
+def analyze_claims(doc_text: str) -> dict[str, Any]:
     """Extract and analyze individual numerical claims.
 
     Returns a dict with:
