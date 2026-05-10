@@ -28,7 +28,7 @@ to a different downstream model than the display name claims.
 """
 
 import os
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 
 LLM_PROVIDER_DISPLAY = "Grok"
@@ -62,13 +62,18 @@ def xai_configured() -> bool:
     return bool(base and key)
 
 
-def xai_openai_client():
+def xai_openai_client() -> Any:
     """Build an OpenAI-SDK client for xAI calls.
 
     Returns None when no xAI path is configured. Callers must branch on
     the None return; constructing an OpenAI client with empty base_url
     or api_key would silently 401 on first request rather than fall
     cleanly into Layer A.
+
+    Return type is Any because openai.OpenAI is an optional runtime
+    dependency: pip-installed wheels carry it, but mypy --strict on the
+    seven-module wheel surface does not import it. Annotating Any here
+    keeps callers in the strict surface from needing a per-call cast.
     """
     base, key = xai_endpoint()
     if not (base and key):
