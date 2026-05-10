@@ -69,7 +69,12 @@ GEMINI_GROUNDING_COST_USD = 0.014
 # Pure computation
 # ================================================================
 
-def compute_cost_usd(provider, model, input_tokens, output_tokens):
+def compute_cost_usd(
+    provider: str,
+    model: str,
+    input_tokens: int,
+    output_tokens: int,
+) -> float:
     """Token counts -> USD cost. Returns 0.0 for unknown (provider, model).
 
     The 0.0 return for unknown models is intentional: it is the
