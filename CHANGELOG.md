@@ -6,47 +6,104 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### publish.yml: github-release annotation extraction
+
+`actions/checkout@v4` in the `github-release` job uses
+`fetch-tags: true`. Without it the runner has the commit history
+but not tag *objects*, so the release-body extraction step's
+`git tag -l --format='%(contents)'` falls through to the tagged
+commit's message instead of the annotation. Surfaced during the
+v1.0.0 cut when the GitHub release body shipped as a commit
+message; recovered for that release with a one-shot
+`gh release edit --notes`; this gate prevents the recurrence in
+v1.0.1+.
+
 ## [1.0.0] - 2026-05-10
 
-### v1.0 ROADMAP contract met
+### v1.0 ROADMAP contract: status
 
-The 0.9.x stabilization arc closes. The seven-module wheel surface
-(`mcp_server`, `mcp_compose`, `mcp_resources`, `mcp_schema`, `framing`,
-`comparison`, `clarethium_measure`) passes `mypy --strict` with zero
-errors; the strict-blocking matrix job in the PR-time quality gate
-enforces it on every push. Lenient `mypy` and `ruff` continue to pass.
-The 65% global production-code coverage floor stays in place; the
-per-module 80% target named in the v1.0 contract is split into a
-tracked v1.0.x follow-up because the largest gap (`comparison.py` at
-20.9%) needs provider-mocked test infrastructure for the
-LLM-network-dependent paths that does not exist yet. ROADMAP carries
-the deferred line item.
+The 0.9.x stabilization arc closes.
 
-The `tests/test_cookbook_recipes.py` adopter-contract suite continues
-to exercise the cookbook claims and the README "Why this and not just
-an LLM" positioning claims against the running API at PR time.
-`scripts/mcp_conformance_driver.py` speaks JSON-RPC over stdio to the
-freshly-built wheel on every tag push and validates every primitive
-(initialize, tools/list, tools/call for `frame_check` and
-`frame_compare`, resources/list, resources/read, prompts/list,
-prompts/get, ping, error handling). `CITATION.cff` resolves to the
-Zenodo concept-DOI ([10.5281/zenodo.19888849](https://doi.org/10.5281/zenodo.19888849));
-the methodology canon at `Clarethium/lodestone` is reachable; the
-README detector-F1 number cites a study artifact reproducible from
-corpus + harness.
+**Met at v1.0.0:**
+
+- **Strict typing on the public wheel surface.** The seven modules
+  (`mcp_server`, `mcp_compose`, `mcp_resources`, `mcp_schema`,
+  `framing`, `comparison`, `clarethium_measure`) pass `mypy --strict`
+  with zero errors. The strict-blocking matrix job in the PR-time
+  quality gate enforces it on every push. Lenient `mypy` and `ruff`
+  continue to pass.
+- **Adopter-contract test coverage.** `tests/test_cookbook_recipes.py`
+  exercises the cookbook claims and the README "Why this and not
+  just an LLM" positioning claims against the running API at PR
+  time.
+- **Conformance driver gate.** `scripts/mcp_conformance_driver.py`
+  speaks JSON-RPC over stdio to the freshly-built wheel on every tag
+  push and validates every primitive (initialize, tools/list,
+  tools/call for `frame_check` and `frame_compare`, resources/list,
+  resources/read, prompts/list, prompts/get, ping, error handling).
+  30/30 PASS at the v1.0.0 cut.
+- **Methodology citation paths.** `CITATION.cff` resolves to the
+  Zenodo concept-DOI ([10.5281/zenodo.19888849](https://doi.org/10.5281/zenodo.19888849));
+  the methodology canon at `Clarethium/lodestone` is reachable; the
+  README detector-F1 number cites a study artifact reproducible from
+  corpus + harness.
+- **CI-driven publish.** v1.0.0 is the first release cut entirely
+  from CI on this repository alone (see "CI-driven publish from
+  this repository" below).
+- **Engine V4.2 capability decision.** The named-pattern detector
+  reports F1 = 0.36 against expert labelers (pre-registered, below
+  the 0.4 useful threshold). v1.0 ships the under-detection-marker
+  pivot (per README "Approach") as the load-bearing claim rather
+  than waiting for the engine to cross threshold. The MCP response
+  field `engine_status: "beta"` and the README + ROADMAP statements
+  about detector F1 carry the honest position forward.
+
+**Deferred to a tracked v1.0.x follow-up** (ROADMAP carries the
+explicit lines):
+
+- **Per-module 80% coverage on the wheel surface.** The 65% global
+  production-code floor stays in place. Of the seven modules, three
+  are already above target (`mcp_schema` 100.0%, `mcp_compose`
+  94.9%, `mcp_resources` 90.3%); four are below
+  (`framing` 69.5%, `mcp_server` 69.4%, `clarethium_measure` 62.6%,
+  `comparison` 20.9%). The `comparison.py` gap is the largest and
+  needs provider-mocked test infrastructure for the
+  LLM-network-dependent paths (`generate_gemini`, `generate_grok`,
+  `analyze_model`) that does not exist yet.
+- **Validation pre-registration first execution.** The behavior-change
+  protocol at `validation/wedge_behavior/PROTOCOL_v1.md` exists with
+  the runner at `validation/wedge_behavior/run_pilot.py`. The first
+  execution with N ≥ 30 documents per condition, the results
+  publication under the same directory, and the CHANGELOG narrative
+  linking those results, all land in v1.0.x rather than blocking
+  the v1.0.0 cut. The contract item is honestly carried forward
+  rather than silently treated as met.
 
 ### CI-driven publish from this repository
 
 `v1.0.0` is the first release cut entirely from CI on this repository
 alone. The `.github/workflows/publish.yml` pipeline (world-state
 preflight + build + sigstore attestation + Trusted Publishing OIDC +
-GitHub release) runs end-to-end on this tag push. Four publish
-workflow defects from the 0.9.x line are fixed and held: the
-tag-vs-pyproject gate skips under `workflow_dispatch` (no longer
-hard-fails on branch refs), sigstore has the `attestations: write`
-permission it needs, the TestPyPI routing condition no longer
-substring-matches `'a'` in `master`, and every publish/release job is
-tag-prefix-anchored.
+GitHub release) runs end-to-end on this tag push.
+
+Five publish-workflow defects are fixed and held — four from the
+0.9.x line, and one more surfaced during this cut itself:
+
+1. The tag-vs-pyproject gate skips under `workflow_dispatch` (no
+   longer hard-fails on branch refs).
+2. The build job has the `attestations: write` permission sigstore
+   needs.
+3. The TestPyPI routing condition no longer substring-matches `'a'`
+   in `master` under `workflow_dispatch`.
+4. Every publish/release job is tag-prefix-anchored.
+5. Routing uses `github.ref_name` (the bare tag name, e.g. `v1.0.0`)
+   instead of `github.ref` (`refs/tags/v1.0.0`) for the `contains()`
+   pre-release check. The prior fix at #3 added the
+   `startsWith(refs/tags/v)` prefix to gate against branch refs but
+   missed that `'a'` is in the literal `'tags/'` segment of every
+   tag ref. Surfaced when v1.0.0 routed to TestPyPI instead of
+   PyPI on the first cut attempt; fixed and re-tagged at the same
+   commit before the release shipped.
 
 ### Source-quality cleanups landed in this cut
 
