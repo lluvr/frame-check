@@ -222,17 +222,23 @@ jobs:
     name: Publish to TestPyPI
     needs: build
     runs-on: ubuntu-latest
-    # Pre-release tags only: vX.Y.Z{rc,a,b}N or vX.Y.Z.devN. The
-    # ``startsWith(refs/tags/v)`` prefix is load-bearing: without
-    # it, ``contains(github.ref, 'a')`` matches the literal substring
-    # 'a' in branch refs like ``refs/heads/master`` and the publish
-    # fires on workflow_dispatch from a branch.
+    # Pre-release tags only: vX.Y.Z{rc,a,b}N or vX.Y.Z.devN.
+    # ``github.ref_name`` is the bare tag name (e.g. ``v1.0.0``) with
+    # no ``refs/tags/`` prefix; ``contains()`` against it matches only
+    # characters in the tag name itself. ``contains(github.ref, 'a')``
+    # was load-bearing-broken: ``github.ref`` is ``refs/tags/v1.0.0``
+    # for a tag push, and the substring 'a' is present in ``tags/``,
+    # so the condition fired on every final tag (the inverse of intent
+    # — surfaced when v1.0.0 cut routed to TestPyPI instead of PyPI).
+    # ``startsWith(github.ref, 'refs/tags/v')`` remains load-bearing
+    # to gate against branch refs (``ref_name`` for a branch push is
+    # just the branch name, e.g. ``master``, which still contains 'a').
     if: |
       startsWith(github.ref, 'refs/tags/v') && (
-        contains(github.ref, '.dev') ||
-        contains(github.ref, 'rc') ||
-        contains(github.ref, 'a') ||
-        contains(github.ref, 'b')
+        contains(github.ref_name, '.dev') ||
+        contains(github.ref_name, 'rc') ||
+        contains(github.ref_name, 'a') ||
+        contains(github.ref_name, 'b')
       )
     environment:
       name: testpypi
@@ -252,15 +258,18 @@ jobs:
     name: Publish to PyPI
     needs: build
     # Final tags only: must be a v-tag and must not carry a
-    # pre-release suffix. ``startsWith`` is load-bearing for the
-    # same reason as the testpypi job: branch refs would silently
-    # satisfy the not-contains conditions.
+    # pre-release suffix. ``github.ref_name`` is the bare tag name;
+    # see the testpypi job for why this is not ``github.ref``.
+    # ``startsWith(github.ref, 'refs/tags/v')`` remains load-bearing
+    # to gate against branch refs (``ref_name`` for a branch push is
+    # just the branch name, which would silently satisfy the
+    # not-contains conditions).
     if: |
       startsWith(github.ref, 'refs/tags/v') &&
-      !contains(github.ref, '.dev') &&
-      !contains(github.ref, 'rc') &&
-      !contains(github.ref, 'a') &&
-      !contains(github.ref, 'b')
+      !contains(github.ref_name, '.dev') &&
+      !contains(github.ref_name, 'rc') &&
+      !contains(github.ref_name, 'a') &&
+      !contains(github.ref_name, 'b')
     runs-on: ubuntu-latest
     environment:
       name: pypi
