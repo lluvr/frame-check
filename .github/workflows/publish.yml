@@ -297,6 +297,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # actions/checkout@v4 fetches refs but not tag OBJECTS by
+          # default. Without ``fetch-tags: true``, the runner sees an
+          # annotated tag as if it were lightweight and the Extract
+          # release notes step's %(contents) format falls through to
+          # the tagged commit's message instead of the annotation.
+          # Surfaced when the v1.0.0 release body shipped as the
+          # workflow-fix commit message instead of the [1.0.0]
+          # CHANGELOG section. Recovery for that release was a
+          # one-shot ``gh release edit --notes``; this gate prevents
+          # the recurrence.
+          fetch-tags: true
       - uses: actions/download-artifact@v4
         with:
           name: dist
