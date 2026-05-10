@@ -2384,7 +2384,7 @@ def build_epistemic_payload(
 
     coverage_cats = cov.get("categories", {}) or {}
 
-    analysis = {
+    analysis: dict[str, Any] = {
         "document": {
             "word_count_estimate": len(document_text.split()),
             "char_count": len(document_text),
