@@ -446,7 +446,7 @@ class TestComparisonExamples:
         for ex in get_document_comparison_examples():
             # 8000 is the documented MAX_DOC_CHARS soft limit; pinning
             # at a generous 16000 here so the test does not mis-fire
-            # if a future operator-side bump moves the limit.
+            # if the limit is later widened.
             assert len(ex["doc_a"]) < 16000
             assert len(ex["doc_b"]) < 16000
 
