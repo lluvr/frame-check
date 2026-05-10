@@ -242,11 +242,9 @@ Notation: resources listed below that already exist in mcp_server.py are marked 
 ### 8.3 Methodology resource
 
 - `frame-check://methodology` -> current methodology version (existing).
-- `frame-check://methodology/v/{version}` -> specific methodology version (new; enables versioned citation).
-
 ### 8.4 Provenance resources (new)
 
-- `frame-check://provenance/engine/{version}` -> engine version manifest (tier, architecture, vendor(s), model version(s), V4_2_GAP_INVENTORY status label, validation records).
+- `frame-check://provenance/engine/{version}` -> engine version manifest (tier, architecture, vendor(s), model version(s), engine status label, validation records).
 - `frame-check://provenance/catalog/{version}` -> catalog version manifest (library version, per-entry version map, ratification references).
 
 ### 8.5 Necessary steps to operationalize the new paths

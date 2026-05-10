@@ -181,6 +181,27 @@ jobs:
           print('Smoke test passed.')
           "
 
+      - name: Conformance driver against wheel
+        # Drives the installed wheel as an external MCP client would
+        # (subprocess + stdio + JSON-RPC frames) and validates every
+        # primitive (initialize, tools/list, tools/call frame_check,
+        # tools/call frame_compare, resources/list, resources/read,
+        # prompts/list, prompts/get, ping, error handling). Pass /
+        # fail per primitive. Exit 1 on any failure; the publish
+        # pipeline halts on a regression. The driver is the
+        # adopter-grade contract test: an external MCP client running
+        # the wheel must see the responses the driver expects.
+        run: |
+          mkdir -p /tmp/fc-target
+          # Extract the wheel contents (no install) so the driver's
+          # PYTHONPATH layout sees the wheel as if it had been
+          # installed without site-packages overhead.
+          unzip -q -o dist/*.whl -d /tmp/fc-target
+          # Driver reads from WHEEL_TARGET = /tmp/fc-target. The
+          # entry script is /tmp/fc-target/mcp_server.py per the
+          # wheel's flat layout.
+          python3 scripts/mcp_conformance_driver.py
+
       - name: Generate sigstore attestation
         uses: actions/attest-build-provenance@v2
         with:
