@@ -1,6 +1,6 @@
 # Decision-readiness validation
 
-Validation harness for the Frame Check decision-readiness profile
+Validation harness for the Framecheck decision-readiness profile
 (see [/corpus/decision-readiness/](https://frame.clarethium.com/corpus/decision-readiness/)
 for the methodology). Phase 2 of the validation work, per that page.
 
@@ -12,11 +12,11 @@ validation/decision_readiness/
 ├── rater_guide.md             per-dimension operational definitions for raters
 ├── rating_template.yaml       the form a rater fills in for one document
 ├── run_validation.py          correlation harness (Spearman + ICC + per-genre)
-├── corpus/                    rated documents (with metadata + Frame Check profile)
+├── corpus/                    rated documents (with metadata + Framecheck profile)
 │   └── {doc_id}/
 │       ├── document.md        the text being rated
 │       ├── metadata.yaml      genre, source, date, etc.
-│       └── profile.json       Frame Check's computed decision-readiness profile
+│       └── profile.json       Framecheck's computed decision-readiness profile
 ├── ratings/                   per-rater submissions
 │   └── {doc_id}/
 │       └── {rater_id}.yaml    one rater's scores for one document
@@ -33,7 +33,7 @@ structural signals correspond to decision support. Those claims
 are not credible without external validation.
 
 This validation harness collects expert ratings on a curated
-corpus, compares them against Frame Check's computed profile, and
+corpus, compares them against Framecheck's computed profile, and
 publishes per-dimension correlations. The profile becomes a live
 signal in the product surface only when correlations clear the
 thresholds documented on the methodology page (Spearman >= 0.6
@@ -59,13 +59,13 @@ averaged across genres, no genre below 0.4).
    of the five dimensions and the 1-5 anchor descriptions.
 2. Pick a document from `corpus/`. Open `document.md` and read it
    in full. Do NOT read `profile.json` first — ratings must be
-   blind to Frame Check's computed profile.
+   blind to Framecheck's computed profile.
 3. Copy `rating_template.yaml` to
    `ratings/{doc_id}/{your_rater_id}.yaml` and fill in your scores.
 4. Open a pull request with your rating file.
 
 The blinding requirement is load-bearing for validation integrity.
-A rater who has read Frame Check's profile cannot un-read it; their
+A rater who has read Framecheck's profile cannot un-read it; their
 ratings are no longer independent ground truth.
 
 ### What makes a good rater
@@ -128,7 +128,7 @@ self_confidence: 4
 ```
 
 The notes here are short but specific. They name what the rater
-saw at each dimension. When Frame Check's computed profile and
+saw at each dimension. When Framecheck's computed profile and
 the expert mean diverge, the notes are what makes the divergence
 interpretable for methodology revision.
 
@@ -137,7 +137,7 @@ interpretable for methodology revision.
 Rating files contributed to this validation effort are released
 under
 [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/),
-matching the rest of the Frame Check corpus. Submitting a rating
+matching the rest of the Framecheck corpus. Submitting a rating
 PR implies acceptance of this license. Raters are credited by
 `rater_id` in the published validation results unless they
 request anonymization, in which case ratings are aggregated
@@ -217,7 +217,7 @@ python3 validation/decision_readiness/run_validation.py
 
 The harness:
 1. Loads all rating files from `ratings/`
-2. Loads Frame Check profiles from `corpus/{doc_id}/profile.json`
+2. Loads Framecheck profiles from `corpus/{doc_id}/profile.json`
 3. Computes per-document expert mean per dimension
 4. Computes Spearman correlation between expert means and Frame
    Check signals across all rated documents
@@ -263,7 +263,7 @@ empty, those thresholds cannot be evaluated. See
 ## Profile generation note
 
 Corpus profiles are computed by `curate_corpus.py` using the
-structural Frame Check analyzers (coverage, voice, temporal,
+structural Framecheck analyzers (coverage, voice, temporal,
 epistemic, claim extraction, frame suggestions) WITHOUT invoking
 the Source Network. This keeps curation offline and reproducible
 without API keys, but means:
@@ -279,7 +279,7 @@ A future Phase 2.5 corpus refresh will re-run the profiles with
 Source Network enabled to populate the evidence + robustness
 dimensions fully. For initial validation, the partial profile is
 sufficient because raters score the dimensions independently of
-Frame Check's signal; correlations on the missing-signal
+Framecheck's signal; correlations on the missing-signal
 dimensions simply have fewer data points until the refresh.
 
 ## Adding a document to the corpus
@@ -291,7 +291,7 @@ dimensions simply have fewer data points until the refresh.
    - `source`
    - `published_date`
    - `excerpt_chars` (the character range used if the doc is long)
-3. Run Frame Check on the document text and save the resulting
+3. Run Framecheck on the document text and save the resulting
    `display.decision_readiness` field to `corpus/{doc_id}/profile.json`.
 4. Open a pull request with the new corpus entry.
 

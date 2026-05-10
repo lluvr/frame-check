@@ -1,6 +1,6 @@
 """MCP tool surface boundary discipline: zero outbound HTTP.
 
-Pins the agent-server design boundary that Frame Check's MCP tools
+Pins the agent-server design boundary that Framecheck's MCP tools
 (frame_check + frame_compare) make zero outbound network calls
 during their runtime traversal. The server's job is deterministic
 structural analysis (regex/feature detection, frame library, claim
@@ -38,7 +38,7 @@ modification.
 
 Per the discipline pattern in MCP_SERVER.md (line 369: "not invoke
 any LLM for divergence; V4.2 judgment is delegated to the caller's
-agent model"; line 417: "Frame Check's MCP server does not invoke
+agent model"; line 417: "Framecheck's MCP server does not invoke
 an external LLM"): the LLM-judgment delegation is the same
 architectural pattern as the verification delegation; this test
 extends the pin from LLM-only to all-network-I/O.

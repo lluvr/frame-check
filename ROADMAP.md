@@ -106,7 +106,7 @@ v1.0 ships either:
 ### Validation: Track B reader-aid study
 
 A second pre-registered study (alongside the wedge-behavior
-protocol) tests whether Frame Check's surfacing actually helps a
+protocol) tests whether Framecheck's surfacing actually helps a
 reader see structural framing they would otherwise miss. The
 protocol drafts at `validation/wedge_behavior/PROTOCOL_v1.md` give
 the H1/H2/H3 hypothesis structure; Track B follows the same shape
@@ -126,7 +126,7 @@ get promoted into the public catalog when ratified.
 - A cookbook (`docs/COOKBOOK.md` or similar) showing 5+ adopter
   recipes: framing-check before AI agent commit, divergence at
   decision points, claim verification on financial documents, etc.
-- A comparison section in README that names what Frame Check gives
+- A comparison section in README that names what Framecheck gives
   an adopter that a plain LLM call does not.
 
 ### Cut a release end-to-end via the new pipeline

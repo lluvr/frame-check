@@ -1,4 +1,4 @@
-"""Frame Check MCP package.
+"""Framecheck MCP package.
 
 This file marks `framecheck_mcp/` as a Python package so setuptools
 includes the bundled data files (frame library, worked examples,

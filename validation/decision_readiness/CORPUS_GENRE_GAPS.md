@@ -103,12 +103,12 @@ the metadata schema if you need to mirror it by hand.
 
 ## What NOT to add
 
-- **Synthetic / fabricated documents.** A document Frame Check
+- **Synthetic / fabricated documents.** A document Framecheck
   is supposed to validate against expert judgment must be a real
   document expert raters can engage with. Fictional documents
   contaminate the corpus.
 - **Texts with restrictive licenses.** Corpus entries are
-  CC-BY-4.0 along with the rest of the Frame Check corpus;
+  CC-BY-4.0 along with the rest of the Framecheck corpus;
   texts with incompatible licenses cannot be redistributed.
   Quote excerpts under fair use only when the license permits
   research-purpose quotation, and document the attribution in

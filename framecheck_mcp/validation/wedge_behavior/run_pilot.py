@@ -90,7 +90,7 @@ def _with_tool_prompt(
         f"---\n{frame_check_output}\n---\n\n"
         f"Respond to the user's prompt. Use the frame_check output "
         f"to compose your response per the agent_guidance discipline "
-        f"the tool returned. Cite measurements as Frame Check's; "
+        f"the tool returned. Cite measurements as Framecheck's; "
         f"the reading is yours; reading-form, never verdict-form."
     )
 

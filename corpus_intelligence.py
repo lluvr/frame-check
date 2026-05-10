@@ -1,6 +1,6 @@
 """Corpus aggregation as substrate intelligence for the MCP surface.
 
-Frame Check ships with a small validation corpus (~10 documents under
+Framecheck ships with a small validation corpus (~10 documents under
 `validation/decision_readiness/corpus/`) plus aggregate findings under
 `validation/decision_readiness/results/{date}-{hash}/aggregate.json`.
 The corpus has empirical signal that until now did not surface
@@ -359,7 +359,7 @@ def get_corpus_summary(
         "aggregate_computed_at_utc": state["computed_at_utc"],
         "per_genre_counts": dict(state.get("per_genre_counts") or {}),
         "small_n_caveat": (
-            "Frame Check's validation corpus is small "
+            "Framecheck's validation corpus is small "
             f"(N={state['n_documents']} documents). Prevalence and "
             "co-pattern statistics carry the denominator; treat any "
             "single-figure rate as a corpus signal, not a population "

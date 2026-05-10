@@ -58,7 +58,7 @@ wheel.
 ### "I want to read the worked examples"
 
 [`../data/worked_examples/`](../data/worked_examples/): four published
-worked examples with multi-LLM comparisons and per-document Frame Check
+worked examples with multi-LLM comparisons and per-document Framecheck
 analysis. Each has a `.md` writeup and a directory carrying the underlying
 JSON artifacts (LLM responses, frame_check results, pairwise comparisons).
 

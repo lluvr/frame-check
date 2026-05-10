@@ -1,6 +1,6 @@
-# Contributing to Frame Check
+# Contributing to Framecheck
 
-Frame Check is part of a public research program on framing and
+Framecheck is part of a public research program on framing and
 verification. Contributions are welcome on the corpus (frame library,
 methodology, calibration data), the detection engine, the MCP server,
 and the documentation surface.
@@ -18,7 +18,7 @@ For **who** decides and **when** a contribution becomes canon, see
 frame-check/
 ├── data/frame_library/          # 20-entry FVS markdown catalog + INDEX + VERSION
 ├── data/worked_examples/        # Published worked examples (multi-LLM comparisons)
-├── data/transmissions/          # Frame Check transmissions (research pieces)
+├── data/transmissions/          # Framecheck transmissions (research pieces)
 ├── calibration/                 # Calibration corpus + results
 ├── validation/                  # Decision-readiness validation runs
 ├── framecheck_mcp/              # Wheel-bundle data carrier (data populated at build time)
@@ -135,7 +135,7 @@ to the claim corpus. To contribute:
 
 ### Contributing a worked example
 
-Worked examples demonstrate Frame Check's analysis applied to a
+Worked examples demonstrate Framecheck's analysis applied to a
 specific, citable public document. They live in
 `data/worked_examples/` (markdown source) and render at
 `corpus_site/worked-examples/` (static HTML). To contribute:
@@ -144,7 +144,7 @@ specific, citable public document. They live in
    non-obvious observation (frame shift, under-detected dimension,
    voice-borderline call, etc.). Worked examples should teach, not
    simply demonstrate.
-2. Run Frame Check on the document. Capture the portrait, coverage,
+2. Run Framecheck on the document. Capture the portrait, coverage,
    voice, temporal, and any FVS matches.
 3. Create `data/worked_examples/<slug>.md`. Follow an existing entry
    (e.g., `fomc-statement-march-2026.md`) for structure. Cite the
@@ -218,7 +218,7 @@ Every PR must:
 
 Every commit to this repository must carry a `Signed-off-by:` trailer
 attesting to the Developer Certificate of Origin v1.1
-(https://developercertificate.org/). Frame Check uses DCO instead of
+(https://developercertificate.org/). Framecheck uses DCO instead of
 a Contributor License Agreement (CLA) so that contributing requires
 no paperwork, just a per-commit certification that you have the right
 to submit the work under the project's existing license (Apache-2.0
