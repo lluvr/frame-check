@@ -78,6 +78,7 @@ import json
 import re
 import statistics
 import time
+from typing import Any
 import contextlib
 
 
@@ -141,9 +142,9 @@ versus via per etc vs often very quite rather too such like
 
 # --- Gate 0: Heading defaultness ---
 
-def extract_headings_simple(text):
+def extract_headings_simple(text: str) -> list[str]:
     """Extract ## and ### headings from markdown."""
-    headings = []
+    headings: list[str] = []
     for line in text.split("\n"):
         line = line.strip()
         if line.startswith("## ") or line.startswith("### "):
@@ -447,7 +448,7 @@ CAUSAL_MARKERS = [
 ]
 
 
-def split_sentences(text):
+def split_sentences(text: str) -> list[tuple[str, str, int]]:
     """Split markdown into (heading, sentence, para_idx) tuples.
 
     Joins consecutive non-heading, non-list-item lines into paragraphs
@@ -458,12 +459,12 @@ def split_sentences(text):
     _LIST_MARKER = re.compile(r'^[-*•]\s+|\d+\.\s+')
     _SENT_BOUNDARY = re.compile(r'(?<=[.!?])\s+(?=[A-Z])')
 
-    results = []
+    results: list[tuple[str, str, int]] = []
     current_heading = ""
     para_idx = 0
     pending: list[str] = []
 
-    def _flush():
+    def _flush() -> None:
         nonlocal para_idx
         if not pending:
             return
@@ -471,7 +472,7 @@ def split_sentences(text):
         pending.clear()
         para_idx += 1
 
-    def _collect(block):
+    def _collect(block: str) -> None:
         cleaned = re.sub(r'^[-*•]\s+', '', block)
         cleaned = re.sub(r'^\d+\.\s+', '', cleaned)
         for sent in _SENT_BOUNDARY.split(cleaned):
@@ -567,10 +568,10 @@ def claim_density(text):
 # approximately that fraction.
 # See module docstring for the under-detection discipline.
 
-def extract_numbers_for_matching(text):
+def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
     """Extract all numbers with type for temporal/source matching."""
-    numbers = []
-    seen = set()
+    numbers: list[dict[str, Any]] = []
+    seen: set[tuple[Any, str, int]] = set()
 
     # Scale-word multipliers. Keyed lowercase so the regex match
     # group can be looked up directly after `.lower()`. Kept local
@@ -686,7 +687,9 @@ def _is_word_count(num, text):
     return False
 
 
-def _filter_numbers(numbers, text):
+def _filter_numbers(
+    numbers: list[dict[str, Any]], text: str,
+) -> list[dict[str, Any]]:
     """Filter years and word counts from number list."""
     return [n for n in numbers
             if not _is_year(n["value"]) and not _is_word_count(n, text)]
@@ -973,7 +976,7 @@ def entity_provenance(doc_text, source_text):
 # Low score can mean original analysis (good) or fabrication (bad).
 # STATUS: DIRECTIONAL (N=18 docs).
 
-def _content_words(text):
+def _content_words(text: str) -> list[str]:
     """Extract content words (non-stop, 3+ chars)."""
     words = re.findall(r'[a-z]{3,}', text.lower())
     return [w for w in words if w not in STOP_WORDS]
@@ -986,7 +989,7 @@ _ABBREV_RE = re.compile(
 )
 
 
-def _split_sentences_simple(text):
+def _split_sentences_simple(text: str) -> list[str]:
     """Split text into sentences for grounding and vocabulary analysis."""
     clean = re.sub(r'^#{1,6}\s+.*$', '', text, flags=re.MULTILINE)
     clean = re.sub(r'\|[^\n]+\|', '', clean)
