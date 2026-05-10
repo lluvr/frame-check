@@ -260,7 +260,11 @@ _NEGATION_RE = re.compile(
 _NEGATION_PRE_WINDOW = 20  # chars: tight to avoid false filters
 
 
-def _list_substantive_matches(text, pattern, apply_diminisher=False):
+def _list_substantive_matches(
+    text: str,
+    pattern: re.Pattern[str],
+    apply_diminisher: bool = False,
+) -> list[str]:
     """Return the list of substantive pattern matches as lowercased strings.
 
     When apply_diminisher is True, matches are filtered for:
@@ -315,7 +319,11 @@ def _list_substantive_matches(text, pattern, apply_diminisher=False):
     return matches
 
 
-def _count_substantive_matches(text, pattern, apply_diminisher=False):
+def _count_substantive_matches(
+    text: str,
+    pattern: re.Pattern[str],
+    apply_diminisher: bool = False,
+) -> int:
     """Backwards-compatible wrapper around _list_substantive_matches.
 
     Retained because external callers may have taken a dependency on the
@@ -343,7 +351,11 @@ def _normalize_marker(raw: str) -> str:
     return re.sub(r'\s+', ' ', raw.lower())
 
 
-def _list_substantive_spans(text, pattern, apply_diminisher=False):
+def _list_substantive_spans(
+    text: str,
+    pattern: re.Pattern[str],
+    apply_diminisher: bool = False,
+) -> list[tuple[str, int, int]]:
     """Return list of (match_text_lower, start, end) for substantive matches.
 
     Sentence-level attribution needs char offsets so a match can be mapped
@@ -469,7 +481,7 @@ CANDIDATE_PATTERNS = {
 }
 
 
-def _compute_sentence_spans(text):
+def _compute_sentence_spans(text: str) -> list[dict[str, Any]]:
     """Locate each sentence from split_sentences inside the original text.
 
     Returns list of dicts with sentence_index (0-based), text, heading,
@@ -596,17 +608,24 @@ def _compute_sentence_spans(text):
     return spans
 
 
-def _offset_to_sentence_index(offset, sentence_spans):
+def _offset_to_sentence_index(
+    offset: int,
+    sentence_spans: list[dict[str, Any]],
+) -> int | None:
     """Return the sentence_index containing char offset, or None."""
     for span in sentence_spans:
         if span["start"] is None:
             continue
         if span["start"] <= offset < span["end"]:
-            return span["sentence_index"]
+            return cast(int, span["sentence_index"])
     return None
 
 
-def _sentence_preview(sent_text, marker=None, window=80):
+def _sentence_preview(
+    sent_text: str,
+    marker: str | None = None,
+    window: int = 80,
+) -> str:
     """Return a short preview of a sentence, optionally centered on marker."""
     if marker and marker in sent_text.lower():
         idx = sent_text.lower().find(marker)
@@ -958,7 +977,13 @@ _PROMO_RE = re.compile(
 )
 
 
-def _voice_cascade_eval(you_pct, we_pct, imp_count, spec_pct, promo_pct):
+def _voice_cascade_eval(
+    you_pct: int,
+    we_pct: int,
+    imp_count: int,
+    spec_pct: int,
+    promo_pct: int,
+) -> list[tuple[str, bool, float]]:
     """Simulate the voice-rule cascade and return per-rule fire state.
 
     Returns a list of (rule_label, fires: bool, margin_to_threshold: float)
@@ -1276,7 +1301,7 @@ _NUMERIC_RE = re.compile(
 _NON_ENTITY_LOWER = {p.lower() for p in _NON_ENTITY_PREFIXES}
 
 
-def _is_entity_attributed(sentence):
+def _is_entity_attributed(sentence: str) -> bool:
     """Check if sentence contains entity-attributed reporting.
 
     Matches "Apple reported $X", "Novo Nordisk announced Y", etc.
@@ -1303,7 +1328,7 @@ def _is_entity_attributed(sentence):
     return False
 
 
-def _is_sourced(sentence):
+def _is_sourced(sentence: str) -> bool:
     """Check if a sentence has any form of source attribution.
 
     Combines two signals:
@@ -1527,8 +1552,15 @@ _GAP_POSITIVES = {
 }
 
 
-def framing_portrait(coverage, temporal, voice, epistemic, claim_stats,
-                     verification=None, grounding=None):
+def framing_portrait(
+    coverage: dict[str, Any],
+    temporal: dict[str, Any],
+    voice: dict[str, Any],
+    epistemic: dict[str, Any],
+    claim_stats: dict[str, Any],
+    verification: dict[str, Any] | None = None,
+    grounding: dict[str, Any] | None = None,
+) -> str:
     """Synthesize all framing signals into a 2-4 sentence portrait.
 
     This is the output that makes the invisible visible. It describes
@@ -1816,8 +1848,15 @@ def framing_portrait(coverage, temporal, voice, epistemic, claim_stats,
 # framing_summary
 # ================================================================
 
-def framing_portrait_natural(coverage, temporal, voice, epistemic, claim_stats,
-                              verification=None, grounding=None):
+def framing_portrait_natural(
+    coverage: dict[str, Any],
+    temporal: dict[str, Any],
+    voice: dict[str, Any],
+    epistemic: dict[str, Any],
+    claim_stats: dict[str, Any],
+    verification: dict[str, Any] | None = None,
+    grounding: dict[str, Any] | None = None,
+) -> str:
     """Natural-language synthesis of the framing signals.
 
     Parallel to `framing_portrait` (the clinical version) but written
@@ -2086,7 +2125,11 @@ def framing_portrait_natural(coverage, temporal, voice, epistemic, claim_stats,
     return " ".join(parts)
 
 
-def framing_summary(coverage, temporal, claim_stats):
+def framing_summary(
+    coverage: dict[str, Any],
+    temporal: dict[str, Any],
+    claim_stats: dict[str, Any],
+) -> str:
     """Generate a descriptive framing summary. No evaluative labels.
 
     Combines category coverage, temporal orientation, and existing
@@ -2163,8 +2206,14 @@ def framing_summary(coverage, temporal, claim_stats):
 # framing_headline
 # ================================================================
 
-def framing_headline(coverage, temporal, voice, epistemic, claim_stats,
-                     verification=None):
+def framing_headline(
+    coverage: dict[str, Any],
+    temporal: dict[str, Any],
+    voice: dict[str, Any],
+    epistemic: dict[str, Any],
+    claim_stats: dict[str, Any],
+    verification: dict[str, Any] | None = None,
+) -> str | None:
     """Return the single most important framing finding as a one-liner.
 
     Priority: framing-first, verification as suffix. The trust
