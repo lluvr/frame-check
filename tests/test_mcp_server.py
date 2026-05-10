@@ -938,6 +938,48 @@ def test_provenance_reports_zero_llm_cost():
     print("  PASS\n")
 
 
+def test_manifest_emits_canonical_and_legacy_version_keys():
+    """Manifest payload emits both ``frame_check_version`` (canonical)
+    and ``framecheck_version`` (legacy / typo'd from v0.9.x). Adopters
+    parsing either key see the same value (FRAME_CHECK_VERSION).
+
+    The legacy key is deprecated and scheduled for removal at v2.0;
+    until then the additive emit preserves wire-compat for any
+    integrator that hardcoded the typo'd field name when it shipped
+    in v0.9.1 through v1.0.0.
+
+    Pinning both fields here locks the additive contract: a future
+    edit that drops either name fails this test, surfacing the
+    deprecation as a deliberate decision rather than silent breakage.
+    """
+    print("=== manifest emits both frame_check_version + framecheck_version ===")
+    payload = mcp_server.build_epistemic_payload(_DOC_SAMPLE)
+    m = payload["manifest"]
+    check(
+        "frame_check_version" in m,
+        "manifest must carry frame_check_version (canonical name)",
+    )
+    check(
+        "framecheck_version" in m,
+        "manifest must carry framecheck_version (legacy / deprecated, "
+        "removed at v2.0)",
+    )
+    check(
+        m.get("frame_check_version") == m.get("framecheck_version"),
+        f"both manifest version keys must carry the same value; got "
+        f"frame_check_version={m.get('frame_check_version')!r}, "
+        f"framecheck_version={m.get('framecheck_version')!r}",
+    )
+    p = payload["provenance"]
+    check(
+        m.get("frame_check_version") == p.get("frame_check_version"),
+        f"manifest.frame_check_version must equal "
+        f"provenance.frame_check_version; got {m.get('frame_check_version')!r} "
+        f"vs {p.get('frame_check_version')!r}",
+    )
+    print("  PASS\n")
+
+
 def test_provenance_carries_production_status():
     """Provenance carries a production_status field that names whether
     the canonical production hosting at frame.clarethium.com is
