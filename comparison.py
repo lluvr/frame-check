@@ -748,9 +748,9 @@ def _infer_num_type(raw_value):
 # Comparison analysis
 # ================================================================
 
-def _extract_number_set(claims):
-    """Extract a set of (value_normalized, type) from claims for comparison."""
-    numbers = set()
+def _extract_number_set(claims: dict[str, Any]) -> set[str]:
+    """Extract a set of normalized number-string values for comparison."""
+    numbers: set[str] = set()
     for claim in claims.get("claims", []):
         for num in claim.get("numbers", []):
             # Normalize: strip $, %, commas, whitespace
@@ -1003,7 +1003,7 @@ def analyze_model(model_name, text, sn_max_claims=15):
     }
 
 
-def jsonify(obj):
+def jsonify(obj: Any) -> Any:
     """Recursively convert sets to sorted lists for JSON encoding.
 
     The analyze_model result and build_cross_model_comparison output
@@ -1402,7 +1402,7 @@ def _detect_verbatim_overlap(models, model_names, threshold=0.95):
     }
 
 
-def _oxford(items, conj="and"):
+def _oxford(items: list[str], conj: str = "and") -> str:
     """Join a list with commas + a conjunction for the last item.
 
     Returns "" for empty, "X" for one, "X <conj> Y" for two,
@@ -2097,7 +2097,9 @@ def _build_structural_framing_diff(
     return data["prose"] if data else None
 
 
-def _find_sentence_for_value(val, claims):
+def _find_sentence_for_value(
+    val: Any, claims: dict[str, Any],
+) -> str | None:
     """Find the claim sentence containing this value."""
     for c in claims.get("claims", []):
         for n in c.get("numbers", []):

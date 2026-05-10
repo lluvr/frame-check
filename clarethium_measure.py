@@ -772,7 +772,7 @@ def _add_commas(val):
         return None
 
 
-def _number_in_source(num, source_text):
+def _number_in_source(num: dict[str, Any], source_text: str) -> bool:
     """Check if a number appears in source text."""
     val = num["value"]
     ntype = num["type"]

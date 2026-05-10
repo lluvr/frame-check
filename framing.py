@@ -325,7 +325,7 @@ def _count_substantive_matches(text, pattern, apply_diminisher=False):
     return len(_list_substantive_matches(text, pattern, apply_diminisher=apply_diminisher))
 
 
-def _normalize_marker(raw):
+def _normalize_marker(raw: str) -> str:
     """Normalize a captured marker to its sentence-space form.
 
     Matches may span newlines in the original text (e.g., a line-wrapped
