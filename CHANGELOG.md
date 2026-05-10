@@ -6,6 +6,34 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### Manifest payload: `frame_check_version` is the canonical field name
+
+The `frame_check` and `frame_compare` MCP tool responses include an
+`analysis.manifest` block whose version field was historically
+emitted as `framecheck_version` (no underscore between `frame` and
+`check`). That was a typo introduced in v0.9.1 (commit `12cb0e29`,
+2026-05-07) — every other surface in the codebase (the sibling
+`provenance.frame_check_version` field, the
+`FRAME_CHECK_VERSION` Python constant, all worked-example fixtures,
+the version-coherence test) uses the underscore-separated form.
+
+The manifest now emits **both** keys carrying the same value:
+
+```json
+"manifest": {
+  "frame_check_version": "1.0.0",   // canonical
+  "framecheck_version": "1.0.0",    // deprecated, removed at v2.0
+  ...
+}
+```
+
+Adopters who parsed the legacy `framecheck_version` keep working;
+new integrations should read `frame_check_version` (which matches
+the documented field everywhere else). The deprecated key is
+scheduled for removal at the next major version (v2.0). Test
+`test_manifest_emits_canonical_and_legacy_version_keys` locks the
+additive contract.
+
 ### publish.yml: github-release annotation extraction
 
 `actions/checkout@v4` in the `github-release` job uses
@@ -17,6 +45,17 @@ v1.0.0 cut when the GitHub release body shipped as a commit
 message; recovered for that release with a one-shot
 `gh release edit --notes`; this gate prevents the recurrence in
 v1.0.1+.
+
+### publish.yml: workflow_dispatch hardening
+
+The publish-to-pypi, publish-to-testpypi, and github-release jobs
+now require `github.event_name == 'push'` in addition to the
+existing `startsWith(github.ref, 'refs/tags/v')` gate. Without it,
+`gh workflow run publish.yml --ref v<existing-tag>` would build
+the wheel and try to publish, fail at PyPI duplicate-version
+rejection, and leave noisy failed-run history. Tag pushes still
+fire normally; workflow_dispatch (the manual-verification path)
+runs only preflight + build.
 
 ## [1.0.0] - 2026-05-10
 

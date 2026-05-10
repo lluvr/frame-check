@@ -435,7 +435,17 @@ def build_check_manifest(
     return {
         "manifest_version": 1,
         "surface": "check",
-        "framecheck_version": FRAME_CHECK_VERSION,
+        # ``frame_check_version`` is the canonical field name (matches
+        # ``provenance.frame_check_version`` in the same response and
+        # the FRAME_CHECK_VERSION Python constant). ``framecheck_version``
+        # was a typo in the original v0.9.x manifest emit (commit
+        # 12cb0e29, 2026-05-07) that nothing pinned. Emitting both
+        # keys keeps adopters who parsed the typo'd field working
+        # while letting new code read the canonical name.
+        # ``framecheck_version`` is deprecated and will be removed at
+        # the next major version (v2.0); see CHANGELOG [Unreleased].
+        "frame_check_version": FRAME_CHECK_VERSION,
+        "framecheck_version": FRAME_CHECK_VERSION,  # deprecated, removed at v2.0
         "pipeline_version": PIPELINE_VERSION,
         "schema_version": SCHEMA_VERSION,
         "frame_library_version": _frame_library_version(),
@@ -619,7 +629,11 @@ def build_compare_manifest(
         "manifest_version": 1,
         "surface": "compare",
         "compare_mode": mode,
-        "framecheck_version": FRAME_CHECK_VERSION,
+        # See build_check_manifest for the framecheck_version typo /
+        # frame_check_version canonical pair; both keys carry the
+        # same value. ``framecheck_version`` deprecated, removed at v2.0.
+        "frame_check_version": FRAME_CHECK_VERSION,
+        "framecheck_version": FRAME_CHECK_VERSION,  # deprecated, removed at v2.0
         "pipeline_version": PIPELINE_VERSION,
         "schema_version": SCHEMA_VERSION,
         "frame_library_version": _frame_library_version(),
