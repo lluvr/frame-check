@@ -659,12 +659,12 @@ def detect_coverage(
 
     for cat, pattern in ANALYTICAL_CATEGORIES.items():
         use_diminisher = cat in ("risks", "uncertainty")
+        spans: list[tuple[str, int, int]] | None = None
         if include_attribution:
             spans = _list_substantive_spans(text, pattern,
                                             apply_diminisher=use_diminisher)
             matches = [m for m, _, _ in spans]
         else:
-            spans = None
             matches = _list_substantive_matches(
                 text, pattern, apply_diminisher=use_diminisher)
         count = len(matches)
