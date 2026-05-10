@@ -46,10 +46,13 @@ A `1.0.0` release commits to:
   ``comparison``, ``clarethium_measure``) with per-module
   declarations in pyproject.toml; the matrix runs the per-module
   threshold instead of the global one.
-- **Doctest-runnable adopter examples.** The README quickstart and
-  `data/worked_examples/*.md` snippets execute under `python -m
-  pytest --doctest-modules` (or equivalent) and are part of the CI
-  gate.
+- **Adopter-contract test coverage.** The cookbook claims and
+  README "Approach" positioning claims (zero per-query cost,
+  determinism, response-shape contract) are verified against the
+  running API in `tests/test_cookbook_recipes.py` and run as part
+  of the regular pytest suite at PR time. Done as of `0.9.x`. v1.0
+  expectation: keep the test in step with cookbook edits; a new
+  recipe lands with a matching test or it does not land at all.
 - **Conformance driver gate.** `scripts/mcp_conformance_driver.py`
   runs against the freshly-built wheel on every tag push and is
   PR-blocking as of `0.9.x`. The driver speaks JSON-RPC over stdio
