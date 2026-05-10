@@ -82,7 +82,7 @@ from llm_cost import (  # noqa: E402
 )
 
 
-def generate_gemini(topic):
+def generate_gemini(topic: str) -> tuple[str | None, dict[str, Any]]:
     """Generate a response from Gemini.
 
     Phase 1.6a Prereq 1: returns a tuple (text, usage_dict).
@@ -139,7 +139,7 @@ def generate_gemini(topic):
         return None, _empty_usage()
 
 
-def generate_grok(topic):
+def generate_grok(topic: str) -> tuple[str | None, dict[str, Any]]:
     """Generate a response from xAI Grok.
 
     Phase 1.6a Prereq 1: returns a tuple (text, usage_dict).
@@ -187,7 +187,7 @@ def generate_grok(topic):
         return None, _empty_usage()
 
 
-def generate_responses(topic):
+def generate_responses(topic: str) -> dict[str, str]:
     """Generate responses from both models in parallel.
 
     Returns dict of {model_name: response_text}. The token
@@ -238,7 +238,10 @@ def generate_responses(topic):
 # Automated Diff Engine (number stability)
 # ================================================================
 
-def generate_stability_check(topic, responses) -> tuple[dict, float]:
+def generate_stability_check(
+    topic: str,
+    responses: dict[str, str],
+) -> tuple[dict[str, dict[str, Any]], float]:
     """Regenerate responses and diff numbers for stability analysis.
 
     Numbers that appear in BOTH generations are stable (likely from
