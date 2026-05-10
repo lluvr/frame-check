@@ -336,7 +336,7 @@ def _build_coverage_v2(cov: dict[str, Any]) -> dict[str, Any]:
     from framing import ANALYTICAL_VOCAB_SAMPLES
 
     categories = cov.get("categories", {}) or {}
-    dimensions: dict[str, dict] = {}
+    dimensions: dict[str, dict[str, Any]] = {}
     for cat_name in ("causes", "risks", "stakeholders", "trends", "uncertainty"):
         cat_entry = categories.get(cat_name, {}) or {}
         density = cat_entry.get("density_per_1kw", 0) or 0
@@ -957,12 +957,12 @@ _CLUSTER_TIER_ORDER = {"high": 0, "medium": 1, "low": 2}
 
 
 def _build_absence_clusters(
-    absent_records: list[dict],
+    absent_records: list[dict[str, Any]],
     *,
     document_word_count: int | None = None,
     matched_frame_count: int | None = None,
     document_claim_count: int | None = None,
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Group absent frames by shared canonical dimensions and surface
     clusters that meet the firing threshold.
 
@@ -1042,7 +1042,7 @@ def _build_absence_clusters(
         for dim in affects_dims:
             by_dimension.setdefault(dim, []).append((fvs_id, tier))
 
-    clusters: list[dict] = []
+    clusters: list[dict[str, Any]] = []
     for dim, members in by_dimension.items():
         canon_size = len(DIMENSION_LIBRARY_ENTRIES.get(dim, []))
         if canon_size <= 0:
@@ -1125,7 +1125,7 @@ def _build_absence_clusters(
 
 
 def _build_divergence_block(
-    frame_library_matches: list[dict],
+    frame_library_matches: list[dict[str, Any]],
     *,
     domain_hint: str | None,
     rendering: str,
@@ -1178,7 +1178,7 @@ def _build_divergence_block(
     # so each absent frame's tier can be computed in O(1).
     from decision_readiness import dimensions_affecting
 
-    absent_records: list[dict] = []
+    absent_records: list[dict[str, Any]] = []
     provisional_count = 0
     tier_counts = {"high": 0, "medium": 0, "low": 0}
     for fvs_id, title, md_path, version in library:
@@ -1334,7 +1334,7 @@ def _build_divergence_block(
     # because empirical signal cannot be overridden by user
     # preference. Records without a relevance entry sort with
     # priority 999 so they fall after curated entries.
-    def _sort_key(r):
+    def _sort_key(r: dict[str, Any]) -> tuple[Any, ...]:
         gr = r.get("goal_relevance") or {}
         gnr = r.get("genre_relevance") or {}
         return (
@@ -2128,7 +2128,7 @@ def _compress_agent_guidance_to_load_bearing(
 def _build_suggested_next_actions(
     analysis: dict[str, Any],
     divergence: dict[str, Any] | None,
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Derive 2-4 specific next-action suggestions from this call's
     findings. Each action is structural-finding-anchored: it points
     at a concrete gap in the analysis and gives the user (via the
@@ -2163,7 +2163,7 @@ def _build_suggested_next_actions(
 
     Deterministic: same input produces same output, same order.
     """
-    actions: list[dict] = []
+    actions: list[dict[str, Any]] = []
 
     # Rule 1: highest-signal absent_frame -> resource pointer.
     # absent_frames are sorted by signal_strength tier (high first)
