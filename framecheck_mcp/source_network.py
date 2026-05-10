@@ -1504,8 +1504,9 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
     best_score = -1
 
     for num_val, raw_str, context in candidates:
-        if claim_value == 0:
-            continue
+        # claim_value == 0 was guarded at function entry (see early
+        # return above); ratio == 0 only when num_val == 0, which the
+        # candidate-extraction layer filters before this loop.
         ratio = num_val / claim_value
         if ratio == 0:
             continue
