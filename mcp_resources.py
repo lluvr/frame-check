@@ -1,4 +1,4 @@
-"""Resource discovery and reads for the Framecheck MCP server.
+"""Resource discovery and reads for the Frame Check MCP server.
 
 Sits one layer above `mcp_log` in the module layer cake: depends on
 `mcp_log` for stderr diagnostics and on path helpers it computes
@@ -309,7 +309,7 @@ def _spec_fd_v1_index_markdown() -> str:
         "# Frame Divergence v1: spec index",
         "",
         ("Author: Lovro Lucic. Canonical reference for the frame "
-        "divergence category as defined by Framecheck."),
+        "divergence category as defined by Frame Check."),
         "",
         "## Parts",
         "",
@@ -1018,7 +1018,7 @@ def _list_resources() -> list[dict[str, Any]]:
             parts.append(hook.rstrip(".") + ".")
         parts.append(
             "Applied analysis of a specific public document; runs "
-            "Framecheck at depth and links each detected frame "
+            "Frame Check at depth and links each detected frame "
             "back to the library."
         )
         description = " ".join(parts)
@@ -1104,7 +1104,7 @@ def _list_resources() -> list[dict[str, Any]]:
     if os.path.isfile(_METHODOLOGY_PATH):
         resources.append({
             "uri": f"{RESOURCE_SCHEME}://methodology",
-            "name": "Framecheck Methodology",
+            "name": "Frame Check Methodology",
             "description": (
                 "The complete methodology specification. Names every "
                 "detector, the calibration protocol, and the known "
@@ -1382,7 +1382,7 @@ def _list_resources() -> list[dict[str, Any]]:
                 "text under fair-use posture for research analysis, "
                 "or AI-generated outputs from third-party services. "
                 "See the document's in-file header for the accurate "
-                "origin and copyright. Framecheck's analytical "
+                "origin and copyright. Frame Check's analytical "
                 "commentary on this document (CC-BY-4.0, Lovro Lucic) "
                 "lives at the sibling /profile, /peer/<partner>, and "
                 "/diff/<partner> URIs.",

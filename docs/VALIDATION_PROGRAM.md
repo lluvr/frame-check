@@ -16,7 +16,7 @@ a stronger form than a paid evaluator study would. The
 primary audience is builders of AI-agent experiences (Claude
 Desktop users, Cursor users, agent framework authors). That
 audience validates the sovereignty case by adopting the tool
-or not, by citing Framecheck in their own work or not, by
+or not, by citing Frame Check in their own work or not, by
 building integrations or not. Each of those behaviors is
 stronger evidence than a 30-participant controlled study
 because it is real use, not paid attention.
@@ -31,7 +31,7 @@ anyone has approached.
 - Install counts on the MCP server once npm distribution is
   live.
 - Unsolicited inquiries from academics, journalists, or
-  practitioners who have found Framecheck on their own.
+  practitioners who have found Frame Check on their own.
 - Third-party citations of the methodology, worked examples,
   or Frame Vocabulary Standard entries.
 - Integrations: somebody ships a product or agent pipeline
@@ -49,11 +49,11 @@ one fires, the formal program is paper design, not fieldwork.
 - **Three or more unsolicited academic inquiries** (from
   distinct researchers, in distinct institutions) within any
   rolling 90-day window.
-- **First third-party citation of Framecheck methodology in
+- **First third-party citation of Frame Check methodology in
   published work** (peer-reviewed journal, preprint, book,
   conference paper, or substantive industry report).
 - **Competitor tool publishes a sovereignty-adjacent
-  measurement** that contradicts or relativises Framecheck's
+  measurement** that contradicts or relativises Frame Check's
   claims, creating a market pressure to respond with
   empirical evidence rather than narrative.
 - **Internal forcing function:** Lovro decides formal
@@ -127,7 +127,7 @@ calibration round as the closing of Phase 2.
 
 This is a **third validation track**, not a substitute for either
 side of the observational/formal v1 split. The observational
-program watches for unsolicited adoption of Framecheck overall;
+program watches for unsolicited adoption of Frame Check overall;
 the formal v1 blueprint validates the three durable compound
 claims (structural-frame invariant, sovereignty case,
 measurement-transparency) when a trigger fires. The
@@ -138,7 +138,7 @@ can fire independently.
 
 ## Why this document exists
 
-The compound claims Framecheck is built on (the sovereignty
+The compound claims Frame Check is built on (the sovereignty
 case, the prompt-quality gap, the operating-manual moat, the
 structural-frame invariant) have zero external coverage as of
 today. Internal iteration and private testing cannot close the
@@ -194,7 +194,7 @@ anchored on a disappearing distinction.
 
 ### What survives
 
-Framecheck measures the **structural frame of final output**.
+Frame Check measures the **structural frame of final output**.
 The measurement is:
 
 - Agnostic to whether the frame came from a prompt, from the
@@ -218,7 +218,7 @@ validation program should test.
 > *The structural frame of a document (voice, coverage,
 > temporal orientation, epistemic basis, FVS matches) is a
 > property of the text, independent of its production pipeline,
-> and is reliably measured by Framecheck.*
+> and is reliably measured by Frame Check.*
 
 Validation question: do independent evaluators, shown Frame
 Check's measurements on a corpus, agree the measurements
@@ -229,13 +229,13 @@ Durability: durable. This is a claim about text, not about
 model generation.
 
 **Claim 2: The sovereignty-case behavioural claim.**
-> *Surfacing Framecheck's measurements to a reader at the
+> *Surfacing Frame Check's measurements to a reader at the
 > moment of an AI conversation changes what the reader does
 > with the AI's response, compared to reading the AI's
 > response alone.*
 
 Validation question: A/B test. Group A sees an AI response
-alone; Group B sees the same response plus Framecheck's
+alone; Group B sees the same response plus Frame Check's
 measurements and agent_guidance. Measure decision outcomes,
 confidence, follow-up question quality, or self-reported
 "did I inherit the AI's frame."
@@ -246,7 +246,7 @@ and what the reader can independently evaluate grows. The
 sovereignty case becomes MORE relevant, not less.
 
 **Claim 3: The measurement-transparency claim.**
-> *An AI agent that cites Framecheck faithfully (using the
+> *An AI agent that cites Frame Check faithfully (using the
 > agent_guidance contract) produces responses that readers
 > can evaluate with more precision than an AI agent that does
 > not cite a structural measurement substrate.*
@@ -272,7 +272,7 @@ elements.
   replaced, the validation re-runs on the successor protocol.
 - Durable payoff: the agent_guidance contract respect, voice
   discipline, tool-call correctness. These are durable tests
-  of the Framecheck design, not the protocol.
+  of the Frame Check design, not the protocol.
 
 **External evaluator pilot (2-3 researchers).**
 - Survives and strengthens. Evaluator-based validation is the
@@ -350,12 +350,12 @@ Three workstreams, executed sequentially, each feeding the next.
 - Corpus: 10 documents (the 5 existing worked examples + 5
   new unseen documents of varied genre).
 - Procedure: 3 independent evaluators (researchers, not part
-  of the Framecheck program) read each document and produce
+  of the Frame Check program) read each document and produce
   their own structural-frame reading (voice, coverage,
-  temporal, epistemic) without seeing Framecheck's output.
-  Each evaluator then compares their reading to Framecheck's.
+  temporal, epistemic) without seeing Frame Check's output.
+  Each evaluator then compares their reading to Frame Check's.
 - Outcome variable: agree-disagree rate per dimension.
-  Dimensions with >70% evaluator agreement with Framecheck
+  Dimensions with >70% evaluator agreement with Frame Check
   are considered validated. Dimensions below 70% trigger a
   targeted detector review.
 - Timeline: one month including recruitment.
@@ -380,14 +380,14 @@ claim).**
 **Workstream 3: Claim 3 anchor (measurement-transparency).**
 
 - Setup: paired agent evaluation. Same 5 prompts run against
-  Claude Desktop with Framecheck MCP installed (agents that
+  Claude Desktop with Frame Check MCP installed (agents that
   have access to the sovereignty prompts) vs without.
 - 10 evaluators read both the with-MCP and without-MCP
   responses for each prompt.
 - Outcome variable: evaluator-identified grounding precision.
   "This specific claim is grounded in X" - can they point at
   the grounding with more precision when the MCP agent cites
-  Framecheck?
+  Frame Check?
 - Timeline: 1 month after Workstream 1 completes (the
   evaluators can be the same cohort).
 
@@ -435,7 +435,7 @@ Three dependencies have to be met:
   validate at the threshold named. They might not. That is
   what validation means.
 - It does not promise the sovereignty case is the "right" or
-  "most useful" framing of Framecheck's contribution. It
+  "most useful" framing of Frame Check's contribution. It
   tests whether the specific claim made in public copy
   replicates under independent measurement.
 - It does not promise that the prompt-model gap is untestable.

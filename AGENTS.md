@@ -8,9 +8,9 @@ or `.cursorrules` is. Read it before making changes.
 
 ## What this repo is
 
-`Clarethium/framecheck` is the public canonical repository for the
-**Framecheck MCP server**: a structural framing analysis tool
-distributed as the PyPI package `framecheck-mcp`. The MCP server
+`Clarethium/frame-check` is the public canonical repository for the
+**Frame Check MCP server**: a structural framing analysis tool
+distributed as the PyPI package `frame-check-mcp`. The MCP server
 gives any MCP-compatible AI client (Claude Desktop, Cursor, Cline,
 Continue.dev, etc.) deterministic structural framing analysis as a
 tool, with $0.00 per query at the server (no LLM calls server-side;
@@ -23,7 +23,7 @@ examples, and the validation harness scaffold.
 ## What goes in this repo
 
 This repository ships only what an adopter needs to install, run,
-extend, and verify Framecheck. The scope is fixed:
+extend, and verify Frame Check. The scope is fixed:
 
 - Python source at the repo root (`mcp_server.py`, `framing.py`,
   `comparison.py`, `frame_library.py`, etc.) and the `framecheck_mcp/`

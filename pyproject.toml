@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "framecheck-mcp"
-version = "1.0.0"
-description = "Framecheck MCP server: deterministic structural framing analysis for AI-generated documents, with default-on frame-divergence block per FRAME_DIVERGENCE_CONTRACT_v1 c1.0. MCP surface delegates V4.2 judgment to the caller's agent model; zero per-query LLM cost."
+name = "frame-check-mcp"
+version = "0.9.4"
+description = "Frame Check MCP server: deterministic structural framing analysis for AI-generated documents, with default-on frame-divergence block per FRAME_DIVERGENCE_CONTRACT_v1 c1.0. MCP surface delegates V4.2 judgment to the caller's agent model; zero Frame Check LLM cost per query."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
@@ -47,16 +47,16 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://blog.clarethium.com/framecheck"
-Repository = "https://github.com/Clarethium/framecheck"
-Issues = "https://github.com/Clarethium/framecheck/issues"
-Changelog = "https://github.com/Clarethium/framecheck/blob/master/CHANGELOG.md"
-Security = "https://github.com/Clarethium/framecheck/blob/master/SECURITY.md"
+Homepage = "https://blog.clarethium.com/frame-check"
+Repository = "https://github.com/Clarethium/frame-check"
+Issues = "https://github.com/Clarethium/frame-check/issues"
+Changelog = "https://github.com/Clarethium/frame-check/blob/master/CHANGELOG.md"
+Security = "https://github.com/Clarethium/frame-check/blob/master/SECURITY.md"
 Methodology = "https://frame.clarethium.com/corpus/methodology/"
 "Frame Library" = "https://frame.clarethium.com/corpus/library/"
 
 [project.scripts]
-framecheck-mcp = "mcp_server:cli"
+frame-check-mcp = "mcp_server:cli"
 
 [tool.setuptools]
 # Modules reachable from mcp_server.py via local-import graph;

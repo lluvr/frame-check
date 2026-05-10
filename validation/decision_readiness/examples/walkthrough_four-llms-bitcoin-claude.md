@@ -76,7 +76,7 @@ Predictions ('could shift') are appropriately conditional."
 heuristic does not catch the document's overall hedged frame
 ("I'd lean toward no") or context-appropriate confidence on
 common-knowledge ranges. The rater's note explicitly anticipates
-this: "Framecheck's 'Confidence Imbalance' pattern would be a
+this: "Frame Check's 'Confidence Imbalance' pattern would be a
 false positive on this document."
 
 **What the rater is evaluating.** Whether the document's

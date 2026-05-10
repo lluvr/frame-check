@@ -1,20 +1,20 @@
 cff-version: 1.2.0
 message: >-
-  If you use Framecheck in academic work, please cite it using the
+  If you use Frame Check in academic work, please cite it using the
   metadata below. The methodology paper and frame library are
   separately citeable research artifacts; see the references block
   for canonical URLs.
-title: "Framecheck: a research instrument for framing and verification in documents"
+title: "Frame Check: a research instrument for framing and verification in documents"
 type: software
 authors:
   - family-names: Lucic
     given-names: Lovro
     orcid: "https://orcid.org/0009-0008-9976-6933"
     website: "https://blog.clarethium.com"
-repository-code: "https://github.com/Clarethium/framecheck"
-url: "https://github.com/Clarethium/framecheck"
+repository-code: "https://github.com/Clarethium/frame-check"
+url: "https://github.com/Clarethium/frame-check"
 abstract: >-
-  Framecheck is a structural framing analysis tool and public
+  Frame Check is a structural framing analysis tool and public
   research program. It names which perspectives a document takes,
   which it omits, and how it positions the reader; numerical claims
   are cross-checked against authoritative sources where coverage
@@ -35,7 +35,7 @@ doi: "10.5281/zenodo.19888849"
 date-released: "2026-04-28"
 references:
   - type: article
-    title: "Framecheck Methodology"
+    title: "Frame Check Methodology"
     authors:
       - family-names: Lucic
         given-names: Lovro
@@ -43,15 +43,15 @@ references:
     url: "https://github.com/Clarethium/lodestone"
     license: CC-BY-4.0
     year: 2026
-    notes: "The methodology that grounds Framecheck's analyses is the Clarethium adopter methodology canon, published as the Clarethium/lodestone repository under CC-BY-4.0."
+    notes: "The methodology that grounds Frame Check's analyses is the Clarethium operator methodology canon, published as the Clarethium/lodestone repository under CC-BY-4.0."
   - type: data
     title: "Frame Vocabulary Standard"
     authors:
       - family-names: Lucic
         given-names: Lovro
         orcid: "https://orcid.org/0009-0008-9976-6933"
-    url: "https://github.com/Clarethium/framecheck/tree/master/data/frame_library"
+    url: "https://github.com/Clarethium/frame-check/tree/master/data/frame_library"
     license: CC-BY-4.0
     version: "0.2.0"
     year: 2026
-    notes: "Bundled with the framecheck-mcp PyPI wheel as data/frame_library/. Also live at https://frame.clarethium.com/corpus/library/."
+    notes: "Bundled with the frame-check-mcp PyPI wheel as data/frame_library/. Also live at https://frame.clarethium.com/corpus/library/."

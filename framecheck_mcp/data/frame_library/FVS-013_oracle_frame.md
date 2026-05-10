@@ -30,7 +30,7 @@ The reader treats AI output as authoritative knowledge rather than generated tex
 
 **When this frame is misleading:** This frame describes the reader's posture, not the document's content. A high-quality, well-sourced, accurate document is still being read in oracle mode if the reader did not independently evaluate it. The oracle frame is about the relationship between reader and text, not about the text itself.
 
-**Honest limits:** The oracle frame is not detectable from the document alone. It is a property of how the document is received, not of what the document contains. Framecheck cannot detect oracle mode directly. It can detect the CONDITIONS that enable oracle mode (fluent voice + confident tone + low epistemic sourcing + no self-referenced uncertainty) and suggest that the reader check their own posture. The suggestion is a prompt for self-reflection, not a detection.
+**Honest limits:** The oracle frame is not detectable from the document alone. It is a property of how the document is received, not of what the document contains. Frame Check cannot detect oracle mode directly. It can detect the CONDITIONS that enable oracle mode (fluent voice + confident tone + low epistemic sourcing + no self-referenced uncertainty) and suggest that the reader check their own posture. The suggestion is a prompt for self-reflection, not a detection.
 
 ## Decision-readiness implication
 
@@ -56,7 +56,7 @@ This entry does not have a traditional worked example because the oracle frame i
 
 **How to detect oracle mode in yourself:** After reading an AI output, ask: "could I reconstruct the key claims from memory without re-reading?" If not, you read for fluency (oracle mode). If yes, you read for content (evaluative mode). Second test: "did I change, add, or remove anything from the AI output before using it?" If no changes at all, oracle mode is likely active.
 
-**How Framecheck helps:** Framecheck's framing portrait and frame suggestions provide an external check that interrupts oracle mode. The user sees "Growth Frame detected" and "What would a risk analyst say?" which forces a moment of evaluation that oracle mode would skip.
+**How Frame Check helps:** Frame Check's framing portrait and frame suggestions provide an external check that interrupts oracle mode. The user sees "Growth Frame detected" and "What would a risk analyst say?" which forces a moment of evaluation that oracle mode would skip.
 
 ## Branch applicability
 

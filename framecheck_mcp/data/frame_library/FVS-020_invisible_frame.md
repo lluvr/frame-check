@@ -16,7 +16,7 @@
 > curators may invoke it when asking "what frame is this document
 > operating from?".
 
-Every document operates from a frame. The frame determines what is emphasized, what is omitted, which conclusions are reachable, and which are hidden. The frame is invisible to the reader unless deliberately surfaced. This is not a specific frame but the meta-condition of all frames: the fact that you are inside one right now and do not know which one. The invisible frame is the reason Framecheck exists. Every other entry in this library names a specific frame. This entry names the condition of not knowing which frame you are in.
+Every document operates from a frame. The frame determines what is emphasized, what is omitted, which conclusions are reachable, and which are hidden. The frame is invisible to the reader unless deliberately surfaced. This is not a specific frame but the meta-condition of all frames: the fact that you are inside one right now and do not know which one. The invisible frame is the reason Frame Check exists. Every other entry in this library names a specific frame. This entry names the condition of not knowing which frame you are in.
 
 **What this frame makes visible:**
 - That no text is unframed (every document operates from some perspective)
@@ -62,5 +62,5 @@ This entry IS its own worked example. You are reading a library entry that claim
 ## Branch applicability
 
 **Primary branch:** Both A and B
-**Branch A:** This is what the framing portrait is FOR. Every Framecheck analysis is an attempt to make the invisible frame visible. The portrait names coverage gaps, voice, temporal orientation, epistemic basis. Each of these is a partial surfacing of the invisible frame.
+**Branch A:** This is what the framing portrait is FOR. Every Frame Check analysis is an attempt to make the invisible frame visible. The portrait names coverage gaps, voice, temporal orientation, epistemic basis. Each of these is a partial surfacing of the invisible frame.
 **Branch B:** The pre-commit intervention is the most direct response to the invisible frame. By writing your answer first, you make YOUR invisible frame visible to yourself. The comparison with AI's frame reveals both.

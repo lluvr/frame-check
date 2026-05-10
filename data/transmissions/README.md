@@ -3,7 +3,7 @@
 Transmissions are short, evidence-first research pieces published
 at [blog.clarethium.com](https://blog.clarethium.com/). Each one
 reports a specific finding from the research program that feeds
-Framecheck. They are the thinking behind the measurement
+Frame Check. They are the thinking behind the measurement
 instruments, written in a disciplined register the author uses
 for published research (stated claim, evidence, what survived
 and what did not survive testing, honest limits).
@@ -76,6 +76,6 @@ in the clarethium-app vault are intentionally not copied here.
 
 The transmissions are the author's research writing, reproduced
 here for structural analysis and MCP accessibility. They carry
-the same license as the rest of the Framecheck corpus material:
+the same license as the rest of the Frame Check corpus material:
 CC-BY-4.0. Citation: `blog.clarethium.com/{slug}` is the
 canonical URL; cite that alongside any derivative use.

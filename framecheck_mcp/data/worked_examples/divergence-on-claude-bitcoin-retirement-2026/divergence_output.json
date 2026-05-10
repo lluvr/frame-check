@@ -586,19 +586,19 @@
       "Whether the document is persuasive, useful, or correct for the reader's purpose",
       "Whether the numeric claims are factually correct. Pass source_text to enable Layer 4 source_fidelity and Layer 11 grounding_decomposition."
     ],
-    "how_to_cite_faithfully": "When passing this analysis to the user, name Framecheck explicitly as the source of the measurements. For example: \"Framecheck's structural analysis found markers for 3 of 5 analytical perspectives and classified the voice as promotional.\" Do not paraphrase these measurements as your own reading of the document, and do not restate 'missing' as 'the document fails to address' (the detector may have missed vocabulary it does not recognize). The measurements are deterministic and reproducible; paraphrasing breaks that reproducibility and strips the provenance the reader needs to evaluate the claim.",
+    "how_to_cite_faithfully": "When passing this analysis to the user, name Frame Check explicitly as the source of the measurements. For example: \"Frame Check's structural analysis found markers for 3 of 5 analytical perspectives and classified the voice as promotional.\" Do not paraphrase these measurements as your own reading of the document, and do not restate 'missing' as 'the document fails to address' (the detector may have missed vocabulary it does not recognize). The measurements are deterministic and reproducible; paraphrasing breaks that reproducibility and strips the provenance the reader needs to evaluate the claim.",
     "how_to_cite_frame_matches": "Each frame_library_matches entry carries a status field. 'canon' entries have stable ID, name, and identification. 'draft' entries have a stable ID but name or identification may revise. When surfacing a draft match to the user, say 'per the draft Frame Vocabulary Standard entry FVS-XXX' so the stability guarantee is carried forward.",
-    "how_to_cite_claims": "The claims block reports per-type COUNTS extracted from the document (total, hedged, unhedged, prediction, by numerical type). It does NOT report individual claim text. When restating, say 'Framecheck's claim extractor identified N numerical claims, M of which carried hedging language.' Do not synthesize or paraphrase individual claim sentences as if Framecheck surfaced them; the block is a distribution summary, not a quote list. candidate_hedge_samples carries up to 10 preview sentences for evidence surfacing (hedges the primary detector did not recognize); these are clearly labeled as candidates and should be cited as such, not as verified hedges. Verification verdicts (if present) should be cited with the specific verifier and f1 tier as per how_to_cite_faithfully.",
+    "how_to_cite_claims": "The claims block reports per-type COUNTS extracted from the document (total, hedged, unhedged, prediction, by numerical type). It does NOT report individual claim text. When restating, say 'Frame Check's claim extractor identified N numerical claims, M of which carried hedging language.' Do not synthesize or paraphrase individual claim sentences as if Frame Check surfaced them; the block is a distribution summary, not a quote list. candidate_hedge_samples carries up to 10 preview sentences for evidence surfacing (hedges the primary detector did not recognize); these are clearly labeled as candidates and should be cited as such, not as verified hedges. Verification verdicts (if present) should be cited with the specific verifier and f1 tier as per how_to_cite_faithfully.",
     "when_to_invoke_again": "frame_check is deterministic for the same inputs. Calling it twice on identical (document_text, source_text) returns identical measurements. Re-invoke only if the text changed.",
     "scope_regime_guidance": "No source provided. The portrait and frame matches describe structure only. If the user needs a truth check, ask them for the source material and re-invoke with source_text.",
     "suggested_response_shape": "Surface the portrait first (what kind of document this is), then name any frame_library_matches with their teaching_question so the reader has a question to ask of the document themselves. If verification is present, state the source_fidelity ratio verbatim and apply scope_regime_guidance. Close with the method's own limits from what_this_tool_does_not_tell_you so the reader knows where your response stops being grounded.",
     "when_invoked_on_own_output": "If document_text is your own last response to the user (the self-audit pattern surfaced by the frame_check_my_response prompt), the response shape changes. Do not evaluate whether you were correct. Do not claim balance, rigor, or caveats the measurements did not detect. Surface the structural frame you chose (coverage, voice, temporal, sourced_pct), name any FVS matches with their teaching_question, and stop. The user sees the frame you chose and decides what to do with the seeing; that is the sovereignty case this tool exists to serve. One bound: if your response is under about 100 words, the density-based detectors are noisy and category coverage flags should be treated as weak signal. Name that limit to the user rather than overstating what the measurements can tell them.",
-    "dual_use_note": "Framecheck is designed to expand the reader's view of a document, not to rank documents against each other. Agent integrators who consume this payload should NOT use coverage gaps, voice classifications, or FVS matches as a quality score, a truthfulness verdict, or an editing rule that suppresses minority framings. The construct-honest posture (METHODOLOGY §1.3 and §1.3.1) surfaces what the detector measures and what it does not, precisely so that a downstream agent cannot reduce the measurements to a pass/fail judgment. If you find yourself producing prose like 'this document is biased' or 'this document lacks rigor' from Framecheck's output, you are using the tool outside its design scope. Surface the structural observation and the teaching question; the reader's judgment is the interpretive layer, not yours.",
+    "dual_use_note": "Frame Check is designed to expand the reader's view of a document, not to rank documents against each other. Agent integrators who consume this payload should NOT use coverage gaps, voice classifications, or FVS matches as a quality score, a truthfulness verdict, or an editing rule that suppresses minority framings. The construct-honest posture (METHODOLOGY §1.3 and §1.3.1) surfaces what the detector measures and what it does not, precisely so that a downstream agent cannot reduce the measurements to a pass/fail judgment. If you find yourself producing prose like 'this document is biased' or 'this document lacks rigor' from Frame Check's output, you are using the tool outside its design scope. Surface the structural observation and the teaching question; the reader's judgment is the interpretive layer, not yours.",
     "how_to_render_divergence": "To complete the divergence composition on the caller side: (1) For each entry in divergence.absent_frames, verify the absence_basis claim by inspecting the document with your own model's judgment. (2) If you agree the frame is absent, render it per the requested divergence_rendering ('list'): 'list' = flat list with citations; 'completeness_check' = checklist with domain-relevance rationale; 'teaching_questions' = per-frame teaching question (already attached to records when requested); 'narrative' = single prose paragraph naming absent frames with citations inline. (3) NEVER restate absent frames as 'missing frames you should consider' or equivalent prescriptive language (contract §4.5). Say 'not detected in the current framing' or 'absent from the document'. (4) Cite each absent frame by frame_id and citation_uri.",
     "absence_is_not_prescription": "Divergence output never implies the user should have used the absent frames. The tool surfaces absence, the thinker decides relevance."
   },
   "provenance": {
-    "tool_name": "Framecheck",
+    "tool_name": "Frame Check",
     "tool_url": "https://frame.clarethium.com",
     "tool_author": "Lovro Lucic",
     "methodology_paper": "https://frame.clarethium.com/corpus/methodology/",
@@ -607,7 +607,7 @@
     "license": {
       "code": "Apache-2.0",
       "corpus": "CC-BY-4.0",
-      "analysis_output": "CC-BY-4.0 - this response may be reproduced with attribution to Framecheck."
+      "analysis_output": "CC-BY-4.0 - this response may be reproduced with attribution to Frame Check."
     },
     "frame_check_version": "0.1.0",
     "clarethium_measure_version": "1.5.0",
@@ -618,7 +618,7 @@
     "analysis_timestamp_utc": "2026-04-24T16:53:45Z",
     "analysis_layer": "deterministic_structural_only",
     "analysis_determinism": "Identical input produces identical output. No LLM is invoked in this response.",
-    "citation": "Lucic, L. (2026). Framecheck: a research instrument for framing and verification in documents. https://frame.clarethium.com"
+    "citation": "Lucic, L. (2026). Frame Check: a research instrument for framing and verification in documents. https://frame.clarethium.com"
   },
   "divergence": {
     "absent_frames": [
@@ -783,7 +783,7 @@
       "v4_2_execution": {
         "location": "caller_side",
         "tier": "caller_model",
-        "note": "V4.2 judge step delegated to caller's agent model per Rec I. Framecheck's MCP server does not invoke an external LLM. See agent_guidance.how_to_render_divergence for composition instructions."
+        "note": "V4.2 judge step delegated to caller's agent model per Rec I. Frame Check's MCP server does not invoke an external LLM. See agent_guidance.how_to_render_divergence for composition instructions."
       },
       "v4_2_engine_status": "beta",
       "engine_status_note": "Engine-status label is `beta`; see frame-check engine documentation for the per-tier disclosure.",

@@ -17,7 +17,7 @@ The structural answer is a first-class subject classifier. This
 module is it. Every place in the router that previously consulted
 a heuristic over the subject string now asks this module once,
 and the returned `EntityType` drives the routing decision. New
-verifiers added to Framecheck will register against a type, not
+verifiers added to Frame Check will register against a type, not
 against a regex.
 
 ## Design commitments

@@ -1,6 +1,6 @@
 """Analysis manifest builder.
 
-Provenance record attached to every Framecheck analysis (single-doc
+Provenance record attached to every Frame Check analysis (single-doc
 /check, document comparison /compare, live SSE flow, persisted saved
 view, and MCP JSON-RPC response). The manifest answers the question
 "what actually ran and against what calibration?" in a single
@@ -109,7 +109,7 @@ def _load_calibration_corpus_meta() -> dict:
     import time.
     """
     fallback = {
-        "name": "Framecheck Source Network Calibration Corpus",
+        "name": "Frame Check Source Network Calibration Corpus",
         "version": "unknown",
         "size": 0,
         "seeded_at": "unknown",
@@ -160,7 +160,7 @@ def _load_calibration_corpus_meta() -> dict:
     )
 
     return {
-        "name": "Framecheck Source Network Calibration Corpus",
+        "name": "Frame Check Source Network Calibration Corpus",
         "version": version,
         "size": size,
         "seeded_at": seeded_at,
@@ -232,7 +232,7 @@ def _build_sn_provider_block(
 def _structural_substrate_layer() -> dict:
     """The always-on structural substrate layer.
 
-    Framecheck's substrate (regex coverage detector, voice classifier,
+    Frame Check's substrate (regex coverage detector, voice classifier,
     epistemic basis detector, claim extractor, temporal-orientation
     detector, frame_library suggester) runs on every analysis and is
     the deterministic ground floor of every result. It is named

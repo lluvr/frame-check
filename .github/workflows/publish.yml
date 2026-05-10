@@ -21,7 +21,7 @@
 #      sdist attached. Sigstore attestations attached for provenance.
 #
 # Trusted Publishing setup (manual, one-time at pypi.org):
-#   - https://pypi.org/manage/project/framecheck-mcp/settings/publishing/
+#   - https://pypi.org/manage/project/frame-check-mcp/settings/publishing/
 #   - Owner: Clarethium, Repository: frame-check, Workflow: publish.yml
 #   - Environment: pypi (final), testpypi (pre-release)
 
@@ -173,7 +173,7 @@ jobs:
         run: |
           python -m venv /tmp/fc_smoke
           /tmp/fc_smoke/bin/pip install --quiet dist/*.whl
-          /tmp/fc_smoke/bin/framecheck-mcp --version
+          /tmp/fc_smoke/bin/frame-check-mcp --version
           /tmp/fc_smoke/bin/python -c "
           from mcp_server import build_epistemic_payload
           p = build_epistemic_payload(
@@ -236,7 +236,7 @@ jobs:
       )
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/framecheck-mcp
+      url: https://test.pypi.org/p/frame-check-mcp
     permissions:
       id-token: write
     steps:
@@ -264,7 +264,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/framecheck-mcp
+      url: https://pypi.org/p/frame-check-mcp
     permissions:
       id-token: write
     steps:

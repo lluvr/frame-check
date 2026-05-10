@@ -35,11 +35,11 @@ Did the with-tool response use reading-form ("the pattern reads as X", "the fram
 **Cite the without-tool verdict-form passage it replaces (if any):**
 > _____
 
-### 3. Cites Framecheck explicitly (item 3, load-bearing)
+### 3. Cites Frame Check explicitly (item 3, load-bearing)
 
-If the with-tool response surfaces ANY structural measurement (coverage gap, voice classification, FVS match, hedge calibration), does it name Framecheck explicitly as the source ("Framecheck found...", "Framecheck classified...", "per Framecheck's structural analysis")?
+If the with-tool response surfaces ANY structural measurement (coverage gap, voice classification, FVS match, hedge calibration), does it name Frame Check explicitly as the source ("Frame Check found...", "Frame Check classified...", "per Frame Check's structural analysis")?
 
-- [ ] Yes (Framecheck named as source for every structural claim)
+- [ ] Yes (Frame Check named as source for every structural claim)
 - [ ] No (at least one structural claim presented as the agent's own reading)
 - [ ] Not applicable (no structural measurements surfaced in this response)
 
@@ -48,7 +48,7 @@ If the with-tool response surfaces ANY structural measurement (coverage gap, voi
 
 ### 4. Calibrates a hedge (item 4, descriptive only)
 
-Did the with-tool response calibrate a hedge that the without-tool response over- or under-stated? (E.g., the without-tool says "this is clearly the right move" and the with-tool says "the framing reads as confident, though Framecheck classified the voice as promotional with low hedge density.")
+Did the with-tool response calibrate a hedge that the without-tool response over- or under-stated? (E.g., the without-tool says "this is clearly the right move" and the with-tool says "the framing reads as confident, though Frame Check classified the voice as promotional with low hedge density.")
 
 - [ ] Yes
 - [ ] No
@@ -59,7 +59,7 @@ Did the with-tool response calibrate a hedge that the without-tool response over
 
 ### 5. Pivots on confidence-gate failure (item 5, descriptive only)
 
-Did the document trigger a confidence gate (under 100 words, non-English, non-analytical structure)? If so, did the with-tool response pivot to a reading of Framecheck's scope rather than a reading of the document?
+Did the document trigger a confidence gate (under 100 words, non-English, non-analytical structure)? If so, did the with-tool response pivot to a reading of Frame Check's scope rather than a reading of the document?
 
 - [ ] Yes (gate fired AND with-tool response pivoted)
 - [ ] No (gate fired AND with-tool response did not pivot)

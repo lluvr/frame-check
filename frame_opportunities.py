@@ -183,7 +183,7 @@ def _generate_one_opportunity(
     # 2,000-char excerpt of the document to Gemini for opt-in opportunity
     # generation. The web app's /profile path redacts PII at intake (so
     # every downstream LLM call sees redacted text), but the MCP server
-    # is a separate published artifact (framecheck-mcp on PyPI) that
+    # is a separate published artifact (frame-check-mcp on PyPI) that
     # users invoke locally with their own Gemini key. The intake-side
     # redaction does not flow through the MCP entry point.
     #

@@ -1,4 +1,4 @@
-"""Stderr logging primitives for the Framecheck MCP server.
+"""Stderr logging primitives for the Frame Check MCP server.
 
 The logging surface has zero internal dependencies on other Frame
 Check modules so it sits cleanly at the bottom of the layer cake;
@@ -81,7 +81,7 @@ def log(msg: str) -> None:
     byte is recoverable for forensic analysis.
     """
     print(
-        f"[framecheck-mcp] {_sanitize_log_message(msg)}",
+        f"[frame-check-mcp] {_sanitize_log_message(msg)}",
         file=sys.stderr, flush=True,
     )
 

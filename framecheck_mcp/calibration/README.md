@@ -1,6 +1,6 @@
-# Framecheck Source Network Calibration
+# Frame Check Source Network Calibration
 
-**Purpose.** Measure per-provider precision/recall so Framecheck can
+**Purpose.** Measure per-provider precision/recall so Frame Check can
 report calibrated confidence per claim, not opaque "this source said
 verified" output. Without this discipline the UI's trust meter is
 uncalibrated: a "verified" from Wikipedia and a "verified" from SEC
