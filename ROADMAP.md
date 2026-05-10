@@ -37,10 +37,15 @@ A `1.0.0` release commits to:
 - **Zero ruff lints.** Done as of `0.9.x`. The PR-time `quality`
   job runs ruff with select families (E, F, B, ISC) and the gate is
   strict-blocking. New violations fail PR.
-- **Coverage floor.** Per-module line coverage on the public wheel
-  surface holds above a target the v1.0 cut declares (currently the
-  `pytest-cov` report runs at PR time, no enforced floor). The
-  pre-v1.0 milestone names the floor and the modules it applies to.
+- **Coverage floor.** The 0.9.x line declares a 70% global floor
+  enforced via ``pytest --cov-fail-under=70`` on the Python 3.12
+  matrix run; current line coverage is 72% across the full
+  codebase under the complete test suite. v1.0 raises the floor
+  to 80% on the public wheel surface modules (``mcp_server``,
+  ``mcp_compose``, ``mcp_resources``, ``mcp_schema``, ``framing``,
+  ``comparison``, ``clarethium_measure``) with per-module
+  declarations in pyproject.toml; the matrix runs the per-module
+  threshold instead of the global one.
 - **Doctest-runnable adopter examples.** The README quickstart and
   `data/worked_examples/*.md` snippets execute under `python -m
   pytest --doctest-modules` (or equivalent) and are part of the CI

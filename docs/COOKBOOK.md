@@ -246,9 +246,11 @@ worked example is this recipe applied to four frontier models.
   differs, plus `unique_omissions` naming what each document
   omitted that the other addressed. Suitable for surfacing in a
   user-facing reader.
-- `analysis.documents`: per-document profiles (the two halves of
-  the comparison), so consumers that want to read what each side
-  did before reading the diff have the underlying values.
+- `analysis.documents`: per-document profiles keyed by label
+  (`"Document A"` / `"Document B"` by default, or the values passed
+  via `document_a_label` / `document_b_label`), so consumers that
+  want to read what each side did before reading the diff have the
+  underlying values.
 
 ### Honest limits
 
