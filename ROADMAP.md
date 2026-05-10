@@ -30,10 +30,11 @@ A `1.0.0` release commits to:
 - **Strict typing on the public wheel surface.** ``mypy --strict``
   passes against `mcp_server`, `mcp_compose`, `mcp_resources`,
   `mcp_schema`, `framing`, `comparison`, `clarethium_measure`. The
-  lenient ``[tool.mypy]`` config already passes clean on this surface
-  and is strict-blocking at PR time; the strict pass shows ~348
-  remaining errors (mostly ``[type-arg]`` and ``[no-untyped-def]``)
-  that close at v1.0.
+  lenient ``[tool.mypy]`` config is also clean on this surface and is
+  strict-blocking at PR time. As of 2026-05-10 the seven-module surface
+  passes ``mypy --strict`` cleanly; v1.0 expectation is to keep the
+  surface strict-clean across every PR (the strict-blocking matrix
+  job runs on each push to master).
 - **Zero ruff lints.** Done as of `0.9.x`. The PR-time `quality`
   job runs ruff with select families (E, F, B, ISC) and the gate is
   strict-blocking. New violations fail PR.
