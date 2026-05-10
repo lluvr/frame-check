@@ -140,9 +140,9 @@ Publication-quality==>Publication-quality
 core claim==>core claim
 Core claim==>Core claim
 
-# ── "Framecheck" → "Framecheck" (collapsing the fork distinction
+# ── "Frame Check" → "Frame Check" (collapsing the fork distinction
 # that was a internal staging-vs-canonical convention) ──
-Framecheck==>Framecheck
+Frame Check==>Frame Check
 
 # ── Operator infrastructure detail in shared module comments ──
 # "local LLM proxy" → public-readable

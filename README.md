@@ -1,44 +1,44 @@
-# Framecheck
+# Frame Check
 
-[![PyPI](https://img.shields.io/pypi/v/framecheck-mcp.svg)](https://pypi.org/project/framecheck-mcp/)
-[![Python](https://img.shields.io/pypi/pyversions/framecheck-mcp.svg)](https://pypi.org/project/framecheck-mcp/)
+[![PyPI](https://img.shields.io/pypi/v/frame-check-mcp.svg)](https://pypi.org/project/frame-check-mcp/)
+[![Python](https://img.shields.io/pypi/pyversions/frame-check-mcp.svg)](https://pypi.org/project/frame-check-mcp/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19888849.svg)](https://doi.org/10.5281/zenodo.19888849)
-[![Tests](https://github.com/Clarethium/framecheck/actions/workflows/tests.yml/badge.svg)](https://github.com/Clarethium/framecheck/actions/workflows/tests.yml)
+[![Tests](https://github.com/Clarethium/frame-check/actions/workflows/tests.yml/badge.svg)](https://github.com/Clarethium/frame-check/actions/workflows/tests.yml)
 
 See what any document does not show you.
 
-Framecheck is a structural framing analysis tool. It names which
+Frame Check is a structural framing analysis tool. It names which
 perspectives a document takes, which it omits, and how it positions
 the reader. Numerical claims are cross-checked against authoritative
 sources where coverage exists.
 
 ## Quickstart (MCP server)
 
-The PyPI package `framecheck-mcp` is the Model Context Protocol
+The PyPI package `frame-check-mcp` is the Model Context Protocol
 server. It runs locally and gives any MCP-compatible AI client
 (Claude Desktop, Cursor, Cline, Continue.dev, etc.) deterministic
 structural framing analysis as a tool.
 
-    pip install framecheck-mcp
+    pip install frame-check-mcp
 
 Then point your MCP client at the installed entry point. For
 Claude Desktop, add to `claude_desktop_config.json`:
 
     {
       "mcpServers": {
-        "framecheck": {
-          "command": "framecheck-mcp"
+        "frame-check": {
+          "command": "frame-check-mcp"
         }
       }
     }
 
-Restart the client. Then in any conversation: "Can you framecheck
+Restart the client. Then in any conversation: "Can you frame-check
 this document?" Full install + verification details in `docs/MCP_SERVER.md`.
 
 ## What it does
 
-Pass a document and Framecheck returns:
+Pass a document and Frame Check returns:
 
 - A structural framing profile: which of five analytical perspectives
   (causes, risks, stakeholders, trends, uncertainty) the document
@@ -86,7 +86,7 @@ public canon at github.com/Clarethium/lodestone.
 ## Why this and not just an LLM
 
 An MCP-compatible AI client can already analyse a document by
-prompting an LLM. Framecheck earns its install footprint where the
+prompting an LLM. Frame Check earns its install footprint where the
 LLM falls short:
 
 - **Determinism.** The structural layer returns the same numbers for
@@ -94,15 +94,15 @@ LLM falls short:
   asked "what frames does this document use" gives a different
   answer each time and a different answer per model. Citable
   research needs the deterministic shape; opinions can layer on top.
-- **Zero per-query cost.** Framecheck's MCP server makes no LLM
+- **Zero per-query cost.** Frame Check's MCP server makes no LLM
   call server-side. The caller's agent does the prose interpretation
-  if the user wants that. This means a framecheck on a 10,000-word
+  if the user wants that. This means a frame-check on a 10,000-word
   document costs the user $0.00, not the $0.05 to $0.50 an LLM
   call would charge.
 - **Explicit absence.** The frame-divergence block names what the
   document does not address by comparing matched frames against the
   Frame Vocabulary Standard catalog. An LLM asked "what's missing"
-  hallucinates plausible-sounding gaps; Framecheck enumerates
+  hallucinates plausible-sounding gaps; Frame Check enumerates
   catalog entries that did not fire on the text and says so.
 - **Calibrated detection.** The named-pattern layer reports detector
   F1 = 0.36 against expert labelers in a pre-registered validation,
@@ -114,9 +114,9 @@ LLM falls short:
   cross-checked against SEC EDGAR / FRED / World Bank / Alpha
   Vantage / Wolfram Alpha at provider pricing tiers (zero or
   user-keyed). An LLM asked "is this number right" cannot fetch
-  primary sources; Framecheck does.
+  primary sources; Frame Check does.
 
-The wedge is not the LLM's job. Framecheck makes it possible for
+The wedge is not the LLM's job. Frame Check makes it possible for
 the LLM to lean on a deterministic, source-grounded measurement
 layer instead of being asked to do that work in-band.
 
@@ -146,12 +146,12 @@ divergence, validate the substrate, verify the audit, read the worked
 examples). The full inventory:
 
 - `docs/MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
-- `docs/COOKBOOK.md`: five recipes for common adopter tasks (framecheck before agent commit, divergence at decision points, source-grounded verification, two-LLM comparison, custom FVS rule)
+- `docs/COOKBOOK.md`: five recipes for common adopter tasks (frame-check before agent commit, divergence at decision points, source-grounded verification, two-LLM comparison, custom FVS rule)
 - `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`: interface contract for the Frame Divergence emission shape (c1.0)
 - `docs/VALIDATION_PROGRAM.md`: observational + formal validation plans
 - `docs/RATERS.md`: rater protocol for the validation program
 - `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
-- `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Framecheck analysis (6 entries)
+- `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (6 entries)
 - The Frame Vocabulary Standard's methodology canon lives at github.com/Clarethium/lodestone
 
 ## Running tests
@@ -172,8 +172,8 @@ Apache-2.0 for code; CC-BY-4.0 for the FVS library and worked examples
 
 ## Citation
 
-If Framecheck is useful in your work, see `CITATION.cff` for the
-citable form. Framecheck is authored by Lovro Lucic.
+If Frame Check is useful in your work, see `CITATION.cff` for the
+citable form. Frame Check is authored by Lovro Lucic.
 
 ## Contributing
 
@@ -184,4 +184,4 @@ canon-promotion decisions). External rater engagement per
 
 ## Issues
 
-https://github.com/Clarethium/framecheck/issues
+https://github.com/Clarethium/frame-check/issues

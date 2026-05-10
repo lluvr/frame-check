@@ -1,10 +1,10 @@
 """
-Framecheck version constants.
+Frame Check version constants.
 
 Two version axes:
 
   FRAME_CHECK_VERSION
-    The Framecheck methodology brand version. Tied to the
+    The Frame Check methodology brand version. Tied to the
     FRAME_DIVERGENCE_CONTRACT_v1 c1.0 spec: bumps when the methodology
     contract version bumps (c1.1 -> 1.1.0; c2.0 -> 2.0.0; etc.).
     Stamped into telemetry events, CITATION.cff, and the MCP
@@ -20,7 +20,7 @@ Two version axes:
 
     Decoupled from pyproject [project] version: pyproject is the
     packaging artifact version (per-release), independent of brand
-    semantic. A wheel can ship `framecheck-mcp 0.8.x` against
+    semantic. A wheel can ship `frame-check-mcp 0.8.x` against
     methodology brand `1.0.0`; the two strings answer different
     questions.
 

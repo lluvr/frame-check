@@ -1,6 +1,6 @@
-# Releasing Framecheck
+# Releasing Frame Check
 
-This document is the maintainer's reference for cutting a Framecheck
+This document is the maintainer's reference for cutting a Frame Check
 MCP release. Releases ship through CI from this repository on
 annotated tag push; no operator-laptop publish path exists in the
 current architecture.
@@ -79,7 +79,7 @@ git push origin master
 git push origin v0.9.5
 
 # 8. Watch the workflow.
-gh run watch -R Clarethium/framecheck
+gh run watch -R Clarethium/frame-check
 ```
 
 ## Version-string discipline
@@ -116,8 +116,8 @@ Verify the artifact installs cleanly:
 python -m venv /tmp/fc-rc1
 /tmp/fc-rc1/bin/pip install --index-url https://test.pypi.org/simple/ \
   --extra-index-url https://pypi.org/simple/ \
-  framecheck-mcp==0.9.5rc1
-/tmp/fc-rc1/bin/framecheck-mcp --version
+  frame-check-mcp==0.9.5rc1
+/tmp/fc-rc1/bin/frame-check-mcp --version
 ```
 
 If the rc looks good, drop the rc suffix and cut the final tag.
@@ -130,7 +130,7 @@ has a defect serious enough that no adopter should pin to it but
 adopters who already pinned should not have their installs break.
 
 ```bash
-twine yank framecheck-mcp 0.9.5 --reason "<short reason>"
+twine yank frame-check-mcp 0.9.5 --reason "<short reason>"
 ```
 
 Document the yank in the next release's CHANGELOG narrative under a
@@ -157,22 +157,22 @@ The publish workflow uses PyPI's Trusted Publishing (OIDC) so the
 GitHub-issued workflow identity authenticates against PyPI without
 an API token. Configure once at:
 
-- https://pypi.org/manage/project/framecheck-mcp/settings/publishing/
+- https://pypi.org/manage/project/frame-check-mcp/settings/publishing/
 
 Settings:
 
 - **Owner**: `Clarethium`
-- **Repository name**: `framecheck`
+- **Repository name**: `frame-check`
 - **Workflow filename**: `publish.yml`
 - **Environment name**: `pypi` (for final releases)
 
 Repeat for TestPyPI:
 
-- https://test.pypi.org/manage/project/framecheck-mcp/settings/publishing/
+- https://test.pypi.org/manage/project/frame-check-mcp/settings/publishing/
 - Same settings, environment name `testpypi`.
 
 Add corresponding GitHub environments at
-`https://github.com/Clarethium/framecheck/settings/environments`
+`https://github.com/Clarethium/frame-check/settings/environments`
 and protect them with branch-restriction (only `master` can deploy
 to `pypi`).
 

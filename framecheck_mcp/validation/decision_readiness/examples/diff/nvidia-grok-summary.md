@@ -177,5 +177,5 @@ behavior, not an answer.
 > for this pair (robustness pending Source Network re-run;
 > counterfactual is genre-absent on both sides).
 >
-> Cited from the Framecheck decision-readiness corpus,
+> Cited from the Frame Check decision-readiness corpus,
 > revision `70e2a95a9d1f`.

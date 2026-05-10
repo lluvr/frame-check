@@ -5,7 +5,7 @@ Single source of truth for where xAI requests get sent. Two paths:
   1. LLM proxy (preferred). When LLM_PROXY_BASE_URL and
      LLM_PROXY_API_KEY are set, every xAI call routes through a
      local proxy. The master XAI_API_KEY lives only inside the
-     proxy process; framecheck never sees it.
+     proxy process; frame-check never sees it.
 
   2. Direct xAI fallback. When the proxy env is unset but
      XAI_API_KEY is set, falls back to api.x.ai/v1 directly. Used
@@ -16,7 +16,7 @@ shape means a misconfigured proxy (e.g., LLM_PROXY_BASE_URL set but
 LLM_PROXY_API_KEY missing) cleanly degrades to direct rather than
 silently breaking analysis.
 
-This module is imported wherever framecheck builds an OpenAI-SDK
+This module is imported wherever frame-check builds an OpenAI-SDK
 client for xAI, plus the V4.2 engine which uses urllib directly.
 
 Provider-display constant: LLM_PROVIDER_DISPLAY surfaces in user-

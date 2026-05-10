@@ -3,13 +3,13 @@ title: One LLM, one life decision: what framing your AI imposes when you ask it 
 slug: ai-on-life-decisions-startup-2026
 author: Lovro Lucic
 published: 2026-04-18
-source_document_url: https://github.com/Clarethium/framecheck/tree/master/data/worked_examples/ai-on-life-decisions-startup-2026
+source_document_url: https://github.com/Clarethium/frame-check/tree/master/data/worked_examples/ai-on-life-decisions-startup-2026
 source_document_title: GPT-5 response to a startup career-change prompt (2026-04-18)
 source_document_author: OpenAI GPT-5 (`gpt-5-2025-08-07`)
 source_document_type: LLM response to a life-decision prompt
 frames_detected: [FVS-001]
 verification_summary: "No Source Network verification attempted. The response makes advisory claims about startup economics (regulatory complexity, runway requirements, burn rate assumptions) that are judgment claims, not empirical claims against external authorities."
-hook: A user asks an LLM about a career change. The LLM produces a framework. The user did not ask for a framework; the LLM imposed one. Framecheck names what the LLM did.
+hook: A user asks an LLM about a career change. The LLM produces a framework. The user did not ask for a framework; the LLM imposed one. Frame Check names what the LLM did.
 ---
 
 ## Context
@@ -26,7 +26,7 @@ millions of times a day.
 
 The response analysed is from OpenAI GPT-5 (`gpt-5-2025-08-07`),
 captured on 2026-04-18. The full response text and the complete
-Framecheck payload are in
+Frame Check payload are in
 `data/worked_examples/ai-on-life-decisions-startup-2026/data.json`
 alongside this writeup, so a reader in 2028 can verify the exact
 bytes the analysis ran against.
@@ -36,10 +36,10 @@ The companion worked example
 ran four frontier models against a similar question and compared
 their framing signatures. This entry does the opposite move: zoom
 in on a single LLM's response to a single life question and show
-what Framecheck surfaces about the conversation that just
+what Frame Check surfaces about the conversation that just
 happened.
 
-## What Framecheck saw
+## What Frame Check saw
 
 GPT-5's response is 814 words, 57 sentences. The structural
 signature from the deterministic detectors:
@@ -118,7 +118,7 @@ response that the measurements point at:
   agreements). But all the stakeholders are *the user's adjacent
   people*, not *the people the user's decision affects*: the
   customers the startup would serve, the competing startups, the
-  incumbents. "Stakeholders" in Framecheck's taxonomy is meant
+  incumbents. "Stakeholders" in Frame Check's taxonomy is meant
   broader than "people close to the decision-maker." The
   detector flagged stakeholders as covered; a reader reviewing
   the substance would say the coverage is partial.
@@ -152,7 +152,7 @@ Because the reader is the point.
 A person asking an AI assistant about a major life decision is
 the single most common AI conversation shape. Millions of these
 happen per day. The answers are typically prescriptive,
-unsourced, framework-imposing, and confident. Framecheck does
+unsourced, framework-imposing, and confident. Frame Check does
 not say these answers are *wrong*; they are often useful. Frame
 Check says what structural frame the answer is putting on the
 question, so the reader can see the frame and decide whether to
@@ -178,10 +178,10 @@ their AI just put on their life decision. Then they decide.
 ## Reproducing this analysis
 
 The prompt, the model ID, the verbatim response, and the full
-Framecheck payload are captured in
+Frame Check payload are captured in
 `data/worked_examples/ai-on-life-decisions-startup-2026/data.json`
 alongside this writeup. A reader in 2028 can load the file, run
-Framecheck's deterministic layer on the stored response text,
+Frame Check's deterministic layer on the stored response text,
 and reproduce the measurements exactly. The same prompt run
 against GPT-5 in 2028 will produce different text; the model
 drifts, the measurements against today's captured response do
@@ -191,12 +191,12 @@ in resource metadata is designed to support.
 ## Citation
 
 Lucic, L. (2026). *One LLM, one life decision: what framing your
-AI imposes when you ask it for advice*. Framecheck Worked
+AI imposes when you ask it for advice*. Frame Check Worked
 Examples.
 frame.clarethium.com/corpus/worked-examples/ai-on-life-decisions-startup-2026/
 
 Licensed CC-BY-4.0. The LLM response analysed is the output of a
 third-party system (OpenAI GPT-5). Its reproduction here is for
 structural analysis and falls under fair-use / fair-dealing
-provisions for research and criticism. Only the Framecheck
+provisions for research and criticism. Only the Frame Check
 analysis is open-licensed.

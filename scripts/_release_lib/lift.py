@@ -1,4 +1,4 @@
-"""Lift dry-run for `framecheck-mcp`.
+"""Lift dry-run for `frame-check-mcp`.
 
 Runs the full pre-publish gate sequence locally, in order, and stops
 short of `twine upload`. The operator runs this before every actual
@@ -15,7 +15,7 @@ Sequence:
   4. Install into a clean target: `pip install --target /tmp/...`.
   5. Smoke import: `import mcp_server` resolves; SERVER_VERSION
      reports the expected value.
-  6. CLI version mode: `framecheck-mcp --version` runs cleanly.
+  6. CLI version mode: `frame-check-mcp --version` runs cleanly.
   7. Conformance driver: all round-trips pass against the installed
      wheel. Round-trip count depends on which optional resources are
      bundled (methodology, spec/frame-divergence/v1 parts).
@@ -327,8 +327,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  SERVER_VERSION={lines[0]}  PROTOCOL_VERSION={lines[1]}")
 
     # 6. CLI --version mode
-    step(6, "CLI: framecheck-mcp --version")
-    cli = TARGET / "bin" / "framecheck-mcp"
+    step(6, "CLI: frame-check-mcp --version")
+    cli = TARGET / "bin" / "frame-check-mcp"
     if not cli.exists():
         return fail(f"CLI entry point not at {cli}")
     proc = subprocess.run(
@@ -863,7 +863,7 @@ def main(argv: list[str] | None = None) -> int:
     print("  # Verify install from TestPyPI in a clean venv:")
     print(
         "  pip install --index-url https://test.pypi.org/simple/ "
-        "--no-deps framecheck-mcp"
+        "--no-deps frame-check-mcp"
     )
     print()
     print("  # PyPI (only after TestPyPI smoke verified clean):")

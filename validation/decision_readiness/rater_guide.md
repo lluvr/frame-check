@@ -6,7 +6,7 @@ at [/corpus/decision-readiness/](https://frame.clarethium.com/corpus/decision-re
 for the underlying framework; this guide gives you the operational
 definitions and anchor descriptions you use while rating.
 
-**Do not read Framecheck's computed profile for the document
+**Do not read Frame Check's computed profile for the document
 before you rate.** The profile lives in `corpus/{doc_id}/profile.json`;
 your ratings must be blind to it for the validation to be
 informative.
@@ -130,7 +130,7 @@ internal sourcing discipline, not about whether the sources
 themselves are correct. A document that cites an unreliable
 source still rates higher on this dimension than one that
 asserts the same number with no source. Source CORRECTNESS is
-captured by the Robustness dimension when Framecheck verifies
+captured by the Robustness dimension when Frame Check verifies
 against authoritative providers.
 
 ---
@@ -222,7 +222,7 @@ effort can publish realistic time estimates for future raters.
 - Add notes explaining your reasoning so divergence cases are
   informative
 
-The validation harness reports cases where Framecheck and
+The validation harness reports cases where Frame Check and
 expert raters diverge sharply. These are the most useful
 documents for methodology revision; your notes are what makes
 the divergence interpretable.

@@ -1,6 +1,6 @@
 """Conformance driver for the MCP server.
 
-Drives the installed `framecheck-mcp` wheel as an MCP client would
+Drives the installed `frame-check-mcp` wheel as an MCP client would
 (subprocess + stdio + JSON-RPC line-delimited frames) and reports
 every primitive's pass/fail status with one-line summaries.
 

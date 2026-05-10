@@ -59,5 +59,5 @@ The frame does NOT fire when:
 ## Branch applicability
 
 **Primary branch:** Both A and B
-**Branch A:** Not directly detectable from the document alone. Requires comparison between the user's original question (the topic field in Framecheck) and the document's actual coverage. When coverage analysis shows narrow focus (1-2 dimensions) on a topic that should be broad, scope narrowing is possible.
+**Branch A:** Not directly detectable from the document alone. Requires comparison between the user's original question (the topic field in Frame Check) and the document's actual coverage. When coverage analysis shows narrow focus (1-2 dimensions) on a topic that should be broad, scope narrowing is possible.
 **Branch B:** The pre-commit step is the most direct detection: the user writes their broad-scope answer first, then sees AI's narrow-scope answer, and the comparison reveals the narrowing.

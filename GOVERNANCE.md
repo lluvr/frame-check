@@ -1,4 +1,4 @@
-# Framecheck Governance
+# Frame Check Governance
 
 **Status:** Minimal v0. Documents current de-facto governance.
 **Curator:** Lovro Lucic (single-curator BDFL model for v0.x of the library).
@@ -7,7 +7,7 @@
 
 ## Purpose
 
-This document names who decides what in Framecheck, where those decisions are recorded, and what is explicitly held for future specification. It closes the reference to `GOVERNANCE.md` in `CONTRIBUTING.md` without overcommitting to a formal review process that has not yet been tested against a real external reviewer.
+This document names who decides what in Frame Check, where those decisions are recorded, and what is explicitly held for future specification. It closes the reference to `GOVERNANCE.md` in `CONTRIBUTING.md` without overcommitting to a formal review process that has not yet been tested against a real external reviewer.
 
 This document covers governance mechanics only: who has authority, over what, by what process, and what happens when governance itself needs to change.
 
@@ -15,7 +15,7 @@ This document covers governance mechanics only: who has authority, over what, by
 
 ## Current state: single-curator
 
-Framecheck is a single-curator project. **Lovro Lucic** is the curator. For v0.x of the library, the curator carries benevolent-dictator authority (BDFL-style) over:
+Frame Check is a single-curator project. **Lovro Lucic** is the curator. For v0.x of the library, the curator carries benevolent-dictator authority (BDFL-style) over:
 
 - Which Frame Vocabulary Standard (FVS) entries are added, refined, promoted, or withdrawn
 - Which detection rules ship in `frame_library.suggest_frames` and `framing.py`
@@ -54,7 +54,7 @@ The curator decides:
 
 The curator does NOT decide:
 
-- What a reader concludes from a Framecheck analysis. The tool produces analytical scaffolding; readers remain sovereign.
+- What a reader concludes from a Frame Check analysis. The tool produces analytical scaffolding; readers remain sovereign.
 - What a reader concludes from a worked example. Worked examples are commentary under fair use; the reader does the interpretive work.
 
 ---

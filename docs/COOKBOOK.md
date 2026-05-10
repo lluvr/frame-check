@@ -1,12 +1,12 @@
 # Cookbook
 
-Recipes for common adopter tasks against the Framecheck MCP server.
+Recipes for common adopter tasks against the Frame Check MCP server.
 Each recipe states the use case, the MCP request that drives it, the
 load-bearing response fields, and the honest limits an adopter
 should know about before they rely on the result.
 
 The recipes assume the MCP server is installed (`pip install
-framecheck-mcp`) and configured in your MCP client per
+frame-check-mcp`) and configured in your MCP client per
 [`docs/MCP_SERVER.md`](MCP_SERVER.md). All examples show the
 JSON-RPC payload your client sends; an MCP client like Claude
 Desktop or Cursor builds and dispatches that payload from a natural
@@ -139,7 +139,7 @@ arbitrary structural framing.
 You have an LLM-produced summary of an earnings release, an
 analyst note, or a research paper, and you have the underlying
 source material that summary was supposed to ground in. Pass both
-to Framecheck and see which claims in the summary are grounded
+to Frame Check and see which claims in the summary are grounded
 in the source, paraphrased, or fabricated.
 
 ### MCP request
@@ -180,7 +180,7 @@ grounded / fabricated / paraphrased decomposition.
   load-bearing on prose-dense sources.
 
 For free-text claim verification against external authorities (no
-`source_text` available), Framecheck additionally cross-checks
+`source_text` available), Frame Check additionally cross-checks
 numeric claims against SEC EDGAR, FRED, World Bank, Alpha Vantage,
 and Wolfram Alpha when the claim's subject classifies to a
 matching entity type and the provider has coverage. Those checks

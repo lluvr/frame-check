@@ -804,7 +804,7 @@ def analyze_model(
 
     The voice / epistemic detection is zero-LLM regex work that
     runs in microseconds; it was added in Phase 1.5 so the
-    Framecheck Corpus Tier A events for compare modes populate
+    Frame Check Corpus Tier A events for compare modes populate
     the same framing fingerprint as single-mode events. The
     existing compare UI does not read the new fields, so this
     addition is invisible to users.
@@ -1859,7 +1859,7 @@ def _build_structural_framing_data(
         structured layouts (the legacy structural_framing_diff
         string used by older saved-comparison JSON and by tests).
 
-    This is the Framecheck core value for compare mode: a
+    This is the Frame Check core value for compare mode: a
     computational structural diff that reveals how two responses
     frame the same topic differently. It works without any API
     key and produces the same output every time for the same
@@ -2237,7 +2237,7 @@ def get_comparison_examples() -> list[dict[str, str]]:
 # The texts are deliberately fictional (made-up companies, made-up
 # numbers) so we are not putting words in real organizations' mouths.
 # They are written in the same register as the AI-generated content
-# Framecheck is built to analyze.
+# Frame Check is built to analyze.
 
 def get_document_comparison_examples() -> list[dict[str, str]]:
     """Return preset document pairs for the documents mode demo.

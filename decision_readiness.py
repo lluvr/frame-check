@@ -13,7 +13,7 @@ JSON can see the profile and provide feedback on the data structure
 before it becomes a visible signal.
 
 The profile composition rule is strict: every dimension is derived
-from existing Framecheck measurements. We do not invent new
+from existing Frame Check measurements. We do not invent new
 signals; we structure the ones we already publish so the user can
 read decision-readiness without re-deriving it from raw fields.
 
@@ -54,7 +54,7 @@ PROFILE_STATUS = "experimental"  # bumps to "validated" after Phase 2
 # agreement so the two cannot drift silently.
 LIBRARY_RESOURCE_SCHEME = "frame-check"
 # public_url points at the entry's canonical markdown source on the
-# public GitHub repository (Clarethium/framecheck). GitHub is always
+# public GitHub repository (Clarethium/frame-check). GitHub is always
 # resolvable for end-users regardless of the hosted-production status
 # at frame.clarethium.com (paused 2026-04-23). The previous form
 # (https://frame.clarethium.com/corpus/library/FVS-XXX.html) returned
@@ -64,7 +64,7 @@ LIBRARY_RESOURCE_SCHEME = "frame-check"
 # from frame_library_index.parse_entry_filenames() so the URL stays
 # accurate when entries are renamed without touching this constant.
 LIBRARY_PUBLIC_URL_BASE = (
-    "https://github.com/Clarethium/framecheck"
+    "https://github.com/Clarethium/frame-check"
     "/blob/master/data/frame_library"
 )
 # Corpus entry URL base, parallel to LIBRARY_PUBLIC_URL_BASE.

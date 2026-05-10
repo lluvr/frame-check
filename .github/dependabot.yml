@@ -1,4 +1,4 @@
-# Dependabot configuration for framecheck-mcp.
+# Dependabot configuration for frame-check-mcp.
 #
 # - pip ecosystem: bumps the build/test dependencies declared in
 #   pyproject.toml [project.dependencies] and [project.optional-dependencies].

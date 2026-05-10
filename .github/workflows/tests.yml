@@ -1,6 +1,6 @@
 name: Tests
 
-# Runs the full Framecheck test suite on PRs and on manual dispatch.
+# Runs the full Frame Check test suite on PRs and on manual dispatch.
 # The existing runner is run_tests.py which wraps the
 # standalone-script test pattern documented in CONTRIBUTING.md. Rather
 # than migrate to pytest in one move, CI respects the existing pattern.

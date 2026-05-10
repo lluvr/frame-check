@@ -1,8 +1,8 @@
 <!--
 Verbatim third-party press release. Copyright NVIDIA Corporation,
-February 21, 2024. Bundled in the Framecheck validation corpus
+February 21, 2024. Bundled in the Frame Check validation corpus
 under standard fair-use posture for analytical excerpting in
-research and methodology demonstration. Framecheck's analytical
+research and methodology demonstration. Frame Check's analytical
 commentary on this document (the per-frame profile, the
 peer/diff comparisons under this corpus entry's directory) is
 licensed CC-BY-4.0; the press release text itself remains

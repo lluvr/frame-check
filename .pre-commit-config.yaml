@@ -43,7 +43,7 @@ repos:
         description: >-
           Scan staged content for API keys and high-entropy secrets
           before they enter git history. Catches the four provider keys
-          Framecheck uses (FRED, Alpha Vantage, Wolfram, Brave) plus
+          Frame Check uses (FRED, Alpha Vantage, Wolfram, Brave) plus
           GitHub PATs, AWS keys, GCP API keys, generic high-entropy
           patterns. Custom rules in `.gitleaks.toml` extend the gitleaks
           default ruleset with provider-specific patterns and an

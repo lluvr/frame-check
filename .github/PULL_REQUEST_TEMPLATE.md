@@ -1,5 +1,5 @@
 <!--
-Thank you for contributing to Framecheck.
+Thank you for contributing to Frame Check.
 
 Two house rules before you submit:
 

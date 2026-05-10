@@ -3,7 +3,7 @@ title: Grok summarises NVIDIA earnings: what Layer 4 verification shows when an 
 slug: grok-on-nvidia-earnings-2026
 author: Lovro Lucic
 published: 2026-04-18
-source_document_url: https://github.com/Clarethium/framecheck/tree/master/data/worked_examples/grok-on-nvidia-earnings-2026
+source_document_url: https://github.com/Clarethium/frame-check/tree/master/data/worked_examples/grok-on-nvidia-earnings-2026
 source_document_title: Grok 4.1 Fast Reasoning summary of NVIDIA Q4 FY2024 earnings press release (2026-04-18)
 source_document_author: xAI Grok 4.1 Fast Reasoning (`grok-4-1-fast`)
 source_document_type: LLM summary of a public financial press release, analysed against the original source material as source_text
@@ -21,12 +21,12 @@ hook: The sovereignty instrument's distinguishing capability is that it checks a
 
 The existing worked examples (life decisions, institutional policy,
 AI-company manifesto) all analyse a document as a self-contained
-artifact. None of them uses Framecheck's `source_text` argument,
+artifact. None of them uses Frame Check's `source_text` argument,
 which unlocks the Layer 4 source-fidelity verification and the
 Layer 11 grounding decomposition. Those two layers are the
-capability that separates Framecheck from framing-only tools:
+capability that separates Frame Check from framing-only tools:
 other instruments can tell you a document reads as promotional;
-Framecheck can also tell you whether the numbers in a document
+Frame Check can also tell you whether the numbers in a document
 literal-match the source those numbers were supposed to come from.
 
 This example runs that end-to-end. A real public press release
@@ -36,19 +36,19 @@ asked, using a deliberately plain prompt ("Write a 200-word
 news-style summary of this press release for a general business
 audience. Stick to the numbers in the source. Use a neutral
 business-news register."), to produce a summary of that release.
-Framecheck's deterministic engine was then invoked with the
+Frame Check's deterministic engine was then invoked with the
 Grok summary as `document_text` and the captured press release
 as `source_text`.
 
 The full exchange, the captured source bytes, the SHA-256
 content hashes of both, the invocation timestamp, and the
-Framecheck payload are stored as
+Frame Check payload are stored as
 `data/worked_examples/grok-on-nvidia-earnings-2026/data.json`
 alongside this writeup. A reader can load that file, re-run
-Framecheck's deterministic layer against the stored bytes,
+Frame Check's deterministic layer against the stored bytes,
 and reproduce the measurements exactly.
 
-## What Framecheck saw
+## What Frame Check saw
 
 The Grok summary is 184 words, 10 sentences. The structural
 signature from the deterministic detectors:
@@ -171,7 +171,7 @@ against the structure. Three specific patterns:
   "surging") and adds one of its own ("hit a record"). An LLM
   summarising a promotional document without an explicit counter-
   frame in the prompt will, by default, echo the promotional
-  voice. Framecheck's voice classification catches the echo;
+  voice. Frame Check's voice classification catches the echo;
   the reader sees that the prompt's asked-for neutrality did
   not survive.
 
@@ -185,7 +185,7 @@ against the structure. Three specific patterns:
 
 - **Coverage absence is genre-determined, not LLM-failure.** A
   press release does not discuss causes, risks, or uncertainty.
-  The summary does not either. Framecheck flags the absence
+  The summary does not either. Frame Check flags the absence
   structurally; the reader distinguishes "absent because the
   source omitted it" from "absent because the summariser
   dropped it." Here, it is the former. That is a distinction
@@ -224,7 +224,7 @@ against the structure. Three specific patterns:
   example exists partly to name that boundary explicitly.
 
 - **Missed by definition: whether the source itself is
-  accurate.** Framecheck's Layer 4 asks only "does the document
+  accurate.** Frame Check's Layer 4 asks only "does the document
   match the source?" not "is the source truthful?" A false
   press release summarised faithfully produces a high
   source-fidelity score. That is the intended scope: Frame
@@ -264,9 +264,9 @@ source diverge.
 The captured source bytes, the captured Grok summary bytes,
 the SHA-256 hashes of both, the invocation timestamp, the
 model ID, the summarization prompt verbatim, and the full
-Framecheck payload are in
+Frame Check payload are in
 `data/worked_examples/grok-on-nvidia-earnings-2026/data.json`.
-A reader can run Framecheck's deterministic layer against
+A reader can run Frame Check's deterministic layer against
 the stored source and summary texts and reproduce the
 measurements exactly.
 
@@ -288,4 +288,4 @@ property of NVIDIA Corporation. The Grok summary is the output
 of a third-party system (xAI Grok 4.1 Fast Reasoning). Both
 are reproduced here for structural analysis and fall under
 fair-use / fair-dealing provisions for research and criticism.
-Only the Framecheck analysis is open-licensed.
+Only the Frame Check analysis is open-licensed.

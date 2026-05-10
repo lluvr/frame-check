@@ -187,7 +187,7 @@ def get_teaching_question(fvs_id: str) -> str | None:
 # IS using AND divergent frames the document is NOT using both surface
 # here, distinguished by the kind tag composed at render time. The
 # user picks the angle they want to take further; each click is one
-# lens applied to their document. Framecheck's value as a divergence
+# lens applied to their document. Frame Check's value as a divergence
 # instrument against AGI's convergent default lives in this surface.
 #
 # Schema per entry:
@@ -223,7 +223,7 @@ class _EmptyDefault(dict):
     """dict subclass that returns "" for missing keys.
 
     Used by compose_takeaway_palette so a prompt template referencing a
-    substrate variable Framecheck did not provide for THIS document
+    substrate variable Frame Check did not provide for THIS document
     silently empties out instead of raising KeyError. Keeps prompt
     authoring forgiving: the operator can reference {v4_2_reasoning} or
     {blind_spots} without having to guard every reference for the case
@@ -438,7 +438,7 @@ def compose_takeaway_palette(
 # Canonical coverage-dimension questions. Mirrors the perspective_desc
 # Jinja set in templates/results.html (line ~412); centralized here so
 # the takeaway composer can reach the same questions without re-parsing
-# template source. Five fixed dimensions are Framecheck's structural
+# template source. Five fixed dimensions are Frame Check's structural
 # coverage contract.
 COVERAGE_QUESTIONS: dict[str, str] = {
     "causes": "Why is this happening?",
@@ -461,7 +461,7 @@ def compose_takeaway_questions(
 ) -> dict:
     """Deterministically compose the takeaway questions from existing
     analysis substrate. Zero new LLM calls; everything below is
-    composed from data Framecheck already produced.
+    composed from data Frame Check already produced.
 
     The takeaway is the user's path from the analysis to a decision.
     It surfaces:
@@ -469,9 +469,9 @@ def compose_takeaway_questions(
         per-frame reasoning and the operator-curated question
       - Dimensions the document does not engage with their canonical
         question
-      - Concerns Framecheck flagged (AI-interpret blind_spots; empty
+      - Concerns Frame Check flagged (AI-interpret blind_spots; empty
         until that async stage resolves on live view)
-      - Claims Framecheck could not verify externally
+      - Claims Frame Check could not verify externally
       - A bundled prompt the user can take to their LLM, structurally
         composed from the substrate above (no LLM-authored content)
 
@@ -729,14 +729,14 @@ def _compose_takeaway_llm_prompt(
     take to their LLM. Pure structural composition: every line of
     substantive content (frame names, reasoning, questions, blind
     spots, claims) comes from operator-curated or LLM-pre-computed
-    sources. The wrapping prose ("Framecheck analyzed...", "Apply
+    sources. The wrapping prose ("Frame Check analyzed...", "Apply
     these to the document.") is structural format only.
 
     The output is plain text suitable for URL-encoding into a
     Claude / GPT chat link or copy-pasting into any LLM.
     """
     parts: list[str] = []
-    parts.append("Framecheck has analyzed the document below. Findings:")
+    parts.append("Frame Check has analyzed the document below. Findings:")
     parts.append("")
 
     if frames_in_use:
@@ -761,7 +761,7 @@ def _compose_takeaway_llm_prompt(
         parts.append("")
 
     if concerns:
-        parts.append("Specific concerns Framecheck flagged in this document:")
+        parts.append("Specific concerns Frame Check flagged in this document:")
         for c in concerns:
             parts.append(f"- {c}")
         parts.append("")

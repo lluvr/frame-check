@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Reviewer engagement for canon-promotion candidates
-    url: https://github.com/Clarethium/framecheck/blob/master/docs/RATERS.md
+    url: https://github.com/Clarethium/frame-check/blob/master/docs/RATERS.md
     about: |
       External reviewers for Frame Vocabulary Standard canon promotions
       or measurement-construct review. See docs/RATERS.md for scope,
