@@ -1,7 +1,7 @@
 # v2 randomly-sampled corpus: design specification
 
 The v1 seeded corpus is convenience-sampled from documents
-already captured for other Frame Check worked examples. This is
+already captured for other Framecheck worked examples. This is
 documented honestly on the
 [methodology page](https://frame.clarethium.com/corpus/decision-readiness/)
 under "Sampling honesty," but acknowledgment alone does not
@@ -23,7 +23,7 @@ mechanical work once the methodology is approved.
 
 1. **Defensibility against selection bias.** A reviewer should
    be able to inspect the sampling procedure and conclude that
-   the v2 entries were not chosen to make Frame Check look good
+   the v2 entries were not chosen to make Framecheck look good
    (or bad).
 2. **Reproducibility.** Anyone with the source pool, sampling
    seed, and procedure should be able to derive the same v2

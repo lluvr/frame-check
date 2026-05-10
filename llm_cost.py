@@ -1,7 +1,7 @@
 """LLM cost accounting: pricing table and token-usage extraction.
 
 Single source of truth for per-model pricing, shared by every caller
-that invokes a Gemini or Grok API in Frame Check. Two concerns live
+that invokes a Gemini or Grok API in Framecheck. Two concerns live
 here and nowhere else:
 
   1. MODEL_PRICING_PER_1K_TOKENS: the rate table. Updated when a
@@ -153,7 +153,7 @@ def extract_proxy_cost_usd(response):
     response.usage object as an integer count of nano-dollars
     (1 tick = 1e-9 USD). The proxy's value is the actual billing
     amount the proxy will charge the master provider key, which is
-    more accurate than frame-check's local pricing table because it
+    more accurate than framecheck's local pricing table because it
     captures price changes the table has not picked up.
 
     Returns the cost in USD when the field is present, or None when
@@ -231,10 +231,10 @@ def measure(provider, model, response, fallback_cost_usd=0.0):
             }
 
         # Prefer the proxy-reported cost when it is present. A proxy
-        # in front of frame-check (when configured) returns
+        # in front of framecheck (when configured) returns
         # cost_in_usd_ticks on usage; that value reflects the actual
         # billing the proxy will pass to the master provider key,
-        # which is more accurate than frame-check's local pricing
+        # which is more accurate than framecheck's local pricing
         # table whenever provider pricing has changed since the
         # table was last calibrated.
         proxy_cost = extract_proxy_cost_usd(response)

@@ -31,12 +31,12 @@ the behavior reproduces deterministically.
 What you expected to happen.
 
 **Actual**
-What happened instead. If applicable, paste the raw Frame Check output
+What happened instead. If applicable, paste the raw Framecheck output
 or tool response.
 
 **Environment**
 
-- Frame Check commit or deploy date:
+- Framecheck commit or deploy date:
 - Python version (for local runs):
 - Browser (for UI bugs):
 - OS:

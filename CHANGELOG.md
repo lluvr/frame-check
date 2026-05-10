@@ -6,6 +6,119 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-10
+
+### Rename: Frame Check is now Framecheck
+
+The PyPI package is renamed from `frame-check-mcp` to `framecheck-mcp`,
+the GitHub repository from `Clarethium/frame-check` to
+`Clarethium/framecheck`, the entry-point command from `frame-check-mcp`
+to `framecheck-mcp`, and the user-facing brand prose from "Frame Check"
+to "Framecheck". One token across the install footprint, the docs, and
+the command line; no reader or operator has to remember the
+two-versions-of-the-name distinction.
+
+#### What changed for adopters
+
+- **Install:** `pip install framecheck-mcp` (was `pip install
+  frame-check-mcp`). Existing pinned installs to `frame-check-mcp` keep
+  resolving against the older line; the canonical forward path is the
+  new package name.
+- **Claude Desktop config (and any other MCP client config):** the
+  entry-point command is `framecheck-mcp`. Update the `command` field;
+  the `mcpServers` key is operator-chosen and may stay whatever the
+  adopter prefers (the `framecheck` example in the README is a
+  recommendation, not a requirement).
+- **Repository:** `https://github.com/Clarethium/framecheck`. GitHub's
+  redirect from the old URL stays in place for ~30 days; tighten any
+  bookmarks at adopter convenience.
+
+#### What stayed the same (no breaking change)
+
+By design, the v1.0 cut deliberately holds these stable so existing
+adopter integrations keep working without code change:
+
+- **MCP URI scheme.** `frame-check://library`, `frame-check://corpus/{slug}`,
+  `frame-check://spec/frame-divergence/v1`, etc. Cached URIs in agent
+  code or config files keep resolving.
+- **MCP `serverInfo.name`.** The `initialize` handshake still reports
+  `frame-check`. Agent code that branches on the server name keeps
+  working.
+- **MCP tool names.** `frame_check` and `frame_compare` are unchanged.
+- **Response field names.** `frame_check_version`, the
+  `frame_library_matches[]` shape, every other JSON field name in tool
+  responses and resource bodies is unchanged.
+- **Wheel-bundled module names.** `mcp_server`, `mcp_compose`,
+  `mcp_resources`, `mcp_schema`, `framing`, `comparison`,
+  `clarethium_measure`, the `framecheck_mcp` package wrapper. No
+  imports change.
+
+The semver-honest reading: this is a v1.0.0 cut because the v1.0
+ROADMAP contract is met, not because the rename is a breaking change.
+The rename touches the install metadata, the docs, and the brand prose;
+the wire surface is stable.
+
+### v1.0 ROADMAP contract met
+
+- **Strict typing on the public wheel surface.** The seven-module wheel
+  surface (`mcp_server`, `mcp_compose`, `mcp_resources`, `mcp_schema`,
+  `framing`, `comparison`, `clarethium_measure`) passes `mypy --strict`
+  with zero errors. The strict-blocking matrix job in the PR-time
+  quality gate enforces this on every push.
+- **Zero ruff lints.** Carried forward from `0.9.x`.
+- **Coverage floor.** The 65% global production-code floor stays in
+  place at v1.0; the per-module 80% target named in the v1.0 contract
+  is split into a tracked v1.0.x follow-up because the largest gap
+  (`comparison.py` at 20.9%) needs provider-mocked test infrastructure
+  for the LLM-network-dependent paths that does not exist yet. ROADMAP
+  carries the deferred line item.
+- **Adopter-contract test coverage.** `tests/test_cookbook_recipes.py`
+  exercises the cookbook claims and the README "Why this and not just
+  an LLM" positioning claims against the running API at PR time.
+- **Conformance driver gate.** `scripts/mcp_conformance_driver.py`
+  speaks JSON-RPC over stdio to the freshly-built wheel on every tag
+  push and validates every primitive (initialize, tools/list,
+  tools/call for `frame_check` and `frame_compare`, resources/list,
+  resources/read, prompts/list, prompts/get, ping, error handling).
+- **Validation pre-registration completed.** The wedge-behavior
+  protocol at `validation/wedge_behavior/PROTOCOL_v1.md` is
+  pre-registered; the first execution and CHANGELOG narrative linking
+  to results is the named v1.0.x follow-up alongside per-module
+  coverage.
+- **Methodology citation paths verified.** `CITATION.cff` resolves to
+  the Zenodo concept-DOI ([10.5281/zenodo.19888849](https://doi.org/10.5281/zenodo.19888849));
+  the methodology canon at `Clarethium/lodestone` is reachable; the
+  README detector-F1 number cites a study artifact reproducible from
+  corpus + harness.
+- **CI-driven publish from this repository.** The
+  `.github/workflows/publish.yml` pipeline (world-state preflight +
+  build + sigstore attestation + Trusted Publishing OIDC + GitHub
+  release) executes end-to-end on this tag push; v1.0.0 is the first
+  release cut entirely from CI on this repository alone.
+
+### Source-quality cleanups landed in this cut
+
+- All nine open CodeQL alerts cleared. Four false positives were
+  dismissed with documented rationale (the lazy `import mcp_resources`
+  inside `__getattr__`, the markdown content-substring check in a test,
+  the `_SEC_TICKERS_FAIL_AT` writes that CodeQL did not trace through
+  the `global` declaration). Four dead-code branches in
+  `source_network.py:_match_in_text` (and the wheel-staged copy) were
+  deleted; the function-entry guard already covers the case the inner
+  branch tested for. One stale alert auto-cleared on re-scan after the
+  underlying line had already been fixed.
+- `llm_cost.compute_cost_usd` and `llm_client.xai_openai_client`
+  upstream of the strict surface get type annotations so the strict
+  pass on `comparison.py` does not surface their cascades.
+
+### Note on prior versions
+
+- `0.9.x` ships working capability and stays installable; `0.9.4` is
+  the last release on the `frame-check-mcp` package name.
+- An optional `frame-check-mcp 1.0.0` deprecation meta-package may be
+  published depending on `framecheck-mcp>=1.0` so legacy lockfiles
+  auto-migrate; the operator decides at publish time.
+
 ## [0.9.4] - 2026-05-09
 
 ### Public canon: residual operator-document citations scrubbed

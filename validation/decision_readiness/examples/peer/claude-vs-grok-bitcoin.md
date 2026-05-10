@@ -70,7 +70,7 @@ attribution language ("according to," "studies show," etc.) at
 **Substantive read:** Grok is more ATTRIBUTED than Claude in
 this response. Whether the attributions Grok added are
 faithful to real sources or invented is a different question
-that Frame Check's structural analysis cannot answer. The
+that Framecheck's structural analysis cannot answer. The
 comparison is the start of an investigation, not the end.
 
 **Important caveat:** because BOTH peers have null verification
@@ -157,7 +157,7 @@ retirement question:
 ## What this comparison does NOT tell us
 
 - Which response is "better" — that depends on what the reader
-  needs. Frame Check's structural analysis is silent on quality.
+  needs. Framecheck's structural analysis is silent on quality.
 - Whether either response's claims are factually correct — the
   comparison is structural, not semantic.
 - Whether Claude is "less hedged in general" — this is one
@@ -188,5 +188,5 @@ retirement question:
 > comparison surfaces structural differences that a reader
 > can use as a starting point for their own judgment.
 >
-> Cited from the Frame Check decision-readiness corpus,
+> Cited from the Framecheck decision-readiness corpus,
 > revision `70e2a95a9d1f`.

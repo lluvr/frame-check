@@ -42,6 +42,6 @@ Which of the following (if any) would this feature require?
 **Honest limits of the proposal**
 What would this feature NOT solve? What are the risks (false
 positives, UX regression, cost, construct-honesty violation)?
-Frame Check's practice is to ship honest-limits alongside every
+Framecheck's practice is to ship honest-limits alongside every
 shipped capability; proposals that carry their own limits are
 easier to converge on.

@@ -201,7 +201,7 @@ def analyze_claims(doc_text: str) -> dict[str, Any]:
     unhedged_count = 0
     prediction_count = 0
     high_precision_count = 0
-    # Per-num-type aggregate for the Frame Check Corpus Tier A
+    # Per-num-type aggregate for the Framecheck Corpus Tier A
     # `claims.by_type` field. Computed here using the RAW number
     # dicts (which still carry the `type` field) because the
     # per-claim `numbers` list gets string-converted later in this
@@ -398,7 +398,7 @@ def analyze_claims(doc_text: str) -> dict[str, Any]:
         "candidate_hedge_count": sum(
             1 for c in claims if c.get("candidate_hedge_marker") is not None
         ),
-        # Per-num-type histogram for the Frame Check Corpus Tier A
+        # Per-num-type histogram for the Framecheck Corpus Tier A
         # `claims.by_type` field.
         "claims_by_type": claims_by_type,
         "risk_indicators": risk_indicators,

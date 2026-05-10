@@ -31,7 +31,7 @@ Check's deterministic detectors produce when the essay is pasted in,
 plus an honest note on where the detector's coverage is thinner than
 the reading.
 
-## What Frame Check saw
+## What Framecheck saw
 
 The structural measurements, from the detectors in `framing.py` and
 `claim_analysis.py` (deterministic, no LLM):
@@ -68,7 +68,7 @@ The structural measurements, from the detectors in `framing.py` and
 
 ### Frame detections
 
-Frame Check's deterministic frame-library matcher suggests one
+Framecheck's deterministic frame-library matcher suggests one
 entry:
 
 - [FVS-002 Fluency Quality Illusion](/corpus/library/FVS-002.html).
@@ -121,7 +121,7 @@ continue to work," "AI is going to get better with scale," "we will
 solve the remaining problems") that are not the kind of claim a
 fact-check API can resolve.
 
-This is worth naming: Frame Check's verification layer is useful
+This is worth naming: Framecheck's verification layer is useful
 only when a document makes verifiable numerical claims against
 entities with authoritative coverage. The Intelligence Age is
 specifically designed, whether consciously or not, to live outside
@@ -150,7 +150,7 @@ assessed. The keyword layer of the detector registers that risks
 were addressed. The reader, with the text in hand, can judge that
 the coverage is nominal rather than substantive.
 
-This is the reason Frame Check is built the way it is. The
+This is the reason Framecheck is built the way it is. The
 structural detectors reliably surface what is present at the surface
 level. They do not tell the reader whether that presence is load
 bearing. That remains the reader's work, and the tool's job is to
@@ -174,12 +174,12 @@ hedge in the essay: a performative acknowledgement that the claim is
 large, immediately followed by a confident "we'll get there."
 
 A final honest note on the method. This worked example uses only
-the zero-cost deterministic layer of Frame Check: framing portrait,
+the zero-cost deterministic layer of Framecheck: framing portrait,
 coverage, voice, epistemic, temporal, and frame-library matching.
 The optional AI-assisted interpretation layer (Grok) and the
 source-network verification layer are both inactive for this
 document — there are no numeric claims to verify, and this writeup
 is explicitly about what the structural measurement can and cannot
-say. The construct honesty claim Frame Check makes is that the
+say. The construct honesty claim Framecheck makes is that the
 structural layer is enough to surface the shape of the argument.
 This essay is a case where that claim is testable.

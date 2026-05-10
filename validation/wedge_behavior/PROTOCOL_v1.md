@@ -6,7 +6,7 @@
 
 ## What this protocol exists to test
 
-The strategic claim that the Frame Check MCP wedge stands or falls on is:
+The strategic claim that the Framecheck MCP wedge stands or falls on is:
 
 > When an LLM agent invokes `frame_check` on a document, the resulting agent response shifts in a load-bearing way compared to the response the same agent would have produced without the tool.
 
@@ -20,7 +20,7 @@ Without this measurement, the wedge claim is a design claim. The agent_guidance 
 
 **H2 (form discipline).** Agent responses produced after a `frame_check` call use reading-form ("the pattern reads as X") more than verdict-form ("the document is X") compared to without-tool. Pre-registered effect direction: higher reading-form fraction in with-tool than without-tool.
 
-**H3 (citation discipline).** Agent responses produced after a `frame_check` call name Frame Check explicitly as the source of structural measurements rather than presenting the measurements as the agent's own reading. Pre-registered effect direction: Frame Check named as source in 100% of with-tool responses where structural claims appear.
+**H3 (citation discipline).** Agent responses produced after a `frame_check` call name Framecheck explicitly as the source of structural measurements rather than presenting the measurements as the agent's own reading. Pre-registered effect direction: Framecheck named as source in 100% of with-tool responses where structural claims appear.
 
 **Null.** No load-bearing shift. The wedge is theater.
 
@@ -62,7 +62,7 @@ For each (document, arm) response pair, three independent raters score the with-
 
 1. **Names a structural absence** that the without-tool response omits. (Yes / No.)
 2. **Uses reading-form** ("the pattern reads as X") in at least one place where the without-tool response used verdict-form ("the document is X"). (Yes / No.)
-3. **Cites Frame Check explicitly** as the source of any structural measurement surfaced. (Yes / No / Not applicable if no structural measurement surfaced.)
+3. **Cites Framecheck explicitly** as the source of any structural measurement surfaced. (Yes / No / Not applicable if no structural measurement surfaced.)
 4. **Calibrates a hedge** that the without-tool response over- or under-stated. (Yes / No / Not detectable from the response pair.)
 5. **Pivots on confidence-gate failure** if the document triggered a confidence gate (under-100-words, non-English, non-analytical). (Yes / No / Gate did not fire.)
 
@@ -78,7 +78,7 @@ The main study at N=10 supports the wedge claim if:
 
 - At least 7 of 10 with-tool responses score positive on item 1 (named absence) AND
 - At least 7 of 10 with-tool responses score positive on item 2 (reading-form) AND
-- At least 9 of 10 with-tool responses where item 3 applies score positive (Frame Check cited).
+- At least 9 of 10 with-tool responses where item 3 applies score positive (Framecheck cited).
 
 Anything weaker is reported as falsification of the wedge claim at the load-bearing-shift threshold. Numerical thresholds are pre-registered here so the analysis is not retrofitted to whatever the data shows.
 
@@ -114,7 +114,7 @@ These exclusions are pre-registered so the result cannot be over-claimed. Hence 
 ## Honest disclosures
 
 - The operator who pre-registered this protocol is also the agent_guidance author. There is a structural conflict of interest: the prompts being measured are written by the same person who chose what to measure. The mitigation: the rubric is binary and behavior-derived, not author-judgment-derived. Three independent raters at the main study reduce the residual bias.
-- The without-tool arm is not a "naive agent"; it is the same agent without the tool call. This is the right comparison for the wedge claim (does the tool change behavior?) but it is NOT the right comparison for "does an agent that has never been trained on frame_check produce shaped output?" That stronger claim requires a different study with a model unaware of Frame Check's existence.
+- The without-tool arm is not a "naive agent"; it is the same agent without the tool call. This is the right comparison for the wedge claim (does the tool change behavior?) but it is NOT the right comparison for "does an agent that has never been trained on frame_check produce shaped output?" That stronger claim requires a different study with a model unaware of Framecheck's existence.
 - Single-model, single-temperature, single-prompt-shape. The result generalizes only as far as those constraints. Generalization beyond is conjecture until the cross-model study runs.
 - The Frame Vocabulary Standard methodology canon at github.com/Clarethium/lodestone cites this protocol as an empirical foothold, not as a definitive validation.
 

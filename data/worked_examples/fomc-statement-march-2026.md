@@ -32,7 +32,7 @@ same paragraph-scale length, very different framing posture.
 Where Altman is promotional, future-oriented, and unsourced, the
 FOMC statement is analytical, present-oriented, and institutional.
 
-## What Frame Check saw
+## What Framecheck saw
 
 The structural measurements, from the detectors in `framing.py`
 and `claim_analysis.py` (deterministic, no LLM):
@@ -103,7 +103,7 @@ library entry plus the reader's eye on the text does.
 
 ## What the method missed
 
-Honest naming of the specific limits Frame Check hit on this
+Honest naming of the specific limits Framecheck hit on this
 document:
 
 - **Multiple policy values in prose, one extracted as a claim.**
@@ -156,20 +156,20 @@ statement organises itself around risks. Same flag, different
 frame assignment (FVS-002 vs FVS-009), different reader takeaway.
 
 This pair, read together, is the single sharpest case for
-construct honesty that Frame Check can make: a structural
+construct honesty that Framecheck can make: a structural
 detector that returns the same category label does not mean two
 documents are doing the same thing. The tool surfaces surface
 patterns; the library entries name which shape of the pattern
 was detected; the reader closes the loop. That is the whole
 method. A worked-example archive that holds only documents
-Frame Check treats favourably is a selection-biased archive;
+Framecheck treats favourably is a selection-biased archive;
 this entry exists partly to anchor the archive against that
 bias.
 
 ## Citation
 
 Lucic, L. (2026). *FOMC Statement March 2026: framing analysis
-of an institutional monetary-policy release*. Frame Check
+of an institutional monetary-policy release*. Framecheck
 Worked Examples.
 frame.clarethium.com/corpus/worked-examples/fomc-statement-march-2026/
 

@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/Clarethium/frame-check/blob/master/schemas/attribution-1.0.0.json",
-  "title": "Frame Check MCP attribution schema",
-  "description": "Per-resource and envelope-level attribution metadata exposed on every resources/list response from the frame-check-mcp server. Keys live under the reverse-DNS prefix `clarethium.com/` per MCP spec 2025-06-18 _meta key naming. Additive minor bumps (1.x.0) preserve consumer compatibility; breaking changes bump the major.",
+  "$id": "https://github.com/Clarethium/framecheck/blob/master/schemas/attribution-1.0.0.json",
+  "title": "Framecheck MCP attribution schema",
+  "description": "Per-resource and envelope-level attribution metadata exposed on every resources/list response from the framecheck-mcp server. Keys live under the reverse-DNS prefix `clarethium.com/` per MCP spec 2025-06-18 _meta key naming. Additive minor bumps (1.x.0) preserve consumer compatibility; breaking changes bump the major.",
   "version": "1.0.0",
   "definitions": {
     "spdxLicense": {
       "type": "string",
-      "description": "SPDX license identifier. The Frame Check canon ships analytical artifacts under CC-BY-4.0; the source code is Apache-2.0 but is not advertised through this schema."
+      "description": "SPDX license identifier. The Framecheck canon ships analytical artifacts under CC-BY-4.0; the source code is Apache-2.0 but is not advertised through this schema."
     },
     "absoluteUrl": {
       "type": "string",
@@ -150,7 +150,7 @@
       "uri": "frame-check://corpus/four-llms-bitcoin-claude",
       "_meta": {
         "clarethium.com/content-type": "bundled-document",
-        "clarethium.com/license-note": "Bundled documents may contain verbatim third-party text under fair-use posture for research analysis, or AI-generated outputs from third-party services. See the document's in-file header for the accurate origin and copyright. Frame Check's analytical commentary on this document (CC-BY-4.0, Lovro Lucic) lives at the sibling /profile, /peer/<partner>, and /diff/<partner> URIs."
+        "clarethium.com/license-note": "Bundled documents may contain verbatim third-party text under fair-use posture for research analysis, or AI-generated outputs from third-party services. See the document's in-file header for the accurate origin and copyright. Framecheck's analytical commentary on this document (CC-BY-4.0, Lovro Lucic) lives at the sibling /profile, /peer/<partner>, and /diff/<partner> URIs."
       }
     }
   ]
