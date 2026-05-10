@@ -624,7 +624,11 @@ def _sentence_preview(sent_text, marker=None, window=80):
     return sent_text[:window] + "..."
 
 
-def detect_coverage(text, include_attribution=False, include_candidates=False):
+def detect_coverage(
+    text: str,
+    include_attribution: bool = False,
+    include_candidates: bool = False,
+) -> dict[str, Any]:
     """Detect which analytical categories a document covers, with density.
 
     Returns per-category marker count, density per 1Kw, and coverage summary.
@@ -815,7 +819,7 @@ def detect_coverage(text, include_attribution=False, include_candidates=False):
 # temporal_orientation
 # ================================================================
 
-def temporal_orientation(text):
+def temporal_orientation(text: str) -> dict[str, Any]:
     """Compute past/present/future orientation ratio.
 
     Uses split_sentences from clarethium_measure to get sentence-level
@@ -1048,7 +1052,7 @@ def _voice_cascade_eval(you_pct, we_pct, imp_count, spec_pct, promo_pct):
 _VOICE_BORDERLINE_MARGIN = 2.0
 
 
-def detect_voice(text):
+def detect_voice(text: str) -> dict[str, Any]:
     """Detect the document's voice: who it positions as the agent.
 
     Voice types:
@@ -1377,7 +1381,9 @@ EPISTEMIC_CANDIDATE_ATTRIBUTION = re.compile(
 )
 
 
-def detect_epistemic_basis(text, include_candidates=False):
+def detect_epistemic_basis(
+    text: str, include_candidates: bool = False,
+) -> dict[str, Any]:
     """Detect how the document supports its claims.
 
     Returns the ratio of source-attributed vs unsupported numeric claims.

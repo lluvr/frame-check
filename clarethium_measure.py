@@ -1869,7 +1869,12 @@ def grounding_decomposition(doc_text, source_text):
 # UNIFIED MEASUREMENT API
 # ================================================================
 
-def measure(doc_text, source=None, comparisons=None, topic=None):
+def measure(
+    doc_text: str,
+    source: str | None = None,
+    comparisons: list[str] | None = None,
+    topic: str | None = None,
+) -> dict[str, Any]:
     """Full measurement profile for an AI-generated document.
 
     Args:
