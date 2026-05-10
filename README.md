@@ -163,7 +163,7 @@ Or directly via pytest:
 
     python3 -m pytest -q
 
-24 test files, ~30 seconds end-to-end. Includes 40+ adversarial dispatcher test functions in `tests/test_mcp_adversarial.py` (parametrized into more tests at collection time) plus the V4.2 engine + classifier coverage.
+21 test files under `tests/`, ~30 seconds end-to-end. Includes 40 adversarial dispatcher test functions in `tests/test_mcp_adversarial.py` (parametrized into more tests at collection time) plus the genre-classifier and frame-divergence coverage.
 
 ## License
 
