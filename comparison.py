@@ -1057,7 +1057,7 @@ def serialize_model_for_stream(
     # SourceResult URLs and source_text fields that live inside
     # each SourceNetworkResult.
     stream_data = {k: v for k, v in model_data.items() if k != "sn_results"}
-    out = jsonify(stream_data)
+    out: dict[str, Any] = jsonify(stream_data)
     text = out.get("text", "")
     if len(text) > 2000:
         out["text"] = text[:2000]
@@ -1212,7 +1212,11 @@ def _compose_compare_verdict(
     return ""
 
 
-def _compose_compare_takeaway(models, model_names, shared_blind):
+def _compose_compare_takeaway(
+    models: dict[str, dict[str, Any]],
+    model_names: list[str],
+    shared_blind: list[str],
+) -> dict[str, Any]:
     """Compose structural takeaway questions for the comparison.
 
     Mirrors the per-document takeaway-questions panel on /check
@@ -1252,7 +1256,7 @@ def _compose_compare_takeaway(models, model_names, shared_blind):
     except ImportError:
         COVERAGE_QUESTIONS = {}
 
-    def _collect_frames(model_data):
+    def _collect_frames(model_data: dict[str, Any] | None) -> list[dict[str, str]]:
         # frame_library_matches is the analyzed-model output's
         # canonical name (set in comparison.analyze_model). Older
         # callers that pass models without this field get an empty
@@ -1283,7 +1287,7 @@ def _compose_compare_takeaway(models, model_names, shared_blind):
             })
         return out
 
-    frames_per_model = []
+    frames_per_model: list[dict[str, Any]] = []
     for name in model_names:
         if name not in models:
             continue
@@ -1311,7 +1315,7 @@ def _compose_compare_takeaway(models, model_names, shared_blind):
         a_frames = frames_per_model[0].get("frames") or []
         b_frames = frames_per_model[1].get("frames") or []
         if a_frames and len(a_frames) == len(b_frames):
-            def _key(f):
+            def _key(f: dict[str, Any]) -> tuple[str, str, str, str]:
                 return (
                     f.get("fvs_id") or "",
                     f.get("name") or "",
@@ -1335,7 +1339,11 @@ def _compose_compare_takeaway(models, model_names, shared_blind):
     }
 
 
-def _detect_verbatim_overlap(models, model_names, threshold=0.95):
+def _detect_verbatim_overlap(
+    models: dict[str, dict[str, Any]],
+    model_names: list[str],
+    threshold: float = 0.95,
+) -> dict[str, Any] | None:
     """Detect whether two compared responses share substantially
     identical text.
 
@@ -1431,7 +1439,12 @@ def _oxford(items: list[str], conj: str = "and") -> str:
     return ", ".join(items[:-1]) + f", {conj} {items[-1]}"
 
 
-def _compose_comparison_portrait(models, model_names, agreed_count, mode=None):
+def _compose_comparison_portrait(
+    models: dict[str, dict[str, Any]],
+    model_names: list[str],
+    agreed_count: int,
+    mode: str | None = None,
+) -> str | None:
     """Deterministic 2-3 sentence prose portrait of the comparison.
 
     Sits at the top of /compare's takeaway panel, mirroring the role
@@ -1557,7 +1570,10 @@ def _compose_comparison_portrait(models, model_names, agreed_count, mode=None):
     return " ".join(sentences)
 
 
-def build_cross_model_comparison(models, mode=None):
+def build_cross_model_comparison(
+    models: dict[str, dict[str, Any]],
+    mode: str | None = None,
+) -> dict[str, Any] | None:
     """Build the cross-model insights from per-model analyses.
 
     Takes a dict of {model_name: analyze_model(...) result} and
