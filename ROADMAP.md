@@ -51,9 +51,13 @@ A `1.0.0` release commits to:
   pytest --doctest-modules` (or equivalent) and are part of the CI
   gate.
 - **Conformance driver gate.** `scripts/mcp_conformance_driver.py`
-  runs against the freshly-built wheel in CI on every tag push (it
-  already runs in the publish workflow's smoke test; the gate
-  becomes blocking at v1.0).
+  runs against the freshly-built wheel on every tag push and is
+  PR-blocking as of `0.9.x`. The driver speaks JSON-RPC over stdio
+  to the wheel as an external MCP client would and validates every
+  primitive (initialize, tools/list, tools/call for `frame_check`
+  and `frame_compare`, resources/list, resources/read, prompts/list,
+  prompts/get, ping, error handling). v1.0 expectation: keep this
+  gate green across all primitives at every cut.
 - **Validation pre-registration completed.** The behavior-change
   study pre-registered at `validation/wedge_behavior/PROTOCOL_v1.md`
   has its first execution complete with N≥30 documents per
