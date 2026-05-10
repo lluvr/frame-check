@@ -486,7 +486,7 @@ def _worked_example_entries() -> list[tuple[Any, ...]]:
             if m:
                 fm = m.group(1)
 
-                def _get(key):
+                def _get(key: str) -> str | None:
                     km = re.search(
                         rf'^{re.escape(key)}:\s*(.+)$',
                         fm, re.MULTILINE,
@@ -544,7 +544,7 @@ def _transmission_entries() -> list[tuple[Any, ...]]:
             if m:
                 fm = m.group(1)
 
-                def _get(key):
+                def _get(key: str) -> str | None:
                     km = re.search(
                         rf'^{re.escape(key)}:\s*(.+)$',
                         fm, re.MULTILINE,
@@ -934,7 +934,7 @@ def _find_latest_aggregate() -> str | None:
 
 # ── MCP-shape resource handlers ────────────────────────────────────
 
-def _list_resources() -> list[dict]:
+def _list_resources() -> list[dict[str, Any]]:
     """Enumerate every resource the server can hand to an agent.
 
     Conservative: only advertises URIs whose content is present on
@@ -944,7 +944,7 @@ def _list_resources() -> list[dict]:
     the list as authoritative for this deploy rather than assuming
     a stable superset.
     """
-    resources: list[dict] = []
+    resources: list[dict[str, Any]] = []
 
     # Library index: the full map (IDs + status + adjacency) an
     # agent would otherwise reconstruct by reading every entry.
