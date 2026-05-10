@@ -23,7 +23,7 @@ The substrate stays deterministic: regex matching plus arithmetic
 over existing structural measurements. No LLM is invoked. Genre is
 not a verdict on the document; it is a structural reading of how
 the document positions its content. Agents surfacing genre should
-name it as Frame Check's reading and surface the runner-up when
+name it as Framecheck's reading and surface the runner-up when
 confidence is borderline (the cascade hesitated between two
 positionings).
 """

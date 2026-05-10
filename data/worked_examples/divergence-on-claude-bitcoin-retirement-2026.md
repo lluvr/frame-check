@@ -3,7 +3,7 @@ title: Frame divergence in action: what frames Claude's Bitcoin retirement recom
 slug: divergence-on-claude-bitcoin-retirement-2026
 author: Lovro Lucic
 published: 2026-04-24
-source_document_url: https://github.com/Clarethium/frame-check/tree/master/data/worked_examples/divergence-on-claude-bitcoin-retirement-2026
+source_document_url: https://github.com/Clarethium/framecheck/tree/master/data/worked_examples/divergence-on-claude-bitcoin-retirement-2026
 source_document_title: Claude Haiku 4.5 response to a Bitcoin retirement prompt (2026-04-18 run)
 source_document_author: AI-generated (Anthropic Claude Haiku 4.5, `claude-haiku-4-5-20251001`)
 source_document_type: AI-generated financial-advice response
@@ -16,7 +16,7 @@ hook: The V1 detector named two present frames. The divergence block named seven
 ## Context
 
 This worked example demonstrates frame divergence: the companion
-primitive to Frame Check's V1 detection, shipped on the MCP surface
+primitive to Framecheck's V1 detection, shipped on the MCP surface
 through the `divergence` block on `frame_check` output. The interface
 contract is `FRAME_DIVERGENCE_CONTRACT_v1.md` (c1.0).
 
@@ -270,20 +270,20 @@ this specific document:
 
 ## Why publish this worked example
 
-Frame divergence is the AGI-era primitive Frame Check claims.
+Frame divergence is the AGI-era primitive Framecheck claims.
 Without a worked example, the claim is abstract. This piece makes it concrete in one direction: what
 the MCP surface emits, what the caller-side composition does with
 it, and what the reader-sovereignty constraint looks like in
 practice on a real AI-generated document in a real domain.
 
-The pattern generalises. Any agent-integrated use of Frame Check
+The pattern generalises. Any agent-integrated use of Framecheck
 that passes `include_divergence=true` on `frame_check` receives
 the same block shape; any caller-side model that honors the two
 added `agent_guidance` keys produces a composition in the same
 faithfulness register. This is the compounding shape: the contract
 is stable, the block is deterministic, and the caller's model does
 the judging. No vendor lock-in, no per-product tool proliferation,
-no Frame Check LLM cost.
+no Framecheck LLM cost.
 
 ## Reproducing this analysis
 
@@ -317,7 +317,7 @@ valid shape.
 ## Citation
 
 Lucic, L. (2026). *Frame divergence in action: what frames Claude's
-Bitcoin retirement recommendation did not use*. Frame Check Worked
+Bitcoin retirement recommendation did not use*. Framecheck Worked
 Examples.
 frame.clarethium.com/corpus/worked-examples/divergence-on-claude-bitcoin-retirement-2026/
 

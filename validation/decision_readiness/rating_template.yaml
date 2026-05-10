@@ -5,7 +5,7 @@
 #
 # Read rater_guide.md first for the per-dimension anchor
 # descriptions. Do NOT read corpus/{doc_id}/profile.json before
-# rating; ratings must be blind to Frame Check's computed profile.
+# rating; ratings must be blind to Framecheck's computed profile.
 
 # Required identifying fields
 doc_id: "REPLACE_WITH_doc_id_FROM_CORPUS"   # must match a corpus/{doc_id}/ entry
@@ -24,7 +24,7 @@ ratings:
   counterfactual: null   # 1=absent, 5=engaged
 
 # Per-dimension notes. Free text. The validation effort uses
-# these to interpret divergence cases (where Frame Check's profile
+# these to interpret divergence cases (where Framecheck's profile
 # and expert ratings disagree). Notes are how the methodology
 # learns where to revise.
 notes:

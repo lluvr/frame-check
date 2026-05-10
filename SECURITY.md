@@ -1,10 +1,10 @@
 # Security Policy
 
-Frame Check has two distribution surfaces:
+Framecheck has two distribution surfaces:
 
 1. **Web service** at `frame.clarethium.com`: a free public research
    instrument (currently in operator-controlled deploy hold).
-2. **MCP package** `frame-check-mcp` (Python wheel; pip-installable
+2. **MCP package** `framecheck-mcp` (Python wheel; pip-installable
    for use with Claude Desktop / Cursor / any MCP client). The wheel
    ships the deterministic measurement layer; LLM-augmented surfaces
    are caller-side.
@@ -34,20 +34,20 @@ exfiltration, cost exhaustion), expect faster turnaround.
 
 **Public disclosure**: the default is coordinated disclosure. The
 reporter and the curator agree on a disclosure date after the fix
-ships. Frame Check does not currently run a bug-bounty program; a
+ships. Framecheck does not currently run a bug-bounty program; a
 security report is a contribution, not a transaction.
 
 ## Supported versions
 
-Frame Check has two release postures:
+Framecheck has two release postures:
 
 - **Web service** (`frame.clarethium.com`): a live deploy, not a
   released product with version ranges. The operator's private dev
   tree is the authoritative source; the Fly.io image tracks its
   master branch with operator-controlled deploy cadence. The public
-  MCP package source ships from `github.com/Clarethium/frame-check`
+  MCP package source ships from `github.com/Clarethium/framecheck`
   via a public-extract pipeline.
-- **MCP package** (`frame-check-mcp` on PyPI, planned 0.8.0
+- **MCP package** (`framecheck-mcp` on PyPI, planned 0.8.0
   initial release): semver-versioned. Security fixes for the
   current minor (0.8.x) ship as patch releases. There is no
   long-term-support track yet; expect every minor to require an
@@ -66,7 +66,7 @@ can run independently:
 
 1. **Install the wheel under inspection** into a clean target.
 
-       pip install --target /tmp/fc-target frame-check-mcp==<version>
+       pip install --target /tmp/fc-target framecheck-mcp==<version>
 
 2. **Run the lift dry-run** against a fresh build of the same
    version's source tree (clones the repo, builds the wheel, runs
@@ -98,7 +98,7 @@ vulnerability" above.
 
 | Date | Surface | Audit | Outcome |
 |---|---|---|---|
-| 2026-04-27 | `frame-check-mcp` 0.8.0 wheel | Pre-publish leakage audit + adversarial harness + client conformance | 16 leakage findings catalogued, 14 closed, 2 partial; 3 dispatcher defects surfaced + closed; 32/32 client round-trips pass. |
+| 2026-04-27 | `framecheck-mcp` 0.8.0 wheel | Pre-publish leakage audit + adversarial harness + client conformance | 16 leakage findings catalogued, 14 closed, 2 partial; 3 dispatcher defects surfaced + closed; 32/32 client round-trips pass. |
 | 2026-04-18 | Web service | Phase 5 cost / origin / abuse hardening | $5 -> $3 daily cap, attacker-hardened error messages, /admin/gates operator endpoint, env-overrides on 7 caps. See commit range `bee2265..f3dce50`. |
 
 ## Security-sensitive surfaces
@@ -118,7 +118,7 @@ these is in scope.
   flows on the web service send excerpts to third-party LLMs and
   user-facing documentation names this explicitly.
 - **MCP server** (`mcp_server.py`, distributed as the
-  `frame-check-mcp` wheel). Untrusted input reaches the detection
+  `framecheck-mcp` wheel). Untrusted input reaches the detection
   engine through the MCP `frame_check` / `frame_compare` tools and
   through the `resources/read` URI surface. Panic /
   denial-of-service through crafted input is in scope. Path
@@ -142,14 +142,14 @@ these is in scope.
 - Typos, low-severity UX issues, and ideas for additional
   security hardening that are not vulnerabilities. Use the issue
   templates (`.github/ISSUE_TEMPLATE/`) for those.
-- Content moderation of user submissions. Frame Check processes
+- Content moderation of user submissions. Framecheck processes
   text deterministically and does not retain submissions; there
   is no moderation surface.
 
 ## Dual-use guidance
 
-Frame Check is a structural-analysis instrument, not a
-truthfulness verdict. Agent integrators who use Frame Check's
+Framecheck is a structural-analysis instrument, not a
+truthfulness verdict. Agent integrators who use Framecheck's
 output as a quality score, truthfulness flag, or editing rule
 that suppresses minority framings are using the tool outside its
 design scope. See `ANTICIPATED_CRITIQUES.md §7 C7.1` and the

@@ -59,7 +59,7 @@ _PATTERNS = [
             "falsification_max_count": 0,
         },
         "reading": (
-            "Document recommends a pick while Frame Check's failure-"
+            "Document recommends a pick while Framecheck's failure-"
             "framing absence detector fires (FVS-007), and either "
             "FVS-009 Risk Frame or FVS-014 Temporal Anchoring is not "
             "actively detected. Recommendations without falsification "

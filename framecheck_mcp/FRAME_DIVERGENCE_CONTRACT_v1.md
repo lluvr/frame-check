@@ -5,15 +5,15 @@ The interface contract for the `divergence` block inside `frame_check` output. B
 **Status:** v1 contract `c1.0` is canonical and shipping. The contract carries forward unchanged across the v2 layered-architecture spec for backward compatibility; this document is the canonical Part 2 reference and the citation target for any caller binding to the `divergence` block.
 **Author:** Lovro Lucic
 **Date:** 2026-04-23 (last revised for capability-regime alignment and V4.2-alpha status disclosure).
-**Citation format:** Lucic, L. (2026). *Frame Divergence v1, Part 2: Contract.* Frame Check. MCP resource URI: `frame-check://spec/frame-divergence/v1/part-2`.
+**Citation format:** Lucic, L. (2026). *Frame Divergence v1, Part 2: Contract.* Framecheck. MCP resource URI: `frame-check://spec/frame-divergence/v1/part-2`.
 
 ---
 
 ## 1. Scope and stance
 
-Part 2 specifies the `divergence` block that Frame Check exposes inside `frame_check` tool output and the capability regime under which divergence is composed on each surface. It binds interface, not implementation. Per Rec II, divergence is not a separate tool: it is an output-shape-plus-guidance enhancement of `frame_check`. Per Rec I, the V4.2 judge step runs server-side on web and caller-side on MCP, which means the block's provenance semantics differ per surface.
+Part 2 specifies the `divergence` block that Framecheck exposes inside `frame_check` tool output and the capability regime under which divergence is composed on each surface. It binds interface, not implementation. Per Rec II, divergence is not a separate tool: it is an output-shape-plus-guidance enhancement of `frame_check`. Per Rec I, the V4.2 judge step runs server-side on web and caller-side on MCP, which means the block's provenance semantics differ per surface.
 
-Stance: the contract is the promise that binds Frame Check's authored output discipline to what agents and thinkers actually receive when the `divergence` block appears. Everything downstream of this contract (library evolution, engine upgrades, rendering choices, caller-side composition) must honor it or trigger a contract version bump with a migration path once dependent adopters exist.
+Stance: the contract is the promise that binds Framecheck's authored output discipline to what agents and thinkers actually receive when the `divergence` block appears. Everything downstream of this contract (library evolution, engine upgrades, rendering choices, caller-side composition) must honor it or trigger a contract version bump with a migration path once dependent adopters exist.
 
 Contract version in this document: **c1.0**.
 
@@ -37,7 +37,7 @@ When absent, the `frame_check` response carries only the `analysis` block and `a
 
 ### 2.3 Reserved operation names
 
-Three names are reserved in the tool namespace and MUST NOT be used for other purposes in v1 implementations. Reservation prevents copycats or parallel implementations from claiming them before Frame Check ships them if scope expands:
+Three names are reserved in the tool namespace and MUST NOT be used for other purposes in v1 implementations. Reservation prevents copycats or parallel implementations from claiming them before Framecheck ships them if scope expands:
 - `frame_inventory` (reserved): catalog-usage fingerprint across a corpus of documents (future-extension).
 - `frame_gap` (reserved): decision-level blind-spot surfacing across a structured decision record rather than a single document (deferred).
 - `frame_divergence` (reserved, superseded): the rejected separate-tool shape from an earlier draft. Reserved to prevent future fragmentation of the category.
@@ -48,8 +48,8 @@ This document specifies the divergence-related inputs. Existing `frame_check` in
 
 ### 3.1 `include_divergence` (optional, boolean)
 
-Default-on flag. When `true` (default), the divergence block is present in the response subject to §2.2 conditions. When `false` (explicit opt-out), no divergence block. Surface defaults as shipped in `frame-check-mcp` 0.8.0 onward:
-- **MCP:** default `true` (revised from the earlier draft `false`). Caller's agent already invokes its own LLM for downstream rendering; the divergence block adds caller-side V4.2 capability via `agent_guidance.how_to_render_divergence` without invoking any Frame Check LLM (zero per-call cost, vendor independence by construction). Callers that want the pre-divergence response shape pass `include_divergence=false`. The default flip from `false` to `true` happened at the 0.8.0 launch decision (commit `2e83fec` / `94ad5fe`); rationale: the V4.2-first launch commitment makes the divergence block the first-class surface, not an opt-in. The earlier `false` default in this contract draft is preserved in git history; the shipped wheel is the canonical reference and this section is its spec.
+Default-on flag. When `true` (default), the divergence block is present in the response subject to §2.2 conditions. When `false` (explicit opt-out), no divergence block. Surface defaults as shipped in `framecheck-mcp` 0.8.0 onward:
+- **MCP:** default `true` (revised from the earlier draft `false`). Caller's agent already invokes its own LLM for downstream rendering; the divergence block adds caller-side V4.2 capability via `agent_guidance.how_to_render_divergence` without invoking any Framecheck LLM (zero per-call cost, vendor independence by construction). Callers that want the pre-divergence response shape pass `include_divergence=false`. The default flip from `false` to `true` happened at the 0.8.0 launch decision (commit `2e83fec` / `94ad5fe`); rationale: the V4.2-first launch commitment makes the divergence block the first-class surface, not an opt-in. The earlier `false` default in this contract draft is preserved in git history; the shipped wheel is the canonical reference and this section is its spec.
 - **Web:** default `true` rate-limited (rate-limit per IP per day per Rec I; consult web app `security.DailyFeatureLimit` for the active cap).
 
 ### 3.2 `domain_hint` (optional, enumerated string)
@@ -112,7 +112,7 @@ Required:
 - `surface`: enum `mcp` or `web`. Reports which channel produced the response.
 - `v4_2_execution`: object describing where and how the V4.2 judge step ran.
   - On web: `{"location": "server_side", "tier": "single_validator_v4_2_latest", "architecture": "single_family_single_judge", "vendor": "xai/grok-4-1-fast-non-reasoning", "model_version": "<served>", "fallback_triggered": <bool>, "fallback_reason": <str|null>}`.
-  - On MCP: `{"location": "caller_side", "tier": "caller_model", "note": "V4.2 judge step delegated to caller's agent model per Rec I. Frame Check's MCP server does not invoke an external LLM. See agent_guidance.how_to_render_divergence for composition instructions."}`.
+  - On MCP: `{"location": "caller_side", "tier": "caller_model", "note": "V4.2 judge step delegated to caller's agent model per Rec I. Framecheck's MCP server does not invoke an external LLM. See agent_guidance.how_to_render_divergence for composition instructions."}`.
 - `v4_2_engine_status`: enum `alpha` | `beta` | `production_candidate` | `production`. Reports the production-readiness of the V4.2 detection layer at invocation time. Consumers that gate on stability bind against this enum.
 - `domain_inferred`: actual domain used for filtering. May differ from `domain_hint` if hint was incompatible with document features; discrepancy flagged.
 - `provisional_count`: number of absent-frame records flagged provisional. Lets consumers surface a caveat without parsing every record.
@@ -126,7 +126,7 @@ Optional:
 
 When the `divergence` block is present, the existing `agent_guidance` field on `frame_check` output MUST carry two additional keys:
 
-- `how_to_render_divergence`: explicit instructions for the caller's model (MCP) or Frame Check's renderer (web) to complete the composition with faithfulness guarantees. Includes: preferred rendering per `divergence_rendering`, citation format, non-prescriptive language requirements, and the V4.2 judge prompt scaffolding (MCP only).
+- `how_to_render_divergence`: explicit instructions for the caller's model (MCP) or Framecheck's renderer (web) to complete the composition with faithfulness guarantees. Includes: preferred rendering per `divergence_rendering`, citation format, non-prescriptive language requirements, and the V4.2 judge prompt scaffolding (MCP only).
 - `absence_is_not_prescription`: the Part 1 §5.1.5 guarantee language verbatim: `"Divergence output never implies the user should have used the absent frames. The tool surfaces absence, the thinker decides relevance."`
 
 ### 4.5 Non-prescriptive rendering requirement
@@ -167,7 +167,7 @@ Per `envelope.v4_2_execution` in §4.3. Key invariant: the envelope always repor
 
 On web, the envelope carries model version (e.g., `xai/grok-4-1-fast-non-reasoning-2026-03`), architecture tier, and fallback state. V4.2 server-side status uses the `alpha` | `beta` | `production_candidate` | `production` enum to communicate engine readiness; the value upgrades as the underlying detection layer matures.
 
-On MCP, the envelope explicitly notes the caller-side execution model. Caller's agent is responsible for naming its own model in its downstream report; Frame Check cannot observe caller's model choice and does not claim to. Vendor-independence per Part 1 §5.2.1 is automatically preserved on MCP because the caller chooses the model.
+On MCP, the envelope explicitly notes the caller-side execution model. Caller's agent is responsible for naming its own model in its downstream report; Framecheck cannot observe caller's model choice and does not claim to. Vendor-independence per Part 1 §5.2.1 is automatically preserved on MCP because the caller chooses the model.
 
 ### 6.2 Catalog provenance
 
@@ -191,7 +191,7 @@ Response also includes:
 
 This operationalizes Rec I. The two surfaces run divergence under different cost and model wiring, but honor the same contract specified in §§3-6.
 
-### 7.1 MCP: raw material + agent guidance, zero Frame Check LLM cost
+### 7.1 MCP: raw material + agent guidance, zero Framecheck LLM cost
 
 On MCP, `frame_check` returns:
 - V1 rule-based detection (the pre-existing `analysis` block, zero LLM cost).
@@ -199,13 +199,13 @@ On MCP, `frame_check` returns:
 - Detection evidence (what signals fired, where).
 - `divergence` block when `include_divergence=true`: includes `absent_frames` with `absence_basis` as scaffolding (caller's model completes the verdict), plus `agent_guidance.how_to_render_divergence` carrying V4.2 judge prompt scaffolding, plus `agent_guidance.absence_is_not_prescription` verbatim.
 
-Frame Check's MCP server does not invoke an external LLM. The `analysis_cost_usd == 0.0` MCP contract holds. The caller's agent (Claude Desktop's Claude, Cursor's configured model, etc.) performs the V4.2 judge step using its own model and bears the LLM cost.
+Framecheck's MCP server does not invoke an external LLM. The `analysis_cost_usd == 0.0` MCP contract holds. The caller's agent (Claude Desktop's Claude, Cursor's configured model, etc.) performs the V4.2 judge step using its own model and bears the LLM cost.
 
-MCP surface default for `include_divergence`: `true` per §3.1 (the divergence block is the headline capability; callers wanting the pre-divergence response shape pass `include_divergence=false` explicitly). No rate limit from Frame Check.
+MCP surface default for `include_divergence`: `true` per §3.1 (the divergence block is the headline capability; callers wanting the pre-divergence response shape pass `include_divergence=false` explicitly). No rate limit from Framecheck.
 
 ### 7.2 Web: server-side V4.2, rate-limited, cost-bounded
 
-On web, the divergence UI action promotes `frame_check` to V4.2-mode, in which Frame Check invokes `grok-4-1-fast-non-reasoning` server-side as the single-family judge. Frame Check bears the LLM cost; fast-tier model choice plus rate limiting (candidate: 3 V4.2 calls per IP per day) bound the per-IP exposure.
+On web, the divergence UI action promotes `frame_check` to V4.2-mode, in which Framecheck invokes `grok-4-1-fast-non-reasoning` server-side as the single-family judge. Framecheck bears the LLM cost; fast-tier model choice plus rate limiting (candidate: 3 V4.2 calls per IP per day) bound the per-IP exposure.
 
 Web surface default for `include_divergence`: `false`. V1 detection is the default; V4.2-mode + divergence is a user-triggered action on the results page.
 
@@ -217,13 +217,13 @@ Both surfaces honor the contract specified in §§3-6 of this document. The `div
 
 The capability-per-channel split is the resolution to the "how to publish V4 without being a cost bottleneck" question that motivated ENGINE_TIER_STRATEGY_v1. Three properties compound:
 
-1. **Cost bottleneck dissolves.** MCP delegates LLM work to caller (zero FC cost); web runs V4.2 behind rate limits within budget. Neither surface exposes Frame Check to scaling risk.
-2. **Vendor independence is automatic on MCP.** Caller chooses their model; Frame Check makes no vendor commitment on MCP. Web commits to Grok-4.1 Fast as current single-validator with MODEL_PANEL re-validation trigger protocol as the drift-management mechanism.
+1. **Cost bottleneck dissolves.** MCP delegates LLM work to caller (zero FC cost); web runs V4.2 behind rate limits within budget. Neither surface exposes Framecheck to scaling risk.
+2. **Vendor independence is automatic on MCP.** Caller chooses their model; Framecheck makes no vendor commitment on MCP. Web commits to Grok-4.1 Fast as current single-validator with MODEL_PANEL re-validation trigger protocol as the drift-management mechanism.
 3. **Category claim lives in canon, not in tool inventory.** Per Rec II, divergence is an output-shape enhancement on `frame_check`, citable through methodology + FVS library + Parts 1-4 of this spec. Future products (Vaurith, Proposal Check, other agent frameworks) call `frame_check` and render divergence from its output; no tool proliferation.
 
 ## 8. MCP resource URIs
 
-URI scheme: `frame-check://`. This is the canonical Frame Check MCP resource scheme, established in mcp_server.py v0.6.0 and documented in MCP_SERVER.md. This contract extends the scheme with new paths for spec, versioned library, versioned methodology, and provenance resources; existing paths are unchanged and remain valid. Scheme and path grammar at c1.0 are additive to the established convention.
+URI scheme: `frame-check://`. This is the canonical Framecheck MCP resource scheme, established in mcp_server.py v0.6.0 and documented in MCP_SERVER.md. This contract extends the scheme with new paths for spec, versioned library, versioned methodology, and provenance resources; existing paths are unchanged and remain valid. Scheme and path grammar at c1.0 are additive to the established convention.
 
 Notation: resources listed below that already exist in mcp_server.py are marked (existing); resources introduced by this contract are marked (new). Path grammar follows the established `frame-check://{resource_type}/{id}[/{subresource}]` convention.
 
@@ -249,13 +249,13 @@ Notation: resources listed below that already exist in mcp_server.py are marked 
 
 ### 8.5 Necessary steps to operationalize the new paths
 
-The `frame-check://` scheme itself is the established Frame Check MCP convention (mcp_server.py v0.6.0+, ~150 references across code/tests/docs). An initial draft of this contract proposed `framecheck://` (no hyphen); an audit on 2026-04-23 caught the drift, and this contract was corrected to align with the canonical scheme. These steps operationalize the new PATHS (spec, versioned library, versioned methodology, provenance) added by this contract on top of the existing scheme:
+The `frame-check://` scheme itself is the established Framecheck MCP convention (mcp_server.py v0.6.0+, ~150 references across code/tests/docs). An initial draft of this contract proposed `framecheck://` (no hyphen); an audit on 2026-04-23 caught the drift, and this contract was corrected to align with the canonical scheme. These steps operationalize the new PATHS (spec, versioned library, versioned methodology, provenance) added by this contract on top of the existing scheme:
 
 1. **Extend mcp_server.py resource handlers for the new paths in §§8.1-8.4.** Handlers for `frame-check://spec/frame-divergence/v1/part-{1,2}` and the spec index shipped commit `25c28f0` with traversal-safe dispatch and 5 regression tests. Library/methodology/provenance versioned-path handlers remain pending (future extension; not blocking current Track B or first-adopter flow). `frame_check` tool-surface divergence integration shipped commit `d735571` (see §2.2 implementation status).
 2. **Conflict audit (complete).** Completed 2026-04-23. No external conflict with `frame-check://`. Internal conflict with the incorrect `framecheck://` draft was caught and corrected before commit.
 3. **Document the new paths in MCP_SERVER.md.** Section "Frame Divergence spec" added in commit `25c28f0` listing the spec path patterns. Library/methodology/provenance versioned paths documentation remains pending.
-4. **Consistency sweep across Frame Check docs.** Existing docs use `frame-check://` consistently; this document was aligned to the canonical scheme in the same commit.
-5. **Announce the new paths.** Publish hold lifted 2026-04-27; `frame-check-mcp` 0.8.0/0.8.1/0.8.2 shipped on PyPI. Path-list announcement in MCP_SERVER.md is the announcement vehicle (the spec resource handlers ship with each release).
+4. **Consistency sweep across Framecheck docs.** Existing docs use `frame-check://` consistently; this document was aligned to the canonical scheme in the same commit.
+5. **Announce the new paths.** Publish hold lifted 2026-04-27; `framecheck-mcp` 0.8.0/0.8.1/0.8.2 shipped on PyPI. Path-list announcement in MCP_SERVER.md is the announcement vehicle (the spec resource handlers ship with each release).
 6. **Include path coverage in package metadata.** Path coverage is wheel-resident (mcp_server.py resource handlers shipped per step 1); package-metadata path enumeration in pyproject.toml description is a future-extension polish item, not blocking.
 
 Steps 1-4 are complete or partially complete (spec-paths shipped; versioned library/methodology/provenance paths are additive future extensions). Steps 5-6 transitioned post-publish-hold-lift to ongoing maintenance items.

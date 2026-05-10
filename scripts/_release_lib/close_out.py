@@ -1,4 +1,4 @@
-"""Cut a Frame Check MCP release: CHANGELOG rename + dev-bump + local tag.
+"""Cut a Framecheck MCP release: CHANGELOG rename + dev-bump + local tag.
 
 The operator runs this BEFORE the orchestrator (`scripts/release.py`).
 The script does the five mechanical pre-publish steps in one invocation:
@@ -331,7 +331,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     new_server_version = _strip_dev_suffix(next_version)
 
-    tag_message = f"frame-check-mcp v{version}\n\n" + version_section.strip() + "\n"
+    tag_message = f"framecheck-mcp v{version}\n\n" + version_section.strip() + "\n"
 
     if args.dry_run:
         print("DRY RUN. Operations that would be performed:")
@@ -415,7 +415,7 @@ def _release_page_url(version: str) -> str:
     """Derive the GitHub releases/new URL from `git remote get-url origin`.
 
     Path A.1 split-repo discipline: the public source repo
-    `Clarethium/frame-check` is the user-visible release target; the
+    `Clarethium/framecheck` is the user-visible release target; the
     the upstream development tree carries audit-trail-only
     tags. Both are valid call sites for cut_release.py, so the URL
     must reflect whichever repo this script is actually running in

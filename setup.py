@@ -38,7 +38,7 @@ staging time means the must-exclude inventory is enforced by code
 rather than by manual inspection.
 
 Why we need (2). The wheel content is the surface adopters see when
-they run ``pip install frame-check-mcp``. Without this hook, dev-tree
+they run ``pip install framecheck-mcp``. Without this hook, dev-tree
 comments and adopter-facing markdown reach pip-install consumers
 even when the public mirror is canon-clean. The canon-substitution
 discipline must be symmetric: every public surface gets the same

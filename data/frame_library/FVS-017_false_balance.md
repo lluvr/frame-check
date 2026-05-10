@@ -79,4 +79,4 @@ Two examples covering structurally distinct mechanisms of the frame: quantitativ
 ## Branch applicability
 
 **Primary branch:** A (document analysis)
-**Branch A:** Structural signal only. When coverage analysis shows multiple dimensions with similar density AND the voice is analytical (not promotional), false balance is POSSIBLE but not confirmed. Confirmation requires domain knowledge about the evidence distribution. Frame Check can flag the structural pattern; the reader must assess the epistemic pattern.
+**Branch A:** Structural signal only. When coverage analysis shows multiple dimensions with similar density AND the voice is analytical (not promotional), false balance is POSSIBLE but not confirmed. Confirmation requires domain knowledge about the evidence distribution. Framecheck can flag the structural pattern; the reader must assess the epistemic pattern.

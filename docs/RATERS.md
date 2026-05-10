@@ -1,4 +1,4 @@
-# Becoming a Frame Check Phase 2 Rater
+# Becoming a Framecheck Phase 2 Rater
 
 **Status:** Open invitation. v0 shipped 2026-04-20.
 **Curator:** Lovro Lucic (curator@frame-check; contact details at bottom).
@@ -11,7 +11,7 @@
 ## What this document is
 
 An open invitation and a contract-in-plain-prose for the Phase 2
-expert validation of Frame Check's decision-readiness profile. The
+expert validation of Framecheck's decision-readiness profile. The
 profile lives at https://frame.clarethium.com/corpus/decision-readiness/
 with explicit `experimental` status pending Phase 2 results. Without
 external raters, the profile stays experimental indefinitely and the
@@ -26,7 +26,7 @@ This document describes what a rater is signing up for, the honest
 state of what they would be rating against, the deliverable shape,
 the terms, and what changes after Phase 2 ships.
 
-**Rating target.** Frame Check's per-document decision-readiness
+**Rating target.** Framecheck's per-document decision-readiness
 profile, computed from existing structural signals and composed
 into five dimensions (coverage, calibration, evidence, robustness,
 counterfactual). The methodology page describes each dimension
@@ -47,7 +47,7 @@ is not validated before you sign on:
   (Kahneman, Tversky; calibration corpus; confirmation bias
   literature). The choice of dimensions is curatorial and
   reviewable; alternative decompositions are possible.
-- **Per-dimension signals:** Computed from existing Frame Check
+- **Per-dimension signals:** Computed from existing Framecheck
   measurements (perspective coverage, claim hedging, source
   verification, contradictions, named structural patterns from
   the Frame Vocabulary Standard library). Each dimension's
@@ -71,7 +71,7 @@ is not validated before you sign on:
 Rating is therefore a real epistemic act. A rater who gives 5/5
 on every dimension regardless of document substance is not
 helpful; a rater who finds the documents genuinely uneven on the
-dimensions, and whose ratings differ from Frame Check's profile,
+dimensions, and whose ratings differ from Framecheck's profile,
 is exactly what the validation needs.
 
 ---
@@ -112,7 +112,7 @@ A useful Phase 2 rater satisfies most of:
   consistent ratings across them is doing the job. The work is
   repeatable rather than essayistic.
 - **Tolerance for the methodology's limitations.** The profile
-  is structural, not predictive. A rater who insists Frame Check
+  is structural, not predictive. A rater who insists Framecheck
   should rate the document's CONCLUSIONS rather than its
   STRUCTURE is not aligned with the methodology and will produce
   noise.
@@ -265,7 +265,7 @@ uniform across dimensions and gives the same score to all five,
 the uniform-rating finding is publishable as the rating, with
 the rater's argument for why.
 
-**Blinding.** The rater MUST NOT read Frame Check's computed
+**Blinding.** The rater MUST NOT read Framecheck's computed
 profile for the document before rating. The profile lives in
 `corpus/{doc_id}/profile.json`. Reading it before rating
 invalidates the rating for correlation purposes (the rater is
@@ -281,7 +281,7 @@ markers and I count substance").
 
 - **Not a job.** This is a research collaboration with named
   attribution, optionally compensated. Not employment.
-- **Not a free certification of Frame Check.** A rater's
+- **Not a free certification of Framecheck.** A rater's
   participation does not endorse the profile. The validation
   result publishes whether the dimensions correlated with
   expert judgment; that result is the endorsement (or the
@@ -291,7 +291,7 @@ markers and I count substance").
   AFTER Phase 2 ships. A rater who wants to be involved in
   drafting the paper itself can opt in; that is a separate
   commitment shape.
-- **Not a binding judgment on AI quality.** Frame Check rates
+- **Not a binding judgment on AI quality.** Framecheck rates
   STRUCTURAL signals in documents (which may or may not be AI
   output). The rater is not endorsing or rejecting any specific
   AI provider.
@@ -333,7 +333,7 @@ markers and I count substance").
    is settled.
 9. **Submit ratings** as a GitHub pull request adding your
    YAML files to `validation/decision_readiness/ratings/`.
-   Public-facing repository: https://github.com/Clarethium/frame-check/.
+   Public-facing repository: https://github.com/Clarethium/framecheck/.
 
 ---
 
@@ -381,7 +381,7 @@ the v2 expansion.
 ## How to reach the curator
 
 GitHub: open an issue at
-https://github.com/Clarethium/frame-check/issues with the title
+https://github.com/Clarethium/framecheck/issues with the title
 prefix `[phase-2-rating]` and a brief expression of interest.
 The curator monitors this label.
 

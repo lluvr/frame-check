@@ -1,6 +1,6 @@
-# Frame Check MCP Server
+# Framecheck MCP Server
 
-Exposes Frame Check's deterministic structural framing analysis as a Model
+Exposes Framecheck's deterministic structural framing analysis as a Model
 Context Protocol tool so agents (Claude Desktop, Cursor, any MCP-compatible
 client) can invoke framing analysis directly instead of paraphrasing
 documents as their own LLM reading.
@@ -24,7 +24,7 @@ payload with three sections:
    invoked), deterministic claim.
 
 The agent_guidance and provenance blocks exist because an agent passing
-Frame Check's output to a user without attribution would strip the
+Framecheck's output to a user without attribution would strip the
 reproducibility that makes the measurement worth citing.
 
 ## Install in Claude Desktop
@@ -90,7 +90,7 @@ change below counts as a breaking change and requires a test update:
 - Three top-level sections (`analysis`, `agent_guidance`, `provenance`)
 - `analysis_cost_usd == 0.0` (no LLM in the deterministic layer)
 - `agent_guidance.what_this_tool_tells_you` and `what_this_tool_does_not_tell_you` populated
-- `agent_guidance.how_to_cite_faithfully` names Frame Check explicitly
+- `agent_guidance.how_to_cite_faithfully` names Framecheck explicitly
 - `frame_library_matches[*].status` in `{draft, canon, aspirational, retired}`
 - `verification` block present iff `source_text` supplied
 - `scope_regime_guidance` cites Layer 4 on saturated sources
@@ -139,7 +139,7 @@ top-level `instructions` field (per the MCP protocol):
 - `protocolVersion`: the supported MCP protocol version.
 - `capabilities`: tools, resources, and prompts capabilities all advertised.
 - `serverInfo`: `name` ("frame-check") and `version` (matches `SERVER_VERSION`).
-- `instructions`: server-orientation prose for the agent. Names the use case (when to use Frame Check), the default invocation shape (`frame_check(document_text=<text>)` works zero-arg), and the four-prompt workflow surface (`frame_check_my_response`, `frame_check_this_ai_response`, `challenge_document`, `explain_framing`). MCP clients whose UI surfaces the InitializeResult can show the user a one-line answer to "what is this server"; agents reading the field get cross-tool orientation that the per-tool descriptions cannot carry.
+- `instructions`: server-orientation prose for the agent. Names the use case (when to use Framecheck), the default invocation shape (`frame_check(document_text=<text>)` works zero-arg), and the four-prompt workflow surface (`frame_check_my_response`, `frame_check_this_ai_response`, `challenge_document`, `explain_framing`). MCP clients whose UI surfaces the InitializeResult can show the user a one-line answer to "what is this server"; agents reading the field get cross-tool orientation that the per-tool descriptions cannot carry.
 
 ## Release arc
 
@@ -148,7 +148,7 @@ This section summarizes the canonical commitments so MCP-facing readers can orie
 **Current state (live on PyPI).** `SERVER_VERSION` in
 `mcp_server.py` matches the released wheel reported on the MCP
 `initialize` handshake; the latest published wheel is on PyPI at
-[pypi.org/project/frame-check-mcp](https://pypi.org/project/frame-check-mcp/).
+[pypi.org/project/framecheck-mcp](https://pypi.org/project/framecheck-mcp/).
 `frame_check` + `frame_compare`, four sovereignty prompts,
 divergence block on by default (`include_divergence=true`; an
 explicit `false` returns the pre-divergence response shape), FVS
@@ -158,7 +158,7 @@ substrate detection (regex-based, zero LLM cost per query); V4.2
 LLM-judge is evaluation-only and not invoked server-side. The MCP
 surface exposes V4.2 via `agent_guidance.how_to_render_divergence`
 so the caller's agent runs V4.2 judgment with its own LLM if the
-caller chooses. Zero Frame Check LLM cost per MCP call; vendor
+caller chooses. Zero Framecheck LLM cost per MCP call; vendor
 independence by construction (the caller picks the model).
 
 **Stable release: `1.0.0`.** API freeze to the v2 construct-carrying shape documented in this file. Breaking change from v1; the canonical first stable release that papers cite.
@@ -166,7 +166,7 @@ independence by construction (the caller picks the model).
 **Collapsed release.** An earlier plan for a `0.7.1` V1-only
 name-reservation release on PyPI was retired 2026-04-23 in favor of
 V4.2-first launch discipline. Name-squat risk on
-`frame-check-mcp` was accepted as tail-risk and did not
+`framecheck-mcp` was accepted as tail-risk and did not
 materialize before the 0.8.0 lift on 2026-04-27.
 
 ## Tool surface
@@ -215,7 +215,7 @@ Returns per-document summaries plus the cross-document comparison:
 shared blind spots, unique coverage gaps, voice / temporal / epistemic
 deltas, and a structured framing-differences narrative with per-dimension
 reader implications. The agent_guidance block explicitly tells the
-caller not to treat the comparison as a ranking; Frame Check names
+caller not to treat the comparison as a ranking; Framecheck names
 what differs, not which is better.
 
 ## Web JSON parity (programmatic alternative)
@@ -459,7 +459,7 @@ quick triage.
         "v4_2_execution": {
             "location": "caller_side",
             "tier": "caller_model",
-            "note": "V4.2 judge step delegated to caller's agent model per Rec I. Frame Check's MCP server does not invoke an external LLM."
+            "note": "V4.2 judge step delegated to caller's agent model per Rec I. Framecheck's MCP server does not invoke an external LLM."
         },
         "v4_2_engine_status": "beta",
         "v4_2_engine_status_reference": "Engine status reflects production-readiness of the V4.2 detection layer; the value is informational for callers that gate on stability.",
@@ -495,7 +495,7 @@ Each cluster carries:
 - `canon_size`: total canon members for this dimension
 - `canon_coverage_fraction`: `member_count / canon_size`, rounded to two decimals
 - `signal_strength`: highest member-frame tier (`high` > `medium` > `low`); the cluster is at least as strong as its strongest member
-- `reading`: a curated, dimension-specific prose reading composed by Frame Check, anchored in evidence (mentions `member_count` and `canon_size`)
+- `reading`: a curated, dimension-specific prose reading composed by Framecheck, anchored in evidence (mentions `member_count` and `canon_size`)
 
 Clusters are sorted by `signal_strength` (high first), then `canon_coverage_fraction` descending (most under-attended first), then dimension alphabetical for stable tiebreaking. The strongest-cluster-first ordering means a caller's agent that takes the first cluster gets the load-bearing dimension theme without further filtering. When no dimension meets the firing threshold, `absence_clusters` is an empty list and the agent falls back to per-frame composition over `absent_frames`.
 
@@ -537,7 +537,7 @@ Output shape (mirrors voice's classification-confidence treatment):
 
 Construct honesty. The classifier composes existing analyzer outputs (voice classification, claim hedge ratio) with text-feature regexes (recommendation markers, instruction markers, alternative-surveying markers, advocacy markers, narrative markers) into per-genre scores. Top score is the classification; runner-up margin drives the confidence label (`high` when margin reaches the borderline threshold; `borderline` when below). When no feature fires (very short text, off-methodology structure, regexes did not match), the classifier abstains: `classification` is `null` and `confidence` is `low`. The construct field carries dimension-specific prose describing how the classification was composed.
 
-Genre is a structural reading of how the document positions its content; not a verdict. Agents surfacing genre to the user should name it as Frame Check's reading and surface the runner-up when confidence is borderline (the cascade hesitated between two positionings).
+Genre is a structural reading of how the document positions its content; not a verdict. Agents surfacing genre to the user should name it as Framecheck's reading and surface the runner-up when confidence is borderline (the cascade hesitated between two positionings).
 
 ### Genre-relative absence ranking
 
@@ -590,7 +590,7 @@ When a pattern's trigger matches the document signal, it surfaces in `divergence
 {
   "id": "recommendation-without-falsification",
   "name": "Recommendation without falsification",
-  "reading": "Document recommends a pick while Frame Check's failure-framing absence detector fires (FVS-007), and either FVS-009 Risk Frame or FVS-014 Temporal Anchoring is not actively detected. Recommendations without falsification conditions cannot be stress-tested; the pick stands or falls without the structure that would let a reader see when it stops being right.",
+  "reading": "Document recommends a pick while Framecheck's failure-framing absence detector fires (FVS-007), and either FVS-009 Risk Frame or FVS-014 Temporal Anchoring is not actively detected. Recommendations without falsification conditions cannot be stress-tested; the pick stands or falls without the structure that would let a reader see when it stops being right.",
   "load_bearing_dimensions": ["counterfactual"],
   "trigger_genre": "recommendation",
   "supporting_evidence": {
@@ -607,7 +607,7 @@ When a pattern's trigger matches the document signal, it surfaces in `divergence
 }
 ```
 
-Construct honesty. The pattern reading is curated text composed by Frame Check; agents cite it as Frame Check's reading. The `supporting_evidence` field carries which frames in the trigger lists actually fired or absented in this document, so the agent can cite the specific frames inline. Corpus prevalence is computed as a frame-shape count; the genre constraint applies to the current document only (the corpus does not yet carry per-document genre classifications), and the small_n_caveat names this honestly.
+Construct honesty. The pattern reading is curated text composed by Framecheck; agents cite it as Framecheck's reading. The `supporting_evidence` field carries which frames in the trigger lists actually fired or absented in this document, so the agent can cite the specific frames inline. Corpus prevalence is computed as a frame-shape count; the genre constraint applies to the current document only (the corpus does not yet carry per-document genre classifications), and the small_n_caveat names this honestly.
 
 When no pattern matches, `frame_patterns` is an empty list and the agent falls back to per-cluster, per-frame, and per-absence composition.
 
@@ -700,7 +700,7 @@ Surface shape (when enabled):
 
 When the flag is omitted or set to `false`, the same key is still present but carries `opportunities=[]`, `total_cost_usd=0.0`, and `available=null` (the substrate did not invoke the LLM). When the flag is `true` but the LLM is unavailable (no API key, library not installed), `available=false` with an `unavailable_reason` field; the deterministic substrate continues to provide clusters, patterns, and absent_frames.
 
-The `agent_guidance.frame_opportunities_discipline` field carries the rules for surfacing opportunities to the user: name the LLM provenance, surface the cost, keep the general teaching question alongside the generated one, never present LLM content as Frame Check's measurement, and handle graceful degradation as a feature (the deterministic substrate still works) rather than an error.
+The `agent_guidance.frame_opportunities_discipline` field carries the rules for surfacing opportunities to the user: name the LLM provenance, surface the cost, keep the general teaching question alongside the generated one, never present LLM content as Framecheck's measurement, and handle graceful degradation as a feature (the deterministic substrate still works) rather than an error.
 
 ### Genre-segmented corpus prevalence
 
@@ -782,7 +782,7 @@ The `audit` goal is the default-equivalent posture: no goal-specific override is
 
 ### Corpus context (empirical anchoring)
 
-Frame Check ships with a small validation corpus (10 documents today) under `validation/decision_readiness/corpus/` plus aggregate findings under `validation/decision_readiness/results/{date}-{hash}/aggregate.json`. The corpus carries empirical signal: per-frame firing rates, co-fire patterns, co-absence patterns, per-dimension peer-difference rates, and cross-question outlier findings. The substrate exposes this signal as `corpus_context` blocks attached to matched frames, absent frames, and absence clusters.
+Framecheck ships with a small validation corpus (10 documents today) under `validation/decision_readiness/corpus/` plus aggregate findings under `validation/decision_readiness/results/{date}-{hash}/aggregate.json`. The corpus carries empirical signal: per-frame firing rates, co-fire patterns, co-absence patterns, per-dimension peer-difference rates, and cross-question outlier findings. The substrate exposes this signal as `corpus_context` blocks attached to matched frames, absent frames, and absence clusters.
 
 Small-N discipline. The corpus is small. Every prevalence statement carries the denominator (`fires in N of M corpus documents`) so the small-N is honest. Outcome data based on expert ratings is not yet available (current `cross_check.json` reports `n_ratings_discovered: 0`); the outcome-shaped signals surfaced are peer-pair-difference rates and cross-question outlier findings from validation runs, named as such in `envelope.corpus_summary.small_n_caveat`. When the corpus is unavailable (e.g., wheel without bundled corpus), every `corpus_context` field is `None` rather than a fabricated value.
 
@@ -831,7 +831,7 @@ Envelope-level `corpus_summary` (attached to `divergence.envelope`):
   "n_documents": 10,
   "state_hash": "7a6e2f294c9e",
   "aggregate_computed_at_utc": "2026-04-25T15:10:04+00:00",
-  "small_n_caveat": "Frame Check's validation corpus is small (N=10 documents). Prevalence and co-pattern statistics carry the denominator; treat any single-figure rate as a corpus signal, not a population estimate. Outcome data based on expert ratings is not yet available; the outcome-shaped signals surfaced are peer-pair-difference rates and cross-question outlier findings from validation runs."
+  "small_n_caveat": "Framecheck's validation corpus is small (N=10 documents). Prevalence and co-pattern statistics carry the denominator; treat any single-figure rate as a corpus signal, not a population estimate. Outcome data based on expert ratings is not yet available; the outcome-shaped signals surfaced are peer-pair-difference rates and cross-question outlier findings from validation runs."
 }
 ```
 
@@ -884,7 +884,7 @@ When the divergence block is emitted, `agent_guidance` gains two keys:
 Every FVS reference in a `frame_check` or `frame_compare` response
 carries a `library_url` field pointing at the entry's markdown source
 on the public GitHub repository
-(`https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-XXX_slug.md`).
+(`https://github.com/Clarethium/framecheck/blob/master/data/frame_library/FVS-XXX_slug.md`).
 The URL is always resolvable for end-users in MCP clients regardless
 of the hosted-production status. The earlier form pointed at
 `frame.clarethium.com/corpus/library/...`; the GitHub URL is preferred
@@ -915,7 +915,7 @@ for in-conversation resource resolution.
 
 Every `frame_check` response carries an `agent_guidance.suggested_next_actions` block: a list of 2-4 specific, structural-finding-anchored
 next-action entries the agent can surface to the user. The block
-exists so a Frame Check finding has a discoverable path forward
+exists so a Framecheck finding has a discoverable path forward
 (reprompts to send back to the source AI, library entries to read,
 named MCP prompts to invoke) instead of a static reading.
 
@@ -965,12 +965,12 @@ The discipline (paraphrased; the field carries the canonical text):
    absent_frame, decision_readiness dimension reading). If the
    agent cannot cite, it does not assert.
 2. **READING-FORM, NEVER VERDICT-FORM**. "The pattern reads as X"
-   is a reading. "The document is X" is a verdict. Frame Check
+   is a reading. "The document is X" is a verdict. Framecheck
    does not verdict; the agent does not verdict on its behalf.
 3. **CONFIDENCE-GATE PIVOTS THE FRAME**. When an off-methodology
    signal fires (under 100 words / non-English / non-analytical
    structure), the insight pivots from "a reading of the document"
-   to "what this run reveals about Frame Check's scope". The user
+   to "what this run reveals about Framecheck's scope". The user
    still gets a reading; it is now about the tool's calibration,
    not the document's framing.
 4. **CROSS-CONTEXT COMPOUNDING ONLY WHEN IT ADDS**. The validation
@@ -1014,7 +1014,7 @@ The `compose_budget` MCP parameter (also exposed at the API layer for sophistica
 - `standard`: top-5 absent_frames, all clusters, all patterns. Middle ground.
 - `full` (default): unfiltered. Backwards-compatible.
 
-Slicing happens AFTER the envelope is built so `envelope.tier_counts` reflects PRE-slice counts (the agent sees the truncation honestly rather than thinking the substrate found fewer absences). `divergence.compose_budget_applied` carries the slice level + per-layer returned/total counts so the agent can render "Frame Check identified N absences; showing top M".
+Slicing happens AFTER the envelope is built so `envelope.tier_counts` reflects PRE-slice counts (the agent sees the truncation honestly rather than thinking the substrate found fewer absences). `divergence.compose_budget_applied` carries the slice level + per-layer returned/total counts so the agent can render "Framecheck identified N absences; showing top M".
 
 Backwards-compatible: omitting `depth/goal/questions` from the prompt invocation produces the same prompt body the prior version produced (defaults match prior behavior). Omitting `compose_budget` from the MCP call preserves the prior unfiltered output.
 
@@ -1056,7 +1056,7 @@ value. Three levels:
   evidence (post-2026-04 fix); no precision/recall against labeled
   gold-standard yet, no inter-rater reliability pilot. The agent
   surfaces confidence and runner-up explicitly when borderline; the
-  classification is named as Frame Check's reading rather than a
+  classification is named as Framecheck's reading rather than a
   measured property of the document.
 - **`composed_pattern`**: a deterministic composition over
   detector and classifier outputs. The trigger conditions are
@@ -1072,7 +1072,7 @@ value. Three levels:
   reading is the curator's normative claim about what the trigger
   means; no IRR pilot has measured whether other readers compose
   the same patterns from the same triggers. The agent cites the
-  trigger as deterministic AND the reading as Frame Check's
+  trigger as deterministic AND the reading as Framecheck's
   curator reading.
 - **`agent_generated`**: opt-in LLM-composed content from Item 12
   `frame_opportunities`. The substrate delegates the composition to
@@ -1092,7 +1092,7 @@ value. Three levels:
   composes without LLM and the agent gets the deterministic
   substrate alone (clusters, patterns, absences with goal/genre
   relevance). The agent cites the model provenance + cost AND
-  never presents LLM-generated content as Frame Check's
+  never presents LLM-generated content as Framecheck's
   measurement (the `teaching_question_general` on each opportunity
   remains the stable catalog reference; the `generated_question` is
   one document-specific application).
@@ -1110,7 +1110,7 @@ value. Three levels:
       "validity_data": "Vocabulary-and-pattern detection with documented lower-bound detection posture. Per-signal construct blocks carry the detector-specific caveats. IRR is not applicable to algorithmic detectors; reproducibility is the validity claim and is documented per signal."
     },
     "caveats": ["...", "...", "..."],
-    "how_to_cite": "Frame Check's detector found markers for X / no markers detected for X."
+    "how_to_cite": "Framecheck's detector found markers for X / no markers detected for X."
   },
   "classifier_output": { "validation_status": { "inter_rater_reliability": "not_yet_measured", "...": "..." }, "...": "..." },
   "composed_pattern":   { "validation_status": { "inter_rater_reliability": "not_yet_measured", "...": "..." }, "...": "..." }
@@ -1349,8 +1349,8 @@ maintenance pause is communicable without protocol changes:
   any transition.
 
 Always-resolvable mirrors: the public GitHub repository at
-`https://github.com/Clarethium/frame-check` and the PyPI
-package `frame-check-mcp`. Citations resolve against the versioned
+`https://github.com/Clarethium/framecheck` and the PyPI
+package `framecheck-mcp`. Citations resolve against the versioned
 PyPI release (`server_version` field), the brand version
 (`frame_check_version` field, decoupled from the wheel), or the
 canonical production URL.
@@ -1358,12 +1358,12 @@ canonical production URL.
 ## Citation
 
 The tool response includes a citation string in `provenance.citation`.
-When surfacing the analysis to a user, quote the Frame Check measurement
-as Frame Check's, not as your own reading.
+When surfacing the analysis to a user, quote the Framecheck measurement
+as Framecheck's, not as your own reading.
 
 ```
-Lucic, L. (YEAR). Frame Check: a research instrument for framing and
-verification in documents. https://github.com/Clarethium/frame-check
+Lucic, L. (YEAR). Framecheck: a research instrument for framing and
+verification in documents. https://github.com/Clarethium/framecheck
 ```
 
 ## License

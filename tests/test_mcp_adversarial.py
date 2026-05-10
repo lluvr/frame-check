@@ -1,4 +1,4 @@
-"""Adversarial test harness for the Frame Check MCP server.
+"""Adversarial test harness for the Framecheck MCP server.
 
 Pre-publish hardening (D2 of the 0.8.0 publish-readiness audit).
 The dispatcher and resource resolver in mcp_server.py are the only
@@ -148,7 +148,7 @@ def test_A3_user_context_is_not_echoed_in_response():
 
 
 def test_A4_template_placeholders_in_document_are_inert():
-    """Frame Check uses `<<COMPOSE_BUDGET>>` style placeholders in
+    """Framecheck uses `<<COMPOSE_BUDGET>>` style placeholders in
     its prompt bodies. A document or user_context that contains
     these literal tokens must not cause them to be substituted in
     any returned text. The placeholders are only evaluated inside

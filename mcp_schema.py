@@ -1,4 +1,4 @@
-"""Tool and prompt schema definitions for the Frame Check MCP server.
+"""Tool and prompt schema definitions for the Framecheck MCP server.
 
 The schema layer carries the static definitions that the MCP
 protocol surfaces under tools/list and prompts/list, plus the
@@ -47,7 +47,7 @@ What lives here:
       surfaced under tools/list, with full inputSchema)
     _TOOLS (the registry list)
 
-The schema layer has no dependencies on the higher Frame Check
+The schema layer has no dependencies on the higher Framecheck
 modules (mcp_compose, mcp_protocol, mcp_cli) and no runtime
 dependencies on mcp_resources or mcp_log either: the prompt
 templates hardcode `frame-check://` URI strings rather than
@@ -233,7 +233,7 @@ def _populate_prompt_body(body: str, args: dict[str, Any] | None) -> str:
 # ── Prompt template strings ────────────────────────────────────────
 
 _PROMPT_SELF_AUDIT = (
-    "Run a Frame Check self-audit on your last response to me.\n\n"
+    "Run a Framecheck self-audit on your last response to me.\n\n"
     "Call frame_check(document_text=<your last response verbatim>, "
     "include_divergence=true, compose_budget=<<COMPOSE_BUDGET>>, "
     "user_goal=<<USER_GOAL>>, "
@@ -246,7 +246,7 @@ _PROMPT_SELF_AUDIT = (
     "low confidence'; non-analytical structure (code, poetry, "
     "fragments) = 'calibrated for analytical prose; low confidence'. "
     "If any gate fires, PIVOT the frame: the insight becomes a "
-    "reading of what the run reveals about Frame Check's scope, not "
+    "reading of what the run reveals about Framecheck's scope, not "
     "a reading of my response. Name the gate in one sentence, then "
     "compose the pivoted reading.\n\n"
     "Compact response (default), insight-led:\n"
@@ -295,14 +295,14 @@ _PROMPT_SELF_AUDIT = (
     "as the methodology page, agent_guidance."
     "what_this_tool_does_not_tell_you). Inline citations throughout; "
     "never add a bibliography. Do not verdict (no 'balanced', no "
-    "'biased', no 'rigorous'). Frame Check measures structural "
+    "'biased', no 'rigorous'). Framecheck measures structural "
     "shape, not semantic correctness; name that limit if relevant. "
     "Do not rewrite unless I ask."
 )
 
 _PROMPT_AI_RESPONSE_AUDIT = (
-    "Frame Check on an AI-generated response the user will paste.\n\n"
-    "The user is using Frame Check to see what another AI did to "
+    "Framecheck on an AI-generated response the user will paste.\n\n"
+    "The user is using Framecheck to see what another AI did to "
     "them, not to be told whether to trust it.\n\n"
     "Ask the user to paste the AI response if they have not. Then "
     "call frame_check(document_text=<that text>, "
@@ -319,7 +319,7 @@ _PROMPT_AI_RESPONSE_AUDIT = (
     "low confidence'; non-analytical structure (code, poetry, "
     "fragments) = 'calibrated for analytical prose; low "
     "confidence'. If any gate fires, PIVOT the frame: the insight "
-    "becomes a reading of what the run reveals about Frame Check's "
+    "becomes a reading of what the run reveals about Framecheck's "
     "scope on this kind of text, not a reading of the AI's "
     "response. Name the gate in one sentence, then compose the "
     "pivoted reading.\n\n"
@@ -329,7 +329,7 @@ _PROMPT_AI_RESPONSE_AUDIT = (
     "strongest absence_cluster reading when "
     "divergence.absence_clusters is non-empty: the cluster names a "
     "dimension-level theme across multiple absent frames. Cite the "
-    "cluster as Frame Check's substrate composition. Then ground "
+    "cluster as Framecheck's substrate composition. Then ground "
     "in 1-2 supporting measurements (voice classification, "
     "frame_library_matches entry, individual high signal_strength "
     "absent_frame, decision_readiness dimension reading). When "
@@ -373,7 +373,7 @@ _PROMPT_AI_RESPONSE_AUDIT = (
     "compare to other AI responses' or 'is this typical'): "
     "frame-check://aggregate/latest carries cross-question "
     "outlier findings across the validation corpus. Cite as "
-    "\"Frame Check's validation corpus has found...\", and only "
+    "\"Framecheck's validation corpus has found...\", and only "
     "when the cross-context comparison sharpens THIS reading; "
     "honor composition_discipline rule (4) on cross-context "
     "compounding. Not a verdict on the user's specific document.\n\n"
@@ -382,7 +382,7 @@ _PROMPT_AI_RESPONSE_AUDIT = (
 )
 
 _PROMPT_CHALLENGE_DOCUMENT = (
-    "Challenge a document using Frame Check's structural "
+    "Challenge a document using Framecheck's structural "
     "measurements.\n\n"
     "The user gives you a document. Call frame_check("
     "document_text=<that text>, include_divergence=true, "
@@ -397,7 +397,7 @@ _PROMPT_CHALLENGE_DOCUMENT = (
     "poetry, fragments) = 'calibrated for analytical prose; low "
     "confidence'. If any gate fires, PIVOT the frame: instead of "
     "challenging the document, surface ONE question about what "
-    "this run reveals about Frame Check's scope on this kind of "
+    "this run reveals about Framecheck's scope on this kind of "
     "text. Name the gate in one sentence, then ask the pivoted "
     "question.\n\n"
     "Compact response (default), insight-led: compose 2-3 "
@@ -435,10 +435,10 @@ _PROMPT_CHALLENGE_DOCUMENT = (
     "- When a frame or cluster carries a corpus_context (peer-pair "
     "difference rate, cross-question outlier, or empirical "
     "prevalence), the question may anchor in that empirical signal "
-    "(e.g., 'Frame Check's validation corpus shows the "
+    "(e.g., 'Framecheck's validation corpus shows the "
     "counterfactual dimension differs across 10 of 12 peer pairs; "
     "what would falsify your conclusion here?'). Honor "
-    "envelope.corpus_summary.small_n_caveat; cite as Frame Check's "
+    "envelope.corpus_summary.small_n_caveat; cite as Framecheck's "
     "validation corpus, not as a population estimate.\n\n"
     "Each question is a tool the user uses; never a verdict. "
     "Reading-form, not verdict-form: 'the pattern reads as X, so "
@@ -466,7 +466,7 @@ _PROMPT_CHALLENGE_DOCUMENT = (
 )
 
 _PROMPT_EXPLAIN_FRAMING = (
-    "Walk the user through a Frame Check result they have just "
+    "Walk the user through a Framecheck result they have just "
     "seen. Assume frame_check was already called and the response "
     "is in context.\n\n"
     "User intent for this walkthrough: depth=<<DEPTH>>, "
@@ -487,7 +487,7 @@ _PROMPT_EXPLAIN_FRAMING = (
     "poetry, fragmentary text) = 'calibrated for analytical prose; "
     "low confidence'. If any gate fires, PIVOT the frame: the "
     "insight becomes a reading of what this run reveals about "
-    "Frame Check's scope, not a reading of the document. Name the "
+    "Framecheck's scope, not a reading of the document. Name the "
     "gate in one sentence, then compose the pivoted reading.\n\n"
     "Compact response (default), insight-led:\n"
     "1. ONE insight, ~2-4 sentences. A reading of the analysis "
@@ -622,7 +622,7 @@ _PROMPTS = [
     {
         "name": "frame_check_this_ai_response",
         "description": (
-            "Frame Check on a response from a DIFFERENT AI that "
+            "Framecheck on a response from a DIFFERENT AI that "
             "the user pastes in. Structured analysis of what that "
             "AI did to the user. The sovereignty case: the user "
             "is using their own agent to see another AI's framing. "
@@ -636,7 +636,7 @@ _PROMPTS = [
         "description": (
             "Generate adversarial questions from the structural "
             "weaknesses of a document. Each question traces to a "
-            "specific Frame Check measurement. Questions, not "
+            "specific Framecheck measurement. Questions, not "
             "verdicts; the user answers. Optional arguments: depth, "
             "goal (defaults to 'challenge' for this prompt), "
             "questions."
@@ -682,8 +682,8 @@ _FRAME_CHECK_TOOL = {
         "Compose ONE insight grounded in the cited measurements (a "
         "reading the user could not see by reading the document "
         "themselves), not a walk through the measurements one by one. "
-        "The measurements are Frame Check's; the reading is yours. "
-        "Cite each measurement as Frame Check's; frame the reading as "
+        "The measurements are Framecheck's; the reading is yours. "
+        "Cite each measurement as Framecheck's; frame the reading as "
         "a reading ('the pattern reads as X'), never as a verdict "
         "('the document is X'). Repeated calls with identical inputs "
         "return identical measurements; zero LLM cost on the "
@@ -756,7 +756,7 @@ _FRAME_CHECK_TOOL = {
                 "type": "string",
                 "description": (
                     "Pass when the user has stated a goal for "
-                    "invoking Frame Check. One of: 'decide' (working "
+                    "invoking Framecheck. One of: 'decide' (working "
                     "through a choice), 'brainstorm' (exploring "
                     "options), 'persuade' (writing to influence), "
                     "'learn' (understanding the topic), 'audit' "
@@ -859,7 +859,7 @@ _FRAME_COMPARE_TOOL = {
         "the user has named the documents (for example 'Gemini "
         "response' and 'Claude response'). Otherwise the comparison "
         "narrative falls back to 'Document A' and 'Document B'.\n\n"
-        "Cite each measurement as Frame Check's; never imply that "
+        "Cite each measurement as Framecheck's; never imply that "
         "one document is better, more rigorous, or more biased "
         "than the other. The structural comparison surfaces what "
         "differs; the reader judges what the difference means. "

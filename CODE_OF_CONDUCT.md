@@ -1,6 +1,6 @@
 # Code of Conduct
 
-Frame Check is a public research program. Participation, whether
+Framecheck is a public research program. Participation, whether
 through code contributions, frame-library candidates, validation
 runs, methodology critique, or issue conversations, is open to
 anyone willing to engage in good faith with the substance of the
@@ -39,7 +39,7 @@ work.
 - Doxing, sharing private contact information, or attempts to
   pressure individual contributors outside the public review
   surface.
-- Claims about Frame Check's measurements, calibration, or
+- Claims about Framecheck's measurements, calibration, or
   methodology that the claimant has not actually run against the
   artifact at the version they reference.
 
@@ -47,13 +47,13 @@ work.
 
 This Code of Conduct applies to:
 
-- The `Clarethium/frame-check` GitHub repository (issues, PRs,
+- The `Clarethium/framecheck` GitHub repository (issues, PRs,
   discussions, code review threads, commit messages).
-- The associated PyPI project page (`frame-check-mcp`).
-- Any conversation about Frame Check on the maintainer's blog
+- The associated PyPI project page (`framecheck-mcp`).
+- Any conversation about Framecheck on the maintainer's blog
   (`blog.clarethium.com`) or public talks where the maintainer
   is hosting or moderating.
-- Coordinated cross-repo work that spans Frame Check and the
+- Coordinated cross-repo work that spans Framecheck and the
   methodology canon at `Clarethium/lodestone`.
 
 It does not extend to private channels, third-party platforms, or

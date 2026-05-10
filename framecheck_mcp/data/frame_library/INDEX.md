@@ -69,7 +69,7 @@ rule, not the frame concept:
 
 Cite by ID and library version:
 
-> Frame Check FVS-008 Growth Frame (library v0.2.0).
+> Framecheck FVS-008 Growth Frame (library v0.2.0).
 
 The ID is permanent across library versions. Names and identification
 text may evolve while a frame is `draft`; only `canon` entries

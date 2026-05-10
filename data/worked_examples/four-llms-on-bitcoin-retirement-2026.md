@@ -1,9 +1,9 @@
 ---
-title: Four LLMs, one investment question: a Frame Check comparison of AI framing signatures
+title: Four LLMs, one investment question: a Framecheck comparison of AI framing signatures
 slug: four-llms-on-bitcoin-retirement-2026
 author: Lovro Lucic
 published: 2026-04-18
-source_document_url: https://github.com/Clarethium/frame-check/tree/master/data/worked_examples/four-llms-on-bitcoin-retirement-2026
+source_document_url: https://github.com/Clarethium/framecheck/tree/master/data/worked_examples/four-llms-on-bitcoin-retirement-2026
 source_document_title: Claude Haiku 4.5, GPT-5, Grok 4.1 Fast Reasoning, Gemini 2.5 Flash; responses to a Bitcoin retirement prompt
 source_document_author: AI-generated (four distinct models, 2026-04-18 run)
 source_document_type: multi-model LLM responses to a life-decision prompt
@@ -28,20 +28,20 @@ on the same afternoon (2026-04-18):
 - xAI Grok 4.1 Fast Reasoning (`grok-4-1-fast-reasoning`)
 - Google Gemini 2.5 Flash (`gemini-2.5-flash`)
 
-Each response was then analysed by Frame Check's deterministic
-layer. The raw model responses and the per-response Frame Check
+Each response was then analysed by Framecheck's deterministic
+layer. The raw model responses and the per-response Framecheck
 payloads are stored alongside this writeup as `llm_responses.json`
 and `frame_check_results.json`, so a future reader can re-run the
 analysis against the same snapshot and reproduce the measurements
 exactly.
 
-The analytical goal is not to rank the models. Frame Check does not
+The analytical goal is not to rank the models. Framecheck does not
 rank. The goal is to show that the four LLMs, answering the same
 question, imposed materially different structural frames on the
 reader; and that the reader, seeing those frames named, can choose
 rather than inherit.
 
-## What Frame Check saw
+## What Framecheck saw
 
 Per-model structural signature, from the deterministic detectors:
 
@@ -114,7 +114,7 @@ four responses:
 
 ## Pairwise comparison
 
-Frame Check's `frame_compare` tool produces a per-pair framing-
+Framecheck's `frame_compare` tool produces a per-pair framing-
 differences narrative. The six pairs across four models surface
 the same underlying pattern: the detector sees the shared
 stakeholders-and-uncertainty blind spot across most pairs, and
@@ -175,7 +175,7 @@ who sees the four measured side by side sees that the question
 has at least four plausible framings, and that choosing between
 them is work the reader has to do.
 
-This is the sovereignty case in the plainest form. Frame Check
+This is the sovereignty case in the plainest form. Framecheck
 does not tell the reader which LLM is correct, which is balanced,
 or which to trust. It names the structural shape of each response
 and hands the reader the information they need to not inherit a
@@ -192,7 +192,7 @@ moment the reader is deciding what to do with them.
 
 The four prompts, model IDs, and full response texts are in
 `data/worked_examples/four-llms-on-bitcoin-retirement-2026/llm_responses.json`.
-The per-model Frame Check results and the pairwise framing
+The per-model Framecheck results and the pairwise framing
 comparisons are in `frame_check_results.json` in the same
 directory. Both files are captured in the repository alongside
 this writeup so a reader in 2028 can resolve "what exactly did
@@ -201,13 +201,13 @@ the exact bytes.
 
 The same prompt run on the same four models six months later
 will produce different responses. That drift IS the research
-signal: Frame Check's measurements are reproducible; LLM
+signal: Framecheck's measurements are reproducible; LLM
 responses are not.
 
 ## Citation
 
 Lucic, L. (2026). *Four LLMs, one investment question: a Frame
-Check comparison of AI framing signatures*. Frame Check Worked
+Check comparison of AI framing signatures*. Framecheck Worked
 Examples.
 frame.clarethium.com/corpus/worked-examples/four-llms-on-bitcoin-retirement-2026/
 
@@ -215,4 +215,4 @@ Licensed CC-BY-4.0. The LLM responses embedded in this analysis
 are the outputs of third-party systems (Anthropic, OpenAI, xAI,
 Google). Their reproduction here is for structural analysis and
 falls under fair-use / fair-dealing provisions for research and
-criticism. Only the Frame Check analysis is open-licensed.
+criticism. Only the Framecheck analysis is open-licensed.

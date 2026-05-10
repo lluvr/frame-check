@@ -39,7 +39,7 @@ When a document over-anchors to one temporal orientation, it crowds out the othe
 - **Coverage** ([methodology](/corpus/decision-readiness/)) indirectly: a single temporal frame is structurally narrow on what perspectives a reader can consider.
 - **Counterfactual**: a future-projected document hides historical disconfirmations; a past-anchored document hides structural changes that break historical patterns.
 
-Frame Check's temporal distribution signal (in the Document Structure card) is the direct measurement.
+Framecheck's temporal distribution signal (in the Document Structure card) is the direct measurement.
 
 ## Generation affordances
 

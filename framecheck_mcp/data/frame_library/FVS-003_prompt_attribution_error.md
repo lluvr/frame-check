@@ -51,7 +51,7 @@ When people say "Claude is thoughtful" or "Grok is direct" or "Gemini is cautiou
 
 **Frame absent:** Layer attribution. Google may have designed Gemini's system prompt to produce structured, heading-based output for analytical queries. Anthropic may have designed Claude's system prompt to include uncertainty hedging as a safety measure. The "superior reasoning" may be a heading format, not a reasoning improvement. The "conversational" tendency may be a safety guardrail, not a capability gap.
 
-**How to read past it:** For each attributed capability, ask: "What would happen if I gave both models the exact same system prompt?" If the behavior persists, it is more likely model-specific. If it changes, it was prompt-specific. Most end users cannot run this test because system prompts are not exposed. Frame Check can detect the attribution pattern by identifying capability claims that lack controlled comparisons.
+**How to read past it:** For each attributed capability, ask: "What would happen if I gave both models the exact same system prompt?" If the behavior persists, it is more likely model-specific. If it changes, it was prompt-specific. Most end users cannot run this test because system prompts are not exposed. Framecheck can detect the attribution pattern by identifying capability claims that lack controlled comparisons.
 
 ## Branch applicability
 

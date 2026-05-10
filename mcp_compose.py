@@ -1,4 +1,4 @@
-"""Composition helpers for the Frame Check MCP server.
+"""Composition helpers for the Framecheck MCP server.
 
 The compose layer carries every response-building helper that turns
 detector output into the MCP epistemic payload structure.
@@ -146,8 +146,8 @@ PRODUCTION_STATUS_NOTE = (
     "calibration_corpus fields in this provenance block resolve "
     "directly. Always-resolvable mirrors that survive any future "
     "hosting transition: GitHub repository "
-    "https://github.com/Clarethium/frame-check; PyPI package "
-    "frame-check-mcp (this server)."
+    "https://github.com/Clarethium/framecheck; PyPI package "
+    "framecheck-mcp (this server)."
 )
 
 
@@ -188,7 +188,7 @@ def _build_provenance(
     )
     # UTC timestamp of the response, in ISO-8601 with a trailing Z.
     # Academic citations frequently want wall-clock precision
-    # ("as of 2026-04-17T15:32:00Z, Frame Check v1.3 found X");
+    # ("as of 2026-04-17T15:32:00Z, Framecheck v1.3 found X");
     # without this field an agent quoting the analysis would have to
     # generate the timestamp separately and race the actual analysis
     # time. The format is seconds-precision because sub-second
@@ -197,7 +197,7 @@ def _build_provenance(
     now = _dt.datetime.now(_dt.timezone.utc).replace(microsecond=0)
     timestamp_iso = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     return {
-        "tool_name": "Frame Check",
+        "tool_name": "Framecheck",
         "tool_url": "https://frame.clarethium.com",
         "tool_author": "Lovro Lucic",
         "methodology_paper": "https://frame.clarethium.com/corpus/methodology/",
@@ -210,7 +210,7 @@ def _build_provenance(
             "corpus": "CC-BY-4.0",
             "analysis_output": (
                 "CC-BY-4.0 - this response may be reproduced with "
-                "attribution to Frame Check."
+                "attribution to Framecheck."
             ),
         },
         "frame_check_version": FRAME_CHECK_VERSION,
@@ -222,8 +222,8 @@ def _build_provenance(
         # handshake's serverInfo.version; surfacing it in provenance
         # lets agents and bug reports cross-reference the wheel without
         # having to re-issue an initialize handshake. Both fields are
-        # legitimate; an integrator running frame-check-mcp 0.8.x
-        # against a Frame Check methodology snapshot at brand version Y
+        # legitimate; an integrator running framecheck-mcp 0.8.x
+        # against a Framecheck methodology snapshot at brand version Y
         # will see server_version=0.8.x and frame_check_version=Y.
         "server_version": SERVER_VERSION,
         # clarethium_measure is the measurement stack. Its version
@@ -249,7 +249,7 @@ def _build_provenance(
         "analysis_layer": analysis_layer,
         "analysis_determinism": note,
         "citation": (
-            f"Lucic, L. ({now.year}). Frame Check: a research "
+            f"Lucic, L. ({now.year}). Framecheck: a research "
             f"instrument for framing and verification in documents. "
             f"https://frame.clarethium.com"
         ),
@@ -595,13 +595,13 @@ _CLAIM_LEVEL_TREATMENTS: dict[str, Any] = {
                 ("Non-firing may reflect vocabulary the detector does "
                 "not recognize rather than absence of the dimension "
                 "in the document."),
-                ("Cite as 'Frame Check's detector found markers for "
+                ("Cite as 'Framecheck's detector found markers for "
                 "X' or 'no markers detected for X' rather than 'the "
                 "document covers X' or 'the document does not "
                 "address X'."),
             ],
             "how_to_cite": (
-                "Frame Check's detector found markers for X / no "
+                "Framecheck's detector found markers for X / no "
                 "markers detected for X."
             ),
         },
@@ -630,7 +630,7 @@ _CLAIM_LEVEL_TREATMENTS: dict[str, Any] = {
             "caveats": [
                 ("The reasoning text is the engine's rationale for "
                 "the binary judgment, not a confidence proxy. Do not "
-                "paraphrase it as 'Frame Check is X% confident'."),
+                "paraphrase it as 'Framecheck is X% confident'."),
                 ("Per-emission borderline-vs-decisive distinction is "
                 "unavailable. Cite the per-frame reliability tier as "
                 "the macro-aggregate evidence; do not treat any "
@@ -647,7 +647,7 @@ _CLAIM_LEVEL_TREATMENTS: dict[str, Any] = {
                 "reliability is the load-bearing evidence."),
             ],
             "how_to_cite": (
-                "Frame Check's V4.2 engine judged the document as "
+                "Framecheck's V4.2 engine judged the document as "
                 "exhibiting X (tier Y reliability; honest_limit Z "
                 "when present)."
             ),
@@ -682,11 +682,11 @@ _CLAIM_LEVEL_TREATMENTS: dict[str, Any] = {
                 "runner-up explicitly so the cascade's hesitation is "
                 "visible to the reader."),
                 ("Single-author calibrated; no IRR data; treat the "
-                "classification as Frame Check's reading rather than "
+                "classification as Framecheck's reading rather than "
                 "a measured property of the document."),
             ],
             "how_to_cite": (
-                "Frame Check classified as X (confidence Y; "
+                "Framecheck classified as X (confidence Y; "
                 "runner-up Z when borderline)."
             ),
         },
@@ -721,16 +721,16 @@ _CLAIM_LEVEL_TREATMENTS: dict[str, Any] = {
                 ("The trigger match is reproducible; the reading "
                 "inside is the curator's normative claim about what "
                 "the trigger means."),
-                ("Cite the reading as Frame Check's reading, not as "
+                ("Cite the reading as Framecheck's reading, not as "
                 "a measured property of the document."),
                 ("No inter-rater reliability data on whether other "
                 "readers would compose the same pattern from the "
                 "same triggers; treat the named composition as "
-                "Frame Check's recognition of a structural shape, "
+                "Framecheck's recognition of a structural shape, "
                 "not a verdict on the document."),
             ],
             "how_to_cite": (
-                "Frame Check identified pattern X (composed "
+                "Framecheck identified pattern X (composed "
                 "deterministically by trigger Y); the substrate's "
                 "reading of pattern X is: ..."
             ),
@@ -779,13 +779,13 @@ _CLAIM_LEVEL_TREATMENTS: dict[str, Any] = {
                 "composed by the LLM, not a measurement."),
                 ("Never present LLM-generated content as Frame "
                 "Check's measurement; the construct-honest cite "
-                "is 'Frame Check requested an LLM-composed "
+                "is 'Framecheck requested an LLM-composed "
                 "question (provider X, model Y, cost Z; "
                 "is_deterministic=false in model_provenance); the "
                 "generated application is: ...'."),
             ],
             "how_to_cite": (
-                "Frame Check requested an LLM-composed question "
+                "Framecheck requested an LLM-composed question "
                 "(provider X, model Y, cost Z USD; "
                 "is_deterministic=false in model_provenance); the "
                 "generated application of FVS-N's general teaching "
@@ -820,7 +820,7 @@ def _apply_v2_only_preference(payload: dict[str, Any]) -> None:
 # alongside analysis / agent_guidance / provenance, plus two
 # agent_guidance additions. This function builds that block.
 #
-# MCP-surface semantics (Contract §7.1): Frame Check's MCP server
+# MCP-surface semantics (Contract §7.1): Framecheck's MCP server
 # does NOT invoke an external LLM. absent_frames are computed from
 # the library_v3 catalog minus frames present in V1 frame_library_matches;
 # `absence_basis` is scaffolding text describing what the caller's
@@ -1278,7 +1278,7 @@ def _build_divergence_block(
             "affects_dimensions": affects_dims,
             "citation_uri": f"{RESOURCE_SCHEME}://library/{fvs_id}",
             # GitHub URL pointing at the entry's markdown source on
-            # the public repository (Clarethium/frame-check). End-users
+            # the public repository (Clarethium/framecheck). End-users
             # in MCP clients (Claude Desktop, Cursor) cannot click
             # frame-check://library/... resource URIs because those
             # are MCP-internal; the library_url gives them an HTTP
@@ -1622,7 +1622,7 @@ def _build_divergence_block(
             "tier": "caller_model",
             "note": (
                 "V4.2 judge step delegated to caller's agent model per "
-                "Rec I. Frame Check's MCP server does not invoke an "
+                "Rec I. Framecheck's MCP server does not invoke an "
                 "external LLM. See agent_guidance.how_to_render_divergence "
                 "for composition instructions."
             ),
@@ -1763,7 +1763,7 @@ def _build_divergence_block(
         "note": (
             "compose_budget bounds output volume; envelope.tier_counts "
             "reflects PRE-slice counts. The agent should surface the "
-            "truncation when relevant ('Frame Check identified N "
+            "truncation when relevant ('Framecheck identified N "
             "absences; showing top M')."
             if compose_budget != "full"
             else "compose_budget=full; no slicing applied."
@@ -1788,8 +1788,8 @@ def _build_divergence_block(
             "decision-readiness dimension (coverage, calibration, "
             "evidence, robustness, counterfactual) and carries a "
             "dimension-specific reading composed by the substrate. The "
-            "cluster reading is Frame Check's composition over the "
-            "divergence set; cite it as Frame Check's reading and use "
+            "cluster reading is Framecheck's composition over the "
+            "divergence set; cite it as Framecheck's reading and use "
             "it as the lead synthesis ('the substrate reads the "
             "absences as concentrated on the X dimension because Y'). "
             "Then walk the supporting absent_frames entries that share "
@@ -1819,7 +1819,7 @@ def _build_divergence_block(
             "it never tells the user what the document should have "
             "done. "
             "(5) Cite each absent frame by frame_id and citation_uri. "
-            "Cite cluster readings as 'Frame Check's substrate-"
+            "Cite cluster readings as 'Framecheck's substrate-"
             "composition of the divergence set on the X dimension'. "
             "(6) Catalog version note: "
             "the divergence catalog is pinned to library_v3 per "
@@ -1873,7 +1873,7 @@ def _build_divergence_block(
             "envelope.corpus_summary is non-null, every frame and "
             "cluster carries an empirical context block. For matched "
             "and absent frames, corpus_context.prevalence reports "
-            "firing rate across Frame Check's validation corpus "
+            "firing rate across Framecheck's validation corpus "
             "(small N; honor the small_n_caveat). typical_co_fires "
             "and typical_co_absences name structural patterns the "
             "corpus has surfaced. corpus_entries_fired_uris point "
@@ -1980,7 +1980,7 @@ def _compress_agent_guidance_to_load_bearing(
         the discipline at first read; once the agent has seen them
         in `full` mode, repeating on every call is dead weight.
       - how_to_cite_faithfully: condense to one sentence per rule
-        (name Frame Check, no paraphrase, no "fails to address",
+        (name Framecheck, no paraphrase, no "fails to address",
         no quality-score use).
       - when_invoked_on_own_output: keep (load-bearing for the self-
         audit case which is the most frequent per-turn invocation).
@@ -2021,7 +2021,7 @@ def _compress_agent_guidance_to_load_bearing(
             "(2) reading-form, never verdict-form; "
             "(3) confidence-gate (under 100 words, non-English, non-"
             "analytical structure) pivots the frame to a reading of "
-            "Frame Check's scope, not a reading of the document; "
+            "Framecheck's scope, not a reading of the document; "
             "(4) cross-context compounding only when it sharpens the "
             "reading, never as scenery; "
             "(5) absence is not prescription (name what the framing "
@@ -2056,7 +2056,7 @@ def _compress_agent_guidance_to_load_bearing(
             "posture is structural-shape only."
         ),
         "how_to_cite_faithfully": (
-            "Name Frame Check explicitly as the source of "
+            "Name Framecheck explicitly as the source of "
             "measurements. Do not paraphrase measurements as the "
             "agent's own reading. Do not restate 'missing' as 'fails "
             "to address' (the detector may have under-detected). Do "
@@ -2067,7 +2067,7 @@ def _compress_agent_guidance_to_load_bearing(
             "draft Frame Vocabulary Standard entry FVS-XXX'; 'canon' "
             "entries cite by id verbatim. claims block: cite COUNTS "
             "(detector-reported), never paraphrase individual claim "
-            "sentences as if Frame Check surfaced them."
+            "sentences as if Framecheck surfaced them."
         ),
         "when_invoked_on_own_output": (
             "If document_text is the agent's own response (self-"
@@ -2078,14 +2078,14 @@ def _compress_agent_guidance_to_load_bearing(
             "density-based detectors are noisy; name that limit."
         ),
         "dual_use_note": (
-            "Frame Check expands the reader's view of one document; "
+            "Framecheck expands the reader's view of one document; "
             "do not rank documents against each other. Surface the "
             "structural observation; the reader's judgment is the "
             "interpretive layer, not the agent's."
         ),
         "compose_budget_applied_note": (
             f"compose_budget={level}: agent_guidance compressed to "
-            "load-bearing prescriptions only (Frame Check naming, "
+            "load-bearing prescriptions only (Framecheck naming, "
             "reading-form discipline, dual-use note, self-audit rule, "
             "citation discipline). Worked examples in "
             "composition_discipline, the full claim_level_treatments "
@@ -2136,7 +2136,7 @@ def _build_suggested_next_actions(
 
     The actions surface the rest of the product surface (the
     challenge_document MCP prompt, the FVS catalog via library_url)
-    so an end-user reading a Frame Check result has a discoverable
+    so an end-user reading a Framecheck result has a discoverable
     path forward, not just a static reading. Prior to this block
     being shipped, the tool surfaced findings without telling the
     user what to do about them; the discovery loop into the four
@@ -2286,7 +2286,7 @@ def build_epistemic_payload(
     include_frame_opportunities: bool = False,
     compose_budget: str = "full",
 ) -> dict[str, Any]:
-    """Run Frame Check's deterministic analyzers on the document and
+    """Run Framecheck's deterministic analyzers on the document and
     return the full epistemic payload: analysis, agent_guidance,
     provenance.
 
@@ -2354,7 +2354,7 @@ def build_epistemic_payload(
 
     # Portrait and headline synthesize the raw coverage/voice/temporal/
     # epistemic signals into a single readable narrative. An agent
-    # surfacing the portrait verbatim carries Frame Check's measurement
+    # surfacing the portrait verbatim carries Framecheck's measurement
     # shape forward; surfacing the raw category lists without the
     # portrait risks reducing to a score the tool does not emit.
     portrait = framing_portrait(cov, temp, voice, epist, ca)
@@ -2594,7 +2594,7 @@ def build_epistemic_payload(
                 "fvs_id": f.get("fvs_id"),
                 "name": f.get("name"),
                 # GitHub URL pointing at the entry's markdown source
-                # on the public repository (Clarethium/frame-check).
+                # on the public repository (Clarethium/framecheck).
                 # End-users can click this to read the entry directly;
                 # GitHub is always resolvable regardless of hosted-
                 # production status (frame.clarethium.com is paused
@@ -2798,7 +2798,7 @@ def build_epistemic_payload(
             # dimension dict with claim_level=composed_pattern so
             # the agent honors the per-level discipline (cite
             # the trigger as deterministic AND the signal_text as
-            # Frame Check's curator reading) rather than treating
+            # Framecheck's curator reading) rather than treating
             # the prose as a measurement.
             dims_block = readiness.get("dimensions") or {}
             for _dim_name, dim_data in dims_block.items():
@@ -2836,7 +2836,7 @@ def build_epistemic_payload(
         "Reasoning quality, logical validity, or causal inference errors",
         "Human-perceived quality; structural measurements are roughly orthogonal (r approx 0.1) to reader-perceived quality",
         "Whether the document is persuasive, useful, or correct for the reader's purpose",
-        "Whether hedge markers in claims activate the uncertainty coverage dimension. Coverage detection for the uncertainty dimension uses vocabulary markers (uncertain, unknown, contested, range, depends, varies) rather than hedge markers in claim positions (might, could, expected to, projected to). A document can carry a high hedge ratio (e.g., 21% of claims hedged) while uncertainty coverage shows zero markers; this is a detector boundary, not a contradiction. When you observe this disconnect, name it as a methodological observation about Frame Check's measurement layers rather than as a finding about the document.",
+        "Whether hedge markers in claims activate the uncertainty coverage dimension. Coverage detection for the uncertainty dimension uses vocabulary markers (uncertain, unknown, contested, range, depends, varies) rather than hedge markers in claim positions (might, could, expected to, projected to). A document can carry a high hedge ratio (e.g., 21% of claims hedged) while uncertainty coverage shows zero markers; this is a detector boundary, not a contradiction. When you observe this disconnect, name it as a methodological observation about Framecheck's measurement layers rather than as a finding about the document.",
     ]
 
     if profile_with_source is None:
@@ -2887,7 +2887,7 @@ def build_epistemic_payload(
 
     agent_guidance: dict[str, Any] = {
         "composition_discipline": (
-            "The measurements are Frame Check's; the reading is the "
+            "The measurements are Framecheck's; the reading is the "
             "agent's. Compose ONE insight that is a reading the user "
             "could not see by re-reading their own document, grounded "
             "in specific cited measurements (analysis.genre "
@@ -2907,20 +2907,20 @@ def build_epistemic_payload(
             "PATTERN BY ITS id verbatim, not paraphrased. Worked "
             "example: instead of 'the pick gets a one-sided "
             "defense pattern' (paraphrase, substrate invisible), "
-            "write 'this matches Frame Check's "
+            "write 'this matches Framecheck's "
             "recommendation-without-falsification pattern' "
             "(substrate identified, user can chain to definition). "
             "The substantive observation can follow the cite, but "
             "the cite must come first. When frame_patterns is "
             "empty and divergence.absence_clusters is non-empty, "
-            "the cluster reading is Frame Check's substrate-side "
+            "the cluster reading is Framecheck's substrate-side "
             "composition over multiple absent frames; cite it as Frame "
             "Check's reading and use it as the lead synthesis (the "
             "cluster names a dimension-level theme the per-frame walk "
             "cannot). CITE THE CLUSTER BY ITS dimension name "
             "verbatim. Worked example: instead of 'four high-"
             "signal absent frames cluster on the same blind spot' "
-            "(paraphrase), write 'Frame Check identified the "
+            "(paraphrase), write 'Framecheck identified the "
             "counterfactual cluster (FVS-007, FVS-009, FVS-014, "
             "FVS-017)' (substrate's dimension name + member "
             "frames). The dimension name is canon-graph anchored "
@@ -2929,7 +2929,7 @@ def build_epistemic_payload(
             "fields are attached to "
             "matched frames, absent frames, or clusters, treat the "
             "prevalence and co-pattern fields as empirical anchoring "
-            "from Frame Check's validation corpus (small N; honor the "
+            "from Framecheck's validation corpus (small N; honor the "
             "small_n_caveat in envelope.corpus_summary when present). "
             "Cross-context compounding rule (4) applies: cite corpus "
             "context only when it sharpens the reading, never as "
@@ -2939,13 +2939,13 @@ def build_epistemic_payload(
             "specific measurement. If you cannot cite, do not assert. "
             "(2) READING-FORM, NEVER VERDICT-FORM. 'The pattern reads "
             "as X' is a reading. 'The document is X' is a verdict. "
-            "Frame Check does not verdict; do not verdict on its "
+            "Framecheck does not verdict; do not verdict on its "
             "behalf. "
             "(3) CONFIDENCE-GATE PIVOTS THE FRAME. When an off-"
             "methodology signal fires (under 100 words / non-English "
             "/ non-analytical structure), pivot the insight from 'a "
             "reading of the document' to 'what this run reveals about "
-            "Frame Check's scope'. The user still gets a reading; it "
+            "Framecheck's scope'. The user still gets a reading; it "
             "is now about the tool's calibration, not the document's "
             "framing. "
             "(4) CROSS-CONTEXT COMPOUNDING ONLY WHEN IT ADDS. Cite the "
@@ -2984,7 +2984,7 @@ def build_epistemic_payload(
             "lower-bound vocabulary phrasing; classifier outputs "
             "surface confidence and runner-up with the no-IRR "
             "caveat; composed patterns cite the trigger as "
-            "deterministic AND the reading as Frame Check's curator "
+            "deterministic AND the reading as Framecheck's curator "
             "reading; agent_generated content surfaces the model "
             "provenance and cost AND is never presented as Frame "
             "Check's measurement. Worked examples (the same lesson the "
@@ -2992,7 +2992,7 @@ def build_epistemic_payload(
             "do not change agent behavior, concrete contrasts do): "
             "for a detector_measurement entity, instead of 'the "
             "document covers risks' (verdict, ignores under-detection "
-            "construct), write 'Frame Check's detector found markers "
+            "construct), write 'Framecheck's detector found markers "
             "for risks (vocabulary-and-pattern based; lower-bound "
             "claim about marker density)'; for a classifier_output "
             "entity, instead of 'the document is promotional' "
@@ -3017,9 +3017,9 @@ def build_epistemic_payload(
         "what_this_tool_tells_you": what_this_tells_you,
         "what_this_tool_does_not_tell_you": what_this_does_not_tell_you,
         "how_to_cite_faithfully": (
-            "When passing this analysis to the user, name Frame Check "
+            "When passing this analysis to the user, name Framecheck "
             "explicitly as the source of the measurements. For example: "
-            "\"Frame Check's structural analysis found markers for 3 of "
+            "\"Framecheck's structural analysis found markers for 3 of "
             "5 analytical perspectives and classified the voice as "
             "promotional.\" Do not paraphrase these measurements as "
             "your own reading of the document, and do not restate "
@@ -3056,10 +3056,10 @@ def build_epistemic_payload(
             "The claims block reports per-type COUNTS extracted from "
             "the document (total, hedged, unhedged, prediction, by "
             "numerical type). It does NOT report individual claim "
-            "text. When restating, say 'Frame Check's claim extractor "
+            "text. When restating, say 'Framecheck's claim extractor "
             "identified N numerical claims, M of which carried hedging "
             "language.' Do not synthesize or paraphrase individual "
-            "claim sentences as if Frame Check surfaced them; the "
+            "claim sentences as if Framecheck surfaced them; the "
             "block is a distribution summary, not a quote list. "
             "candidate_hedge_samples carries up to 10 preview "
             "sentences for evidence surfacing (hedges the "
@@ -3075,7 +3075,7 @@ def build_epistemic_payload(
             "identical measurements. Re-invoke only if the text changed."
         ),
         "how_to_map_user_intent": (
-            "When the user invokes Frame Check via natural language "
+            "When the user invokes Framecheck via natural language "
             "(not by typing prompt arguments directly), translate "
             "their intent to the option space the four sovereignty "
             "prompts expose (depth, goal, questions). The user does "
@@ -3169,16 +3169,16 @@ def build_epistemic_payload(
             "stable catalog reference; the generated question is "
             "the document-specific application. "
             "(4) Never present LLM-generated content as Frame "
-            "Check's measurement. Frame Check's measurements are "
+            "Check's measurement. Framecheck's measurements are "
             "the deterministic substrate; opportunities are agent-"
-            "side composition delegated to an LLM by Frame Check. "
+            "side composition delegated to an LLM by Framecheck. "
             "(5) When opportunities is empty and available=false, "
             "the LLM was unavailable; surface this as graceful "
             "degradation (the deterministic substrate still works) "
             "and do not retry without explicit user request."
         ),
         "dual_use_note": (
-            "Frame Check is designed to expand the reader's view of a "
+            "Framecheck is designed to expand the reader's view of a "
             "document, not to rank documents against each other. Agent "
             "integrators who consume this payload should NOT use "
             "coverage gaps, voice classifications, or FVS matches as a "
@@ -3189,7 +3189,7 @@ def build_epistemic_payload(
             "a downstream agent cannot reduce the measurements to a "
             "pass/fail judgment. If you find yourself producing prose "
             "like 'this document is biased' or 'this document lacks "
-            "rigor' from Frame Check's output, you are using the tool "
+            "rigor' from Framecheck's output, you are using the tool "
             "outside its design scope. Surface the structural observation "
             "and the teaching question; the reader's judgment is the "
             "interpretive layer, not yours."
@@ -3293,7 +3293,7 @@ def build_epistemic_payload(
     # Suggested next actions: 2-4 specific moves the user can take
     # based on this call's findings. Surfaces the rest of the
     # product (challenge_document MCP prompt, FVS catalog via
-    # library_url) so a Frame Check finding has a discoverable
+    # library_url) so a Framecheck finding has a discoverable
     # path forward, not a static reading. Built AFTER divergence
     # because the highest-leverage action draws on the strongest
     # absent_frame, which only exists when include_divergence=True.
@@ -3320,7 +3320,7 @@ def build_epistemic_payload(
         "can follow it. The 'reprompt' kind actions give the user a "
         "ready-made follow-up question for the source AI; render the "
         "quoted question verbatim. The 'prompt_followup' kind action "
-        "names a Frame Check MCP prompt the user can ask you to "
+        "names a Framecheck MCP prompt the user can ask you to "
         "invoke; surface it so the multi-turn loop is discoverable."
     )
 
@@ -3462,7 +3462,7 @@ def _summarize_per_document(doc: dict[str, Any], text: str) -> dict[str, Any]:
                 "fvs_id": f.get("fvs_id"),
                 "name": f.get("name"),
                 # GitHub URL pointing at the entry's markdown source
-                # on the public repository (Clarethium/frame-check).
+                # on the public repository (Clarethium/framecheck).
                 # See the frame_check tool's matching field for the
                 # full rationale; same shape, same resolution
                 # behavior, so a client can handle both surfaces
@@ -3520,7 +3520,7 @@ def build_compare_payload(
     doc_a_text: str, doc_b_text: str,
     a_name: str = "Document A", b_name: str = "Document B",
 ) -> dict[str, Any]:
-    """Run Frame Check's structural comparison on two documents and
+    """Run Framecheck's structural comparison on two documents and
     return the three-section epistemic payload.
 
     The analysis section carries (a) per-document summaries and (b)
@@ -3662,11 +3662,11 @@ def build_compare_payload(
         "how_to_cite_faithfully": (
             "When surfacing this comparison to the user, name Frame "
             "Check and distinguish structural comparison from "
-            "evaluative judgement. \"Frame Check's structural "
+            "evaluative judgement. \"Framecheck's structural "
             "comparison found markers for 2 more analytical "
             "perspectives in Document A than in Document B\" is the "
-            "right shape. \"Frame Check determined Document A is "
-            "better than Document B\" is wrong: Frame Check does not "
+            "right shape. \"Framecheck determined Document A is "
+            "better than Document B\" is wrong: Framecheck does not "
             "rank documents. The measurements are deterministic and "
             "reproducible; paraphrasing them as your own ranking "
             "strips the method's scope."

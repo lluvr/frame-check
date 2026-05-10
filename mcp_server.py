@@ -1,7 +1,7 @@
 """
-Frame Check MCP server.
+Framecheck MCP server.
 
-Exposes Frame Check's deterministic structural framing analysis as a
+Exposes Framecheck's deterministic structural framing analysis as a
 Model Context Protocol tool so AI agents (Claude Desktop, Cursor, any
 MCP-compatible client) can invoke framing analysis directly instead
 of paraphrasing documents as their own LLM-generated interpretation.
@@ -24,7 +24,7 @@ epistemic payload with three sections:
                        tool URL
 
 The agent_guidance and provenance blocks exist because an agent
-passing Frame Check's output to a user without attribution would
+passing Framecheck's output to a user without attribution would
 strip the reproducibility that makes the measurement worth citing.
 Surfacing "how to cite faithfully" in the tool response is the
 structure that carries the integrity forward to the user.
@@ -34,7 +34,7 @@ Protocol
 Implements the Model Context Protocol over stdio using JSON-RPC 2.0
 line-delimited. No external dependency on an MCP SDK. The protocol
 surface is small enough (initialize, tools/list, tools/call, ping,
-notifications) that implementing it in-repo keeps Frame Check
+notifications) that implementing it in-repo keeps Framecheck
 self-contained: no extra install step, no SDK version drift.
 
 Install in Claude Desktop
@@ -43,14 +43,14 @@ Add to `claude_desktop_config.json`:
 
     {
       "mcpServers": {
-        "frame-check": {
+        "framecheck": {
           "command": "python3",
-          "args": ["/absolute/path/to/frame-check/mcp_server.py"]
+          "args": ["/absolute/path/to/framecheck/mcp_server.py"]
         }
       }
     }
 
-Then ask Claude: "Can you frame-check this document?"
+Then ask Claude: "Can you framecheck this document?"
 
 License: Apache-2.0. See LICENSE at repo root.
 """
@@ -64,7 +64,7 @@ import sys
 import traceback
 from typing import Any
 
-# Import the Frame Check pipeline from the sibling modules. The script
+# Import the Framecheck pipeline from the sibling modules. The script
 # is meant to be invoked with its directory as the working context
 # (Claude Desktop does this automatically). Adding the script's
 # directory to sys.path is defensive: covers the case where the MCP
@@ -118,7 +118,7 @@ SERVER_NAME = "frame-check"
 # test_server_version_bumped_for_decision_readiness_capability;
 # adding suffixes here would break that pin and the handshake
 # parser shape downstream consumers may rely on.
-SERVER_VERSION = "0.9.4"
+SERVER_VERSION = "1.0.0"
 
 # ── Logging ────────────────────────────────────────────────────────
 #
@@ -200,7 +200,7 @@ from mcp_resources import (  # noqa: E402
 # Tool definitions, prompt templates, and the small helpers that
 # translate user-intent prompt arguments into MCP-parameter values
 # now live in `mcp_schema.py`. The schema layer has no runtime
-# dependencies on other Frame Check modules; the protocol layer
+# dependencies on other Framecheck modules; the protocol layer
 # (still in mcp_server.py at Step 3 boundary) imports the
 # definitions for tools/list, prompts/list, and prompts/get
 # dispatch, plus MAX_DOCUMENT_CHARS / MAX_SOURCE_CHARS for input
@@ -294,7 +294,7 @@ from mcp_compose import (  # noqa: E402
 # log layers. External callers (tests under ``tests/``, conformance
 # tooling under ``scripts/``, downstream pip-install consumers reading
 # ``mcp_server.<name>``) historically dotted into this module for any
-# Frame Check internal; the decomposition (2026-04-29) preserved that
+# Framecheck internal; the decomposition (2026-04-29) preserved that
 # surface by re-importing names here. ``__all__`` declares the full
 # re-export set so static analyzers (CodeQL ``py/unused-import``,
 # ruff F401) recognize the imports as intentional public API rather
@@ -414,7 +414,7 @@ def handle_initialize(_params: dict[str, Any]) -> dict[str, Any]:
     here.
 
     The top-level `instructions` field carries server-orientation
-    prose to the agent: when to use Frame Check, default invocation
+    prose to the agent: when to use Framecheck, default invocation
     shape, and the four-prompt workflow surface. Per the MCP
     protocol this is the canonical place for cross-tool guidance
     (per-tool descriptions are delivered separately via tools/list);
@@ -434,7 +434,7 @@ def handle_initialize(_params: dict[str, Any]) -> dict[str, Any]:
             "version": SERVER_VERSION,
         },
         "instructions": (
-            "Frame Check is a structural framing-analysis tool for "
+            "Framecheck is a structural framing-analysis tool for "
             "any English analytical document. Use it when the user "
             "wants to read a document with a structural lens (which "
             "perspectives it covers, which it omits, how confidently "
@@ -457,7 +457,7 @@ def handle_initialize(_params: dict[str, Any]) -> dict[str, Any]:
             "traced to structural gaps), `explain_framing` (guided "
             "walkthrough of a completed result). The user can ask "
             "you to use any of them by name.\n\n"
-            "Cite each measurement as Frame Check's; frame your "
+            "Cite each measurement as Framecheck's; frame your "
             "reading as a reading ('the pattern reads as X'), never "
             "as a verdict ('the document is X'). The deterministic "
             "path returns identical measurements on identical "
@@ -505,7 +505,7 @@ def handle_resources_list(_params: dict[str, Any]) -> dict[str, Any]:
             resource["contentHash"] = _content_hash(text)
         except (ValueError, FileNotFoundError, OSError) as exc:
             sys.stderr.write(
-                f"[frame-check-mcp] resources/list dropping {uri}: "
+                f"[framecheck-mcp] resources/list dropping {uri}: "
                 f"{type(exc).__name__}: {exc}\n"
             )
             continue
@@ -546,7 +546,7 @@ def handle_resources_read(params: dict[str, Any]) -> dict[str, Any]:
 #
 # MCP prompts are server-defined templates the agent's LLM executes.
 # This server ships four. The two load-bearing ones encode the
-# novel use case: an agent using Frame Check to audit AI-generated
+# novel use case: an agent using Framecheck to audit AI-generated
 # text. Either its own last response (frame_check_my_response) or
 # a response from a different AI that the user pasted in
 # (frame_check_this_ai_response). The other two cover common
@@ -634,12 +634,12 @@ def _tool_error(message: str) -> dict[str, Any]:
 # message interpolation.
 _MCP_TOOL_ERROR_MESSAGES = {
     "frame_check_internal_error": (
-        "Frame Check analysis could not complete. The server logged the "
+        "Framecheck analysis could not complete. The server logged the "
         "failure for follow-up; retry in a minute. If the problem "
         "persists, the document may have unusual structure."
     ),
     "frame_compare_internal_error": (
-        "Frame Check comparison could not complete. The server logged "
+        "Framecheck comparison could not complete. The server logged "
         "the failure for follow-up; retry in a minute."
     ),
 }
@@ -1253,7 +1253,7 @@ def _install_version_info() -> dict[str, Any]:
 
 
 _HELP_TEXT = """\
-frame-check MCP server
+framecheck MCP server
 
 USAGE
   python3 mcp_server.py [FLAG]
@@ -1294,13 +1294,13 @@ STARTUP AND TROUBLESHOOTING
   - config path per platform (macOS / Windows / Linux)
   - absolute paths required (relative paths and `~` do not expand)
   - Python 3.10+ required (`str | None` syntax)
-  - stderr logs labeled `[frame-check-mcp]`
+  - stderr logs labeled `[framecheck-mcp]`
   - empty log means the server never started (check the command path)
 
 RESOURCES
   Public docs:   https://frame.clarethium.com
   Methodology:   https://frame.clarethium.com/corpus/methodology/
-  Repo:          https://github.com/Clarethium/frame-check
+  Repo:          https://github.com/Clarethium/framecheck
 """
 
 
@@ -1323,7 +1323,7 @@ def _cli_version() -> int:
     info = _install_version_info()
     # Header line plus a single space-delimited key=value line so
     # the output is both human-readable and scriptable.
-    print(f"frame-check mcp_server v{info['server_version']}")
+    print(f"framecheck mcp_server v{info['server_version']}")
     dirty = "+dirty" if info.get("git_dirty") else ""
     fields = [
         f"server_version={info['server_version']}",
@@ -1382,7 +1382,7 @@ def _cli_test() -> int:
     resources/read on one sample from each family) and
     pretty-prints the results.
 
-    An operator installing Frame Check into an MCP client runs
+    An operator installing Framecheck into an MCP client runs
     this first. If any of these surfaces fail here, no client
     will succeed either; the failure location is the first debug
     hint. The sections are headed so the output is skimmable.
@@ -1523,8 +1523,8 @@ def cli() -> int:
     Parses sys.argv for the optional subcommand flags (--help, --version,
     --test) and dispatches accordingly; falls through to the JSON-RPC
     stdio loop in main() when no subcommand is given. This is the entry
-    point pyproject.toml registers as `frame-check-mcp` so an installed
-    user can run `frame-check-mcp --version` and get the install
+    point pyproject.toml registers as `framecheck-mcp` so an installed
+    user can run `framecheck-mcp --version` and get the install
     fingerprint without spawning the stdio server. Direct invocation via
     `python3 mcp_server.py` still goes through the same dispatch via the
     `if __name__ == "__main__"` block below.

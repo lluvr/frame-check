@@ -1,7 +1,7 @@
-title = "Frame Check gitleaks configuration"
+title = "Framecheck gitleaks configuration"
 
 # Extends gitleaks' default ruleset with patterns specific to the
-# providers Frame Check uses for source verification. Default rules
+# providers Framecheck uses for source verification. Default rules
 # catch GitHub tokens, Gemini AIzaSy, generic high-entropy patterns,
 # etc., but do not catch the three provider keys whose value shapes
 # are too short or too low-entropy for generic detection:

@@ -1,12 +1,12 @@
 """Tests for mcp_server.py: the Model Context Protocol server that
-exposes Frame Check's structural framing analysis to AI agents.
+exposes Framecheck's structural framing analysis to AI agents.
 
 The tests exercise three layers:
 
   1. The epistemic-payload builder directly (no protocol).
      Validates that the analysis / agent_guidance / provenance
      schema holds and that the measurements match the underlying
-     Frame Check pipeline.
+     Framecheck pipeline.
 
   2. The JSON-RPC dispatcher in isolation.
      Feeds synthetic requests and checks the response envelope,
@@ -871,11 +871,11 @@ def test_agent_guidance_includes_scope_honesty():
         "how_to_cite_faithfully" in g,
         "how_to_cite_faithfully is required",
     )
-    # The citation instruction must name Frame Check explicitly so
+    # The citation instruction must name Framecheck explicitly so
     # the agent cannot paraphrase the measurements as its own.
     check(
-        "Frame Check" in g["how_to_cite_faithfully"],
-        "how_to_cite_faithfully must name Frame Check",
+        "Framecheck" in g["how_to_cite_faithfully"],
+        "how_to_cite_faithfully must name Framecheck",
     )
     print("  PASS\n")
 
@@ -883,7 +883,7 @@ def test_agent_guidance_includes_scope_honesty():
 def test_provenance_reports_zero_llm_cost():
     """The deterministic layer does not invoke an LLM. Provenance
     must report cost 0.0 so agents and downstream telemetry do not
-    misattribute cost to Frame Check invocations.
+    misattribute cost to Framecheck invocations.
 
     Provenance also carries four version fields so a citation can
     resolve against a specific snapshot: frame_check_version (brand /
@@ -1037,7 +1037,7 @@ def test_initialize_handshake():
 
 def test_initialize_carries_server_instructions():
     """The InitializeResult must carry an `instructions` field
-    (top-level per MCP protocol) describing when to use Frame Check,
+    (top-level per MCP protocol) describing when to use Framecheck,
     the default invocation shape, and the four-prompt workflow
     surface. Per-tool descriptions are delivered separately via
     tools/list; this field is the canonical place for cross-tool
@@ -1480,7 +1480,7 @@ def test_saturated_source_steers_guidance_to_layer_4():
     agent_guidance.scope_regime_guidance must then point the agent
     at Layer 4 source_fidelity for numerical claims. This is the
     epistemic-honesty propagation the canon-play positioning relies
-    on: Frame Check does not silently let an agent quote the wrong
+    on: Framecheck does not silently let an agent quote the wrong
     layer on dense sources."""
     print("=== saturated regime -> guidance cites Layer 4 ===")
     doc = (
@@ -1540,7 +1540,7 @@ def test_frame_matches_carry_stability_status():
 def test_agent_guidance_describes_cite_form_for_matches():
     """The guidance must tell the agent HOW to surface frame matches
     honestly given their status. Missing this is the difference
-    between 'the agent cites Frame Check faithfully' and 'the agent
+    between 'the agent cites Framecheck faithfully' and 'the agent
     claims a draft frame is a stable standard'."""
     print("=== agent_guidance covers how to cite frame matches ===")
     payload = mcp_server.build_epistemic_payload(_SAMPLE_DOC_FOR_SOURCE)
@@ -1832,7 +1832,7 @@ def test_initialize_advertises_resources_capability():
 
 def test_resources_list_includes_library_and_docs():
     """resources/list must advertise at least the library and the
-    calibration tiers. Omitting either breaks the 'Frame Check as
+    calibration tiers. Omitting either breaks the 'Framecheck as
     canonical reference' contract. The methodology resource is
     optional (its presence depends on whether the methodology
     document is bundled in the wheel for a given audience)."""
@@ -1989,8 +1989,8 @@ def test_resources_read_methodology_returns_markdown():
         contents = resp["result"]["contents"]
         check(contents[0]["mimeType"] == "text/markdown",
               "methodology MIME must be markdown")
-        check("Frame Check" in contents[0]["text"],
-              "methodology must mention Frame Check")
+        check("Framecheck" in contents[0]["text"],
+              "methodology must mention Framecheck")
     else:
         check(resp["error"]["code"] == -32602,
               "absent methodology must return -32602")
@@ -3075,7 +3075,7 @@ def test_frame_library_matches_carry_clickable_library_url():
     url = first.get("library_url") or ""
     check(
         url.startswith(
-            "https://github.com/Clarethium/frame-check"
+            "https://github.com/Clarethium/framecheck"
             "/blob/master/data/frame_library/"
         ),
         f"library_url must point at the canonical GitHub markdown "
@@ -3123,7 +3123,7 @@ def test_absent_frames_carry_clickable_library_url():
     url = first.get("library_url") or ""
     check(
         url.startswith(
-            "https://github.com/Clarethium/frame-check"
+            "https://github.com/Clarethium/framecheck"
             "/blob/master/data/frame_library/"
         )
         and f"{first['frame_id']}_" in url
@@ -3142,7 +3142,7 @@ def test_absent_frames_carry_clickable_library_url():
     co_url = co_absences[0].get("library_url") or ""
     check(
         co_url.startswith(
-            "https://github.com/Clarethium/frame-check"
+            "https://github.com/Clarethium/framecheck"
             "/blob/master/data/frame_library/"
         )
         and f"{co_absences[0]['fvs_id']}_" in co_url
@@ -3231,7 +3231,7 @@ def test_suggested_next_actions_carries_findings_anchored_actions():
         url = resource_actions[0].get("related_url") or ""
         check(
             url.startswith(
-                "https://github.com/Clarethium/frame-check"
+                "https://github.com/Clarethium/framecheck"
                 "/blob/master/data/frame_library/"
             )
             and url.endswith(".md"),
@@ -3595,13 +3595,13 @@ def test_frame_match_carries_adjacent_frames():
         # divergence here would mean someone bypassed the helper.
         # URL pattern follows decision_readiness.LIBRARY_PUBLIC_URL_BASE,
         # which switched from frame.clarethium.com/corpus/library to
-        # github.com/Clarethium/frame-check/blob/master/data/frame_library
+        # github.com/Clarethium/framecheck/blob/master/data/frame_library
         # when production paused 2026-04-23 (Path A.1 decision): GitHub
         # is always resolvable for end-users regardless of hosted-
         # production status, and per-entry filenames stay accurate
         # under entry rename via parse_entry_filenames().
         public_url_prefix = (
-            "https://github.com/Clarethium/frame-check/blob/master"
+            "https://github.com/Clarethium/framecheck/blob/master"
             "/data/frame_library/"
         )
         check(
@@ -4071,7 +4071,7 @@ def test_agent_guidance_names_self_audit_pattern():
 def test_prompts_get_ai_response_prompt_warns_against_verdict():
     """The sovereignty-case prompt must also carry verdict
     prohibition against the analyzed AI (not just self). Reading
-    an AI response through Frame Check should surface structure,
+    an AI response through Framecheck should surface structure,
     never conclude bias."""
     print("=== frame_check_this_ai_response prohibits verdict ===")
     resp = mcp_server.dispatch({
@@ -4650,13 +4650,13 @@ def test_all_prompts_pivot_frame_on_off_methodology():
         # The pivot is FROM document-reading TO scope-reading.
         has_pivot_target = (
             "scope" in text.lower()
-            and ("Frame Check" in text or "the tool" in text.lower()
+            and ("Framecheck" in text or "the tool" in text.lower()
                  or "this kind of text" in text.lower())
         )
         check(
             has_pivot_target,
             f"prompt {prompt_name!r} does not name the pivot target "
-            f"(reading about Frame Check's scope/calibration on this "
+            f"(reading about Framecheck's scope/calibration on this "
             f"kind of text); agent may pivot to nothing in particular",
         )
     _assert_no_new_failures(baseline, "test_all_prompts_pivot_frame_on_off_methodology")
@@ -5051,7 +5051,7 @@ def test_resources_list_drops_unreadable_not_hashless():
 def test_worked_example_reproduces_from_captured_payload():
     """The Grok-on-NVIDIA worked example captured its source text,
     the LLM summary text, SHA-256 hashes of both, and the full
-    Frame Check payload as data.json. Re-running build_epistemic_payload
+    Framecheck payload as data.json. Re-running build_epistemic_payload
     on the captured texts must produce measurements that match the
     captured payload field-for-field (minus timestamps and latency).
 
@@ -5992,7 +5992,7 @@ def test_divergence_summary_names_clusters_when_present():
         check(
             "substrate" in summary.lower(),
             "divergence_summary must name 'substrate' as the agent of "
-            "the cluster composition (Frame Check is composing, not "
+            "the cluster composition (Framecheck is composing, not "
             "the agent or the document)",
         )
     _assert_no_new_failures(
@@ -6134,7 +6134,7 @@ def test_how_to_render_divergence_teaches_cluster_first_composition():
 def test_frame_library_matches_carry_corpus_context():
     """Per-frame corpus_context is attached to every matched frame
     in frame_library_matches. The substrate composes catalog
-    assertion with empirical anchoring from Frame Check's validation
+    assertion with empirical anchoring from Framecheck's validation
     corpus.
 
     Pins:
@@ -8035,7 +8035,7 @@ def test_frame_opportunities_carries_provenance_discipline():
     """agent_guidance must include frame_opportunities_discipline
     teaching the agent: is_deterministic flag, cost surfacing,
     keep general teaching question alongside generated question,
-    never present LLM content as Frame Check measurement, and
+    never present LLM content as Framecheck measurement, and
     handle graceful degradation.
     """
     baseline = len(_FAILURES)
@@ -8066,10 +8066,10 @@ def test_frame_opportunities_carries_provenance_discipline():
         "unavailable",
     )
     check(
-        "Frame Check" in text and "measurement" in text.lower(),
+        "Framecheck" in text and "measurement" in text.lower(),
         "discipline must name that opportunities are NOT Frame "
         "Check measurements (they are LLM compositions delegated "
-        "by Frame Check)",
+        "by Framecheck)",
     )
     _assert_no_new_failures(
         baseline, "test_frame_opportunities_carries_provenance_discipline"
@@ -8251,7 +8251,7 @@ def test_compose_budget_minimal_compresses_agent_guidance():
       - compose_budget=full (default) returns the full agent_guidance
         unchanged (existing tests at line 872 area depend on this).
       - compose_budget=minimal returns a smaller agent_guidance.
-      - The compressed dict still names Frame Check explicitly in
+      - The compressed dict still names Framecheck explicitly in
         how_to_cite_faithfully.
       - The compressed dict still surfaces reading-form vs verdict-
         form discipline in composition_discipline.
@@ -8311,8 +8311,8 @@ def test_compose_budget_minimal_compresses_agent_guidance():
         "citation discipline)",
     )
     check(
-        "Frame Check" in minimal_ag.get("how_to_cite_faithfully", ""),
-        "minimal how_to_cite_faithfully must still name Frame Check "
+        "Framecheck" in minimal_ag.get("how_to_cite_faithfully", ""),
+        "minimal how_to_cite_faithfully must still name Framecheck "
         "explicitly",
     )
     check(
@@ -8417,7 +8417,7 @@ def test_compose_budget_standard_compresses_agent_guidance():
       - compose_budget_applied_note correctly reports
         compose_budget=standard so the caller can audit which tier
         produced the cut.
-      - standard preserves the load-bearing rules (Frame Check name,
+      - standard preserves the load-bearing rules (Framecheck name,
         reading-form-not-verdict-form, dual-use anti-misuse,
         self-audit rule).
       - standard divergence-side slicing is unchanged: top-5 absent
@@ -8485,8 +8485,8 @@ def test_compose_budget_standard_compresses_agent_guidance():
 
     # Load-bearing rules survive the cut.
     check(
-        "Frame Check" in standard_ag.get("how_to_cite_faithfully", ""),
-        "standard how_to_cite_faithfully must still name Frame Check "
+        "Framecheck" in standard_ag.get("how_to_cite_faithfully", ""),
+        "standard how_to_cite_faithfully must still name Framecheck "
         "explicitly",
     )
     cd = standard_ag.get("composition_discipline", "")
@@ -8885,8 +8885,8 @@ def test_llm_classifier_output_claim_level_treatment():
 
     htc = llm_co.get("how_to_cite", "")
     check(
-        "Frame Check" in htc and "reliability" in htc,
-        "llm_classifier_output.how_to_cite must name Frame Check "
+        "Framecheck" in htc and "reliability" in htc,
+        "llm_classifier_output.how_to_cite must name Framecheck "
         "AND the reliability tier so the citation carries the "
         "aggregate evidence (got: " + repr(htc[:120]) + ")",
     )
@@ -9761,7 +9761,7 @@ def test_frame_opportunities_prompt_carries_substrate_context():
     check(
         "Substrate-level composition" in block,
         "block must label itself as substrate-level composition so "
-        "the LLM treats it as Frame Check's reading, not document "
+        "the LLM treats it as Framecheck's reading, not document "
         "content",
     )
     # _build_corpus_context_block: corpus_context with segmented
@@ -10195,7 +10195,7 @@ def test_decision_readiness_dimensions_carry_claim_level():
     scoring per dimension) and curator-authored signal_text. Pins
     claim_level=composed_pattern on each dimension dict so the
     agent honors the per-level discipline (cite the trigger as
-    deterministic AND the signal_text as Frame Check's curator
+    deterministic AND the signal_text as Framecheck's curator
     reading) rather than treating the prose as a measurement.
     Without this, the decision_readiness profile remained the
     one un-tagged composed surface in the analysis dict.

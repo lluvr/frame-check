@@ -41,7 +41,7 @@ the seeded corpus; raters can read it at
 - Self-confidence honest about ambiguous dimensions
 
 The validation effort learns the most from this kind of rating.
-Divergence cases between Frame Check's profile and a good
+Divergence cases between Framecheck's profile and a good
 rater's scores are interpretable because the notes explain the
 rater's reasoning.
 
@@ -56,7 +56,7 @@ rater's reasoning.
 
 This contributes to per-dimension means but is uninterpretable
 on divergence. The validation effort cannot tell whether the
-rater agreed with Frame Check by accident or by analysis.
+rater agreed with Framecheck by accident or by analysis.
 
 ### `example-insufficient.yaml`: what to avoid
 
