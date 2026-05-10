@@ -85,7 +85,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write  # for sigstore attestation
+      id-token: write  # OIDC for sigstore attestation
+      attestations: write  # actions/attest-build-provenance write
     steps:
       - uses: actions/checkout@v4
         with:
