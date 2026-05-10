@@ -702,7 +702,10 @@ def _filter_numbers(
             if not _is_year(n["value"]) and not _is_word_count(n, text)]
 
 
-def temporal_consistency(doc_text, comparison_texts):
+def temporal_consistency(
+    doc_text: str,
+    comparison_texts: list[str],
+) -> dict[str, Any]:
     """Cross-version number stability.
 
     Construct: Fraction of unique numbers that appear in only SOME versions
@@ -769,7 +772,7 @@ def temporal_consistency(doc_text, comparison_texts):
 # in the source. See module docstring for the under-detection discipline. for failure
 # modes and valid uses.
 
-def _add_commas(val):
+def _add_commas(val: str) -> str | None:
     """Re-insert commas into a plain integer string: 2000 -> 2,000."""
     if '.' in val or len(val) <= 3:
         return None
@@ -813,7 +816,7 @@ def _number_in_source(num: dict[str, Any], source_text: str) -> bool:
         return False
 
 
-def source_matching(doc_text, source_text):
+def source_matching(doc_text: str, source_text: str) -> dict[str, Any]:
     """Programmatic number-to-source matching. Zero LLM."""
     numbers = _filter_numbers(extract_numbers_for_matching(doc_text), doc_text)
 
@@ -851,7 +854,7 @@ def source_matching(doc_text, source_text):
 # generated text but absent from source material.
 # STATUS: DIRECTIONAL (N=18 docs). Needs wider validation.
 
-def extract_entities(text):
+def extract_entities(text: str) -> list[dict[str, str]]:
     """Extract named entities from generated text. Zero LLM."""
     entities = []
     seen = set()
@@ -939,7 +942,7 @@ def extract_entities(text):
     return entities
 
 
-def _entity_in_source(entity, source_text):
+def _entity_in_source(entity: dict[str, str], source_text: str) -> bool:
     """Check if entity appears in source text."""
     val = entity["value"]
     if val.lower() in source_text.lower():
@@ -950,7 +953,7 @@ def _entity_in_source(entity, source_text):
     return False
 
 
-def entity_provenance(doc_text, source_text):
+def entity_provenance(doc_text: str, source_text: str) -> dict[str, Any]:
     """Entity detection + source matching. Zero LLM.
     STATUS: DIRECTIONAL (N=18 docs). English-centric patterns."""
     entities = extract_entities(doc_text)
