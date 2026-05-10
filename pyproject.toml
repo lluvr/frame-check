@@ -152,18 +152,11 @@ show_missing = false
 precision = 1
 
 [tool.mypy]
-# Type-check configuration. The current discipline is incremental:
-# the codebase has organic type coverage and is moving toward
-# ``--strict`` over time. Settings here pin a baseline that catches
-# real bugs (untyped dict access typos, name redefinitions,
-# incompatible overrides) without blocking on the larger annotation
-# debt that ``strict`` would surface.
-#
-# Goal at v1.0: this section's ``strict = true`` flips on for
-# ``mcp_server``, ``mcp_compose``, ``mcp_resources``, ``mcp_schema``,
-# ``framing``, ``comparison``, ``clarethium_measure`` (the public
-# wheel surface). Modules under ``tests/`` and adapter scripts can
-# stay at the relaxed default.
+# Type-check configuration. The codebase ships strict-clean on the
+# seven-module wheel surface as of v1.0.0; the per-module override
+# below pins ``strict = true`` for those modules so local
+# ``mypy <file>`` matches CI behavior. Other modules stay at the
+# lenient defaults below as an incremental-typing on-ramp.
 python_version = "3.10"
 ignore_missing_imports = true
 follow_imports = "silent"
@@ -181,9 +174,27 @@ exclude = [
     "build/",
 ]
 
-# Per-module overrides. The script-style validation harnesses under
-# ``calibration/`` and ``validation/`` are ad-hoc analysis code, not
-# library API; relax checks there.
+# Per-module overrides.
+# 1. The seven-module wheel surface flips to ``strict = true`` per the
+#    v1.0 contract. The `Mypy --strict` step in tests.yml is
+#    strict-blocking on the same set; this override keeps the
+#    contract visible in pyproject so contributors running local
+#    mypy on a single file see the same gate CI applies.
+[[tool.mypy.overrides]]
+module = [
+    "mcp_server",
+    "mcp_compose",
+    "mcp_resources",
+    "mcp_schema",
+    "framing",
+    "comparison",
+    "clarethium_measure",
+]
+strict = true
+
+# 2. The script-style validation harnesses under ``calibration/`` and
+#    ``validation/`` are ad-hoc analysis code, not library API; relax
+#    checks there.
 [[tool.mypy.overrides]]
 module = [
     "calibration.*",
