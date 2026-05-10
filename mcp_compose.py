@@ -1139,7 +1139,7 @@ def _build_divergence_block(
     user_goal: str | None = None,
     document_text_for_opportunities: str | None = None,
     include_frame_opportunities: bool = False,
-    document_signals: dict | None = None,
+    document_signals: dict[str, Any] | None = None,
     compose_budget: str = "full",
 ) -> dict[str, Any]:
     """Build the FRAME_DIVERGENCE_CONTRACT_v1 Part 2 `divergence` block.
@@ -2127,7 +2127,7 @@ def _compress_agent_guidance_to_load_bearing(
 
 def _build_suggested_next_actions(
     analysis: dict[str, Any],
-    divergence: dict | None,
+    divergence: dict[str, Any] | None,
 ) -> list[dict]:
     """Derive 2-4 specific next-action suggestions from this call's
     findings. Each action is structural-finding-anchored: it points

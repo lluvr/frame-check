@@ -202,10 +202,10 @@ _SPEC_FD_V1_PART2_PATH = os.path.join(
 # A `from mcp_resources import _FRAME_VERSIONS` would capture the
 # value at IMPORT time (None) and never see the population.
 
-_FRAME_STATUSES: dict | None = None
+_FRAME_STATUSES: dict[str, Any] | None = None
 _FRAME_LIBRARY_VERSION: str | None = None
-_FRAME_VERSIONS: dict | None = None
-_FRAME_ADJACENCY: dict | None = None
+_FRAME_VERSIONS: dict[str, Any] | None = None
+_FRAME_ADJACENCY: dict[str, Any] | None = None
 
 
 def _get_frame_statuses() -> dict[str, Any] | None:
@@ -348,7 +348,7 @@ def _spec_fd_v1_index_markdown() -> str:
 
 # ── Library, worked-example, transmission entry listings ───────────
 
-def _library_entries() -> list[tuple]:
+def _library_entries() -> list[tuple[Any, ...]]:
     """List (fvs_id, title, absolute_md_path, version) for every FVS
     entry present under data/frame_library/.
 
@@ -363,7 +363,7 @@ def _library_entries() -> list[tuple]:
     same analysis against the same version in future without
     having to reconstruct the text manually.
     """
-    out: list[tuple] = []
+    out: list[tuple[Any, ...]] = []
     if not os.path.isdir(_LIBRARY_DIR):
         return out
     for fname in sorted(os.listdir(_LIBRARY_DIR)):
@@ -399,7 +399,7 @@ def _library_entries() -> list[tuple]:
     return out
 
 
-def _library_v3_entries() -> list[tuple]:
+def _library_v3_entries() -> list[tuple[Any, ...]]:
     """Catalog used by the MCP divergence block: 19 entries, FVS-020
     excluded.
 
@@ -413,7 +413,7 @@ def _library_v3_entries() -> list[tuple]:
     Returns list of (fvs_id, title, absolute_md_path, version) tuples.
     """
     src_dir = _LIBRARY_V3_DIR if os.path.isdir(_LIBRARY_V3_DIR) else _LIBRARY_DIR
-    out: list[tuple] = []
+    out: list[tuple[Any, ...]] = []
     if not os.path.isdir(src_dir):
         return out
     for fname in sorted(os.listdir(src_dir)):
@@ -448,7 +448,7 @@ def _library_v3_entries() -> list[tuple]:
     return out
 
 
-def _worked_example_entries() -> list[tuple]:
+def _worked_example_entries() -> list[tuple[Any, ...]]:
     """List (slug, title, path, metadata) for every published worked
     example. Files prefixed with an underscore (_TEMPLATE.md) or named
     README.md are excluded: the template is a scaffold, not a
@@ -461,7 +461,7 @@ def _worked_example_entries() -> list[tuple]:
     hook) without pulling the full markdown first. Missing keys
     default to None so the caller can test presence.
     """
-    out: list[tuple] = []
+    out: list[tuple[Any, ...]] = []
     if not os.path.isdir(_WORKED_EXAMPLES_DIR):
         return out
     for fname in sorted(os.listdir(_WORKED_EXAMPLES_DIR)):
@@ -503,7 +503,7 @@ def _worked_example_entries() -> list[tuple]:
     return out
 
 
-def _transmission_entries() -> list[tuple]:
+def _transmission_entries() -> list[tuple[Any, ...]]:
     """List (slug, display_title, path, metadata) for every
     transmission curated under data/transmissions/. Files named
     README.md or starting with an underscore are excluded (the
@@ -516,7 +516,7 @@ def _transmission_entries() -> list[tuple]:
     pick a relevant transmission by topic or by one-line summary
     without fetching the full body first.
     """
-    out: list[tuple] = []
+    out: list[tuple[Any, ...]] = []
     if not os.path.isdir(_TRANSMISSIONS_DIR):
         return out
     for fname in sorted(os.listdir(_TRANSMISSIONS_DIR)):
@@ -721,12 +721,12 @@ def _worked_examples_readme_path() -> str | None:
     return candidate if os.path.isfile(candidate) else None
 
 
-def _calibration_runs() -> list[tuple]:
+def _calibration_runs() -> list[tuple[Any, ...]]:
     """List (run_id, absolute_dir_path) for every calibration run
     directory that has at least a REPORT.md. Sorted newest first
     (lexicographic on the ISO-date prefix). A run without a REPORT
     is treated as in-progress and not exposed as a resource."""
-    out: list[tuple] = []
+    out: list[tuple[Any, ...]] = []
     if not os.path.isdir(_CALIBRATION_RESULTS_DIR):
         return out
     for name in sorted(os.listdir(_CALIBRATION_RESULTS_DIR), reverse=True):
