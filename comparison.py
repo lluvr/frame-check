@@ -769,7 +769,7 @@ def _extract_number_set(claims: dict[str, Any]) -> set[str]:
     return numbers
 
 
-def _extract_claim_sentences(claims):
+def _extract_claim_sentences(claims: dict[str, Any]) -> list[str]:
     """Extract claim sentences for topic comparison."""
     return [
         c.get("sentence", "")[:150]
@@ -778,7 +778,11 @@ def _extract_claim_sentences(claims):
     ]
 
 
-def analyze_model(model_name, text, sn_max_claims=15):
+def analyze_model(
+    model_name: str,
+    text: str,
+    sn_max_claims: int = 15,
+) -> dict[str, Any]:
     """Analyze a single model's response.
 
     `sn_max_claims` caps how many claims are forwarded to the
@@ -1032,7 +1036,9 @@ def jsonify(obj: Any) -> Any:
     return obj
 
 
-def serialize_model_for_stream(model_data):
+def serialize_model_for_stream(
+    model_data: dict[str, Any] | None,
+) -> dict[str, Any] | None:
     """Convert an analyze_model result to a JSON-serializable dict.
 
     Wraps jsonify with response-text truncation so the SSE event
@@ -1060,13 +1066,13 @@ def serialize_model_for_stream(model_data):
 
 def _compose_compare_verdict(
     *,
-    verbatim_overlap=None,
-    frames_shared=None,
-    frames_per_model=None,
-    agreed_count=0,
-    disagreement_count=0,
-    subject="Both responses",
-):
+    verbatim_overlap: dict[str, Any] | None = None,
+    frames_shared: list[dict[str, Any]] | None = None,
+    frames_per_model: list[dict[str, Any]] | None = None,
+    agreed_count: int = 0,
+    disagreement_count: int = 0,
+    subject: str = "Both responses",
+) -> str:
     """Compose the at-a-glance verdict sentence for the compare page.
 
     The verdict leads with FRAMES, not counts. The frame each response
@@ -1122,7 +1128,7 @@ def _compose_compare_verdict(
             "These documents", or "Both responses").
     """
 
-    def _frame_label(f):
+    def _frame_label(f: dict[str, Any] | None) -> str:
         # Format a frame for verdict prose. Frame NAME only; the
         # FVS-NNN identifier is library jargon and surfaces on the
         # FVS chip (clickable badge linking to the library entry)
