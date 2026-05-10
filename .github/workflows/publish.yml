@@ -233,7 +233,14 @@ jobs:
     # ``startsWith(github.ref, 'refs/tags/v')`` remains load-bearing
     # to gate against branch refs (``ref_name`` for a branch push is
     # just the branch name, e.g. ``master``, which still contains 'a').
+    # ``github.event_name == 'push'`` blocks the case where someone
+    # runs ``gh workflow run publish.yml --ref v<existing-tag>``: the
+    # tag-prefix check would otherwise satisfy and the publish step
+    # would re-run against PyPI (which rejects duplicate versions,
+    # producing noisy failed-run history). Tag pushes are the only
+    # legitimate trigger for the publish jobs.
     if: |
+      github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/v') && (
         contains(github.ref_name, '.dev') ||
         contains(github.ref_name, 'rc') ||
@@ -264,7 +271,10 @@ jobs:
     # to gate against branch refs (``ref_name`` for a branch push is
     # just the branch name, which would silently satisfy the
     # not-contains conditions).
+    # ``github.event_name == 'push'`` blocks workflow_dispatch on a
+    # tag ref from re-publishing; see the testpypi job comment.
     if: |
+      github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/v') &&
       !contains(github.ref_name, '.dev') &&
       !contains(github.ref_name, 'rc') &&
@@ -286,10 +296,15 @@ jobs:
   github-release:
     name: Create GitHub release
     needs: build
-    # Tag-push only. Without this gate, ``workflow_dispatch`` from
-    # master creates a release named after the branch (e.g.,
-    # ``master``).
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Tag-push only. Without ``startsWith(refs/tags/v)``,
+    # workflow_dispatch from master would create a release named
+    # after the branch (e.g., ``master``). ``github.event_name ==
+    # 'push'`` additionally blocks workflow_dispatch on an existing
+    # tag from creating a duplicate release (the gh CLI returns a
+    # 422 conflict but the noise is in the run history).
+    if: |
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
