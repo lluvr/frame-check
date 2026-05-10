@@ -2885,7 +2885,7 @@ def build_epistemic_payload(
                 "for numerical claims."
             )
 
-    agent_guidance = {
+    agent_guidance: dict[str, Any] = {
         "composition_discipline": (
             "The measurements are Frame Check's; the reading is the "
             "agent's. Compose ONE insight that is a reading the user "
