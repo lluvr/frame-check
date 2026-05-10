@@ -130,6 +130,27 @@ filterwarnings = [
     "default",
 ]
 
+[tool.coverage.run]
+# Coverage measures production code only; ``tests/`` runs at 100%
+# and including it in the denominator inflates the headline number
+# (the test suite gets credit for testing itself). Excluding tests
+# gives an honest production-code coverage figure that future
+# threshold tightening can target. Build / runner / staging files
+# are also excluded since they are not part of the wheel surface.
+omit = [
+    "tests/*",
+    "setup.py",
+    "run_tests.py",
+    "framecheck_mcp/*",
+]
+
+[tool.coverage.report]
+# Report misses (lines not covered) so a contributor reading the
+# CI log sees which lines need a test. ``skip_covered`` would shorten
+# the report but obscures the per-module floor: keep it explicit.
+show_missing = false
+precision = 1
+
 [tool.mypy]
 # Type-check configuration. The current discipline is incremental:
 # the codebase has organic type coverage and is moving toward

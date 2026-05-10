@@ -37,15 +37,21 @@ A `1.0.0` release commits to:
 - **Zero ruff lints.** Done as of `0.9.x`. The PR-time `quality`
   job runs ruff with select families (E, F, B, ISC) and the gate is
   strict-blocking. New violations fail PR.
-- **Coverage floor.** The 0.9.x line declares a 70% global floor
-  enforced via ``pytest --cov-fail-under=70`` on the Python 3.12
-  matrix run; current line coverage is 72% across the full
-  codebase under the complete test suite. v1.0 raises the floor
-  to 80% on the public wheel surface modules (``mcp_server``,
-  ``mcp_compose``, ``mcp_resources``, ``mcp_schema``, ``framing``,
-  ``comparison``, ``clarethium_measure``) with per-module
-  declarations in pyproject.toml; the matrix runs the per-module
-  threshold instead of the global one.
+- **Coverage floor.** The 0.9.x line declares a 65% production-code
+  floor enforced via ``pytest --cov-fail-under=65`` on the Python
+  3.12 matrix run. ``[tool.coverage.run] omit`` in pyproject.toml
+  excludes ``tests/``, ``setup.py``, ``run_tests.py``, and the
+  ``framecheck_mcp/`` build-staging copy so the headline is honest
+  production-code coverage rather than the inflated number that
+  results from counting tests-testing-themselves. Current
+  production coverage: 69%. The biggest single drag is
+  ``source_network.py`` at 10% (1435 statements, network-bound code
+  paths that need provider-mocked tests to exercise). v1.0 raises
+  the floor to 80% on the public wheel surface modules
+  (``mcp_server``, ``mcp_compose``, ``mcp_resources``, ``mcp_schema``,
+  ``framing``, ``comparison``, ``clarethium_measure``) with
+  per-module declarations; the matrix runs the per-module threshold
+  instead of the global one.
 - **Adopter-contract test coverage.** The cookbook claims and
   README "Approach" positioning claims (zero per-query cost,
   determinism, response-shape contract) are verified against the
