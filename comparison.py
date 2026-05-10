@@ -1836,9 +1836,14 @@ def build_cross_model_comparison(
 
 
 def _build_structural_framing_data(
-    a_name, a, b_name, b,
-    shared_blind, only_a_blind, only_b_blind,
-):
+    a_name: str,
+    a: dict[str, Any],
+    b_name: str,
+    b: dict[str, Any],
+    shared_blind: list[str],
+    only_a_blind: set[str],
+    only_b_blind: set[str],
+) -> dict[str, Any] | None:
     """Build a deterministic structural framing comparison as
     structured data. Zero LLM.
 
@@ -2109,9 +2114,14 @@ def _build_structural_framing_data(
 
 
 def _build_structural_framing_diff(
-    a_name, a, b_name, b,
-    shared_blind, only_a_blind, only_b_blind,
-):
+    a_name: str,
+    a: dict[str, Any],
+    b_name: str,
+    b: dict[str, Any],
+    shared_blind: list[str],
+    only_a_blind: set[str],
+    only_b_blind: set[str],
+) -> str | None:
     """Legacy wrapper: return the framing comparison as the single
     prose paragraph string older saved-JSON files and existing
     tests expect. New consumers should call
@@ -2137,7 +2147,7 @@ def _find_sentence_for_value(
     return ""
 
 
-def compare_responses(responses):
+def compare_responses(responses: dict[str, str]) -> dict[str, Any] | None:
     """Analyze and compare responses from multiple models.
 
     Synchronous batch entry point. Calls analyze_model for each
@@ -2189,7 +2199,7 @@ def compare_responses(responses):
 # Example topics (static, no API calls)
 # ================================================================
 
-def get_comparison_examples():
+def get_comparison_examples() -> list[dict[str, str]]:
     """Return static example topics. No API calls. No cost."""
     return [
         {
@@ -2229,7 +2239,7 @@ def get_comparison_examples():
 # They are written in the same register as the AI-generated content
 # Frame Check is built to analyze.
 
-def get_document_comparison_examples():
+def get_document_comparison_examples() -> list[dict[str, str]]:
     """Return preset document pairs for the documents mode demo.
 
     Each pair is well under MAX_DOC_CHARS so the textareas validate
