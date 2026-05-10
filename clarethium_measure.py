@@ -78,6 +78,7 @@ import json
 import re
 import statistics
 import time
+from collections.abc import Iterable
 from typing import Any
 import contextlib
 
@@ -1013,7 +1014,7 @@ def _split_sentences_simple(text: str) -> list[str]:
             if len(s.strip().split()) >= 5 and "word count" not in s.lower()]
 
 
-def vocabulary_proximity(doc_text, source_text):
+def vocabulary_proximity(doc_text: str, source_text: str) -> dict[str, Any]:
     """Content word overlap between generated sentences and source.
 
     Construct: What fraction of the generated vocabulary comes from the source?
@@ -1086,7 +1087,7 @@ NAMING_RE = re.compile(
 )
 
 
-def _count_syllables(word):
+def _count_syllables(word: str) -> int:
     word = word.lower().strip()
     if len(word) <= 3:
         return 1
@@ -1102,7 +1103,7 @@ def _count_syllables(word):
     return max(1, count)
 
 
-def _tokenize(text):
+def _tokenize(text: str) -> list[str]:
     text = re.sub(r'#{1,6}\s+', '', text)
     text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)
     text = re.sub(r'\*([^*]+)\*', r'\1', text)
@@ -1111,7 +1112,7 @@ def _tokenize(text):
     return re.findall(r"[a-zA-Z']+", text.lower())
 
 
-def presentation_features(text):
+def presentation_features(text: str) -> dict[str, Any]:
     """Surface presentation characteristics. Descriptive, not evaluative."""
     words = _tokenize(text)
     sents = _split_sentences_simple(text)
@@ -1200,7 +1201,7 @@ _CALIBRATION_ASSERTION_RE = re.compile(
 )
 
 
-def epistemic_calibration(doc_text, source_text):
+def epistemic_calibration(doc_text: str, source_text: str) -> dict[str, Any]:
     """Per-sentence assertion grounding check.
 
     Construct: For each sentence containing assertion markers (expanded set),
@@ -1297,7 +1298,7 @@ def epistemic_calibration(doc_text, source_text):
 # information density vs repetition patterns.
 # STATUS: EXPERIMENTAL (v1.3). No external validation.
 
-def information_novelty(doc_text):
+def information_novelty(doc_text: str) -> dict[str, Any]:
     """Per-sentence novelty via cumulative vocabulary tracking.
 
     Construct: For each sentence, fraction of content words not seen in any
@@ -1371,7 +1372,7 @@ def information_novelty(doc_text):
 # (surface layers). Gap = overclaiming signal.
 # STATUS: EXPERIMENTAL (v1.3). Composite metrics inherit component limitations.
 
-def quality_profile(profile):
+def quality_profile(profile: dict[str, Any]) -> dict[str, Any]:
     """Composite substance vs presentation index.
 
     Construct: Aggregates fidelity layers into substance index and surface
@@ -1502,7 +1503,11 @@ _GFP_EXTERNAL_ENTITIES = [
 ]
 
 
-def _gfp_is_derivable(value, source_floats, tolerance=0.02):
+def _gfp_is_derivable(
+    value: float,
+    source_floats: Iterable[float],
+    tolerance: float = 0.02,
+) -> bool:
     """Check if a number is derivable from source numbers by arithmetic.
 
     Handles: A/B, A*B, A+B, A-B, A/100 (percentage to decimal),
@@ -1515,12 +1520,12 @@ def _gfp_is_derivable(value, source_floats, tolerance=0.02):
 
     src = list(source_floats)
 
-    def close(derived, target):
+    def close(derived: float, target: float) -> bool:
         if abs(target) < 0.001:
             return abs(derived) < 0.001
         return abs(derived - target) / abs(target) < tolerance
 
-    def close_tight(derived, target):
+    def close_tight(derived: float, target: float) -> bool:
         if abs(target) < 0.001:
             return abs(derived) < 0.001
         return abs(derived - target) / abs(target) < 0.01  # 1% not 2%
@@ -1616,7 +1621,7 @@ _DERIVATION_REGIME_DIAGNOSTIC_MAX = 10   # N < this -> diagnostic
 _DERIVATION_REGIME_TRANSITION_MAX = 15   # N < this -> transition, else saturated
 
 
-def grounding_decomposition(doc_text, source_text):
+def grounding_decomposition(doc_text: str, source_text: str) -> dict[str, Any]:
     """Per-sentence Grounded/Framed/Projected decomposition.
 
     For each sentence, classifies the primary information provenance:
@@ -1998,7 +2003,7 @@ def measure(
 # DISPLAY
 # ================================================================
 
-def _range_label(score, ref_dict):
+def _range_label(score: float, ref_dict: dict[str, Any]) -> str:
     """Place a score within reference distribution ranges."""
     labels = []
     for cond, stats in sorted(ref_dict.items()):
@@ -2010,7 +2015,7 @@ def _range_label(score, ref_dict):
     return ", ".join(labels[:2]) if labels else "outside reference range"
 
 
-def print_profile(profile):
+def print_profile(profile: dict[str, Any]) -> None:
     """Human-readable profile output."""
     meta = profile["metadata"]
     print(f"\n{'=' * 64}")
@@ -2173,7 +2178,7 @@ def print_profile(profile):
 # CLI
 # ================================================================
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Clarethium Measure: AI Output Measurement Profile",
         formatter_class=argparse.RawDescriptionHelpFormatter,
