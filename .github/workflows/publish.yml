@@ -181,7 +181,18 @@ jobs:
         run: |
           python -m venv /tmp/fc_smoke
           /tmp/fc_smoke/bin/pip install --quiet dist/*.whl
-          /tmp/fc_smoke/bin/frame-check-mcp --version
+          # Capture the version banner output and assert git_sha is
+          # populated. The v1.0.7 manifest-fields fix did not extend to
+          # mcp_server.py:_install_version_info which has its own copy
+          # of the SHA detection logic; v1.0.8 closes that residue.
+          # Asserting on the banner output catches a regression of
+          # either bug class (broken lookup OR removed candidate path).
+          banner=$(/tmp/fc_smoke/bin/frame-check-mcp --version 2>&1)
+          echo "$banner"
+          if echo "$banner" | grep -q 'git_sha=unknown'; then
+            echo "::error::frame-check-mcp --version reports git_sha=unknown; lookup-path bug regression."
+            exit 1
+          fi
           cd /tmp
           /tmp/fc_smoke/bin/python -c "
           from mcp_server import build_epistemic_payload

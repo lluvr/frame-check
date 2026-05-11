@@ -118,7 +118,7 @@ SERVER_NAME = "frame-check"
 # test_server_version_bumped_for_decision_readiness_capability;
 # adding suffixes here would break that pin and the handshake
 # parser shape downstream consumers may rely on.
-SERVER_VERSION = "1.0.7"
+SERVER_VERSION = "1.0.8"
 
 # ── Logging ────────────────────────────────────────────────────────
 #
@@ -1188,12 +1188,28 @@ def _install_version_info() -> dict[str, Any]:
         if result.returncode == 0 and result.stdout.strip():
             info["git_sha"] = result.stdout.strip()
     if info["git_sha"] == "unknown":
-        pipeline_version_path = os.path.join(_SCRIPT_DIR, "pipeline_version.txt")
-        with contextlib.suppress(OSError):
-            with open(pipeline_version_path, "r", encoding="utf-8") as f:
-                baked = f.read().strip()
-            if baked and baked != "unknown":
-                info["git_sha"] = baked
+        # Probe both candidate locations for the baked SHA. Source-tree
+        # / Docker layout: pipeline_version.txt sits next to mcp_server.py
+        # at _SCRIPT_DIR. Wheel layout: the file installs inside
+        # framecheck_mcp/ per pyproject [tool.setuptools.package-data]
+        # while mcp_server.py installs as a top-level py-module. Without
+        # the second candidate, every fresh-venv `frame-check-mcp
+        # --version` reports git_sha=unknown (surfaced 2026-05-11 by an
+        # actual e2e Phase-1 against frame-check-mcp==1.0.7). Same root
+        # cause as the v1.0.7 manifest-fields fix in version.py and
+        # manifest.py; this is the same dual-path probe applied to
+        # mcp_server.py's separate copy of the SHA detection logic.
+        pipeline_version_paths = [
+            os.path.join(_SCRIPT_DIR, "pipeline_version.txt"),
+            os.path.join(_SCRIPT_DIR, "framecheck_mcp", "pipeline_version.txt"),
+        ]
+        for pipeline_version_path in pipeline_version_paths:
+            with contextlib.suppress(OSError):
+                with open(pipeline_version_path, "r", encoding="utf-8") as f:
+                    baked = f.read().strip()
+                if baked and baked != "unknown":
+                    info["git_sha"] = baked
+                    break
     # Check for uncommitted changes. A stale install running against
     # a repo with uncommitted work should surface that state.
     try:
