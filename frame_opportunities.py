@@ -265,7 +265,22 @@ def _generate_one_opportunity(
     return {
         "frame_id": fvs_id,
         "frame_title": title,
+        # URI/URL quartet: same alias-normalization as the rest of
+        # the v1.0.12 schema-coherence sweep. citation_uri and
+        # library_resource_uri carry the same frame-check://library/
+        # value; library_url and public_url carry the same HTTPS
+        # GitHub URL. Source dict (absent_frame) has all four after
+        # the v1.0.10/v1.0.11 fixes; pull through faithfully.
         "citation_uri": absent_frame.get("citation_uri"),
+        "library_resource_uri": (
+            absent_frame.get("library_resource_uri")
+            or absent_frame.get("citation_uri")
+        ),
+        "library_url": absent_frame.get("library_url"),
+        "public_url": (
+            absent_frame.get("public_url")
+            or absent_frame.get("library_url")
+        ),
         "teaching_question_general": teaching_question,
         "generated_question": generated,
         "model_provenance": {

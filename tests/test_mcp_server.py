@@ -1231,6 +1231,102 @@ def test_typical_co_fires_carry_library_resource_uri():
     print("  PASS\n")
 
 
+def test_all_frame_reference_shapes_carry_canonical_uri_url_quartet():
+    """Every frame-reference record in the payload (any dict with
+    fvs_id or frame_id starting with 'FVS-') must carry the full
+    canonical URI/URL field quartet:
+
+      - citation_uri (MCP resource URI; original name on
+        absent_frames + corpus_context blocks)
+      - library_resource_uri (MCP resource URI; original name on
+        decision_readiness library_entries; alias on absent_frames
+        and corpus_context after v1.0.10/v1.0.11)
+      - library_url (HTTPS GitHub URL; original name on
+        absent_frames + frame_library_matches)
+      - public_url (HTTPS GitHub URL; original name on
+        decision_readiness library_entries; alias added to other
+        blocks at v1.0.12)
+
+    AND the alias-equality invariant must hold:
+      - citation_uri == library_resource_uri (both point to the
+        frame-check://library/<fvs_id> resource)
+      - library_url == public_url (both point to the same GitHub
+        markdown URL when the entry has a known filename)
+
+    The v1.0.12 schema-coherence sweep extended the alias quartet
+    across every frame-reference emit site so adopters writing a
+    single FVS-reference renderer can read the same field shape
+    regardless of which payload block they're parsing. Pre-v1.0.12
+    integrations using only one of the alias names per pair remain
+    valid; this test pins the additive alias contract.
+
+    Walks the payload looking for dicts that have fvs_id or
+    frame_id matching the FVS- prefix and asserts the quartet on
+    each. Skips records where library_url is None (entries without
+    canonical filenames — None on both names is consistent).
+    """
+    print("=== all frame-reference shapes carry canonical URI/URL quartet ===")
+    baseline = len(_FAILURES)
+    payload = mcp_server.build_epistemic_payload(
+        "The Committee notes risks. Stakeholders monitor data.",
+        include_divergence=True,
+    )
+
+    def _walk(node, path=""):
+        out = []
+        if isinstance(node, dict):
+            fid = node.get("fvs_id") or node.get("frame_id")
+            if fid and isinstance(fid, str) and fid.startswith("FVS-"):
+                out.append((path, fid, node))
+            for k, v in node.items():
+                out.extend(_walk(v, f"{path}.{k}"))
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                out.extend(_walk(v, f"{path}[{i}]"))
+        return out
+
+    references = _walk(payload)
+    check(
+        len(references) > 0,
+        f"test pre-condition: at least one FVS-shaped reference must "
+        f"appear in the payload; got {len(references)}",
+    )
+
+    for path, fid, rec in references:
+        # Both URI fields must be present and equal.
+        cu = rec.get("citation_uri")
+        lru = rec.get("library_resource_uri")
+        check(
+            cu is not None and lru is not None,
+            f"{path} (fvs_id={fid}): both citation_uri and "
+            f"library_resource_uri must be present; got "
+            f"citation_uri={cu!r}, library_resource_uri={lru!r}",
+        )
+        check(
+            cu == lru,
+            f"{path} (fvs_id={fid}): citation_uri and "
+            f"library_resource_uri must be equal aliases; got "
+            f"citation_uri={cu!r}, library_resource_uri={lru!r}",
+        )
+        # URL aliases: when one is set, both should be set with
+        # equal value. When both are None (entry has no canonical
+        # filename), that is also consistent.
+        lu = rec.get("library_url")
+        pu = rec.get("public_url")
+        check(
+            (lu is None and pu is None) or lu == pu,
+            f"{path} (fvs_id={fid}): library_url and public_url "
+            f"must be equal aliases (or both None for entries "
+            f"without a canonical filename); got "
+            f"library_url={lu!r}, public_url={pu!r}",
+        )
+
+    _assert_no_new_failures(
+        baseline, "test_all_frame_reference_shapes_carry_canonical_uri_url_quartet",
+    )
+    print(f"  PASS (verified {len(references)} FVS-references across the payload)\n")
+
+
 def test_provenance_carries_production_status():
     """Provenance carries a production_status field that names whether
     the canonical production hosting at frame.clarethium.com is

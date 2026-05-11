@@ -444,6 +444,12 @@ def get_frame_corpus_context(
         # frame-check://library/<fvs_id> values. An MCP-integrated
         # agent that learned the decision_readiness shape can now
         # access library_resource_uri uniformly across the payload.
+        # typical_co_fires / typical_co_absences entries carry the
+        # full canonical URI/URL quartet (citation_uri ≡
+        # library_resource_uri, library_url ≡ public_url) so adopters
+        # read one consistent shape across every frame-reference block.
+        # citation_uri + library_url were the original fields (pre-1.0);
+        # library_resource_uri added v1.0.11, public_url added v1.0.12.
         "typical_co_fires": [
             {
                 "fvs_id": entry["fvs_id"],
@@ -453,6 +459,7 @@ def get_frame_corpus_context(
                     f"frame-check://library/{entry['fvs_id']}"
                 ),
                 "library_url": _library_entry_ref(entry["fvs_id"]).get("public_url"),
+                "public_url": _library_entry_ref(entry["fvs_id"]).get("public_url"),
             }
             for entry in frame_stats["typical_co_fires"]
         ],
@@ -465,6 +472,7 @@ def get_frame_corpus_context(
                     f"frame-check://library/{entry['fvs_id']}"
                 ),
                 "library_url": _library_entry_ref(entry["fvs_id"]).get("public_url"),
+                "public_url": _library_entry_ref(entry["fvs_id"]).get("public_url"),
             }
             for entry in frame_stats["typical_co_absences"]
         ],

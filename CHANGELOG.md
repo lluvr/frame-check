@@ -6,6 +6,79 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.12] - 2026-05-11
+
+### Schema coherence: full canonical URI/URL quartet on every frame-reference shape
+
+Closes the schema-coherence backlog opened at v1.0.10/v1.0.11.
+Fresh-eyes audit on the v1.0.11 baseline surfaced two remaining
+instances of the same defect class:
+
+  - `frame_opportunities[*]` (opt-in LLM-composed teaching
+    questions): emitted only `citation_uri` for the MCP resource
+    URI; missing `library_resource_uri` (decision_readiness
+    convention) and the `library_url`/`public_url` pair entirely.
+  - `decision_readiness.dimensions[*].library_entries[*]` (and
+    `fired_library_entries[*]`): emitted only `library_resource_uri`
+    + `public_url`; missing the `citation_uri` and `library_url`
+    aliases used by the `absent_frames` + `typical_co_*` blocks.
+  - `divergence.absent_frames[*]` and `corpus_context.typical_co_*`:
+    emitted citation_uri + library_resource_uri + library_url, but
+    missing `public_url`.
+  - `frame_library_matches[*]`: emitted library_resource_uri +
+    library_url, but missing citation_uri and public_url.
+
+Every frame-reference record across the payload now carries the
+full canonical quartet `{citation_uri, library_resource_uri,
+library_url, public_url}` where:
+
+  - `citation_uri` ≡ `library_resource_uri` (both point to the
+    `frame-check://library/<fvs_id>` MCP resource)
+  - `library_url` ≡ `public_url` (both point to the same HTTPS
+    GitHub URL for the entry markdown, or both are None when the
+    entry has no canonical filename)
+
+An adopter writing a single FVS-reference renderer can now read
+the same field shape regardless of which payload block they're
+parsing. Pre-v1.0.12 integrations that used only one alias name
+per pair remain valid; the additive aliases are forever.
+
+Code sites edited:
+
+  - `decision_readiness.py:170-185` (`library_entry_ref`)
+  - `mcp_compose.py:1291-1320` (absent_frames)
+  - `mcp_compose.py:2607-2640` (frame_check
+    frame_library_matches)
+  - `mcp_compose.py:3498-3530` (frame_compare
+    frame_library_matches)
+  - `corpus_intelligence.py:447-470` (typical_co_fires + absences)
+  - `frame_opportunities.py:265-289` (frame_opportunities[*])
+
+Pinned by
+`tests/test_mcp_server.py::test_all_frame_reference_shapes_carry_canonical_uri_url_quartet`:
+walks the payload, finds every dict with fvs_id or frame_id
+matching the FVS- prefix, asserts the quartet on each, asserts
+the alias-equality invariant. Verified on 19 distinct FVS IDs
+across all 5 emit sites in the bundled Grok-NVIDIA fixture.
+
+Snapshot refreshed.
+
+### Deferred from this round (with rationale)
+
+The wider field-name pairs `name` ↔ `title` and `fvs_id` ↔
+`frame_id` remain divergent across blocks:
+
+  - `name` ↔ `title`: NOT semantically equivalent.
+    `frame_library_matches[*].name` carries an absence-qualifier
+    (e.g., `'Failure Framing (absent)'`) when the frame fires as
+    absence-pattern; `title` is canonical without qualifier.
+    Naive aliasing would conflate distinct content. Operator
+    decision required.
+  - `fvs_id` ↔ `frame_id`: same value in current data, safe to
+    alias mechanically. Deferred — the `frame_id` rename in
+    particular touches more integrations than the URI/URL pair
+    and warrants explicit consideration.
+
 ## [1.0.11] - 2026-05-11
 
 ### Schema alignment: `library_resource_uri` on `corpus_context.typical_co_fires` / `typical_co_absences`

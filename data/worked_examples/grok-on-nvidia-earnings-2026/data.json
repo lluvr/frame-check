@@ -375,6 +375,8 @@
           "name": "Growth Frame",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md",
           "library_resource_uri": "frame-check://library/FVS-008",
+          "citation_uri": "frame-check://library/FVS-008",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md",
           "library_entry_version": "1",
           "teaching_question": "What would a risk analyst say about this same data?",
           "definition": "The default analytical frame for most AI-generated business content. Organizes information around growth metrics, market expansion, and upward trajectory while omitting risks, stakeholders, and uncertainty.",
@@ -385,37 +387,49 @@
               "fvs_id": "FVS-009",
               "title": "Risk Frame",
               "library_resource_uri": "frame-check://library/FVS-009",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
+              "citation_uri": "frame-check://library/FVS-009",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
             },
             {
               "fvs_id": "FVS-007",
               "title": "Failure Framing",
               "library_resource_uri": "frame-check://library/FVS-007",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
+              "citation_uri": "frame-check://library/FVS-007",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
             },
             {
               "fvs_id": "FVS-001",
               "title": "Frame Amplification",
               "library_resource_uri": "frame-check://library/FVS-001",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+              "citation_uri": "frame-check://library/FVS-001",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
             },
             {
               "fvs_id": "FVS-004",
               "title": "Default Geometry",
               "library_resource_uri": "frame-check://library/FVS-004",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-004_default_geometry.md"
+              "citation_uri": "frame-check://library/FVS-004",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-004_default_geometry.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-004_default_geometry.md"
             },
             {
               "fvs_id": "FVS-011",
               "title": "Stakeholder Frame",
               "library_resource_uri": "frame-check://library/FVS-011",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
+              "citation_uri": "frame-check://library/FVS-011",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
             },
             {
               "fvs_id": "FVS-014",
               "title": "Temporal Anchoring",
               "library_resource_uri": "frame-check://library/FVS-014",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+              "citation_uri": "frame-check://library/FVS-014",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
             }
           ],
           "affects_dimensions": [
@@ -461,44 +475,50 @@
                 "count": 3,
                 "citation_uri": "frame-check://library/FVS-001",
                 "library_resource_uri": "frame-check://library/FVS-001",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
               },
               {
                 "fvs_id": "FVS-007",
                 "count": 3,
                 "citation_uri": "frame-check://library/FVS-007",
                 "library_resource_uri": "frame-check://library/FVS-007",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
               },
               {
                 "fvs_id": "FVS-011",
                 "count": 1,
                 "citation_uri": "frame-check://library/FVS-011",
                 "library_resource_uri": "frame-check://library/FVS-011",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
               }
             ],
             "typical_co_absences": [
               {
-                "fvs_id": "FVS-014",
+                "fvs_id": "FVS-010",
                 "count": 7,
-                "citation_uri": "frame-check://library/FVS-014",
-                "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-017",
                 "count": 7,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
               },
               {
-                "fvs_id": "FVS-009",
+                "fvs_id": "FVS-011",
                 "count": 7,
-                "citation_uri": "frame-check://library/FVS-009",
-                "library_resource_uri": "frame-check://library/FVS-009",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
+                "citation_uri": "frame-check://library/FVS-011",
+                "library_resource_uri": "frame-check://library/FVS-011",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
               }
             ],
             "corpus_entries_fired_uris": [
@@ -515,6 +535,8 @@
           "name": "Fluency-Quality Illusion",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-002_fluency_quality_illusion.md",
           "library_resource_uri": "frame-check://library/FVS-002",
+          "citation_uri": "frame-check://library/FVS-002",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-002_fluency_quality_illusion.md",
           "library_entry_version": "1",
           "teaching_question": "If this were written in rough notes instead of polished prose, would you still accept the claims?",
           "definition": "Both humans and LLMs treat fluency as a proxy for quality. Smooth delivery, confident tone, and polished language make content feel correct whether or not it is. Errors hide in plain sight because the output feels good.",
@@ -525,37 +547,49 @@
               "fvs_id": "FVS-001",
               "title": "Frame Amplification",
               "library_resource_uri": "frame-check://library/FVS-001",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+              "citation_uri": "frame-check://library/FVS-001",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
             },
             {
               "fvs_id": "FVS-003",
               "title": "Prompt Attribution Error",
               "library_resource_uri": "frame-check://library/FVS-003",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-003_prompt_attribution_error.md"
+              "citation_uri": "frame-check://library/FVS-003",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-003_prompt_attribution_error.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-003_prompt_attribution_error.md"
             },
             {
               "fvs_id": "FVS-007",
               "title": "Failure Framing",
               "library_resource_uri": "frame-check://library/FVS-007",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
+              "citation_uri": "frame-check://library/FVS-007",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
             },
             {
               "fvs_id": "FVS-010",
               "title": "Completeness Illusion",
               "library_resource_uri": "frame-check://library/FVS-010",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
+              "citation_uri": "frame-check://library/FVS-010",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
             },
             {
               "fvs_id": "FVS-013",
               "title": "Oracle Frame",
               "library_resource_uri": "frame-check://library/FVS-013",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-013_oracle_frame.md"
+              "citation_uri": "frame-check://library/FVS-013",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-013_oracle_frame.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-013_oracle_frame.md"
             },
             {
               "fvs_id": "FVS-016",
               "title": "Authority by Citation",
               "library_resource_uri": "frame-check://library/FVS-016",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+              "citation_uri": "frame-check://library/FVS-016",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
             }
           ],
           "affects_dimensions": [],
@@ -568,6 +602,8 @@
           "name": "Failure Framing (absent)",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md",
           "library_resource_uri": "frame-check://library/FVS-007",
+          "citation_uri": "frame-check://library/FVS-007",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md",
           "library_entry_version": "1",
           "teaching_question": "What would have to be true for this analysis to be wrong?",
           "definition": "Specifying what counts as failure constrains output more sharply than specifying what success looks like. This document makes claims without naming what would make them wrong.",
@@ -578,25 +614,33 @@
               "fvs_id": "FVS-002",
               "title": "Fluency-Quality Illusion",
               "library_resource_uri": "frame-check://library/FVS-002",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-002_fluency_quality_illusion.md"
+              "citation_uri": "frame-check://library/FVS-002",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-002_fluency_quality_illusion.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-002_fluency_quality_illusion.md"
             },
             {
               "fvs_id": "FVS-004",
               "title": "Default Geometry",
               "library_resource_uri": "frame-check://library/FVS-004",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-004_default_geometry.md"
+              "citation_uri": "frame-check://library/FVS-004",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-004_default_geometry.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-004_default_geometry.md"
             },
             {
               "fvs_id": "FVS-001",
               "title": "Frame Amplification",
               "library_resource_uri": "frame-check://library/FVS-001",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+              "citation_uri": "frame-check://library/FVS-001",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
             },
             {
               "fvs_id": "FVS-008",
               "title": "Growth Frame",
               "library_resource_uri": "frame-check://library/FVS-008",
-              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
+              "citation_uri": "frame-check://library/FVS-008",
+              "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md",
+              "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
             }
           ],
           "affects_dimensions": [
@@ -638,48 +682,54 @@
             },
             "typical_co_fires": [
               {
-                "fvs_id": "FVS-008",
-                "count": 3,
-                "citation_uri": "frame-check://library/FVS-008",
-                "library_resource_uri": "frame-check://library/FVS-008",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
-              },
-              {
                 "fvs_id": "FVS-001",
                 "count": 3,
                 "citation_uri": "frame-check://library/FVS-001",
                 "library_resource_uri": "frame-check://library/FVS-001",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+              },
+              {
+                "fvs_id": "FVS-008",
+                "count": 3,
+                "citation_uri": "frame-check://library/FVS-008",
+                "library_resource_uri": "frame-check://library/FVS-008",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
               },
               {
                 "fvs_id": "FVS-011",
                 "count": 1,
                 "citation_uri": "frame-check://library/FVS-011",
                 "library_resource_uri": "frame-check://library/FVS-011",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
               }
             ],
             "typical_co_absences": [
               {
-                "fvs_id": "FVS-008",
+                "fvs_id": "FVS-010",
                 "count": 6,
-                "citation_uri": "frame-check://library/FVS-008",
-                "library_resource_uri": "frame-check://library/FVS-008",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
-              },
-              {
-                "fvs_id": "FVS-014",
-                "count": 6,
-                "citation_uri": "frame-check://library/FVS-014",
-                "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-017",
                 "count": 6,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+              },
+              {
+                "fvs_id": "FVS-011",
+                "count": 6,
+                "citation_uri": "frame-check://library/FVS-011",
+                "library_resource_uri": "frame-check://library/FVS-011",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
               }
             ],
             "corpus_entries_fired_uris": [
@@ -755,49 +805,65 @@
                 "fvs_id": "FVS-001",
                 "title": "Frame Amplification",
                 "library_resource_uri": "frame-check://library/FVS-001",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+                "citation_uri": "frame-check://library/FVS-001",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
               },
               {
                 "fvs_id": "FVS-008",
                 "title": "Growth Frame",
                 "library_resource_uri": "frame-check://library/FVS-008",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
+                "citation_uri": "frame-check://library/FVS-008",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
               },
               {
                 "fvs_id": "FVS-009",
                 "title": "Risk Frame",
                 "library_resource_uri": "frame-check://library/FVS-009",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
+                "citation_uri": "frame-check://library/FVS-009",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
               },
               {
                 "fvs_id": "FVS-010",
                 "title": "Completeness Illusion",
                 "library_resource_uri": "frame-check://library/FVS-010",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
+                "citation_uri": "frame-check://library/FVS-010",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-011",
                 "title": "Stakeholder Frame",
                 "library_resource_uri": "frame-check://library/FVS-011",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
+                "citation_uri": "frame-check://library/FVS-011",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md"
               },
               {
                 "fvs_id": "FVS-014",
                 "title": "Temporal Anchoring",
                 "library_resource_uri": "frame-check://library/FVS-014",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+                "citation_uri": "frame-check://library/FVS-014",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
               },
               {
                 "fvs_id": "FVS-015",
                 "title": "Efficiency Frame",
                 "library_resource_uri": "frame-check://library/FVS-015",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md"
+                "citation_uri": "frame-check://library/FVS-015",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md"
               },
               {
                 "fvs_id": "FVS-017",
                 "title": "False Balance",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "citation_uri": "frame-check://library/FVS-017",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
               }
             ],
             "fired_library_entries": [
@@ -805,7 +871,9 @@
                 "fvs_id": "FVS-008",
                 "title": "Growth Frame",
                 "library_resource_uri": "frame-check://library/FVS-008",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
+                "citation_uri": "frame-check://library/FVS-008",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
               }
             ],
             "claim_level": "composed_pattern"
@@ -826,13 +894,17 @@
                 "fvs_id": "FVS-012",
                 "title": "Uncertainty Frame",
                 "library_resource_uri": "frame-check://library/FVS-012",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
+                "citation_uri": "frame-check://library/FVS-012",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-012_uncertainty_frame.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
               },
               {
                 "fvs_id": "FVS-017",
                 "title": "False Balance",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "citation_uri": "frame-check://library/FVS-017",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
               }
             ],
             "fired_library_entries": [],
@@ -853,7 +925,9 @@
                 "fvs_id": "FVS-016",
                 "title": "Authority by Citation",
                 "library_resource_uri": "frame-check://library/FVS-016",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+                "citation_uri": "frame-check://library/FVS-016",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
               }
             ],
             "fired_library_entries": [],
@@ -873,7 +947,9 @@
                 "fvs_id": "FVS-016",
                 "title": "Authority by Citation",
                 "library_resource_uri": "frame-check://library/FVS-016",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+                "citation_uri": "frame-check://library/FVS-016",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
               }
             ],
             "fired_library_entries": [],
@@ -893,31 +969,41 @@
                 "fvs_id": "FVS-001",
                 "title": "Frame Amplification",
                 "library_resource_uri": "frame-check://library/FVS-001",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+                "citation_uri": "frame-check://library/FVS-001",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
               },
               {
                 "fvs_id": "FVS-007",
                 "title": "Failure Framing",
                 "library_resource_uri": "frame-check://library/FVS-007",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
+                "citation_uri": "frame-check://library/FVS-007",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
               },
               {
                 "fvs_id": "FVS-009",
                 "title": "Risk Frame",
                 "library_resource_uri": "frame-check://library/FVS-009",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
+                "citation_uri": "frame-check://library/FVS-009",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
               },
               {
                 "fvs_id": "FVS-012",
                 "title": "Uncertainty Frame",
                 "library_resource_uri": "frame-check://library/FVS-012",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
+                "citation_uri": "frame-check://library/FVS-012",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-012_uncertainty_frame.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-012_uncertainty_frame.md"
               },
               {
                 "fvs_id": "FVS-014",
                 "title": "Temporal Anchoring",
                 "library_resource_uri": "frame-check://library/FVS-014",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+                "citation_uri": "frame-check://library/FVS-014",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
               }
             ],
             "fired_library_entries": [
@@ -925,7 +1011,9 @@
                 "fvs_id": "FVS-007",
                 "title": "Failure Framing",
                 "library_resource_uri": "frame-check://library/FVS-007",
-                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
+                "citation_uri": "frame-check://library/FVS-007",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
               }
             ],
             "claim_level": "composed_pattern"
@@ -1084,14 +1172,14 @@
         "analysis_output": "CC-BY-4.0 - this response may be reproduced with attribution to Frame Check."
       },
       "frame_check_version": "1.0.0",
-      "server_version": "1.0.10",
+      "server_version": "1.0.11",
       "clarethium_measure_version": "1.5.0",
       "frame_library_version": "0.2.0",
       "engine_version": "1.0.0",
       "framing_engine": "layer_a",
       "analysis_cost_usd": 0.0,
-      "analysis_latency_ms": 24,
-      "analysis_timestamp_utc": "2026-05-11T18:49:21Z",
+      "analysis_latency_ms": 18,
+      "analysis_timestamp_utc": "2026-05-11T19:12:00Z",
       "analysis_layer": "deterministic_structural_plus_verification",
       "analysis_determinism": "Identical input produces identical output. No LLM is invoked in this response.",
       "citation": "Lucic, L. (2026). Frame Check: a research instrument for framing and verification in documents. https://frame.clarethium.com"
@@ -1104,7 +1192,7 @@
       "pipeline_version": "4b21150",
       "schema_version": 1,
       "frame_library_version": "0.2.0",
-      "analysis_run_at": "2026-05-11T18:49:21Z",
+      "analysis_run_at": "2026-05-11T19:12:00Z",
       "layers_run": [
         {
           "name": "structural_substrate",
@@ -1183,6 +1271,7 @@
           "citation_uri": "frame-check://library/FVS-001",
           "library_resource_uri": "frame-check://library/FVS-001",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
           "corpus_context": {
             "prevalence": "fires in 7 of 10 corpus documents",
             "fires_in_count": 7,
@@ -1219,48 +1308,54 @@
             },
             "typical_co_fires": [
               {
-                "fvs_id": "FVS-008",
-                "count": 3,
-                "citation_uri": "frame-check://library/FVS-008",
-                "library_resource_uri": "frame-check://library/FVS-008",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
-              },
-              {
                 "fvs_id": "FVS-007",
                 "count": 3,
                 "citation_uri": "frame-check://library/FVS-007",
                 "library_resource_uri": "frame-check://library/FVS-007",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
+              },
+              {
+                "fvs_id": "FVS-008",
+                "count": 3,
+                "citation_uri": "frame-check://library/FVS-008",
+                "library_resource_uri": "frame-check://library/FVS-008",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
               },
               {
                 "fvs_id": "FVS-015",
                 "count": 2,
                 "citation_uri": "frame-check://library/FVS-015",
                 "library_resource_uri": "frame-check://library/FVS-015",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md"
               }
             ],
             "typical_co_absences": [
               {
-                "fvs_id": "FVS-008",
+                "fvs_id": "FVS-010",
                 "count": 3,
-                "citation_uri": "frame-check://library/FVS-008",
-                "library_resource_uri": "frame-check://library/FVS-008",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
-              },
-              {
-                "fvs_id": "FVS-014",
-                "count": 3,
-                "citation_uri": "frame-check://library/FVS-014",
-                "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-017",
                 "count": 3,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+              },
+              {
+                "fvs_id": "FVS-015",
+                "count": 3,
+                "citation_uri": "frame-check://library/FVS-015",
+                "library_resource_uri": "frame-check://library/FVS-015",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md"
               }
             ],
             "corpus_entries_fired_uris": [
@@ -1292,6 +1387,7 @@
           "citation_uri": "frame-check://library/FVS-009",
           "library_resource_uri": "frame-check://library/FVS-009",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md",
           "corpus_context": {
             "prevalence": "fires in 0 of 10 corpus documents",
             "fires_in_count": 0,
@@ -1333,21 +1429,24 @@
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+              },
+              {
+                "fvs_id": "FVS-010",
+                "count": 10,
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-014",
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-014",
                 "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
-              },
-              {
-                "fvs_id": "FVS-016",
-                "count": 10,
-                "citation_uri": "frame-check://library/FVS-016",
-                "library_resource_uri": "frame-check://library/FVS-016",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
               }
             ],
             "corpus_entries_fired_uris": []
@@ -1371,6 +1470,7 @@
           "citation_uri": "frame-check://library/FVS-014",
           "library_resource_uri": "frame-check://library/FVS-014",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
           "corpus_context": {
             "prevalence": "fires in 0 of 10 corpus documents",
             "fires_in_count": 0,
@@ -1412,21 +1512,24 @@
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
               },
               {
-                "fvs_id": "FVS-016",
+                "fvs_id": "FVS-010",
                 "count": 10,
-                "citation_uri": "frame-check://library/FVS-016",
-                "library_resource_uri": "frame-check://library/FVS-016",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-009",
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-009",
                 "library_resource_uri": "frame-check://library/FVS-009",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
               }
             ],
             "corpus_entries_fired_uris": []
@@ -1450,6 +1553,7 @@
           "citation_uri": "frame-check://library/FVS-017",
           "library_resource_uri": "frame-check://library/FVS-017",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
           "corpus_context": {
             "prevalence": "fires in 0 of 10 corpus documents",
             "fires_in_count": 0,
@@ -1487,25 +1591,28 @@
             "typical_co_fires": [],
             "typical_co_absences": [
               {
+                "fvs_id": "FVS-010",
+                "count": 10,
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
+              },
+              {
                 "fvs_id": "FVS-014",
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-014",
                 "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
-              },
-              {
-                "fvs_id": "FVS-016",
-                "count": 10,
-                "citation_uri": "frame-check://library/FVS-016",
-                "library_resource_uri": "frame-check://library/FVS-016",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
               },
               {
                 "fvs_id": "FVS-009",
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-009",
                 "library_resource_uri": "frame-check://library/FVS-009",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
               }
             ],
             "corpus_entries_fired_uris": []
@@ -1528,6 +1635,7 @@
           "citation_uri": "frame-check://library/FVS-010",
           "library_resource_uri": "frame-check://library/FVS-010",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
           "corpus_context": {
             "prevalence": "fires in 0 of 10 corpus documents",
             "fires_in_count": 0,
@@ -1569,21 +1677,24 @@
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
               },
               {
                 "fvs_id": "FVS-014",
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-014",
                 "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
               },
               {
-                "fvs_id": "FVS-016",
+                "fvs_id": "FVS-009",
                 "count": 10,
-                "citation_uri": "frame-check://library/FVS-016",
-                "library_resource_uri": "frame-check://library/FVS-016",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+                "citation_uri": "frame-check://library/FVS-009",
+                "library_resource_uri": "frame-check://library/FVS-009",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
               }
             ],
             "corpus_entries_fired_uris": []
@@ -1606,6 +1717,7 @@
           "citation_uri": "frame-check://library/FVS-011",
           "library_resource_uri": "frame-check://library/FVS-011",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-011_stakeholder_frame.md",
           "corpus_context": {
             "prevalence": "fires in 1 of 10 corpus documents",
             "fires_in_count": 1,
@@ -1642,25 +1754,28 @@
             },
             "typical_co_fires": [
               {
-                "fvs_id": "FVS-008",
-                "count": 1,
-                "citation_uri": "frame-check://library/FVS-008",
-                "library_resource_uri": "frame-check://library/FVS-008",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
-              },
-              {
                 "fvs_id": "FVS-001",
                 "count": 1,
                 "citation_uri": "frame-check://library/FVS-001",
                 "library_resource_uri": "frame-check://library/FVS-001",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
               },
               {
                 "fvs_id": "FVS-007",
                 "count": 1,
                 "citation_uri": "frame-check://library/FVS-007",
                 "library_resource_uri": "frame-check://library/FVS-007",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-007_failure_framing.md"
+              },
+              {
+                "fvs_id": "FVS-008",
+                "count": 1,
+                "citation_uri": "frame-check://library/FVS-008",
+                "library_resource_uri": "frame-check://library/FVS-008",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-008_growth_frame.md"
               }
             ],
             "typical_co_absences": [
@@ -1669,21 +1784,24 @@
                 "count": 9,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+              },
+              {
+                "fvs_id": "FVS-010",
+                "count": 9,
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-014",
                 "count": 9,
                 "citation_uri": "frame-check://library/FVS-014",
                 "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
-              },
-              {
-                "fvs_id": "FVS-016",
-                "count": 9,
-                "citation_uri": "frame-check://library/FVS-016",
-                "library_resource_uri": "frame-check://library/FVS-016",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
               }
             ],
             "corpus_entries_fired_uris": [
@@ -1709,6 +1827,7 @@
           "citation_uri": "frame-check://library/FVS-012",
           "library_resource_uri": "frame-check://library/FVS-012",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-012_uncertainty_frame.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-012_uncertainty_frame.md",
           "corpus_context": {
             "prevalence": "fires in 1 of 10 corpus documents",
             "fires_in_count": 1,
@@ -1750,21 +1869,24 @@
                 "count": 9,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+              },
+              {
+                "fvs_id": "FVS-010",
+                "count": 9,
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-014",
                 "count": 9,
                 "citation_uri": "frame-check://library/FVS-014",
                 "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
-              },
-              {
-                "fvs_id": "FVS-016",
-                "count": 9,
-                "citation_uri": "frame-check://library/FVS-016",
-                "library_resource_uri": "frame-check://library/FVS-016",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
               }
             ],
             "corpus_entries_fired_uris": [
@@ -1789,6 +1911,7 @@
           "citation_uri": "frame-check://library/FVS-015",
           "library_resource_uri": "frame-check://library/FVS-015",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-015_efficiency_frame.md",
           "corpus_context": {
             "prevalence": "fires in 2 of 10 corpus documents",
             "fires_in_count": 2,
@@ -1829,7 +1952,8 @@
                 "count": 2,
                 "citation_uri": "frame-check://library/FVS-001",
                 "library_resource_uri": "frame-check://library/FVS-001",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-001_frame_amplification.md"
               }
             ],
             "typical_co_absences": [
@@ -1838,21 +1962,24 @@
                 "count": 8,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+              },
+              {
+                "fvs_id": "FVS-010",
+                "count": 8,
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-014",
                 "count": 8,
                 "citation_uri": "frame-check://library/FVS-014",
                 "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
-              },
-              {
-                "fvs_id": "FVS-016",
-                "count": 8,
-                "citation_uri": "frame-check://library/FVS-016",
-                "library_resource_uri": "frame-check://library/FVS-016",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
               }
             ],
             "corpus_entries_fired_uris": [
@@ -1879,6 +2006,7 @@
           "citation_uri": "frame-check://library/FVS-016",
           "library_resource_uri": "frame-check://library/FVS-016",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-016_authority_by_citation.md",
           "corpus_context": {
             "prevalence": "fires in 0 of 10 corpus documents",
             "fires_in_count": 0,
@@ -1920,21 +2048,24 @@
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-017",
                 "library_resource_uri": "frame-check://library/FVS-017",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-017_false_balance.md"
+              },
+              {
+                "fvs_id": "FVS-010",
+                "count": 10,
+                "citation_uri": "frame-check://library/FVS-010",
+                "library_resource_uri": "frame-check://library/FVS-010",
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-010_completeness_illusion.md"
               },
               {
                 "fvs_id": "FVS-014",
                 "count": 10,
                 "citation_uri": "frame-check://library/FVS-014",
                 "library_resource_uri": "frame-check://library/FVS-014",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
-              },
-              {
-                "fvs_id": "FVS-009",
-                "count": 10,
-                "citation_uri": "frame-check://library/FVS-009",
-                "library_resource_uri": "frame-check://library/FVS-009",
-                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-009_risk_frame.md"
+                "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md",
+                "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-014_temporal_anchoring.md"
               }
             ],
             "corpus_entries_fired_uris": []
@@ -1955,6 +2086,7 @@
           "citation_uri": "frame-check://library/FVS-003",
           "library_resource_uri": "frame-check://library/FVS-003",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-003_prompt_attribution_error.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-003_prompt_attribution_error.md",
           "corpus_context": null,
           "genre_relevance": null,
           "goal_relevance": null,
@@ -1972,6 +2104,7 @@
           "citation_uri": "frame-check://library/FVS-004",
           "library_resource_uri": "frame-check://library/FVS-004",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-004_default_geometry.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-004_default_geometry.md",
           "corpus_context": null,
           "genre_relevance": null,
           "goal_relevance": null,
@@ -1989,6 +2122,7 @@
           "citation_uri": "frame-check://library/FVS-005",
           "library_resource_uri": "frame-check://library/FVS-005",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-005_system_attribution_error.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-005_system_attribution_error.md",
           "corpus_context": null,
           "genre_relevance": null,
           "goal_relevance": null,
@@ -2006,6 +2140,7 @@
           "citation_uri": "frame-check://library/FVS-006",
           "library_resource_uri": "frame-check://library/FVS-006",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-006_identity_framing_asymmetry.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-006_identity_framing_asymmetry.md",
           "corpus_context": null,
           "genre_relevance": null,
           "goal_relevance": null,
@@ -2023,6 +2158,7 @@
           "citation_uri": "frame-check://library/FVS-013",
           "library_resource_uri": "frame-check://library/FVS-013",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-013_oracle_frame.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-013_oracle_frame.md",
           "corpus_context": null,
           "genre_relevance": null,
           "goal_relevance": null,
@@ -2040,6 +2176,7 @@
           "citation_uri": "frame-check://library/FVS-018",
           "library_resource_uri": "frame-check://library/FVS-018",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-018_scope_narrowing.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-018_scope_narrowing.md",
           "corpus_context": null,
           "genre_relevance": null,
           "goal_relevance": null,
@@ -2057,6 +2194,7 @@
           "citation_uri": "frame-check://library/FVS-019",
           "library_resource_uri": "frame-check://library/FVS-019",
           "library_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-019_narrative_coherence.md",
+          "public_url": "https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-019_narrative_coherence.md",
           "corpus_context": null,
           "genre_relevance": null,
           "goal_relevance": null,
@@ -2220,6 +2358,6 @@
       }
     }
   },
-  "frame_check_payload_refreshed_at_utc": "2026-05-11T13:00:00Z",
-  "frame_check_payload_refresh_reason": "Refreshed at v1.0.11 cut: corpus_context.typical_co_fires and typical_co_absences entries (under frame_library_matches[*] and divergence.absent_frames[*]) now carry library_resource_uri alias for citation_uri. Same defect class as the v1.0.10 fix on absent_frames[*]; surfaced by fresh-eyes schema audit."
+  "frame_check_payload_refreshed_at_utc": "2026-05-11T19:00:00Z",
+  "frame_check_payload_refresh_reason": "Refreshed at v1.0.12 cut: every frame-reference record across the payload (frame_library_matches[*], absent_frames[*], corpus_context.typical_co_*, decision_readiness.*.library_entries[*], frame_opportunities[*]) now carries the full canonical URI/URL quartet {citation_uri, library_resource_uri, library_url, public_url} where citation_uri ≡ library_resource_uri and library_url ≡ public_url. Closes the schema-coherence backlog opened by the same defect class that produced v1.0.10/v1.0.11."
 }
