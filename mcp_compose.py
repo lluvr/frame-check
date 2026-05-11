@@ -2708,17 +2708,40 @@ def build_epistemic_payload(
         sf = profile_with_source.get("source_fidelity", {}) or {}
         gd = profile_with_source.get("grounding_decomposition", {}) or {}
         scope = gd.get("scope_assessment", {}) or {}
+        # Per-claim diagnostics: clarethium_measure.source_matching()
+        # computes unsourced_details internally as
+        # [{value, type, context}]; surface it here so adopters can
+        # act on the unsourced_rate. Without this, a wire reading
+        # "23/25 in source" tells an adopter the headline but hides
+        # the actionable diagnostic (which 2 numbers don't match).
+        # Added v1.0.9 after Phase-1 e2e against the bundled Grok-
+        # over-NVIDIA fixture surfaced the gap: source_fidelity
+        # ratio is the killer demo, but the missing per-item list
+        # made it un-actionable. The internal data was already
+        # there; this is wire-format completion.
+        unsourced_details = sf.get("unsourced_details", []) or []
         analysis["verification"] = {
             "source_fidelity": {
                 "total_numbers": sf.get("total_numbers", 0),
                 "in_source": sf.get("in_source", 0),
                 "not_in_source": sf.get("not_in_source", 0),
                 "unsourced_rate": sf.get("unsourced_rate", 0.0),
+                "unsourced_items": [
+                    {
+                        "value": it.get("value"),
+                        "type": it.get("type"),
+                        "context": it.get("context"),
+                    }
+                    for it in unsourced_details
+                ],
                 "note": (
                     "Digit-level match. A number 'in_source' appears as "
                     "an exact digit substring in the source text. "
                     "'not_in_source' does not; those claims may be "
-                    "derived, rounded, or fabricated."
+                    "derived, rounded, or fabricated. The "
+                    "'unsourced_items' list names the specific numbers "
+                    "that did not match (value + claim-sentence context) "
+                    "so the caller can decide which to investigate."
                 ),
             },
             "grounding_decomposition": {

@@ -6,6 +6,49 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.9] - 2026-05-11
+
+### Source-fidelity diagnostics: per-claim `unsourced_items`
+
+The source-fidelity ratio (Layer 4: digit-substring match of a
+document's numbers against the source it was supposed to be
+grounded in) is the capability that distinguishes Frame Check
+from framing-only tools. Pre-v1.0.9, the wire format reported
+the COUNT of unsourced numbers
+(`source_fidelity.not_in_source: 2 out of 25`) but not WHICH
+specific numbers. Adopters reading "23/25 in source" got the
+headline but couldn't act on the 8% unsourced rate without
+manually diffing source vs. summary side-by-side — which
+defeats the tool's purpose for AI-output auditing.
+
+The internal data was already computed:
+`clarethium_measure.source_matching()` builds
+`unsourced_details` as `[{value, type, context}, ...]` where
+`context` is the claim-sentence the number appeared in
+(`clarethium_measure.py:843-846`). The MCP composer at
+`mcp_compose.py:2708` was reading the summary fields and
+dropping the items list.
+
+This release surfaces `verification.source_fidelity.unsourced_items`
+on the wire when `source_text` is provided. Adopters now see:
+
+    {"value": "100000000", "type": "integer",
+     "context": "NVIDIA RTX now serves 100 million gamers..."}
+
+against the load-bearing demo (Grok-on-NVIDIA worked example):
+the LLM smuggled a "100 million users" figure from training data
+into a summary of a press release that disclosed no user count.
+That class of insertion is exactly what the source-fidelity
+capability exists to surface; the headline ratio is necessary
+but not sufficient — the per-claim diagnostic is the actionable
+half.
+
+Wire-format addition only (no removed or renamed fields). The
+new field is omitted when no `source_text` is supplied (same
+schema-stability discipline as the rest of the verification
+block). Pinned by
+`tests/test_mcp_server.py::test_source_fidelity_carries_per_claim_unsourced_items`.
+
 ## [1.0.8] - 2026-05-11
 
 ### Same-class fix: `git_sha=unknown` in version banner

@@ -1031,6 +1031,82 @@ def test_manifest_emits_canonical_and_legacy_version_keys():
     print("  PASS\n")
 
 
+def test_source_fidelity_carries_per_claim_unsourced_items():
+    """When source_text is provided and at least one document number
+    does not literal-match the source, verification.source_fidelity
+    must carry an ``unsourced_items`` list naming the specific values
+    + claim-sentence context for each.
+
+    Pre-v1.0.9: the wire reported the count (e.g., ``not_in_source: 2``)
+    without the items. Adopters reading "23/25 in source" got the
+    headline but couldn't act on the 8% unsourced rate without
+    manually diffing source vs. summary. The actionable diagnostic
+    was hidden behind a count.
+
+    The internal data was already there: ``clarethium_measure.
+    source_matching()`` builds ``unsourced_details`` as
+    [{value, type, context}, ...]. v1.0.9 surfaces it via the
+    composer at mcp_compose.py:2712 as ``unsourced_items``.
+
+    Pins the wire shape so a future composer change that drops the
+    items list fails this test. The Grok-on-NVIDIA worked example
+    is the load-bearing demo for this capability; the field is the
+    actionable half of the differentiator.
+    """
+    print("=== source_fidelity carries per-claim unsourced_items ===")
+    baseline = len(_FAILURES)
+    # Document with an explicit numeric claim NOT in source.
+    doc = (
+        "## NVIDIA Update\n\n"
+        "NVIDIA reported revenue of $35.1 billion in Q3 FY2025, up 94 "
+        "percent year over year. The company also serves 999 million "
+        "creators worldwide."
+    )
+    src = (
+        "## NVIDIA Q3 FY2025\n\n"
+        "Revenue: $35.1 billion, up 94 percent year over year. "
+        "Operating margin steady. No user-count figure disclosed."
+    )
+    payload = mcp_server.build_epistemic_payload(
+        doc, source_text=src, include_divergence=False,
+    )
+    sf = payload["analysis"]["verification"]["source_fidelity"]
+    check(
+        "unsourced_items" in sf,
+        "verification.source_fidelity must carry unsourced_items "
+        "(per-claim diagnostics, added v1.0.9)",
+    )
+    items = sf.get("unsourced_items", [])
+    check(
+        isinstance(items, list),
+        f"unsourced_items must be a list; got {type(items).__name__}",
+    )
+    # The "999 million" claim is NOT in source; at least one item.
+    check(
+        len(items) >= 1,
+        f"expected >=1 unsourced item for a doc with a number not in "
+        f"source; got {len(items)} items, total_numbers={sf.get('total_numbers')}, "
+        f"not_in_source={sf.get('not_in_source')}",
+    )
+    # Each item must carry the three documented fields.
+    for it in items:
+        check(
+            "value" in it and "type" in it and "context" in it,
+            f"unsourced_item must carry value+type+context keys; got "
+            f"{sorted(it.keys())}",
+        )
+    # And the count in unsourced_items must agree with not_in_source.
+    check(
+        len(items) == sf.get("not_in_source", -1),
+        f"unsourced_items count ({len(items)}) must equal "
+        f"not_in_source count ({sf.get('not_in_source')})",
+    )
+    _assert_no_new_failures(
+        baseline, "test_source_fidelity_carries_per_claim_unsourced_items",
+    )
+    print("  PASS\n")
+
+
 def test_provenance_carries_production_status():
     """Provenance carries a production_status field that names whether
     the canonical production hosting at frame.clarethium.com is
