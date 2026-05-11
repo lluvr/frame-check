@@ -47,6 +47,21 @@ and `clarethium_measure` brought every module to or above the
 floor. The CI gate at `scripts/check_per_module_coverage.py`
 (invoked by `tests.yml`) is strict-blocking.
 
+The 80% per-module floor scope is intentionally the wheel-
+surface seven modules only. Other modules (`source_network`,
+`frame_library`, `manifest`, `prompt_safety`,
+`frame_opportunities`, `version`, etc.) are bundled in the
+wheel as implementation dependencies of the surface and are
+held to the global 65% floor only. Adopters interact with
+those modules transitively through the seven; targeted tests
+on them follow as the project finds load-bearing gaps, but
+they are not part of the per-module 80% contract. A future
+1.x cut can promote a module into the per-module floor by
+adding it to the FLOORS dict in
+`scripts/check_per_module_coverage.py` alongside the matching
+ROADMAP entry; promotion follows the same DCO + rationale
+process as a contract change.
+
 | Module                  | Pre-1.0.x | Post-1.0.x |
 |-------------------------|-----------|------------|
 | `mcp_schema`            |   100.0%  |    100.0%  |
@@ -100,6 +115,25 @@ path (named-pattern detector F1 ≥ 0.4 against expert labelers)
 remains open. A V4.2 promotion in 1.x would carry CHANGELOG
 narrative documenting the criteria the new engine met and
 flip `engine_status` from `"beta"` to a stronger statement.
+
+## v2.0 breaking changes (committed)
+
+Items the operator and adopters can both rely on landing at
+the next major-version boundary. Each is named here so the
+v2.0 cut is a contract execution, not a discovery exercise.
+
+### Remove `framecheck_version` from manifest payload
+
+The MCP manifest payload currently emits both
+`provenance.frame_check_version` (canonical, matching
+`version.py:FRAME_CHECK_VERSION`) and
+`provenance.framecheck_version` (legacy, deprecated since
+v1.0.1). Both carry the same value; the additive emission is
+a deprecation grace period for adopters whose integrations
+still read the v0.9.x typo'd field name. At v2.0, the legacy
+key is dropped and only `frame_check_version` remains. Code
+sites: `manifest.py:447,635` (emit), `CHANGELOG.md [1.0.1]`
+section (rationale).
 
 ## Past 1.x (open questions)
 
