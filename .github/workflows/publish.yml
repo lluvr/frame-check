@@ -360,6 +360,18 @@ jobs:
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Pass notes via env var (not direct ${{ }} substitution
+          # into the script) so bash does not perform command
+          # substitution on backticked code spans inside the
+          # CHANGELOG annotation. Surfaced at the v1.0.2 cut: the
+          # annotation included literal `git tag -l --format='%(contents)'`
+          # in a backtick code span; bash ran that as a command and
+          # the output (every tag's annotation, concatenated) got
+          # spliced into the release body. With the env-var
+          # interpolation pattern, "$NOTES" is literal expansion
+          # only — backticks inside the value are preserved as
+          # characters, not interpreted as command substitution.
+          NOTES: ${{ steps.notes.outputs.notes }}
         run: |
           # Pre-release if the tag has a dev/rc/a/b suffix.
           extra=()
@@ -368,6 +380,6 @@ jobs:
           esac
           gh release create "${GITHUB_REF_NAME}" \
             --title "${GITHUB_REF_NAME}" \
-            --notes "${{ steps.notes.outputs.notes }}" \
+            --notes "$NOTES" \
             "${extra[@]}" \
             dist/*

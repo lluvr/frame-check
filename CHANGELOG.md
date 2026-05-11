@@ -6,6 +6,42 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### publish.yml: pass release notes via env var (not direct expression substitution)
+
+`gh release create --notes "${{ steps.notes.outputs.notes }}"` lets
+GitHub Actions substitute the notes content directly into the bash
+script string. Bash then performs command substitution on any
+backticks in the value. The CHANGELOG `[1.0.2]` section included
+the literal text `` `git tag -l --format='%(contents)'` `` in a
+backtick code span — bash ran that as an actual command, the
+output (every tag's annotation, concatenated) got spliced into
+the release body, and other backticked code spans (e.g.
+`` `actions/checkout@v4` ``) returned empty (not a real command),
+which left holes in the prose.
+
+Surfaced at the v1.0.2 cut. Recovery: one-shot `gh release edit
+--notes`. Real fix: pass the notes via an env var so bash treats
+them as literal characters:
+
+```yaml
+env:
+  NOTES: ${{ steps.notes.outputs.notes }}
+run: |
+  gh release create ... --notes "$NOTES" ...
+```
+
+`"$NOTES"` is variable expansion only; bash does not perform
+command substitution on the value. Backticks inside the
+CHANGELOG annotation now reach `gh release create` as literal
+characters and render as Markdown code spans on the release page.
+
+This is the third release-body recurrence in the v1.0.x line
+(v1.0.0 commit-message fallthrough, v1.0.1 annotation overwrite,
+v1.0.2 backtick command substitution). Each cut surfaced a
+different load-bearing detail of the release-notes-extraction
+path; v1.0.3 is the live test that the env-var fix carries
+through.
+
 ## [1.0.2] - 2026-05-11
 
 ### publish.yml: re-fetch annotated tag after actions/checkout overwrites it
