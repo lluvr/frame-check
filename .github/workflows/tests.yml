@@ -79,14 +79,12 @@ jobs:
       - name: Run test suite
         # Run on the matrix Python version. Coverage instrumentation
         # is added on 3.12 only (one matrix row produces the report;
-        # the others verify compatibility). The 65% floor is on
-        # production code only (tests/ + setup.py + run_tests.py
+        # the others verify compatibility). The 65% global floor is
+        # on production code only (tests/ + setup.py + run_tests.py
         # excluded via [tool.coverage.run] omit in pyproject.toml).
-        # Current global is ~69%; per-module 80% on the seven-module
-        # wheel surface is a tracked v1.0.x follow-up (see ROADMAP.md
-        # "Deferred from v1.0 to v1.0.x"; comparison.py at 20.9% is
-        # the largest single drag and needs provider-mocked tests
-        # for the LLM-network-dependent paths).
+        # Per-module 80% on the seven-module wheel surface is
+        # enforced separately by the next step (the v1.0 ROADMAP
+        # contract).
         run: |
           if [ "${{ matrix.python-version }}" = "3.12" ]; then
             python3 run_tests.py \
@@ -94,6 +92,18 @@ jobs:
           else
             python3 run_tests.py
           fi
+
+      - name: Per-module 80% floor (v1.0 wheel-surface contract)
+        # Strict-blocking. The v1.0 ROADMAP commits to 80% per-module
+        # production-code coverage on the seven-module wheel surface
+        # (mcp_server, mcp_compose, mcp_resources, mcp_schema, framing,
+        # comparison, clarethium_measure). pytest-cov has only one
+        # global --cov-fail-under so this step parses the .coverage
+        # file from the prior step and enforces the per-module floor.
+        # A regression below 80% on any of the seven is a contract
+        # violation and must fail PR.
+        if: matrix.python-version == '3.12'
+        run: python3 scripts/check_per_module_coverage.py
 
   quality:
     # Quality-gate job: ruff (style + bug-prone-pattern lints) and
