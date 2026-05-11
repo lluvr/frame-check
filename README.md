@@ -36,6 +36,25 @@ Claude Desktop, add to `claude_desktop_config.json`:
 Restart the client. Then in any conversation: "Can you frame-check
 this document?" Full install + verification details in `docs/MCP_SERVER.md`.
 
+### Verifying the wheel (sigstore attestation)
+
+Every published wheel ships with a sigstore build-provenance
+attestation generated inside the GitHub Actions publish workflow
+via OIDC. Adopters who want to verify the wheel was built from
+this repository's CI (and not modified between the runner and
+PyPI) can do so with the `gh` CLI:
+
+    pip download frame-check-mcp --no-deps -d /tmp/fc-verify
+    gh attestation verify /tmp/fc-verify/frame_check_mcp-*.whl \
+      --owner Clarethium
+
+A passing verification proves the wheel artifact's hash matches
+the one signed by the publish workflow run for the corresponding
+tag, with the workflow file path and git SHA recorded in the
+attestation. Verification is optional; security-conscious
+deployments and packaging mirrors may want it as part of their
+install pipeline.
+
 ## What it does
 
 Pass a document and Frame Check returns:
