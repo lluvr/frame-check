@@ -401,10 +401,18 @@ jobs:
           # state was lost; trim trailing whitespace per line so
           # gh's body normalization (line endings, trailing blank
           # lines) doesn't trigger a spurious diff.
+          #
+          # Note on `gh ... --jq '.body'`: gh's --jq is a single-arg
+          # expression, NOT a wrapped jq invocation. Passing `-r` (a
+          # standalone-jq raw-output flag) makes gh refuse with
+          # "accepts at most 1 arg(s), received 2"; the v1.0.5 cut
+          # tripped this and shipped a release whose gate failed
+          # spuriously. gh's --jq already prints primitives raw, so
+          # the bare expression is correct.
           expected=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}" \
             | sed 's/[[:space:]]*$//')
           body=$(gh release view "${GITHUB_REF_NAME}" \
-            -R "${GITHUB_REPOSITORY}" --json body --jq -r '.body' \
+            -R "${GITHUB_REPOSITORY}" --json body --jq '.body' \
             | sed 's/[[:space:]]*$//')
           if [ "$expected" != "$body" ]; then
             echo "::error::Release body diverges from annotated tag content."

@@ -6,6 +6,30 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.6] - 2026-05-11
+
+### publish.yml: post-publish gate jq invocation fix
+
+The post-publish release-body verification gate added in v1.0.5
+shipped with a typo: `gh release view ... --json body --jq -r '.body'`.
+The `-r` flag is a standalone-`jq` raw-output flag, not valid for
+gh's `--jq` (which is a single-argument expression). gh refused
+with `accepts at most 1 arg(s), received 2`, the body fetch
+returned empty, and the gate fired against an empty string,
+falsely reporting divergence on a release whose body actually
+matched the annotation byte-for-byte (verified locally).
+
+The v1.0.6 cut drops `-r` from the gh invocation. gh's `--jq`
+already prints string primitives raw, so the bare expression is
+correct. A defensive comment in the step body documents the
+trap so a future contributor doesn't re-introduce it.
+
+The v1.0.5 release itself is correct (PyPI artifact published,
+GitHub release body matches annotated tag); only the gate's
+verification step failed. v1.0.6 is the live re-test: with the
+jq fix in place, the gate should turn green on a matching body
+and the entire post-publish-verification commitment lands.
+
 ## [1.0.5] - 2026-05-11
 
 ### publish.yml: post-publish release-body verification gate
