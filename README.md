@@ -157,6 +157,28 @@ on an LLM-summarised earnings release, plus a divergence walk-through
 on Claude's Bitcoin retirement recommendation. See
 [`data/worked_examples/`](data/worked_examples/) for the full set.
 
+## Calibration evidence
+
+The detector-empirics report under
+[`framecheck_mcp/calibration/results/detector_empirics_2026-05-01/REPORT.md`](framecheck_mcp/calibration/results/detector_empirics_2026-05-01/REPORT.md)
+ships in the wheel. It carries: per-FVS firing rate across the
+13-document calibration corpus, coverage perspective addressed
+rate per category, genre classification distribution, and absence-
+cluster dimension incidence. The empirics are computed by running
+`frame_check` over stdio MCP against each corpus document and
+aggregating the structural fields, so the report is reproducible
+from the wheel + corpus alone.
+
+The `F1 = 0.36 against expert labelers` figure cited in the
+sections above is from a separate pre-registered validation run
+(detector-vs-labeler agreement, methodology pinned in
+`validation/wedge_behavior/PROTOCOL_v1.md`). The first execution
+with N >= 30 documents per condition is deferred to a future
+v1.0.x patch per `ROADMAP.md`. Until that lands, the firing-rate
+empirics in the report above are the load-bearing public
+calibration evidence; the F1 figure is the operator's prior
+in-house measurement and is named with that caveat.
+
 ## Documentation
 
 Browse [`docs/README.md`](docs/README.md) for reading paths organised
