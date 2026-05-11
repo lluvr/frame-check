@@ -140,6 +140,24 @@ Note that the `provenance` block carries only
 emitted the legacy key — the deprecation pair lives in the
 `manifest` block alone.
 
+### Remove `analysis.coverage` (v1) block
+
+The MCP payload currently emits both `analysis.coverage`
+(v1, keyword + pattern based; `addressed`/`missing` lists
+plus density-per-1k-words) and `analysis.coverage_v2` (v2,
+per-dimension construct block with detection-confidence
+metadata). v1 carries an inline DEPRECATION NOTICE on its
+`caveat` string flagged at Phase 2 (2026-04-21) pointing
+adopters at v2 as the forward contract. At v2.0 the v1
+block is removed; only `coverage_v2` remains. Code sites:
+`mcp_compose.py:327` (`_build_coverage_v2`), inline caveat
+at the same file's `_compose` block (~2415).
+
+Adopters reading `analysis.coverage` today must migrate to
+`analysis.coverage_v2` before the v2.0 cut. The `caveat`
+string in every response carries the migration directive;
+this ROADMAP entry is its committed counterpart.
+
 ## Past 1.x (open questions)
 
 - **Multi-language MCP wrappers** (TypeScript, Go): contingent on
