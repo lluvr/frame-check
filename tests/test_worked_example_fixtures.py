@@ -104,32 +104,53 @@ def test_worked_example_fixture_matches_live_payload(fixture_path):
     )
 
     # Allowlist: load-bearing fields the worked-example MD writeups
-    # reference + the differentiator capability fields. Each entry is a
-    # dotted path into the payload; the value at that path must match
-    # snapshot exactly. Adding a new field to the allowlist is a
+    # reference + the differentiator capability fields + the construct-
+    # confidence fields adopters depend on for restatement discipline.
+    # Each entry is a dotted path into the payload; the value at that
+    # path must match snapshot exactly. Adding a new field is a
     # deliberate widening of the contract.
     ALLOWLIST = [
+        # Voice (cascade classification + confidence + runner-up)
         "analysis.voice.classification",
+        "analysis.voice.confidence",
+        "analysis.voice.runner_up",
+        # Genre (parallel cascade)
+        "analysis.genre.classification",
+        "analysis.genre.confidence",
+        # Coverage v1 (deprecated; pinned until v2.0 cut removes it)
         "analysis.coverage.addressed",
         "analysis.coverage.missing",
         "analysis.coverage.addressed_count",
         "analysis.coverage.total_categories",
+        # Temporal
         "analysis.temporal.dominant",
+        # Epistemic
         "analysis.epistemic.numeric_sentences",
         "analysis.epistemic.sourced_pct",
+        # Claims (counts; per-claim items are not pinned — extractor
+        # evolution stays open as long as the headline counts hold)
         "analysis.claims_extracted.total",
         "analysis.claims_extracted.hedged_count",
         "analysis.claims_extracted.unhedged_count",
         "analysis.claims_extracted.prediction_count",
+        # Decision-readiness (status string + dimensions present)
+        "analysis.decision_readiness.status",
     ]
 
-    # Source-fidelity fields (only present when source_text supplied).
+    # Source-fidelity + grounding-decomposition fields (only present
+    # when source_text supplied). The grounding fields carry adopter-
+    # facing recommendation text + classification proportions; an
+    # unannounced shift in either is a real adopter regression.
     if source_text is not None:
         ALLOWLIST += [
             "analysis.verification.source_fidelity.total_numbers",
             "analysis.verification.source_fidelity.in_source",
             "analysis.verification.source_fidelity.not_in_source",
             "analysis.verification.source_fidelity.unsourced_rate",
+            "analysis.verification.grounding_decomposition.proportions",
+            "analysis.verification.grounding_decomposition.has_projection",
+            "analysis.verification.grounding_decomposition.recommendation",
+            "analysis.verification.grounding_decomposition.status",
         ]
 
     def _resolve(payload, path):

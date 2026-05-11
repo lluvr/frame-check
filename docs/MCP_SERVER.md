@@ -204,6 +204,58 @@ grounding decomposition. When `include_divergence=true`, the response
 also carries the `divergence` block described in the "Divergence block"
 section below.
 
+#### `verification.source_fidelity` (when `source_text` is supplied)
+
+```jsonc
+{
+  "verification": {
+    "source_fidelity": {
+      "total_numbers": 25,
+      "in_source": 23,
+      "not_in_source": 2,
+      "unsourced_rate": 0.08,
+      "unsourced_items": [
+        {"value": "100000000", "type": "integer",
+         "context": "NVIDIA RTX now serves 100 million gamers and creators..."},
+        {"value": "198", "type": "integer",
+         "context": "to shareholders of record on March 6. (198 words)"}
+      ],
+      "note": "..."
+    }
+  }
+}
+```
+
+`unsourced_items` (added v1.0.9) is the per-claim diagnostic for the
+`not_in_source` count. Each item carries the literal value, its
+extracted type (integer/decimal/percentage/currency), and the
+claim-sentence context the value appeared in. Use this to surface
+WHICH numbers in the document do not literal-match the source —
+adopters can render the items to the user as "X numbers in the
+document do not appear in the source: [item.value], [item.value], ..."
+or pass them downstream to a verification subroutine.
+
+What the literal-substring match catches and misses:
+
+- **Catches**: same digit string in different prose contexts
+  (e.g., `$22.1B` ≡ `$22.1 billion` because "22.1" matches);
+  percentage variants (`94%` ≡ `94 percent`); currency variants
+  (`$X` ≡ `X dollars`).
+- **Misses (false negatives)**: same number expressed in
+  materially different formats — `$22.1 billion` (digit substring
+  "22.1") will NOT match `$22,100,000,000` (digit substring
+  "22100000000"). Same for rounded vs. precise (`$22.1B` vs.
+  `$22,109,000,000`). Adopters who need format-tolerant matching
+  should layer their own normalization on top.
+- **Catches (avoids false positives)**: a value like `$22` in the
+  document does NOT spuriously match `2022` in source; the matcher
+  scopes by token boundaries, not raw substring.
+
+What the field reports vs. what it does not: this is digit-presence
+in source, not numeric correctness. A number flagged `not_in_source`
+may be derived, rounded, fabricated, or pulled from elsewhere; the
+tool surfaces the deviation, not its cause.
+
 ### `frame_compare`: two-document structural diff
 
 | Parameter | Required | Type | Meaning |

@@ -20,7 +20,13 @@ This protocol is the empirical foothold for claim 2.
 
 **H1 (named-absence advantage).** Frame Check's `divergence.absent_frames` block names structurally-absent canonical frames more reliably than a frontier LLM prompted "what's missing from this document's framing." Pre-registered effect direction: in N >= 20 documents, Frame Check names absences a panel of trained raters scores as VALID at a rate >= the LLM's, with the LLM's false-positive (hallucinated-absence) rate strictly higher.
 
-**H2 (source-fidelity advantage).** When `source_text` is provided alongside `document_text`, Frame Check's per-claim `verification.source_fidelity.unsourced_items` correctly identifies numbers present in document but absent from source. A frontier LLM prompted "list any numbers in the document that are not in the source" returns answers whose precision is strictly lower than Frame Check's literal-substring match. Pre-registered: zero false negatives expected from Frame Check on numeric digit-substrings (the test is whether the LLM produces false negatives, since a literal substring match is mathematically complete).
+**H2 (source-fidelity advantage).** When `source_text` is provided alongside `document_text`, Frame Check's per-claim `verification.source_fidelity.unsourced_items` identifies numbers present in document but absent from source via literal digit-substring match (scoped by token boundaries; see `docs/MCP_SERVER.md` for the catches/misses table). A frontier LLM prompted "list any numbers in the document that are not in the source" returns answers whose error profile differs from Frame Check's mechanical check.
+
+Pre-registered claims:
+
+  - **Zero false POSITIVES from Frame Check** (a number flagged `not_in_source` is verifiably not a token-bounded digit substring of the source). The substring match is deterministic.
+  - **Frame Check's known false-NEGATIVE class**: same number expressed in materially different formats (`$22.1 billion` vs `$22,100,000,000`; rounded vs precise) registers as `not_in_source` despite semantic equivalence. This is a calibrated limit, not a defect; the H2 test measures whether the LLM's false-negative rate is LOWER (it might catch format-equivalent numbers Frame Check misses) AND whether its false-positive rate is HIGHER (since the LLM is interpretive, not deterministic).
+  - **The directional test**: ratio of (LLM false positives) to (Frame Check false negatives) over the N=10 corpus. Pre-registered effect direction: ratio > 1 (LLM's interpretive errors exceed Frame Check's format-rigidity errors on a corpus of real LLM-summary-vs-source pairs). The null is ratio ≤ 1 — meaning interpretive matching wins on this corpus.
 
 **H3 (reproducibility advantage).** Frame Check returns byte-identical structured output for byte-identical input across runs. A frontier LLM returns materially-different framing analyses across runs of the same document at non-zero temperature, and across model versions even at temperature zero. Pre-registered: 5 runs of each (Frame Check + LLM) on N >= 10 documents, measured as Jaccard distance of named-frame sets per pair.
 
@@ -58,7 +64,7 @@ For each document, three measurement runs:
 
 1. **Frame Check structural analysis.** `mcp_server.build_epistemic_payload(document_text, source_text=..., include_divergence=True)`. Captures all wire fields (voice, coverage, divergence.absent_frames, verification.source_fidelity, frame_library_matches, decision_readiness).
 
-2. **LLM-prompted framing analysis (baseline).** A single frontier LLM is selected and pinned before the pilot (operator authorization). Default candidate: Claude Sonnet 4.6 at temperature 0.7. Same model + temperature + system prompt across all N documents.
+2. **LLM-prompted framing analysis (baseline).** A single frontier LLM is selected and pinned before the pilot (operator authorization). Default candidate as of pre-registration date (2026-05-11): Claude Sonnet 4.6 at temperature 0.7. The exact model identifier (including any provider-side version suffix) and temperature are recorded in the per-document results record at execution time; same model + temperature + system prompt across all N documents within the same pilot or main-study run. If the default candidate is deprecated by the provider before execution, operator selects the strongest available substitute and records the substitution rationale in the results writeup. The pre-registration commits to the prompt template + the head-to-head methodology, not to a model identifier that may not survive to execution.
 
    Prompt template (locked at pre-registration):
    ```
@@ -101,7 +107,7 @@ See `rating_rubric_v1.md` for the per-rater rubric. Pre-registered before pilot.
 
 ## Open questions before execution
 
-- **LLM selection.** Sonnet 4.6 is the default; operator can substitute another frontier model with full justification before pilot. The point is to test the strongest plausible baseline, not a weakened one.
+- **LLM selection.** Sonnet 4.6 is the default candidate as of pre-reg date. Operator can substitute another frontier model with justification recorded in the results writeup before pilot. The point is to test the strongest plausible baseline, not a weakened one. Pre-registration commits to the prompt + methodology, not a specific model identifier.
 - **Rater compensation.** Compensation rate and rater recruitment is operator territory; documented separately under operator-controlled artifacts.
 - **Source corpus.** Worked examples are EXCLUDED from sample selection. Documents must come from outside the bundled fixtures to avoid contamination.
 
