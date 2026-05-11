@@ -6,6 +6,8 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-05-11
+
 ### publish.yml: pass release notes via env var (not direct expression substitution)
 
 `gh release create --notes "${{ steps.notes.outputs.notes }}"` lets
