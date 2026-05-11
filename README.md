@@ -163,7 +163,7 @@ Or directly via pytest:
 
     python3 -m pytest -q
 
-21 test files under `tests/`, ~30 seconds end-to-end. Includes 40 adversarial dispatcher test functions in `tests/test_mcp_adversarial.py` (parametrized into more tests at collection time) plus the genre-classifier and frame-divergence coverage.
+25 test files under `tests/`, ~30 seconds end-to-end. Includes 40 adversarial dispatcher test functions in `tests/test_mcp_adversarial.py` (parametrized into more tests at collection time), per-module 80% coverage gate on the seven wheel-surface modules (`scripts/check_per_module_coverage.py`), the cookbook-recipe contract suite (`tests/test_cookbook_recipes.py`), and the genre-classifier + frame-divergence coverage.
 
 ## License
 
