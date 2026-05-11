@@ -6,6 +6,8 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-05-11
+
 ### publish.yml: re-fetch annotated tag after actions/checkout overwrites it
 
 `actions/checkout@v4` with `fetch-tags: true` does TWO fetches: the
