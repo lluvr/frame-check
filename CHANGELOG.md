@@ -6,21 +6,23 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-05-11
+
 ### Per-module 80% coverage on the wheel surface (v1.0 contract closed)
 
 The v1.0 ROADMAP committed each of the seven wheel-surface modules
 to 80% production-code coverage; v1.0.0 deferred this because four
-modules were below target. The deferral closes in this cycle:
+modules were below target. The deferral closes at v1.0.1:
 
-| Module                  | At v1.0.0 | Now    |
-|-------------------------|-----------|--------|
-| `comparison`            |  20.9%    | 86.5%  |
-| `clarethium_measure`    |  62.6%    | 84.4%  |
-| `framing`               |  69.5%    | 82.6%  |
-| `mcp_server`            |  69.4%    | 81.5%  |
-| `mcp_resources`         |  90.3%    | 90.3%  |
-| `mcp_compose`           |  94.9%    | 94.9%  |
-| `mcp_schema`            | 100.0%    | 100.0% |
+| Module                  | At v1.0.0 | At v1.0.1 |
+|-------------------------|-----------|-----------|
+| `comparison`            |  20.9%    | 86.5%     |
+| `clarethium_measure`    |  62.6%    | 84.4%     |
+| `framing`               |  69.5%    | 82.6%     |
+| `mcp_server`            |  69.4%    | 81.5%     |
+| `mcp_resources`         |  90.3%    | 90.3%     |
+| `mcp_compose`           |  94.9%    | 94.9%     |
+| `mcp_schema`            | 100.0%    | 100.0%    |
 
 Three new test files land alongside the close-out:
 
@@ -72,8 +74,8 @@ The manifest now emits **both** keys carrying the same value:
 
 ```json
 "manifest": {
-  "frame_check_version": "1.0.0",   // canonical
-  "framecheck_version": "1.0.0",    // deprecated, removed at v2.0
+  "frame_check_version": "1.0.1",   // canonical
+  "framecheck_version": "1.0.1",    // deprecated, removed at v2.0
   ...
 }
 ```
@@ -107,6 +109,76 @@ the wheel and try to publish, fail at PyPI duplicate-version
 rejection, and leave noisy failed-run history. Tag pushes still
 fire normally; workflow_dispatch (the manual-verification path)
 runs only preflight + build.
+
+### Test quality: silent-pass bug surfaced + closed across 125 tests
+
+The `check()` helper at `tests/test_mcp_server.py:47` appends to a
+module-level `_FAILURES` list but does not raise. Tests that used
+`check()` and didn't snapshot `_FAILURES` plus call
+`_assert_no_new_failures` at the end *silently passed under
+pytest* even when `check()` had recorded failures. The helper's
+docstring documented this gap (lines 56-75); only ~half the file's
+tests had adopted the helper pattern.
+
+The 1.0.1 cut surfaced the gap via mutation testing: dropping
+`"analysis": analysis,` from the MCP epistemic payload assembly
+(a fundamental contract break) caused `test_payload_has_three_sections`
+to silently report PASS. Audit found 125 of 244 test functions in
+the file with the same shape.
+
+A mechanical retrofit applied the helper pattern to all 125
+functions. The retrofit then surfaced **five pre-existing latent
+defects** that were silently passing on real regressions:
+
+1. `test_coverage_v2_shape` required `len(construct[field]) > 50`
+   for the `reference` URL, which is exactly 48 characters.
+   Threshold dropped to `> 40` (still catches missing/empty fields,
+   accepts the legitimate URL).
+2. `test_mcp_voice_carries_classification_confidence_construct`:
+   same `> 50` threshold, same URL, same fix.
+3. `test_mcp_temporal_carries_distribution_construct`: same.
+4. `test_epistemic_candidate_attribution_surfaces_agency_parentheticals`
+   used `(Bloomberg survey, July 2026)` to test the E.3 detector,
+   but `survey` matches the primary `_SOURCE_RE` so the sentence
+   was correctly classified as primary-sourced and excluded from
+   the under-detection candidate list. Replaced fixture with
+   `(Census BTOS, June 2026)` (the canonical E.3 example named in
+   the detector's own docstring).
+5. `test_lift_dry_run_gate_10_matches_rewriter_policy` tested two
+   gate patterns. The `paused_pat` for `frame.clarethium.com` was
+   removed from `lift.py` at the 0.8.8 cleanup; the test was also
+   asserting that URL-prefixed forms match the gate, but the
+   gate's intentional `/` lookbehind exclusion delegates URL-
+   prefixed forms to the rewriter. Rewrote the test to mirror
+   what `lift.py` gate 10 actually catches (bare-host occurrences),
+   with explicit property pins for the lookbehind exclusions.
+
+Total tests stay at 882; the behavior change is that 125 tests
+that silently passed now actually verify what they claim, and the
+five latent defects are caught + fixed.
+
+### Documentation cold-read: stale references
+
+- `docs/MCP_SERVER.md` "Exercised contracts": pointed at
+  `test_canon_graph_consistency.py` which doesn't exist; the
+  canon-graph assertions live in `tests/test_frame_library_index.py`
+  and `tests/test_decision_readiness.py`. Reference updated.
+- `docs/MCP_SERVER.md` "Tests" section: the bare
+  `python3 test_mcp_server.py` invocation was wrong (no test file
+  at repo root). Replaced with the pytest invocation; added the
+  full-suite invocation alongside.
+- `README.md`: bumped test-file count (21 → 25) reflecting the
+  four new test files; named the per-module 80% gate and the
+  cookbook-recipe contract suite explicitly.
+
+### Branch protection on master
+
+`master` is now protected via `gh api PUT /repos/.../branches/.../
+protection`: force-push blocked, branch deletion blocked, linear
+history required. Operator (admin) keeps bypass for emergency
+recovery (`enforce_admins: false`). No required status checks at
+this posture (lightweight for solo development); raise to
+PR-required-checks when an external contributor lands.
 
 ## [1.0.0] - 2026-05-10
 
