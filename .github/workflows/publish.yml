@@ -327,6 +327,21 @@ jobs:
         with:
           name: dist
           path: dist/
+      - name: Re-fetch annotated tag (work around actions/checkout overwrite)
+        # actions/checkout@v4 with ``fetch-tags: true`` (set above)
+        # does an initial ``+refs/tags/*:refs/tags/*`` fetch that gets
+        # the annotated tag object, but its SECOND fetch
+        # ``+<commit-sha>:refs/tags/<tag>`` (passed ``--no-tags``)
+        # overwrites the tag ref to point DIRECTLY at the commit,
+        # replacing the annotated form with a lightweight one. After
+        # that overwrite, ``git tag -l --format='%(contents)'`` falls
+        # through to the commit's message instead of the annotation.
+        # Surfaced at the v1.0.1 cut: the release body shipped as
+        # the commit message even with fetch-tags: true. The explicit
+        # re-fetch below restores the annotated tag object that
+        # actions/checkout's second fetch dropped.
+        run: |
+          git fetch origin --force "+refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
       - name: Extract release notes from annotated tag
         id: notes
         run: |

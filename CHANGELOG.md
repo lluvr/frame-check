@@ -6,6 +6,32 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### publish.yml: re-fetch annotated tag after actions/checkout overwrites it
+
+`actions/checkout@v4` with `fetch-tags: true` does TWO fetches: the
+first (`+refs/tags/*:refs/tags/*`) gets the annotated tag object;
+the second (`--no-tags ... +<commit-sha>:refs/tags/<tag>`)
+OVERWRITES the tag ref to point directly at the commit, replacing
+the annotated form with a lightweight one. After that overwrite,
+`git tag -l --format='%(contents)'` falls through to the commit's
+message instead of the annotation.
+
+Surfaced at the v1.0.1 cut even with the v1.0.0 fetch-tags fix
+applied: the release body still shipped as the commit message.
+Recovery for v1.0.1 was a one-shot `gh release edit --notes`. The
+real fix in `publish.yml` is a new step before the extract that
+explicitly re-fetches the tag, restoring the annotated object that
+checkout's second fetch dropped:
+
+```yaml
+- name: Re-fetch annotated tag (work around actions/checkout overwrite)
+  run: |
+    git fetch origin --force "+refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+```
+
+Verified locally by replaying the actions/checkout double-fetch
+sequence and confirming the re-fetch step restores the annotation.
+
 ## [1.0.1] - 2026-05-11
 
 ### Per-module 80% coverage on the wheel surface (v1.0 contract closed)
