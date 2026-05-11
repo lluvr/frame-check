@@ -17,7 +17,7 @@
 #      Pre-release tags (vX.Y.Zrc1, vX.Y.Z.dev0, vX.Y.ZaN, vX.Y.ZbN)
 #      go to TestPyPI; final tags go to PyPI.
 #   5. Create a GitHub release whose body is the annotated tag message
-#      (= the v0.9.x CHANGELOG section by convention) with the wheel +
+#      (= the matching CHANGELOG section by convention) with the wheel +
 #      sdist attached. Sigstore attestations attached for provenance.
 #
 # Trusted Publishing setup (manual, one-time at pypi.org):
