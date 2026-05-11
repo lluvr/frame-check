@@ -122,6 +122,18 @@ def test_worked_example_fixture_matches_live_payload(fixture_path):
         "analysis.coverage.missing",
         "analysis.coverage.addressed_count",
         "analysis.coverage.total_categories",
+        # Coverage v2 (forward contract per ROADMAP v2.0 entry).
+        # contract_version + per-dimension status are the load-bearing
+        # adopter fields; markers_matched count + density are the
+        # quantitative fields. Pinning these here ensures v2 cannot
+        # silently drift before the v2.0 cut promotes it to sole
+        # coverage block.
+        "analysis.coverage_v2.contract_version",
+        "analysis.coverage_v2.dimensions.causes.status",
+        "analysis.coverage_v2.dimensions.risks.status",
+        "analysis.coverage_v2.dimensions.stakeholders.status",
+        "analysis.coverage_v2.dimensions.trends.status",
+        "analysis.coverage_v2.dimensions.uncertainty.status",
         # Temporal
         "analysis.temporal.dominant",
         # Epistemic
