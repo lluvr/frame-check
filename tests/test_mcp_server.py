@@ -1167,6 +1167,70 @@ def test_absent_frames_carry_library_resource_uri():
     print("  PASS\n")
 
 
+def test_typical_co_fires_carry_library_resource_uri():
+    """Every typical_co_fires / typical_co_absences entry under
+    corpus_context (whether on frame_library_matches[*] or
+    divergence.absent_frames[*]) must carry library_resource_uri
+    matching frame-check://library/<fvs_id>, in addition to the
+    pre-1.0 citation_uri field that carries the same value.
+
+    Same defect class as the v1.0.10 fix on absent_frames[*]
+    itself: an MCP-integrated agent that learned the
+    decision_readiness.dimensions[*].library_entries[*] shape
+    (which emits library_resource_uri) and looked for the field
+    on co_fires / co_absences per analogy got nothing — those
+    blocks emitted only citation_uri. Surfaced 2026-05-11 by a
+    fresh-eyes schema-coherence audit on the v1.0.10 baseline.
+
+    v1.0.11 adds the alias to both blocks at the corpus_intelligence
+    emit site. Schema-additive; pre-1.0.11 integrations using
+    citation_uri keep working.
+    """
+    print("=== typical_co_fires/absences carry library_resource_uri ===")
+    baseline = len(_FAILURES)
+    payload = mcp_server.build_epistemic_payload(
+        "The Committee notes risks. Stakeholders monitor data.",
+        include_divergence=True,
+    )
+    records = []
+    for fmm in payload["analysis"].get("frame_library_matches", []):
+        cc = fmm.get("corpus_context") or {}
+        records.extend(cc.get("typical_co_fires", []) or [])
+        records.extend(cc.get("typical_co_absences", []) or [])
+    for af in payload.get("divergence", {}).get("absent_frames", []):
+        cc = af.get("corpus_context") or {}
+        records.extend(cc.get("typical_co_fires", []) or [])
+        records.extend(cc.get("typical_co_absences", []) or [])
+    check(
+        len(records) > 0,
+        f"test pre-condition: at least one typical_co_* record must "
+        f"be present for a generic doc with corpus context; got "
+        f"{len(records)} records",
+    )
+    for rec in records:
+        fid = rec.get("fvs_id")
+        check(
+            "library_resource_uri" in rec,
+            f"typical_co_* record for {fid!r} missing library_resource_uri "
+            f"(added v1.0.11)",
+        )
+        expected = f"frame-check://library/{fid}"
+        check(
+            rec.get("library_resource_uri") == expected,
+            f"typical_co_* record for {fid!r}: library_resource_uri must "
+            f"be {expected!r}; got {rec.get('library_resource_uri')!r}",
+        )
+        check(
+            rec.get("library_resource_uri") == rec.get("citation_uri"),
+            f"typical_co_* record for {fid!r}: library_resource_uri and "
+            f"citation_uri must carry the same value; got "
+            f"library_resource_uri={rec.get('library_resource_uri')!r}, "
+            f"citation_uri={rec.get('citation_uri')!r}",
+        )
+    _assert_no_new_failures(baseline, "test_typical_co_fires_carry_library_resource_uri")
+    print("  PASS\n")
+
+
 def test_provenance_carries_production_status():
     """Provenance carries a production_status field that names whether
     the canonical production hosting at frame.clarethium.com is
