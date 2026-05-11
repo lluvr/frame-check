@@ -6,6 +6,61 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.11] - 2026-05-11
+
+### Schema alignment: `library_resource_uri` on `corpus_context.typical_co_fires` / `typical_co_absences`
+
+Same defect class as the v1.0.10 fix on `divergence.absent_frames[*]`,
+discovered at a different emit site by a fresh-eyes schema-coherence
+audit on the v1.0.10 baseline. The `corpus_context.typical_co_fires`
+and `corpus_context.typical_co_absences` records (under both
+`frame_library_matches[*]` and `divergence.absent_frames[*]`) carried
+only `citation_uri` for the MCP resource URI; not the
+`library_resource_uri` field that the parallel
+`decision_readiness.dimensions[*].library_entries[*]` block emits.
+An MCP-integrated agent that learned the decision_readiness shape
+and looked for `library_resource_uri` on co_fires per analogy got
+nothing.
+
+This release adds `library_resource_uri` to both blocks at the
+`corpus_intelligence.py:438,447` emit site. Both fields carry
+identical `frame-check://library/<fvs_id>` values; pre-1.0.11
+integrations using `citation_uri` keep working. Schema-additive
+only.
+
+Pinned by
+`tests/test_mcp_server.py::test_typical_co_fires_carry_library_resource_uri`:
+asserts the field exists on every typical_co_* record, matches
+expected URI shape, and equals citation_uri.
+
+Snapshot refresh on the bundled Grok-NVIDIA worked example so the
+worked-example regression test continues to pass against the new
+wire shape.
+
+### Deferred from this round (with rationale)
+
+The fresh-eyes audit also surfaced wider field-name divergence
+across blocks: `name` vs `title` vs `frame_title` for the human-
+readable label; `library_url` vs `public_url` for the GitHub URL;
+`fvs_id` vs `frame_id` for the identifier. Aliasing was NOT
+applied across the board:
+
+- `library_url` ↔ `public_url`: byte-identical values in current
+  data. Safe to alias mechanically. Deferred pending a deliberate
+  schema decision (additive aliases are forever; the choice
+  shouldn't be rushed).
+- `fvs_id` ↔ `frame_id`: same value. Safe to alias.
+- `name` ↔ `title`: NOT semantically equivalent.
+  `frame_library_matches[*].name` carries an absence-qualifier
+  suffix (e.g., `'Failure Framing (absent)'`) when the frame
+  detects as absence-pattern; `title` is canonical without
+  qualifier. Naive aliasing would conflate distinct content.
+
+These three non-fixed items are tracked as schema-coherence
+backlog; v1.0.11 closes only the `library_resource_uri` instance
+because that fix matches the v1.0.10 pattern exactly with no
+semantic risk.
+
 ## [1.0.10] - 2026-05-11
 
 ### Schema alignment: `library_resource_uri` on `divergence.absent_frames`

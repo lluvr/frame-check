@@ -435,11 +435,23 @@ def get_frame_corpus_context(
         "fires_in_count": fires,
         "fires_in_total": n,
         "fires_in_by_genre": by_genre_with_totals,
+        # typical_co_fires / typical_co_absences entries carry both
+        # citation_uri (original name on this block since pre-1.0) AND
+        # library_resource_uri (alias added v1.0.11 to match the
+        # decision_readiness.dimensions[*].library_entries[*] +
+        # divergence.absent_frames[*] convention applied at v1.0.10).
+        # Same conceptual MCP resource URI; both fields hold identical
+        # frame-check://library/<fvs_id> values. An MCP-integrated
+        # agent that learned the decision_readiness shape can now
+        # access library_resource_uri uniformly across the payload.
         "typical_co_fires": [
             {
                 "fvs_id": entry["fvs_id"],
                 "count": entry["count"],
                 "citation_uri": f"frame-check://library/{entry['fvs_id']}",
+                "library_resource_uri": (
+                    f"frame-check://library/{entry['fvs_id']}"
+                ),
                 "library_url": _library_entry_ref(entry["fvs_id"]).get("public_url"),
             }
             for entry in frame_stats["typical_co_fires"]
@@ -449,6 +461,9 @@ def get_frame_corpus_context(
                 "fvs_id": entry["fvs_id"],
                 "count": entry["count"],
                 "citation_uri": f"frame-check://library/{entry['fvs_id']}",
+                "library_resource_uri": (
+                    f"frame-check://library/{entry['fvs_id']}"
+                ),
                 "library_url": _library_entry_ref(entry["fvs_id"]).get("public_url"),
             }
             for entry in frame_stats["typical_co_absences"]
