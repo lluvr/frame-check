@@ -1277,6 +1277,20 @@ def _build_divergence_block(
             "claim_level": _CLAIM_LEVEL_DETECTOR,
             "affects_dimensions": affects_dims,
             "citation_uri": f"{RESOURCE_SCHEME}://library/{fvs_id}",
+            # library_resource_uri: alias for citation_uri added at
+            # v1.0.10 to match the schema convention used by
+            # decision_readiness.dimensions[*].library_entries[*]
+            # (which emits {fvs_id, library_resource_uri, public_url}).
+            # Surfaced 2026-05-11 by an actual Phase-2 client run:
+            # the operator's MCP integration looked for
+            # library_resource_uri on absent_frames (per the
+            # decision_readiness convention) and got None, because
+            # absent_frames used citation_uri instead. Both fields
+            # carry identical values; pre-v1.0.10 integrations using
+            # citation_uri remain valid. Schema-additive only.
+            "library_resource_uri": (
+                f"{RESOURCE_SCHEME}://library/{fvs_id}"
+            ),
             # GitHub URL pointing at the entry's markdown source on
             # the public repository (Clarethium/frame-check). End-users
             # in MCP clients (Claude Desktop, Cursor) cannot click

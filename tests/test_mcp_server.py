@@ -1107,6 +1107,66 @@ def test_source_fidelity_carries_per_claim_unsourced_items():
     print("  PASS\n")
 
 
+def test_absent_frames_carry_library_resource_uri():
+    """divergence.absent_frames records must carry library_resource_uri
+    matching frame-check://library/<frame_id>, in addition to the
+    existing citation_uri field that carries the same value.
+
+    The two fields are intentional aliases. citation_uri is the
+    original name on absent_frames; library_resource_uri matches the
+    naming convention used by
+    ``decision_readiness.dimensions[*].library_entries[*]`` (which
+    emits ``{fvs_id, library_resource_uri, public_url}``). An MCP-
+    integrated agent that learned the decision_readiness shape and
+    looks for ``library_resource_uri`` on absent_frames per analogy
+    must find the field there.
+
+    Surfaced 2026-05-11 by an operator Phase-2 client run: the
+    integration looked for library_resource_uri on absent_frames and
+    got None / absent because absent_frames used citation_uri only.
+    v1.0.10 adds the alias.
+
+    Pins both the field's presence and its value-shape so a future
+    composer change that drops it fails this test.
+    """
+    print("=== absent_frames carry library_resource_uri ===")
+    baseline = len(_FAILURES)
+    payload = mcp_server.build_epistemic_payload(
+        "The Committee notes risks. Stakeholders monitor data.",
+        include_divergence=True,
+    )
+    absent_frames = payload.get("divergence", {}).get("absent_frames", [])
+    check(
+        len(absent_frames) > 0,
+        "test pre-condition: at least one absent frame must be present "
+        f"for a generic short doc; got {len(absent_frames)}",
+    )
+    for af in absent_frames:
+        check(
+            "library_resource_uri" in af,
+            f"absent_frame {af.get('frame_id', '?')!r} missing "
+            f"library_resource_uri field (added v1.0.10)",
+        )
+        fid = af.get("frame_id")
+        expected = f"frame-check://library/{fid}"
+        check(
+            af.get("library_resource_uri") == expected,
+            f"absent_frame {fid!r} library_resource_uri must be "
+            f"{expected!r}; got {af.get('library_resource_uri')!r}",
+        )
+        # citation_uri must still be set and equal to library_resource_uri
+        # (aliases of each other).
+        check(
+            af.get("citation_uri") == af.get("library_resource_uri"),
+            f"absent_frame {fid!r}: citation_uri and library_resource_uri "
+            f"must carry the same value; got "
+            f"citation_uri={af.get('citation_uri')!r}, "
+            f"library_resource_uri={af.get('library_resource_uri')!r}",
+        )
+    _assert_no_new_failures(baseline, "test_absent_frames_carry_library_resource_uri")
+    print("  PASS\n")
+
+
 def test_provenance_carries_production_status():
     """Provenance carries a production_status field that names whether
     the canonical production hosting at frame.clarethium.com is

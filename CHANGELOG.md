@@ -6,6 +6,46 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.10] - 2026-05-11
+
+### Schema alignment: `library_resource_uri` on `divergence.absent_frames`
+
+Operator Phase-2 client validation surfaced an MCP schema
+inconsistency. `decision_readiness.dimensions[*].library_entries[*]`
+emits frame references with the shape
+`{fvs_id, library_resource_uri, public_url}` (see
+`decision_readiness.py:167-174`). `divergence.absent_frames[*]`
+emitted the parallel concept under different field names:
+`{frame_id, citation_uri, library_url}`. An MCP-integrated agent
+that learned the decision_readiness shape and looked for
+`library_resource_uri` on absent_frames per analogy got None.
+
+The cross-block inconsistency was load-bearing in practice: the
+v1.0.9 Phase-2 protocol document (`Test 2 — Frame Divergence`)
+asked Claude Desktop to cite absent frames by `library_resource_uri`
+per the decision_readiness convention; the operator's client run
+found the field absent on absent_frames and surfaced this
+correctly.
+
+This release adds `library_resource_uri` to `absent_frames`
+records as an alias for `citation_uri`. Both fields carry
+identical values
+(`frame-check://library/<frame_id>`); pre-v1.0.10 integrations
+using `citation_uri` remain valid. Schema-additive only — no
+fields renamed or removed.
+
+Pinned by
+`tests/test_mcp_server.py::test_absent_frames_carry_library_resource_uri`:
+asserts the field exists on every absent_frame, matches the
+expected URI shape, and equals the existing `citation_uri`. A
+future composer change that drops the alias fails the test.
+
+The parallel `frame_id` ↔ `fvs_id` and `library_url` ↔ `public_url`
+field-name pairs remain divergent across blocks; promoting either
+of those to alias-pair status is a separate decision (the
+`frame_id` rename in particular would touch more integrations
+and is deferred pending adopter feedback).
+
 ## [1.0.9] - 2026-05-11
 
 ### Source-fidelity diagnostics: per-claim `unsourced_items`
