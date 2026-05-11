@@ -6,6 +6,44 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.8] - 2026-05-11
+
+### Same-class fix: `git_sha=unknown` in version banner
+
+The v1.0.7 cut closed three manifest-block fields with broken
+`__file__`-relative data lookups (pipeline_version,
+frame_library_version, sn_corpus). Phase-1 e2e against the live
+v1.0.7 wheel surfaced a fourth field with the same root cause:
+`mcp_server.py:_install_version_info` has its own SHA detection
+chain (separate from `version.py:_detect_pipeline_version`) that
+also reads `pipeline_version.txt` from `_SCRIPT_DIR` only — so
+`frame-check-mcp --version` reports `git_sha=unknown` on every
+fresh-venv install, even though the manifest field now reports
+the correct SHA.
+
+Cosmetically minor (the wire-format manifest carries the correct
+SHA), but adopter-facing: the version banner is the first thing
+an adopter runs after install, and seeing `git_sha=unknown`
+undermines confidence in the install. Same dual-path fix as
+v1.0.7: probe both `_SCRIPT_DIR/pipeline_version.txt` and
+`_SCRIPT_DIR/framecheck_mcp/pipeline_version.txt`.
+
+CI hardening: the publish.yml smoke step now captures the
+`frame-check-mcp --version` output and fails if it contains
+`git_sha=unknown`. Closes the bug class on the version-banner
+surface alongside the manifest-field assertions added at v1.0.7.
+
+Note on duplication: `mcp_server.py` and `version.py` carry
+parallel SHA-detection chains by design — `mcp_server.py` runs
+git-rev-parse first (so dev always sees the current commit, not
+the last baked SHA), while `version.py:PIPELINE_VERSION` checks
+env var → baked file → git in that order (so production reads
+the build-time SHA before falling back to git, since `_SCRIPT_DIR`
+in a wheel install has no .git directory). Consolidating into
+one helper would invert the dev-mode precedence and risk a
+silent staleness regression. Two parallel fixes is the right
+shape.
+
 ## [1.0.7] - 2026-05-11
 
 ### Production manifest self-reporting was broken in three fields
