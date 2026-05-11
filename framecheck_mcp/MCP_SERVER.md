@@ -83,9 +83,11 @@ aggregate harness last ran against.
 
 ## Exercised contracts
 
-The payload contract is pinned by `test_mcp_server.py` (and, for the
-canon-graph resource chain, `test_canon_graph_consistency.py`). Every
-change below counts as a breaking change and requires a test update:
+The payload contract is pinned by `tests/test_mcp_server.py` (and,
+for the canon-graph resource chain, by
+`tests/test_frame_library_index.py` plus the canon-graph assertions
+in `tests/test_decision_readiness.py`). Every change below counts as
+a breaking change and requires a test update:
 
 - Three top-level sections (`analysis`, `agent_guidance`, `provenance`)
 - `analysis_cost_usd == 0.0` (no LLM in the deterministic layer)
@@ -1375,10 +1377,18 @@ verification in documents. https://github.com/Clarethium/frame-check
 ## Tests
 
 ```bash
-python3 test_mcp_server.py
+python3 -m pytest tests/test_mcp_server.py
 ```
 
 Covers the three layers: epistemic-payload builder, JSON-RPC dispatcher,
 and end-to-end subprocess roundtrip. The subprocess test spawns the
 server exactly the way Claude Desktop does, so a green run is a
 reasonably strong install-safety signal.
+
+For the full suite (882 tests across 25 files including the
+adversarial harness, conformance driver, cookbook recipes, and
+per-module 80% coverage gate on the seven-module wheel surface):
+
+```bash
+python3 -m pytest -q
+```
