@@ -124,16 +124,21 @@ v2.0 cut is a contract execution, not a discovery exercise.
 
 ### Remove `framecheck_version` from manifest payload
 
-The MCP manifest payload currently emits both
-`provenance.frame_check_version` (canonical, matching
+The MCP manifest block currently emits both
+`manifest.frame_check_version` (canonical, matching
 `version.py:FRAME_CHECK_VERSION`) and
-`provenance.framecheck_version` (legacy, deprecated since
+`manifest.framecheck_version` (legacy, deprecated since
 v1.0.1). Both carry the same value; the additive emission is
 a deprecation grace period for adopters whose integrations
 still read the v0.9.x typo'd field name. At v2.0, the legacy
 key is dropped and only `frame_check_version` remains. Code
-sites: `manifest.py:447,635` (emit), `CHANGELOG.md [1.0.1]`
+sites: `manifest.py:447,636` (emit), `CHANGELOG.md [1.0.1]`
 section (rationale).
+
+Note that the `provenance` block carries only
+`provenance.frame_check_version` (canonical) and never
+emitted the legacy key — the deprecation pair lives in the
+`manifest` block alone.
 
 ## Past 1.x (open questions)
 

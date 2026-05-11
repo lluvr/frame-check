@@ -6,6 +6,70 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.7] - 2026-05-11
+
+### Production manifest self-reporting was broken in three fields
+
+A fresh-venv install + neutral-cwd smoke (the discipline the v1.0.6
+publish step did not exercise) surfaced three manifest fields the
+production wheel had been emitting wrong since v1.0.0:
+
+  - `manifest.pipeline_version`: 'unknown' (expected: short git SHA
+    of the commit that built the wheel)
+  - `manifest.frame_library_version`: '0.0.0' (expected: the
+    library version pinned in `data/frame_library/VERSION`)
+  - `manifest.sn_corpus.version`: 'unknown', `size`: 0, `seeded_at`:
+    'unknown' (expected: values from
+    `calibration/source_network_corpus.yaml`)
+
+Same root cause for all three: the loader functions in `version.py`
+and `manifest.py` resolve data files via
+`Path(__file__).resolve().parent / "..."`. In the source tree the
+data lives next to the modules at the repo root, so the lookup
+works in dev. The wheel layout is different: the modules install
+as top-level py-modules at `/site-packages/`, while
+`pyproject [tool.setuptools.package-data]` bundles the data inside
+`/site-packages/framecheck_mcp/`. The single-path `__file__`-
+relative lookup misses the framecheck_mcp/ subpackage every time.
+
+`mcp_server.py:_DATA_ROOT` and `frame_library_index.py:_DATA_ROOT`
+already had a dual-path probe for exactly this reason
+(documented in the comment headers). `version.py` and `manifest.py`
+were never updated to follow the same pattern, so adopters'
+manifests have been quietly missing self-reporting since v1.0.0.
+
+Fix is mechanical:
+
+  - `version.py:_detect_pipeline_version()`: probe both
+    `pipeline_version.txt` next to version.py AND inside
+    `framecheck_mcp/`.
+  - `manifest.py:_frame_library_version()`: probe both
+    `data/frame_library/VERSION` next to manifest.py AND inside
+    `framecheck_mcp/data/frame_library/`.
+  - `manifest.py:_calibration_corpus()`: probe both
+    `calibration/source_network_corpus.yaml` locations.
+  - `pyproject.toml [tool.setuptools.package-data]`: add
+    `calibration/source_network_corpus.yaml` to the framecheck_mcp
+    package-data list (was unbundled entirely, so even with the
+    lookup fix the file would not have been findable in the
+    wheel).
+
+CI hardening: the `publish.yml` `Smoke-test installed wheel` step
+now `cd /tmp` before importing (previously it ran from the
+checkout directory, which shadowed the installed wheel with the
+source tree and let the bug class hide), and asserts the three
+manifest fields are non-default. A regression of the same
+__file__-relative lookup shape now fails CI loudly at publish
+time instead of shipping silently. Verified end-to-end locally
+before the v1.0.7 cut: build + install in fresh venv + run from
+neutral cwd; all three fields populated.
+
+Wire format unchanged at the field-name level (the same fields
+that existed before now carry correct values instead of
+fallbacks). Adopters who depended on the fallback values
+specifically will see a one-time change at v1.0.7 install; this
+is the intent.
+
 ## [1.0.6] - 2026-05-11
 
 ### publish.yml: post-publish gate jq invocation fix

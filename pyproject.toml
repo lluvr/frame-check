@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "frame-check-mcp"
-version = "1.0.6"
+version = "1.0.7"
 description = "Frame Check MCP server: deterministic structural framing analysis for AI-generated documents, with default-on frame-divergence block per FRAME_DIVERGENCE_CONTRACT_v1 c1.0. MCP surface delegates V4.2 judgment to the caller's agent model; zero Frame Check LLM cost per query."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -103,6 +103,11 @@ framecheck_mcp = [
     "data/transmissions/**/*",
     "MCP_SERVER.md",
     "FRAME_DIVERGENCE_CONTRACT_v1.md",
+    # source_network_corpus.yaml is the calibration-corpus reference
+    # the manifest's sn_corpus block reads. Without it bundled,
+    # production manifests report sn_corpus.version 'unknown' /
+    # size 0 (surfaced at v1.0.7 cut).
+    "calibration/source_network_corpus.yaml",
     "calibration/results/**/*",
     "validation/decision_readiness/results/**/*",
     "validation/decision_readiness/corpus/**/*",

@@ -94,12 +94,27 @@ def _detect_pipeline_version() -> str:
         return env
 
     here = Path(__file__).resolve().parent
-    baked = here / "pipeline_version.txt"
-    if baked.is_file():
-        with contextlib.suppress(OSError):
-            text = baked.read_text(encoding="utf-8").strip()
-            if text:
-                return text
+    # Probe both candidate locations for the baked SHA. Source-tree
+    # layout: pipeline_version.txt sits next to version.py at the
+    # repo root (publish.yml's "Bake git SHA" step writes it there).
+    # Wheel layout: pyproject [tool.setuptools.package-data]
+    # bundles pipeline_version.txt INSIDE framecheck_mcp/, while
+    # version.py installs as a top-level py-module. Without the
+    # second candidate the production wheel always reported
+    # `pipeline_version: 'unknown'` (surfaced 2026-05-11 by an
+    # actual fresh-venv smoke against frame-check-mcp==1.0.6).
+    # Mirrors the dual-path probe in mcp_server.py _DATA_ROOT and
+    # frame_library_index.py _DATA_ROOT.
+    candidates = [
+        here / "pipeline_version.txt",
+        here / "framecheck_mcp" / "pipeline_version.txt",
+    ]
+    for baked in candidates:
+        if baked.is_file():
+            with contextlib.suppress(OSError):
+                text = baked.read_text(encoding="utf-8").strip()
+                if text:
+                    return text
     # Last resort: ask git directly. Works in dev where .git is present
     # and the git binary is installed. Times out fast so a missing or
     # broken git installation cannot delay startup noticeably.

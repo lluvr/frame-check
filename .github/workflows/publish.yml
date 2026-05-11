@@ -170,10 +170,19 @@ jobs:
           "
 
       - name: Smoke-test installed wheel
+        # Runs from /tmp (not the workflow checkout cwd) so import
+        # resolution goes to site-packages, not the source tree.
+        # Without the cd, sys.path[0]='' resolves to the checkout dir
+        # and shadows the installed wheel — which is how three
+        # broken manifest fields (pipeline_version, frame_library_
+        # version, sn_corpus) shipped silently up to v1.0.6 (the
+        # smoke step ran from the source tree, where __file__-
+        # relative data lookups happened to work).
         run: |
           python -m venv /tmp/fc_smoke
           /tmp/fc_smoke/bin/pip install --quiet dist/*.whl
           /tmp/fc_smoke/bin/frame-check-mcp --version
+          cd /tmp
           /tmp/fc_smoke/bin/python -c "
           from mcp_server import build_epistemic_payload
           p = build_epistemic_payload(
@@ -183,7 +192,33 @@ jobs:
           assert p['provenance']['analysis_cost_usd'] == 0.0
           assert p['divergence']['envelope']['catalog_version'] == 'library_v3'
           assert len(p['divergence']['absent_frames']) > 0
-          print('Smoke test passed.')
+
+          # v1.0.7 hardening: assert the manifest's self-reporting
+          # fields are populated. The pre-fix wheel returned
+          # 'unknown'/0/0.0.0 for these because __file__-relative
+          # data lookups in version.py and manifest.py missed the
+          # framecheck_mcp/ subpackage layout in site-packages.
+          # Failing CI on regression catches the entire bug class.
+          m = p['manifest']
+          assert m['pipeline_version'] != 'unknown', (
+              'manifest.pipeline_version is unknown — pipeline_version.txt '
+              'lookup is broken in the wheel layout (regression of v1.0.7 fix)'
+          )
+          assert m['frame_library_version'] != '0.0.0', (
+              'manifest.frame_library_version is 0.0.0 — '
+              'data/frame_library/VERSION lookup is broken in the wheel '
+              'layout (regression of v1.0.7 fix)'
+          )
+          assert m['sn_corpus']['version'] != 'unknown', (
+              'manifest.sn_corpus.version is unknown — '
+              'calibration/source_network_corpus.yaml is missing from the '
+              'wheel or its lookup is broken (regression of v1.0.7 fix)'
+          )
+          assert m['sn_corpus']['size'] > 0, (
+              'manifest.sn_corpus.size is 0 — same root cause as '
+              'sn_corpus.version unknown'
+          )
+          print('Smoke test passed (manifest self-reporting populated).')
           "
 
       - name: Conformance driver against wheel

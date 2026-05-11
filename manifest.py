@@ -70,11 +70,27 @@ def _frame_library_version() -> str:
     missing rather than raising; an absent marker should surface as
     visible "0.0.0" in the manifest, not a 500 on /check.
     """
-    try:
-        p = Path(__file__).resolve().parent / "data" / "frame_library" / "VERSION"
-        return p.read_text(encoding="utf-8").strip() if p.is_file() else "0.0.0"
-    except OSError:
-        return "0.0.0"
+    here = Path(__file__).resolve().parent
+    # Probe both candidate locations. Source-tree: data/ at the repo
+    # root next to manifest.py. Wheel: data/ ships inside
+    # framecheck_mcp/ per pyproject [tool.setuptools.package-data]
+    # while manifest.py installs as a top-level py-module. Without
+    # the second candidate the production wheel always reported
+    # `frame_library_version: '0.0.0'` (surfaced 2026-05-11 by a
+    # fresh-venv smoke against frame-check-mcp==1.0.6). Mirrors
+    # mcp_server.py _DATA_ROOT and frame_library_index.py
+    # _DATA_ROOT dual-path resolution.
+    candidates = [
+        here / "data" / "frame_library" / "VERSION",
+        here / "framecheck_mcp" / "data" / "frame_library" / "VERSION",
+    ]
+    for p in candidates:
+        try:
+            if p.is_file():
+                return p.read_text(encoding="utf-8").strip()
+        except OSError:
+            continue
+    return "0.0.0"
 
 
 # Calibration corpus reference for the manifest's sn_corpus block.
@@ -115,16 +131,28 @@ def _load_calibration_corpus_meta() -> dict:
         "seeded_at": "unknown",
         "url": _CALIBRATION_URL,
     }
-    try:
-        p = (
-            Path(__file__).resolve().parent
-            / "calibration"
-            / "source_network_corpus.yaml"
-        )
-        if not p.is_file():
-            return fallback
-        text = p.read_text(encoding="utf-8")
-    except OSError:
+    here = Path(__file__).resolve().parent
+    # Same dual-path probe as _frame_library_version + version.py.
+    # Wheel installs the YAML inside framecheck_mcp/ (added to
+    # pyproject package-data alongside this fix); source tree has
+    # it at the repo root next to manifest.py. Without the second
+    # candidate the production wheel reported sn_corpus.version
+    # 'unknown' / size 0 / seeded_at 'unknown' on every install
+    # (surfaced 2026-05-11 by a fresh-venv smoke against
+    # frame-check-mcp==1.0.6).
+    candidates = [
+        here / "calibration" / "source_network_corpus.yaml",
+        here / "framecheck_mcp" / "calibration" / "source_network_corpus.yaml",
+    ]
+    text = None
+    for p in candidates:
+        try:
+            if p.is_file():
+                text = p.read_text(encoding="utf-8")
+                break
+        except OSError:
+            continue
+    if text is None:
         return fallback
 
     # Top-level scalar parse without a yaml dependency: scan for
