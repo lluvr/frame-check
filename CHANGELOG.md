@@ -6,6 +6,57 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### Per-module 80% coverage on the wheel surface (v1.0 contract closed)
+
+The v1.0 ROADMAP committed each of the seven wheel-surface modules
+to 80% production-code coverage; v1.0.0 deferred this because four
+modules were below target. The deferral closes in this cycle:
+
+| Module                  | At v1.0.0 | Now    |
+|-------------------------|-----------|--------|
+| `comparison`            |  20.9%    | 86.5%  |
+| `clarethium_measure`    |  62.6%    | 84.4%  |
+| `framing`               |  69.5%    | 82.6%  |
+| `mcp_server`            |  69.4%    | 81.5%  |
+| `mcp_resources`         |  90.3%    | 90.3%  |
+| `mcp_compose`           |  94.9%    | 94.9%  |
+| `mcp_schema`            | 100.0%    | 100.0% |
+
+Three new test files land alongside the close-out:
+
+- `tests/test_comparison.py` (124 tests): pure-function core +
+  provider-mock harness for `generate_gemini`, `generate_grok`,
+  `generate_responses`, `generate_stability_check`,
+  `stability_n3_check`. The harness seeds `sys.modules` with a
+  stub `google.genai` and patches `llm_client.xai_openai_client`
+  so the LLM-network entry points exercise without touching any
+  external service.
+- `tests/test_framing_synthesis.py` (20 tests): targets
+  `framing_summary`, `framing_portrait_natural`, and
+  `framing_headline` (the synthesis layer the prior surface only
+  ran indirectly through the MCP composer).
+- `tests/test_mcp_server_cli.py` (29 tests): targets `cli()`
+  argv dispatch, `_cli_help`, `_cli_version`,
+  `_install_version_info` (including three fallback-path tests),
+  the `main()` JSON-RPC stdio loop driven by `io.StringIO`
+  patching, the `__getattr__` proxy to `mcp_resources` cache
+  state, and the `dispatch()` unhandled-exception branch.
+- `tests/test_clarethium_measure_top_level.py` (42 tests):
+  `measure()` orchestrator, the layer-function leaves
+  (`source_matching`, `entity_provenance`, `vocabulary_proximity`,
+  `epistemic_calibration`, `information_novelty`,
+  `quality_profile`, `grounding_decomposition`,
+  `temporal_consistency`), helper functions, `print_profile`,
+  and the `main()` argparse CLI entry.
+
+`scripts/check_per_module_coverage.py` enforces the per-module
+floor in CI: it loads the .coverage file produced by
+`pytest --cov` and exits non-zero if any of the seven modules
+falls below 80%. The new `Per-module 80% floor (v1.0 wheel-
+surface contract)` step in `tests.yml` runs this script as
+strict-blocking on the 3.12 matrix row. Total tests in the
+suite: 666 -> 882 (+216).
+
 ### Manifest payload: `frame_check_version` is the canonical field name
 
 The `frame_check` and `frame_compare` MCP tool responses include an
