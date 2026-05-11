@@ -152,10 +152,13 @@ jobs:
                comparison.py clarethium_measure.py
 
   pytest-smoke:
-    # Secondary job: direct pytest invocation. Some suites
-    # (test_circuit_breaker.py, test_phase1_load.py, test_construct_honesty_voice.py)
-    # are idiomatic pytest and run cleanly under direct invocation.
-    # Keeps the two invocation paths both verified.
+    # Secondary job: direct pytest invocation against the suites
+    # listed in the test step below. The primary `tests` job above
+    # runs them via run_tests.py (the standalone-script pattern most
+    # of this repo's tests follow); pytest-smoke covers the same
+    # suites under direct pytest. Keeps both invocation paths
+    # verified so a future migration to pure-pytest does not surface
+    # at release time.
     runs-on: ubuntu-latest
     timeout-minutes: 10
 

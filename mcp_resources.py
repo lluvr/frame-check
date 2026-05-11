@@ -328,7 +328,7 @@ def _spec_fd_v1_index_markdown() -> str:
          "re-validation landing")),
         (4, "Self-red-team and competitive map",
          ("failure scenarios paired with minimum-surviving "
-         "artifacts; adjacent-category positioning")),
+         "artifacts; boundary against adjacent categories")),
     ]
     for num, title, blurb in part_descriptions:
         if num in present:

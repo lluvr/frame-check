@@ -2743,7 +2743,8 @@ def build_epistemic_payload(
     # five-dimension profile. Lead use case per the methodology page
     # is AI-response audit at the moment of conversation, which is
     # the MCP path; the profile MUST be reachable from MCP responses
-    # for that positioning to be implemented, not just documented.
+    # for that capability to be available to adopters, not only
+    # described in the methodology page.
     #
     # Synthetic source_network when source_text was supplied: the
     # MCP context uses Layer 4 source_fidelity (digit-substring
