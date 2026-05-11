@@ -34,35 +34,32 @@ The current PyPI line is `1.0.x`. The next stable target is `1.x`
 See `CHANGELOG.md` `[1.0.0]` for the cut narrative and the
 five-defect publish-workflow audit that landed alongside.
 
+## Closed in v1.0.x
+
+### Per-module 80% coverage on the wheel surface (closed in 1.0.1)
+
+The v1.0 contract committed each of the seven wheel-surface
+modules to 80% production-code coverage; v1.0.0 deferred this
+because four modules were below target. The deferral closed in
+the v1.0.x line: provider-mock test infrastructure for
+`comparison.py` and targeted tests for `framing`, `mcp_server`,
+and `clarethium_measure` brought every module to or above the
+floor. The CI gate at `scripts/check_per_module_coverage.py`
+(invoked by `tests.yml`) is strict-blocking.
+
+| Module                  | Pre-1.0.x | Post-1.0.x |
+|-------------------------|-----------|------------|
+| `mcp_schema`            |   100.0%  |    100.0%  |
+| `mcp_compose`           |    94.9%  |     94.9%  |
+| `mcp_resources`         |    90.3%  |     90.3%  |
+| `framing`               |    69.5%  |     82.6%  |
+| `mcp_server`            |    69.4%  |     81.5%  |
+| `clarethium_measure`    |    62.6%  |     84.4%  |
+| `comparison`            |    20.9%  |     86.5%  |
+
 ## Deferred from v1.0 to v1.0.x
 
-Two v1.0 contract items are honestly deferred rather than
-silently treated as met. Both have explicit follow-up work
-sketched below; either becomes a `1.0.x` patch when its work
-lands.
-
-### Per-module 80% coverage on the wheel surface
-
-The 65% global production-code floor stays in place at v1.0.0.
-Of the seven wheel-surface modules, three are at or above the
-v1.0 target and four are below:
-
-| Module                  | Current | Target |
-|-------------------------|---------|--------|
-| `mcp_schema`            |  100.0% |   80%  |
-| `mcp_compose`           |   94.9% |   80%  |
-| `mcp_resources`         |   90.3% |   80%  |
-| `framing`               |   69.5% |   80%  |
-| `mcp_server`            |   69.4% |   80%  |
-| `clarethium_measure`    |   62.6% |   80%  |
-| `comparison`            |   20.9% |   80%  |
-
-The largest gap (`comparison.py`) needs provider-mocked tests
-for the LLM-network-dependent paths (`generate_gemini`,
-`generate_grok`, `analyze_model`) that does not exist yet.
-Building that mock infrastructure is the load-bearing piece;
-once it lands, the other three modules close their gaps with
-ordinary unit tests.
+One v1.0 contract item remains deferred to a future patch.
 
 ### Validation pre-registration first execution
 
