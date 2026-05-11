@@ -43,7 +43,6 @@ from clarethium_measure import (
     information_novelty,
     measure,
     print_profile,
-    quality_profile,
     source_matching,
     temporal_consistency,
     vocabulary_proximity,
