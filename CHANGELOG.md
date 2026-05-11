@@ -6,6 +6,32 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-05-11
+
+### CI: bump GitHub Actions to current major versions
+
+Six actions bumped via dependabot squash-merge (PR #2):
+
+- `actions/checkout` v4 → v6
+- `actions/setup-python` v5 → v6
+- `actions/attest-build-provenance` v2 → v4
+- `actions/upload-artifact` v4 → v7
+- `actions/download-artifact` v4 → v8
+- `github/codeql-action/{init,analyze}` v3 → v4
+
+The v6 versions of `actions/checkout` and `actions/setup-python`
+target Node.js 24 natively, clearing the deprecation warnings that
+appeared on every CI log under the prior versions (which were being
+forced to run on Node 24 via the `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`
+env var). The env var stays in place as defensive belt-and-suspenders;
+it's a no-op under the new versions.
+
+The new attest-build-provenance v4 + upload-artifact v7 +
+download-artifact v8 are exercised end-to-end on this tag push (the
+sigstore + artifact-handoff path); v1.0.4 is the live verification
+that the bumped versions behave the same way against the publish
+pipeline.
+
 ## [1.0.3] - 2026-05-11
 
 ### publish.yml: pass release notes via env var (not direct expression substitution)
