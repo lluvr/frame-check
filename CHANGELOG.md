@@ -36,12 +36,22 @@ on the wire when `source_text` is provided. Adopters now see:
      "context": "NVIDIA RTX now serves 100 million gamers..."}
 
 against the load-bearing demo (Grok-on-NVIDIA worked example):
-the LLM smuggled a "100 million users" figure from training data
-into a summary of a press release that disclosed no user count.
-That class of insertion is exactly what the source-fidelity
-capability exists to surface; the headline ratio is necessary
-but not sufficient — the per-claim diagnostic is the actionable
-half.
+Grok's summary contains the literal value "100 million" tied to a
+user-count claim ("RTX now serves 100 million gamers and
+creators") that the source press release does not contain. The
+literal-substring check surfaces the deviation; whether the value
+was derived, rounded, pulled from training data, or fabricated is
+downstream interpretation the tool does not claim. The source-
+fidelity capability surfaces presence-in-source, not numeric
+correctness — the construct-honesty boundary is named in the
+field's `note` string.
+
+Known limit-class on the literal-substring approach: same number
+expressed in materially different formats (e.g., `$22.1 billion`
+vs. `$22,100,000,000`) will register as `not_in_source` despite
+semantic equivalence. Documented in `docs/MCP_SERVER.md` under
+the verification block; adopters needing format-tolerant matching
+layer normalization on top.
 
 Wire-format addition only (no removed or renamed fields). The
 new field is omitted when no `source_text` is supplied (same
