@@ -167,11 +167,26 @@ def library_entry_ref(fvs_id: str) -> dict:
     public_url = (
         f"{LIBRARY_PUBLIC_URL_BASE}/{fname}" if fname else None
     )
+    # URI/URL field aliases: library_resource_uri is the canonical
+    # MCP-resource URI; citation_uri is the alias name used on
+    # divergence.absent_frames[*] and corpus_context.typical_co_*
+    # records (since pre-1.0). Both carry the same
+    # frame-check://library/<fvs_id> value. public_url is the
+    # canonical HTTPS GitHub URL on this block; library_url is the
+    # alias name used on absent_frames + frame_library_matches.
+    # Both carry the same value. The v1.0.12 normalization emits
+    # both names from this single builder so every caller propagates
+    # the full {citation_uri, library_resource_uri, library_url,
+    # public_url} quartet — adopters get one consistent shape
+    # regardless of which block they read from.
+    lib_resource_uri = f"{LIBRARY_RESOURCE_SCHEME}://library/{fvs_id}"
     return {
         "fvs_id": fvs_id,
         "title": titles.get(fvs_id) or fvs_id,
-        "library_resource_uri": f"{LIBRARY_RESOURCE_SCHEME}://library/{fvs_id}",
+        "library_resource_uri": lib_resource_uri,
+        "citation_uri": lib_resource_uri,
         "public_url": public_url,
+        "library_url": public_url,
     }
 
 

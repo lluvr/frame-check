@@ -1278,16 +1278,14 @@ def _build_divergence_block(
             "affects_dimensions": affects_dims,
             "citation_uri": f"{RESOURCE_SCHEME}://library/{fvs_id}",
             # library_resource_uri: alias for citation_uri added at
-            # v1.0.10 to match the schema convention used by
-            # decision_readiness.dimensions[*].library_entries[*]
-            # (which emits {fvs_id, library_resource_uri, public_url}).
-            # Surfaced 2026-05-11 by an actual Phase-2 client run:
-            # the operator's MCP integration looked for
-            # library_resource_uri on absent_frames (per the
-            # decision_readiness convention) and got None, because
-            # absent_frames used citation_uri instead. Both fields
-            # carry identical values; pre-v1.0.10 integrations using
-            # citation_uri remain valid. Schema-additive only.
+            # v1.0.10 to match the decision_readiness convention.
+            # Both fields carry identical values; pre-v1.0.10
+            # integrations using citation_uri remain valid. v1.0.12
+            # also adds public_url as the alias for library_url so
+            # this block emits the full canonical
+            # {citation_uri, library_resource_uri, library_url,
+            # public_url} quartet — every frame-reference shape in
+            # the payload now reads identically.
             "library_resource_uri": (
                 f"{RESOURCE_SCHEME}://library/{fvs_id}"
             ),
@@ -1298,8 +1296,14 @@ def _build_divergence_block(
             # are MCP-internal; the library_url gives them an HTTP
             # link they can follow. Always-resolvable regardless of
             # hosted-production status. None when no canonical
-            # filename is known for the ID.
+            # filename is known for the ID. public_url is the alias
+            # name used by decision_readiness library_entries; same
+            # value, added v1.0.12 for cross-block consistency.
             "library_url": (
+                _library_entry_ref(fvs_id).get("public_url")
+                if fvs_id else None
+            ),
+            "public_url": (
                 _library_entry_ref(fvs_id).get("public_url")
                 if fvs_id else None
             ),
@@ -2624,8 +2628,24 @@ def build_epistemic_payload(
                 # access) can chain this tool response into
                 # resources/read on the matching FVS entry directly,
                 # without having to construct the URI themselves.
+                # library_resource_uri is the canonical name on this
+                # block; citation_uri is the alias name carried on
+                # divergence.absent_frames[*] and corpus_context.
+                # typical_co_*. v1.0.12 emits both so adopters read
+                # a single shape across all frame-reference blocks.
                 "library_resource_uri": (
                     f"{RESOURCE_SCHEME}://library/{f.get('fvs_id')}"
+                    if f.get("fvs_id") else None
+                ),
+                "citation_uri": (
+                    f"{RESOURCE_SCHEME}://library/{f.get('fvs_id')}"
+                    if f.get("fvs_id") else None
+                ),
+                # public_url is the alias name for library_url used
+                # by decision_readiness library_entries; same value
+                # (GitHub HTTPS URL to the entry markdown).
+                "public_url": (
+                    _library_entry_ref(f.get("fvs_id", "")).get("public_url")
                     if f.get("fvs_id") else None
                 ),
                 # Per-entry version pinned from the entry's
