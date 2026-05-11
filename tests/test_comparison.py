@@ -46,6 +46,9 @@ need provider-mocked harnesses; that work lands separately.
 from __future__ import annotations
 
 import json
+import sys
+import types
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -962,3 +965,340 @@ class TestBuildCrossModelComparison:
         assert s["total_agreed"] == 1   # "100" in both
         assert s["total_only_a"] == 1   # "200" only in A
         assert s["total_only_b"] == 1   # "300" only in B
+
+
+# ================================================================
+# Provider-mock harness for generate_gemini / generate_grok
+# ================================================================
+#
+# The two LLM-network entry points share a structural shape: lift
+# a provider client, call its generate-content endpoint, normalize
+# the (text, usage) tuple, return it. The mock harness below replaces
+# the provider client with a synthetic stand-in so the tests exercise
+# every branch (success, malformed response, exception) without
+# touching the network.
+#
+# Approach:
+#   - generate_gemini imports ``google.genai`` inside the function
+#     body. We seed sys.modules with a stub module before the call;
+#     the import resolves to the stub. The stub's Client.models
+#     .generate_content returns a configured MagicMock.
+#   - generate_grok imports ``xai_openai_client`` from llm_client.
+#     We patch llm_client.xai_openai_client to return a configured
+#     mock client; the inside-function import picks up the patched
+#     attribute (CPython caches modules so a patched attribute on
+#     llm_client survives the re-import).
+
+
+class _StubGeminiResponse:
+    """Stand-in for google.genai's GenerateContentResponse."""
+
+    def __init__(self, text: str | None, prompt_tokens: int = 0, candidates_tokens: int = 0):
+        self.text = text
+        meta = MagicMock()
+        meta.prompt_token_count = prompt_tokens
+        meta.candidates_token_count = candidates_tokens
+        meta.input_token_count = None
+        meta.output_token_count = None
+        self.usage_metadata = meta
+
+
+def _seed_stub_genai_module(response: _StubGeminiResponse | Exception) -> types.ModuleType:
+    """Install a stub google.genai module in sys.modules.
+
+    If ``response`` is an Exception, generate_content raises it on
+    call. Otherwise it returns the response object.
+    """
+    stub_genai = types.ModuleType("google.genai")
+    stub_google = types.ModuleType("google")
+    stub_google.genai = stub_genai  # type: ignore[attr-defined]
+
+    client = MagicMock()
+    if isinstance(response, Exception):
+        client.models.generate_content.side_effect = response
+    else:
+        client.models.generate_content.return_value = response
+
+    stub_genai.Client = MagicMock(return_value=client)
+    sys.modules["google"] = stub_google
+    sys.modules["google.genai"] = stub_genai
+    return stub_genai
+
+
+@pytest.fixture
+def cleanup_stub_genai():
+    """Remove the stub google.genai module after the test so a real
+    google.genai import in another test isn't shadowed."""
+    yield
+    sys.modules.pop("google.genai", None)
+    sys.modules.pop("google", None)
+
+
+class TestGenerateGemini:
+    """``generate_gemini`` returns (text, usage_dict). Branches:
+    PromptInjectionAttempt -> (None, empty); successful response;
+    response.text is None / empty; provider exception."""
+
+    def test_prompt_injection_returns_none_and_empty_usage(self) -> None:
+        # Empty topic triggers the prompt-safety check.
+        with patch.object(comparison, "check_user_text_safe") as mock_check:
+            from prompt_safety import PromptInjectionAttempt
+            mock_check.side_effect = PromptInjectionAttempt("blocked")
+            text, usage = comparison.generate_gemini("anything")
+        assert text is None
+        assert usage == {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0}
+
+    def test_successful_response_returns_text_and_usage(self, cleanup_stub_genai: None) -> None:
+        _seed_stub_genai_module(
+            _StubGeminiResponse(text="generated body", prompt_tokens=100, candidates_tokens=50),
+        )
+        text, usage = comparison.generate_gemini("Apple revenue 2024")
+        assert text == "generated body"
+        assert usage["input_tokens"] == 100
+        assert usage["output_tokens"] == 50
+        # _compute_token_cost may return 0.0 for unknown rates; just
+        # check the field is present and a float.
+        assert isinstance(usage["cost_usd"], float)
+
+    def test_empty_response_text_returns_none(self, cleanup_stub_genai: None) -> None:
+        _seed_stub_genai_module(_StubGeminiResponse(text=""))
+        text, usage = comparison.generate_gemini("topic")
+        # Empty .text falsy -> returned as None per the function logic.
+        assert text is None
+        # Token counts default to 0 (no metadata configured).
+        assert usage["input_tokens"] == 0
+
+    def test_provider_exception_returns_none(self, cleanup_stub_genai: None) -> None:
+        _seed_stub_genai_module(RuntimeError("provider down"))
+        text, usage = comparison.generate_gemini("topic")
+        assert text is None
+        assert usage == {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0}
+
+
+class _StubGrokResponse:
+    """Stand-in for an OpenAI-compatible chat-completion response."""
+
+    def __init__(self, content: str | None, prompt_tokens: int = 0, completion_tokens: int = 0):
+        choice = MagicMock()
+        choice.message.content = content
+        self.choices = [choice] if content is not None else []
+        usage = MagicMock()
+        usage.prompt_tokens = prompt_tokens
+        usage.completion_tokens = completion_tokens
+        self.usage = usage
+
+
+class TestGenerateGrok:
+    """``generate_grok`` mirrors ``generate_gemini`` but against an
+    OpenAI-compatible client (xAI). Same branch structure."""
+
+    def test_prompt_injection_returns_none(self) -> None:
+        with patch.object(comparison, "check_user_text_safe") as mock_check:
+            from prompt_safety import PromptInjectionAttempt
+            mock_check.side_effect = PromptInjectionAttempt("blocked")
+            text, usage = comparison.generate_grok("topic")
+        assert text is None
+        assert usage == {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0}
+
+    def test_no_xai_client_returns_empty(self) -> None:
+        # xai_openai_client returns None when XAI_API_KEY is not set.
+        with patch("llm_client.xai_openai_client", return_value=None):
+            text, usage = comparison.generate_grok("topic")
+        assert text is None
+        assert usage["cost_usd"] == 0.0
+
+    def test_successful_response(self) -> None:
+        client = MagicMock()
+        client.chat.completions.create.return_value = _StubGrokResponse(
+            content="grok output", prompt_tokens=80, completion_tokens=40,
+        )
+        with patch("llm_client.xai_openai_client", return_value=client):
+            text, usage = comparison.generate_grok("topic")
+        assert text == "grok output"
+        assert usage["input_tokens"] == 80
+        assert usage["output_tokens"] == 40
+
+    def test_empty_choices_returns_none_text(self) -> None:
+        # No choices -> text stays None per the function logic.
+        client = MagicMock()
+        client.chat.completions.create.return_value = _StubGrokResponse(content=None)
+        with patch("llm_client.xai_openai_client", return_value=client):
+            text, usage = comparison.generate_grok("topic")
+        assert text is None
+        # No usage metadata -> zeros.
+        assert usage["input_tokens"] == 0
+
+    def test_provider_exception_returns_none(self) -> None:
+        client = MagicMock()
+        client.chat.completions.create.side_effect = RuntimeError("provider down")
+        with patch("llm_client.xai_openai_client", return_value=client):
+            text, usage = comparison.generate_grok("topic")
+        assert text is None
+        assert usage == {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0}
+
+
+class TestGenerateResponses:
+    """``generate_responses`` calls generate_gemini + generate_grok in
+    parallel and returns ``{model_name: response_text}``. We patch the
+    underlying generators directly so the test exercises the parallel-
+    pool orchestration without touching the network."""
+
+    def test_both_succeed(self) -> None:
+        with patch.object(
+            comparison, "generate_gemini",
+            return_value=("gemini text", {"cost_usd": 0.001}),
+        ), patch.object(
+            comparison, "generate_grok",
+            return_value=("grok text", {"cost_usd": 0.002}),
+        ):
+            result = comparison.generate_responses("topic")
+        assert result == {"Gemini": "gemini text", "Grok": "grok text"}
+
+    def test_one_returns_none_text_skipped(self) -> None:
+        # generate_gemini returning (None, _) -> Gemini key absent.
+        with patch.object(
+            comparison, "generate_gemini",
+            return_value=(None, {"cost_usd": 0.0}),
+        ), patch.object(
+            comparison, "generate_grok",
+            return_value=("grok text", {"cost_usd": 0.001}),
+        ):
+            result = comparison.generate_responses("topic")
+        assert "Gemini" not in result
+        assert result["Grok"] == "grok text"
+
+    def test_exception_in_one_does_not_break_other(self) -> None:
+        # Per-model failures are tolerated by design; the other
+        # provider's result still surfaces.
+        with patch.object(
+            comparison, "generate_gemini",
+            side_effect=RuntimeError("gemini blew up"),
+        ), patch.object(
+            comparison, "generate_grok",
+            return_value=("grok text", {"cost_usd": 0.001}),
+        ):
+            result = comparison.generate_responses("topic")
+        assert "Gemini" not in result
+        assert result["Grok"] == "grok text"
+
+
+class TestGenerateStabilityCheck:
+    """``generate_stability_check`` re-runs each provider in parallel
+    and aggregates the (text, usage) tuples through
+    stability_from_regenerations."""
+
+    def test_unknown_provider_skipped(self) -> None:
+        # responses keyed by name not in model_funcs -> skipped.
+        results, total = comparison.generate_stability_check(
+            "topic", {"UnknownModel": "original response"},
+        )
+        assert results == {}
+        assert total == 0.0
+
+    def test_gemini_regeneration_path(self) -> None:
+        # generate_stability_check uses model_funcs = {"Gemini":
+        # generate_gemini, "Grok": generate_grok} and submits the
+        # generator for each model_name in responses. We patch the
+        # generators to return deterministic content so the
+        # cross-version comparison is observable.
+        with patch.object(
+            comparison, "generate_gemini",
+            return_value=("Revenue was $100 in 2024.", {"cost_usd": 0.001}),
+        ):
+            results, total = comparison.generate_stability_check(
+                "Apple revenue 2024", {"Gemini": "Revenue was $100 in 2024."},
+            )
+        # Same numbers in both gen1 and gen2 -> stable bucket.
+        assert "Gemini" in results
+        assert results["Gemini"]["stable_count"] >= 1
+        assert results["Gemini"]["changed_count"] == 0
+        # Cost from the regeneration usage is accumulated.
+        assert total == pytest.approx(0.001, abs=1e-6)
+
+    def test_changed_numbers_surface(self) -> None:
+        # gen1 has $100; regeneration returns $200 -> $100 changed.
+        with patch.object(
+            comparison, "generate_gemini",
+            return_value=("Revenue was $200.", {"cost_usd": 0.0}),
+        ):
+            results, _ = comparison.generate_stability_check(
+                "Apple", {"Gemini": "Revenue was $100."},
+            )
+        assert results["Gemini"]["changed_count"] >= 1
+
+    def test_regeneration_failure_tolerated(self) -> None:
+        # Per-model regen failures are tolerated; the model's entry
+        # is omitted from results, total_cost reflects only
+        # successful regens.
+        with patch.object(
+            comparison, "generate_gemini",
+            side_effect=RuntimeError("regen failed"),
+        ):
+            results, total = comparison.generate_stability_check(
+                "topic", {"Gemini": "original"},
+            )
+        assert results == {}
+        assert total == 0.0
+
+
+class TestStabilityN3Check:
+    """``stability_n3_check`` runs N regenerations of the same prompt
+    against one provider and returns the schema-shaped stability
+    dict."""
+
+    def test_unknown_provider_returns_empty(self) -> None:
+        result = comparison.stability_n3_check("topic", "unknown_provider", n=3)
+        assert result["regeneration_count"] == 0
+        assert result["stable_count"] == 0
+
+    def test_all_regenerations_fail_returns_empty(self) -> None:
+        # Patch the provider generator in the registry to always
+        # raise. The contextlib.suppress in the orchestrator
+        # absorbs the exceptions; with no successful regens the
+        # function falls to _empty_stability_result.
+        failing_generator = MagicMock(side_effect=RuntimeError("provider down"))
+        with patch.dict(
+            comparison._PROVIDER_GENERATORS,
+            {"gemini": failing_generator},
+        ):
+            result = comparison.stability_n3_check("topic", "gemini", n=3)
+        assert result["regeneration_count"] == 0
+
+    def test_successful_regenerations_aggregate(self) -> None:
+        success_generator = MagicMock(
+            return_value=("Revenue was $100.", {"cost_usd": 0.001}),
+        )
+        with patch.dict(
+            comparison._PROVIDER_GENERATORS,
+            {"gemini": success_generator},
+        ):
+            result = comparison.stability_n3_check("topic", "gemini", n=2)
+        # Two regens with identical text -> all numbers stable.
+        assert result["regeneration_count"] == 2
+        assert result["stability_rate"] == 1.0
+
+
+class TestStabilityFromRegenerationsExceptionPath:
+    """``stability_from_regenerations`` swallows analyze_claims
+    failures: a regeneration whose claim analysis crashes
+    contributes an empty claim set rather than crashing the loop."""
+
+    def test_analyze_claims_failure_falls_back_to_empty(self) -> None:
+        # Patch analyze_claims to raise on the second regen only.
+        call_count = [0]
+        original = comparison.analyze_claims
+
+        def flaky_analyze(text: str) -> dict[str, object]:
+            call_count[0] += 1
+            if call_count[0] == 2:
+                raise RuntimeError("analyzer hiccup")
+            return original(text)
+
+        regens = [
+            {"text": "Revenue was $100.", "usage": {"cost_usd": 0.0}},
+            {"text": "Revenue was $200.", "usage": {"cost_usd": 0.0}},
+        ]
+        with patch.object(comparison, "analyze_claims", side_effect=flaky_analyze):
+            result = comparison.stability_from_regenerations(regens)
+        # Loop completed; second regen contributes an empty claim set.
+        assert result["regeneration_count"] == 2
