@@ -6,6 +6,31 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-05-11
+
+### publish.yml: post-publish release-body verification gate
+
+Three release-body bug classes surfaced in the v1.0.x line, each
+requiring manual `gh release edit --notes` recovery: commit-message
+fallthrough at v1.0.0 (lightweight tag), annotation overwrite at
+v1.0.1 (actions/checkout second-fetch), backtick command
+substitution at v1.0.2 (`--notes` direct expression interpolation).
+Each was caught by the operator noticing the wrong body AFTER the
+release shipped.
+
+The new `Verify release body matches annotated tag (post-publish
+gate)` step in the github-release job fetches the release body via
+`gh release view` after `gh release create` finishes, compares to
+the annotated tag content (with trailing-whitespace normalization
+to absorb gh's line-ending handling), and fails the workflow on a
+mismatch. Any future variant of the release-body bug class fails
+CI loudly at publish time instead of waiting on operator
+inspection.
+
+The recovery for a future failure stays the same:
+`gh release edit <tag> --notes "$(awk extract from CHANGELOG)"`.
+The gate's value is in the alarm, not the recovery.
+
 ## [1.0.4] - 2026-05-11
 
 ### CI: bump GitHub Actions to current major versions

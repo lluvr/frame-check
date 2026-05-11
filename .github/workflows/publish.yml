@@ -383,3 +383,35 @@ jobs:
             --notes "$NOTES" \
             "${extra[@]}" \
             dist/*
+
+      - name: Verify release body matches annotated tag (post-publish gate)
+        # Defense-in-depth catch-all for the release-body bug class:
+        # three different defects have surfaced in the v1.0.x line
+        # (commit-message fallthrough at v1.0.0, annotation overwrite
+        # at v1.0.1, backtick command substitution at v1.0.2), each
+        # requiring manual gh release edit recovery. This step fetches
+        # the release body that was just created and compares it to
+        # the annotated tag content. A mismatch fails the workflow,
+        # surfacing any future bug class immediately rather than
+        # waiting for an operator to notice the wrong body.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Re-fetch the tag annotation in case the prior step's
+          # state was lost; trim trailing whitespace per line so
+          # gh's body normalization (line endings, trailing blank
+          # lines) doesn't trigger a spurious diff.
+          expected=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}" \
+            | sed 's/[[:space:]]*$//')
+          body=$(gh release view "${GITHUB_REF_NAME}" \
+            -R "${GITHUB_REPOSITORY}" --json body --jq -r '.body' \
+            | sed 's/[[:space:]]*$//')
+          if [ "$expected" != "$body" ]; then
+            echo "::error::Release body diverges from annotated tag content."
+            echo "--- expected (annotated tag) ---"
+            printf '%s\n' "$expected" | head -40
+            echo "--- got (release body) ---"
+            printf '%s\n' "$body" | head -40
+            exit 1
+          fi
+          echo "Release body matches annotated tag (verified)."
