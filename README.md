@@ -172,12 +172,16 @@ from the wheel + corpus alone.
 The `F1 = 0.36 against expert labelers` figure cited in the
 sections above is from a separate pre-registered validation run
 (detector-vs-labeler agreement, methodology pinned in
-`validation/wedge_behavior/PROTOCOL_v1.md`). The first execution
-with N >= 30 documents per condition is deferred to a future
-v1.0.x patch per `ROADMAP.md`. Until that lands, the firing-rate
-empirics in the report above are the load-bearing public
-calibration evidence; the F1 figure is the operator's prior
-in-house measurement and is named with that caveat.
+`validation/wedge_behavior/PROTOCOL_v1.md`). The pilot N=2 has
+executed (2026-05-12) and is published at
+[`validation/wedge_behavior/results_v1/RESULTS_v1.md`](validation/wedge_behavior/results_v1/RESULTS_v1.md);
+load-bearing shift = YES on both pilot documents under the
+pre-registered rubric. The N=10 main study under PROTOCOL_v1's
+pre-registered decision rule is the next gate. Until the main
+study lands, the firing-rate empirics in the calibration report
+above + the pilot evidence in RESULTS_v1.md together carry the
+load; the F1 figure is the operator's prior in-house
+measurement and is named with that caveat.
 
 ## Documentation
 
