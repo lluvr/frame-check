@@ -285,15 +285,25 @@ def main():
         }
         out_path = doc_dir / "data.json"
         out_path.write_text(json.dumps(record, indent=2, default=str))
+        llm_status = (
+            "executed" if args.call_llm else "placeholder"
+        )
         print(f"  {slug}: frame_check {len(fc_runs)} runs, "
-              f"{fc_dt:.0f}ms; llm placeholder x {len(llm_runs)}")
+              f"{fc_dt:.0f}ms; llm {llm_status} x {len(llm_runs)}")
 
     print()
     print("Done. Next steps:")
-    print("  1. Operator runs the LLM side against each prompt with "
-          "ANTHROPIC_API_KEY or equivalent.")
-    print("  2. Raters score per rating_rubric_v1.md.")
-    print("  3. Results writeup committed under results/<study-name>/REPORT.md.")
+    if args.call_llm:
+        print("  1. LLM-baseline arm executed via Anthropic API.")
+        print("  2. For H3 (reproducibility), run analyze_h3.py on the "
+              "results dir.")
+        print("  3. For H1 + H2 (require raters), score per "
+              "rating_rubric_v1.md.")
+    else:
+        print("  1. Operator runs the LLM side against each prompt with "
+              "ANTHROPIC_API_KEY or equivalent (or re-run with --call-llm).")
+        print("  2. For H3, run analyze_h3.py once LLM responses captured.")
+        print("  3. Raters score per rating_rubric_v1.md for H1 + H2.")
 
 
 if __name__ == "__main__":
