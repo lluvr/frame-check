@@ -74,16 +74,34 @@ process as a contract change.
 
 ## Deferred from v1.0 to v1.0.x
 
-One v1.0 contract item remains deferred to a future patch.
-
 ### Validation pre-registration first execution
 
 `validation/wedge_behavior/PROTOCOL_v1.md` is the pre-registered
-behavior-change study; `validation/wedge_behavior/run_pilot.py`
-is the runner. The first execution with N ≥ 30 documents per
-condition, the results publication under the same directory,
-and a CHANGELOG narrative linking those results, all land in a
-`1.0.x` patch.
+behavior-change study. The pilot N=2 has been executed (2026-05-12)
+and published at
+[`validation/wedge_behavior/results_v1/RESULTS_v1.md`](validation/wedge_behavior/results_v1/RESULTS_v1.md).
+The pilot finding: load-bearing shift = YES on both pilot
+documents (one recommendation-shaped, one opinion-shaped); items
+1 (named structural absence), 2 (reading-form), 3 (Frame Check
+cited explicitly), and 4 (hedge calibration) all fired positive.
+Three rubric calibration findings surfaced for v2 before the
+main study.
+
+The pilot is descriptive only per the pre-registered analysis
+plan; the N=10 main study under PROTOCOL_v1's pre-registered
+decision rule is the load-bearing test. Main study is the next
+gate; remains operator-handed (sample selection, three
+independent raters, Gwet's AC1 reliability metric per item).
+
+The original v1.0 deferral asked for N ≥ 30 documents; the
+pre-registered protocol revised that to N=10 main study after
+the rubric stabilizes (a smaller N at higher rater reliability
+buys more credibility than a larger N at single-rater).
+
+`validation/baseline_comparison/PROTOCOL_v1.md` is the parallel
+study testing information advantage over a frontier LLM
+prompted for framing analysis. Pre-registered; pilot N=3 still
+pending.
 
 ## In flight (1.x milestones, no order)
 
