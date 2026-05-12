@@ -933,37 +933,29 @@ When the divergence block is emitted, `agent_guidance` gains two keys:
   divergence output never implies the user should have used the
   absent frames.
 
-## Clickable library URLs (`library_url` field)
+## Canonical URI/URL quartet on every FVS reference (v1.0.12+)
 
-Every FVS reference in a `frame_check` or `frame_compare` response
-carries a `library_url` field pointing at the entry's markdown source
-on the public GitHub repository
-(`https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-XXX_slug.md`).
-The URL is always resolvable for end-users in MCP clients regardless
-of the hosted-production status. The earlier form pointed at
-`frame.clarethium.com/corpus/library/...`; the GitHub URL is preferred
-because it survives any future hosting transition without rewrites.
+Every record in the payload that identifies a Frame Vocabulary
+Standard entry — `frame_library_matches[*]`, `divergence.absent_frames[*]`,
+`corpus_context.typical_co_fires[*]` / `typical_co_absences[*]`,
+`decision_readiness.dimensions[*].library_entries[*]` /
+`fired_library_entries[*]`, `frame_opportunities.opportunities[*]` —
+carries four URI/URL fields:
 
-The field appears on every site that names an FVS entry:
+| Field | Value | Use |
+|---|---|---|
+| `citation_uri` | `frame-check://library/FVS-XXX` | MCP resource URI; pass to `resources/read` |
+| `library_resource_uri` | `frame-check://library/FVS-XXX` (same value) | Alias of `citation_uri`; same use |
+| `library_url` | `https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-XXX_slug.md` | HTTPS GitHub URL; user-clickable |
+| `public_url` | (same HTTPS URL) | Alias of `library_url`; same use |
 
-- `analysis.frame_library_matches[].library_url`
-- `divergence.absent_frames[].library_url`
-- `divergence.absent_frames[].corpus_context.typical_co_fires[].library_url`
-- `divergence.absent_frames[].corpus_context.typical_co_absences[].library_url`
-- `decision_readiness` profile's per-dimension `library_entries[].public_url` (canon-graph reference shape; same URL form, different field name for legacy compatibility).
+The aliasing is alias-equality invariant: `citation_uri == library_resource_uri` and `library_url == public_url` in every record. Pre-v1.0.12 the field names varied across blocks (`citation_uri` only on `absent_frames` and `typical_co_*`; `library_resource_uri` only on `decision_readiness` and `frame_library_matches`; `library_url` on `absent_frames` and `frame_library_matches`; `public_url` only on `decision_readiness`). v1.0.10 / v1.0.11 / v1.0.12 progressively normalized this so an adopter writing one renderer for FVS references reads the same shape regardless of which block they parse. Integrations that hardcoded any one of the four names remain valid; the v1.0.12 sweep is additive.
 
-The `agent_guidance.how_to_cite_frame_matches` text mandates
-rendering FVS references as markdown links: `[FVS-XXX Frame Title](library_url)`. End-users in MCP clients (Claude Desktop,
-Cursor) cannot click `frame-check://library/...` resource URIs
-because those are MCP-internal; the `library_url` gives them an
-HTTP link they can follow.
+Example payloads in this document show illustrative subsets (often just `citation_uri` + the FVS id) for readability — but the wire emits all four fields on every reference. Pinned by `tests/test_mcp_server.py::test_all_frame_reference_shapes_carry_canonical_uri_url_quartet`.
 
-The MCP `library_resource_uri` (frame-check://) is preserved
-alongside `library_url`; agents running entirely through MCP can
-chain into `resources/read` on the matching entry without a web
-fetch. Both fields point at the same logical entry; the agent
-uses `library_url` for end-user citations and `library_resource_uri`
-for in-conversation resource resolution.
+The `agent_guidance.how_to_cite_frame_matches` text mandates rendering FVS references as markdown links: `[FVS-XXX Frame Title](library_url)`. End-users in MCP clients (Claude Desktop, Cursor) cannot click `frame-check://library/...` URIs because those are MCP-internal; the HTTPS `library_url` / `public_url` gives them an HTTP link they can follow. Agents running entirely through MCP chain the `citation_uri` / `library_resource_uri` into `resources/read` on the matching entry.
+
+The earlier hosted URL form pointed at `frame.clarethium.com/corpus/library/...`; the GitHub URL replaces it because it survives any future hosting transition without rewrites.
 
 ## Suggested next actions (`agent_guidance.suggested_next_actions`)
 
