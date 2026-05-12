@@ -172,16 +172,17 @@ from the wheel + corpus alone.
 The `F1 = 0.36 against expert labelers` figure cited in the
 sections above is from a separate pre-registered validation run
 (detector-vs-labeler agreement, methodology pinned in
-`validation/wedge_behavior/PROTOCOL_v1.md`). The pilot N=2 has
-executed (2026-05-12) and is published at
-[`validation/wedge_behavior/results_v1/RESULTS_v1.md`](validation/wedge_behavior/results_v1/RESULTS_v1.md);
-load-bearing shift = YES on both pilot documents under the
-pre-registered rubric. The N=10 main study under PROTOCOL_v1's
-pre-registered decision rule is the next gate. Until the main
-study lands, the firing-rate empirics in the calibration report
-above + the pilot evidence in RESULTS_v1.md together carry the
-load; the F1 figure is the operator's prior in-house
-measurement and is named with that caveat.
+`validation/wedge_behavior/PROTOCOL_v1.md`). The pre-registered
+protocol + harness shipped end-to-end; a 2026-05-12 pipeline
+smoke test verified the harness drives both arms and produces
+rubric-scored output. Methodologically credible main-study
+evidence requires externally-sourced documents and independent
+raters; see
+[`validation/wedge_behavior/STATUS.md`](validation/wedge_behavior/STATUS.md)
+for the honest scope and the path to that evidence. Until the
+main study lands, the firing-rate empirics in the calibration
+report above carry the load; the F1 figure is the operator's
+prior in-house measurement and is named with that caveat.
 
 ## Documentation
 
