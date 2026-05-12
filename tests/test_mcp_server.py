@@ -1327,6 +1327,113 @@ def test_all_frame_reference_shapes_carry_canonical_uri_url_quartet():
     print(f"  PASS (verified {len(references)} FVS-references across the payload)\n")
 
 
+def test_frame_opportunity_record_carries_canonical_uri_url_quartet():
+    """`frame_opportunities.opportunities[*]` records (the opt-in
+    LLM-composed teaching-question path) must carry the v1.0.12
+    canonical URI/URL quartet just like every other FVS-reference
+    block does. The default `frame_check` invocation skips this
+    code path (it requires `include_frame_opportunities=True` AND
+    a Gemini API key), so the broader
+    `test_all_frame_reference_shapes_carry_canonical_uri_url_quartet`
+    invariant test does not exercise it. This test mocks the
+    Gemini call to exercise `_generate_one_opportunity` directly
+    and asserts the quartet on the result.
+
+    Surfaced by a fresh-eyes audit on v1.0.12 as G-OPP: the
+    edit at frame_opportunities.py:265-289 added the quartet but
+    no test pinned the field-presence on the opt-in code path.
+    A future composer change that drops aliases from the
+    opportunity record would not be caught by the existing tests.
+    """
+    print("=== frame_opportunity record carries canonical URI/URL quartet ===")
+    baseline = len(_FAILURES)
+    import frame_opportunities
+    from unittest.mock import MagicMock, patch
+    import os as _os
+
+    # Mock Gemini client + cost calc so no real LLM call fires.
+    fake_response = MagicMock()
+    fake_response.text = "Generated teaching question?"
+    fake_client = MagicMock()
+    fake_client.models.generate_content.return_value = fake_response
+
+    # Source absent_frame dict carrying the v1.0.10/v1.0.12 quartet
+    # (this is what frame_opportunities receives from upstream).
+    absent_frame = {
+        "frame_id": "FVS-009",
+        "frame_title": "Risk Frame",
+        "citation_uri": "frame-check://library/FVS-009",
+        "library_resource_uri": "frame-check://library/FVS-009",
+        "library_url": (
+            "https://github.com/Clarethium/frame-check/blob/master/"
+            "data/frame_library/FVS-009_risk_frame.md"
+        ),
+        "public_url": (
+            "https://github.com/Clarethium/frame-check/blob/master/"
+            "data/frame_library/FVS-009_risk_frame.md"
+        ),
+        "teaching_question": "What risks does the document not name?",
+    }
+
+    with patch.dict(_os.environ, {"GEMINI_API_KEY": "test-key"}, clear=False):
+        with patch("google.genai.Client", return_value=fake_client):
+            with patch(
+                "llm_cost.extract_gemini_usage", return_value=(100, 20),
+            ):
+                with patch("llm_cost.compute_cost_usd", return_value=0.0001):
+                    rec = frame_opportunities._generate_one_opportunity(
+                        absent_frame=absent_frame,
+                        document_text="Sample document text.",
+                        document_genre="analysis",
+                        user_goal=None,
+                        model="gemini-2.5-flash",
+                    )
+
+    check(
+        rec is not None,
+        "test pre-condition: _generate_one_opportunity must return "
+        "a record under mocked LLM call; got None (mocking broke?)",
+    )
+    if rec is None:
+        _assert_no_new_failures(
+            baseline,
+            "test_frame_opportunity_record_carries_canonical_uri_url_quartet",
+        )
+        print("  SKIP — record was None (mock setup issue)\n")
+        return
+
+    # Quartet presence
+    for f in ("citation_uri", "library_resource_uri", "library_url", "public_url"):
+        check(
+            f in rec,
+            f"frame_opportunity record missing {f!r} (added v1.0.12)",
+        )
+    # Alias-equality invariant
+    check(
+        rec.get("citation_uri") == rec.get("library_resource_uri"),
+        f"citation_uri and library_resource_uri must be equal aliases; got "
+        f"citation_uri={rec.get('citation_uri')!r}, "
+        f"library_resource_uri={rec.get('library_resource_uri')!r}",
+    )
+    check(
+        rec.get("library_url") == rec.get("public_url"),
+        f"library_url and public_url must be equal aliases; got "
+        f"library_url={rec.get('library_url')!r}, "
+        f"public_url={rec.get('public_url')!r}",
+    )
+    # Specifically: the URIs must point at the FVS-009 entry
+    check(
+        rec.get("citation_uri") == "frame-check://library/FVS-009",
+        f"citation_uri must propagate from absent_frame source dict; got "
+        f"{rec.get('citation_uri')!r}",
+    )
+    _assert_no_new_failures(
+        baseline,
+        "test_frame_opportunity_record_carries_canonical_uri_url_quartet",
+    )
+    print("  PASS\n")
+
+
 def test_provenance_carries_production_status():
     """Provenance carries a production_status field that names whether
     the canonical production hosting at frame.clarethium.com is
