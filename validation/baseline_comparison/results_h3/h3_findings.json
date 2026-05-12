@@ -1,0 +1,33 @@
+{
+  "h3_findings": [
+    {
+      "slug": "h3-mcp-stdio-overview",
+      "frame_check": {
+        "runs": 5,
+        "byte_identical_runs_after_stripping_timestamps": true,
+        "distinct_post_strip_hashes": 1,
+        "mean_pairwise_jaccard_distance": 0.0,
+        "named_pattern_sample_size": 25
+      },
+      "llm_baseline": {
+        "runs": 5,
+        "parse_failures": 0,
+        "mean_pairwise_jaccard_distance": 0.6643,
+        "min_pairwise_jaccard_distance": 0.5217,
+        "max_pairwise_jaccard_distance": 0.8148,
+        "named_pattern_set_sizes_per_run": [
+          17,
+          17,
+          17,
+          15,
+          12
+        ]
+      },
+      "h3_pre_registered_outcome": {
+        "frame_check_distance_zero": true,
+        "llm_distance_above_zero": true,
+        "outcome_consistent_with_pre_reg": true
+      }
+    }
+  ]
+}

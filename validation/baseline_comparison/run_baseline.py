@@ -42,6 +42,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -131,6 +132,54 @@ def run_llm_baseline_placeholder(
     ]
 
 
+def run_llm_baseline_anthropic(
+    document_text: str,
+    source_text: str | None,
+    model: str,
+    runs: int = 1,
+) -> list[dict[str, Any]]:
+    """Drive the LLM-baseline arm via Anthropic API. Pre-registered
+    constraints per PROTOCOL_v1.md §"Treatment design": same model +
+    temperature 0.7 + locked prompt template across all runs.
+    Separate API calls per run = separate sessions (the H3
+    reproducibility measurement requires no carryover).
+    Requires ANTHROPIC_API_KEY in env."""
+    import time as _time
+
+    import anthropic  # type: ignore
+
+    client = anthropic.Anthropic()
+    prompt = LLM_PROMPT_TEMPLATE.format(
+        document_text=document_text,
+        source_text=source_text or "(no source provided)",
+    )
+    out = []
+    for i in range(runs):
+        t0 = _time.perf_counter()
+        response = client.messages.create(
+            model=model,
+            max_tokens=4000,
+            temperature=0.7,
+            system="You are a helpful assistant.",
+            messages=[{"role": "user", "content": prompt}],
+        )
+        elapsed = _time.perf_counter() - t0
+        text = "".join(b.text for b in response.content if b.type == "text")
+        out.append({
+            "status": "executed",
+            "model": response.model,
+            "prompt": prompt,
+            "raw_response_text": text,
+            "captured_at_utc": _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime()),
+            "run_index": i,
+            "input_tokens": response.usage.input_tokens,
+            "output_tokens": response.usage.output_tokens,
+            "elapsed_s": round(elapsed, 2),
+            "response_id": response.id,
+        })
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument(
@@ -174,14 +223,11 @@ def main():
     )
     args = ap.parse_args()
 
-    if args.call_llm:
-        raise NotImplementedError(
-            "--call-llm not implemented in v1 of the harness. Operator runs "
-            "the LLM side separately via the authenticated invocation of "
-            "choice and fills llm_baseline_run<i>.json. This separation "
-            "preserves the protocol's pre-registered prompt + model + "
-            "temperature without coupling the harness to any single LLM SDK."
-        )
+    # --call-llm: drive the LLM-baseline arm via Anthropic API.
+    # Without --call-llm, the harness produces a placeholder file
+    # the operator fills in via their authenticated LLM invocation.
+    # Either path satisfies pre-reg as long as the prompt template
+    # + model + temperature stay locked.
 
     corpus = json.loads(args.corpus.read_text())
     if not isinstance(corpus, list):
@@ -211,10 +257,20 @@ def main():
         )
         fc_dt = (time.perf_counter() - t0) * 1000
 
-        llm_runs = run_llm_baseline_placeholder(
-            document_text, source_text, args.llm_model,
-            runs=args.runs_per_side,
-        )
+        if args.call_llm:
+            if "ANTHROPIC_API_KEY" not in os.environ:
+                print("ANTHROPIC_API_KEY not set; --call-llm requires it",
+                      file=sys.stderr)
+                return 1
+            llm_runs = run_llm_baseline_anthropic(
+                document_text, source_text, args.llm_model,
+                runs=args.runs_per_side,
+            )
+        else:
+            llm_runs = run_llm_baseline_placeholder(
+                document_text, source_text, args.llm_model,
+                runs=args.runs_per_side,
+            )
 
         record = {
             "slug": slug,
