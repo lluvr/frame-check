@@ -181,6 +181,52 @@ Adopters reading `analysis.coverage` today must migrate to
 string in every response carries the migration directive;
 this ROADMAP entry is its committed counterpart.
 
+## v2.0 design questions (uncommitted, revisit at scoping)
+
+Items that are NOT pre-committed but warrant explicit scoping
+before v2.0 ships. Each carries a real tradeoff that should be
+weighed in light of v1.0.x adoption signal.
+
+### Re-evaluate the v1.0.10/v1.0.11/v1.0.12 alias quartet
+
+Every FVS-reference record in the wire payload now carries
+`{citation_uri, library_resource_uri, library_url, public_url}`
+where `citation_uri == library_resource_uri` and
+`library_url == public_url`. The aliasing closed cross-block
+naming inconsistencies and lets adopters write a single FVS
+renderer for any block. Measured cost on the bundled
+Grok-NVIDIA fixture: **+15.5% wire payload size** vs. emitting
+only the canonical name per pair (16.7KB of pure alias
+redundancy on a 108KB baseline).
+
+The cost scales linearly with FVS-reference count per response.
+On adopter integrations with token-limited LLM contexts and
+many `frame_library_matches` + `absent_frames` + nested
+`corpus_context.typical_co_*` records, the overhead is real
+per-call cost.
+
+Options to weigh at v2.0 scoping:
+
+1. **Keep the quartet (status quo).** Schema coherence wins
+   over payload size; adopters who don't care about size pay
+   nothing they wouldn't have paid.
+2. **Drop the alias names, keep only the canonical pair**
+   (`citation_uri` + `library_url`). Reverses the v1.0.10–12
+   sweep; adopters who hardcoded the alias names break and
+   must migrate.
+3. **Gate the aliases behind an opt-in flag** (e.g.,
+   `prefer_compat_aliases=true`, default false). Smaller
+   default payload; adopters who need the aliases opt in.
+
+This ROADMAP entry pre-commits nothing. The decision needs
+v1.0.x adoption signal: do adopters use the aliases, are
+they hitting token limits because of them, what naming
+convention does the integration ecosystem actually settle on?
+The canonical-only-emit option (#2) is reversible-as-additive
+later (re-add the aliases if adopters protest); the keep-quartet
+option is forever-additive (aliases can't be cleanly removed
+once shipped longer than v1.0.x).
+
 ## Past 1.x (open questions)
 
 - **Multi-language MCP wrappers** (TypeScript, Go): contingent on
