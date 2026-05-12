@@ -81,25 +81,26 @@ behavior-change study. The pre-registered protocol + harness
 shipped end-to-end (`run_pilot.py` + `run_arms.py`); a 2026-05-12
 pipeline smoke test verified the harness drives both arms via
 Anthropic API, captures responses with full metadata, and
-produces rubric-scored output. Smoke-test pilot data is
-operator-internal (the pilot used agent-authored documents and
-agent-as-rater, methodologically pipeline-verification not
-validation evidence — see
+produces rubric-scored output. Smoke-test pilot data is kept in
+the author's local workspace, not committed to this public
+repo (the pilot used self-authored documents and agent-as-rater,
+methodologically pipeline-verification not validation evidence
+— see
 [`validation/wedge_behavior/STATUS.md`](validation/wedge_behavior/STATUS.md)
 for the honest scope).
 
 The smoke test surfaced three rubric calibration findings:
 catalog-naming as distinct evidence on item 1, reading-form
 dominance vs. presence on item 2, and hedge-calibration two
-kinds on item 4. These ship into PROTOCOL_v2 if accepted by
-operator before the main study locks.
+kinds on item 4. These ship into PROTOCOL_v2 if accepted before
+the main study locks.
 
 The next gate is methodologically credible main-study evidence:
 externally-sourced documents (public LLM-output corpora, random
 op-ed samples, Wikipedia featured articles), three independent
 raters with Gwet's AC1 reliability per item, and PROTOCOL_v2
-locked before execution. Operator-handed work; harness is ready
-to drive once the three sourcing conditions are met.
+locked before execution. Human-driven work; harness is ready to
+drive once the three sourcing conditions are met.
 
 `validation/baseline_comparison/PROTOCOL_v1.md` is the parallel
 study testing information advantage over a frontier LLM prompted

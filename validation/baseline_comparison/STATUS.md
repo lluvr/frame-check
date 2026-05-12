@@ -39,4 +39,4 @@ Same constraints as `validation/wedge_behavior/STATUS.md`:
 2. Independent raters with Gwet's AC1 reported per item.
 3. PROTOCOL_v2 with rubric refinements applied if the wedge_behavior calibration findings carry over.
 
-The harness is ready. The protocols are pre-registered. The methodologically credible main study awaits operator-handed sourcing + rater pool.
+The harness is ready. The protocols are pre-registered. The methodologically credible main study awaits human-driven sourcing + rater pool.

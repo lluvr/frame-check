@@ -85,7 +85,15 @@ def run_frame_check(
     runs: int = 1,
 ) -> list[dict[str, Any]]:
     """Frame Check side of the comparison. Deterministic; expected
-    to return byte-identical payloads across runs."""
+    to return byte-identical payloads across runs.
+
+    Strips agent_guidance from each captured payload before return:
+    the H3 analyzer only reads analysis.* fields, and the verbose
+    composition_discipline / per-level claim treatment text under
+    agent_guidance is wheel-emitted internal vocabulary that should
+    not appear inline in committed data files. Stripping here keeps
+    the captured data.json adopter-readable without touching the
+    wheel's wire format."""
     out = []
     for _ in range(runs):
         p = mcp_server.build_epistemic_payload(
@@ -93,9 +101,13 @@ def run_frame_check(
             source_text=source_text,
             include_divergence=True,
             domain_hint="finance",  # Pre-registered default; rationale: most
-                                     # observed AI-summary use cases are
-                                     # financial in the operator's reach.
+                                     # observed AI-summary use cases in the
+                                     # bundled corpus are financial.
         )
+        # Drop agent_guidance: not needed for the H3 measurement;
+        # keeping it would commit verbose internal wire vocabulary
+        # to the captured data file.
+        p.pop("agent_guidance", None)
         out.append(p)
     return out
 

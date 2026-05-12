@@ -15,8 +15,8 @@ Requires ANTHROPIC_API_KEY in the environment. Cost ~$0.02 per call,
 ~$0.08 per document run, well under the protocol's $1 ceiling.
 
 Usage:
-    ANTHROPIC_API_KEY=$(vault decrypt ANTHROPIC_API_KEY) \\
-        python3 validation/wedge_behavior/run_arms.py <doc-slug>
+    ANTHROPIC_API_KEY=... python3 \\
+        validation/wedge_behavior/run_arms.py <doc-slug>
 """
 from __future__ import annotations
 

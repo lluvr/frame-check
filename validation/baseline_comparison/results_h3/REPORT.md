@@ -41,7 +41,7 @@ The variance is concentrated in the *detected pattern names* axis — the LLM in
 Anyone with `ANTHROPIC_API_KEY` can reproduce this measurement:
 
 ```bash
-ANTHROPIC_API_KEY=$(your-vault-decrypt) python3 \
+ANTHROPIC_API_KEY=... python3 \
     validation/baseline_comparison/run_baseline.py \
     --corpus validation/baseline_comparison/h3_corpus.json \
     --results-dir /tmp/baseline-h3 \
