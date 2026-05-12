@@ -77,31 +77,35 @@ process as a contract change.
 ### Validation pre-registration first execution
 
 `validation/wedge_behavior/PROTOCOL_v1.md` is the pre-registered
-behavior-change study. The pilot N=2 has been executed (2026-05-12)
-and published at
-[`validation/wedge_behavior/results_v1/RESULTS_v1.md`](validation/wedge_behavior/results_v1/RESULTS_v1.md).
-The pilot finding: load-bearing shift = YES on both pilot
-documents (one recommendation-shaped, one opinion-shaped); items
-1 (named structural absence), 2 (reading-form), 3 (Frame Check
-cited explicitly), and 4 (hedge calibration) all fired positive.
-Three rubric calibration findings surfaced for v2 before the
-main study.
+behavior-change study. The pre-registered protocol + harness
+shipped end-to-end (`run_pilot.py` + `run_arms.py`); a 2026-05-12
+pipeline smoke test verified the harness drives both arms via
+Anthropic API, captures responses with full metadata, and
+produces rubric-scored output. Smoke-test pilot data is
+operator-internal (the pilot used agent-authored documents and
+agent-as-rater, methodologically pipeline-verification not
+validation evidence — see
+[`validation/wedge_behavior/STATUS.md`](validation/wedge_behavior/STATUS.md)
+for the honest scope).
 
-The pilot is descriptive only per the pre-registered analysis
-plan; the N=10 main study under PROTOCOL_v1's pre-registered
-decision rule is the load-bearing test. Main study is the next
-gate; remains operator-handed (sample selection, three
-independent raters, Gwet's AC1 reliability metric per item).
+The smoke test surfaced three rubric calibration findings:
+catalog-naming as distinct evidence on item 1, reading-form
+dominance vs. presence on item 2, and hedge-calibration two
+kinds on item 4. These ship into PROTOCOL_v2 if accepted by
+operator before the main study locks.
 
-The original v1.0 deferral asked for N ≥ 30 documents; the
-pre-registered protocol revised that to N=10 main study after
-the rubric stabilizes (a smaller N at higher rater reliability
-buys more credibility than a larger N at single-rater).
+The next gate is methodologically credible main-study evidence:
+externally-sourced documents (public LLM-output corpora, random
+op-ed samples, Wikipedia featured articles), three independent
+raters with Gwet's AC1 reliability per item, and PROTOCOL_v2
+locked before execution. Operator-handed work; harness is ready
+to drive once the three sourcing conditions are met.
 
 `validation/baseline_comparison/PROTOCOL_v1.md` is the parallel
-study testing information advantage over a frontier LLM
-prompted for framing analysis. Pre-registered; pilot N=3 still
-pending.
+study testing information advantage over a frontier LLM prompted
+for framing analysis. Same shape: protocol + harness ready;
+methodologically credible execution awaits the same external
+sourcing + independent-rater conditions.
 
 ## In flight (1.x milestones, no order)
 
