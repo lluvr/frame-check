@@ -1,7 +1,7 @@
 """Lift dry-run for `frame-check-mcp`.
 
 Runs the full pre-publish gate sequence locally, in order, and stops
-short of `twine upload`. The operator runs this before every actual
+short of `twine upload`. The maintainer runs this before every actual
 TestPyPI / PyPI lift to surface any last-mile metadata, packaging,
 or runtime defect that the audit-time tests did not catch.
 
@@ -24,7 +24,7 @@ Sequence:
   9. URL surface check: every Project-URL in the wheel METADATA
      resolves publicly (HEAD returns < 400). This catches the
      2026-04-27 defect where 0.8.0 published with seven dead
-     Project-URLs because the operator's GitHub repo was private
+     Project-URLs because the maintainer's GitHub repo was private
      and the production site was paused. Skip with --skip-urls
      for offline runs or when URLs are knowingly being staged for
      an upcoming change.
@@ -45,10 +45,10 @@ Sequence:
      handling, real-corpus drive, frame_compare quality, render
      enum, contentHash integrity). Allows known gaps named in
      KNOWN_HARNESS_GAPS to fail without blocking lift; any
-     unexpected FAIL line surfaces here and stops the operator
+     unexpected FAIL line surfaces here and stops the maintainer
      before twine upload. Locks in the 38/39 baseline (D3
      teaching_questions content gap is the named known gap,
-     parked for the 0.8.4 operator authoring sprint). Skip with
+     parked for the 0.8.4 maintainer authoring sprint). Skip with
      --skip-quality for offline runs or staging releases.
  12. Wheel METADATA Project-URLs match pyproject canonical:
      reads the wheel METADATA's Project-URL: lines, reads the
@@ -82,7 +82,7 @@ Sequence:
  mechanical lift gates that enforce restoration.
 
 If every step passes, prints the exact `twine upload` commands the
-operator would run for TestPyPI then PyPI, with explicit "operator
+maintainer would run for TestPyPI then PyPI, with explicit "maintainer
 runs this manually" framing. The script never invokes twine upload
 itself.
 
@@ -126,7 +126,7 @@ def _read_pyproject_version() -> str:
 
     Stays correct across version bumps; replaces the hardcoded
     constant the script shipped with originally (which silently
-    drifted whenever the operator lifted pyproject without
+    drifted whenever the maintainer lifted pyproject without
     updating the script).
     """
     path = REPO / "pyproject.toml"
@@ -185,10 +185,10 @@ VAULT_DOC_PATTERNS = _SHAPE_PATTERNS + _load_extra_patterns()
 _TOTAL_STEPS = 15
 
 # Harness FAIL substrings that are accepted as known gaps and do NOT
-# block lift. Each entry should name the operator-decision gating it
-# (parked sprint, deferred operator authoring, etc.) so a 3-year-out
+# block lift. Each entry should name the maintainer-decision gating it
+# (parked sprint, deferred maintainer authoring, etc.) so a 3-year-out
 # reviewer can see WHY this exception exists. Adding a new entry is
-# an operator decision: a regression must either fix the underlying
+# a maintainer decision: a regression must either fix the underlying
 # defect, or be explicitly accepted as a known gap by adding here
 # with the gating reason.
 KNOWN_HARNESS_GAPS = (
@@ -578,7 +578,7 @@ def main(argv: list[str] | None = None) -> int:
                 f"{len(unexpected)} unexpected harness FAILs. "
                 "Either fix the regression, or add the FAIL substring "
                 "to KNOWN_HARNESS_GAPS in lift_dry_run.py with the "
-                "operator-decision gating that justifies the exception."
+                "maintainer-decision gating that justifies the exception."
             )
         summary_match = re.search(
             r"=== summary: (\d+)/(\d+) passed ===", proc.stdout,
@@ -595,10 +595,10 @@ def main(argv: list[str] | None = None) -> int:
 
     # 12. Wheel METADATA Project-URLs match dev-tree pyproject [project.urls]
     #     byte-for-byte. Catches the 0.8.10 class: extract.rewrite_pyproject
-    #     (or any other pre-build mutator) overrides operator-canonical
+    #     (or any other pre-build mutator) overrides maintainer-canonical
     #     URLs with a stale fallback that resolves but diverges from
     #     intent. Gate 9 verifies URLs RESOLVE; this gate verifies they
-    #     MATCH the operator's source-of-truth in pyproject.toml.
+    #     MATCH the maintainer's source-of-truth in pyproject.toml.
     step(12, "Wheel METADATA Project-URLs match pyproject canonical")
     import tomllib
     with open(REPO / "pyproject.toml", "rb") as f:
@@ -607,7 +607,7 @@ def main(argv: list[str] | None = None) -> int:
     if not pyproject_urls:
         return fail(
             "pyproject.toml has no [project.urls] block. Without "
-            "operator-canonical URLs to compare against, this gate "
+            "maintainer-canonical URLs to compare against, this gate "
             "has no source of truth."
         )
     with zipfile.ZipFile(wheel) as z:
@@ -833,7 +833,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             if audit.returncode != 0:
                 # Surface the audit's findings before failing so the
-                # operator sees the leak shapes inline rather than
+                # maintainer sees the leak shapes inline rather than
                 # having to reproduce the audit by hand.
                 head = "\n".join(audit.stdout.splitlines()[:40])
                 return fail(
@@ -853,7 +853,7 @@ def main(argv: list[str] | None = None) -> int:
     print("READY for twine upload.")
     print("=" * 60)
     print()
-    print("Operator runs ONE of these manually (this script does not):")
+    print("Maintainer runs ONE of these manually (this script does not):")
     print()
     print("  # TestPyPI (always lift here first):")
     print(

@@ -1,6 +1,6 @@
 """Cut a Frame Check MCP release: CHANGELOG rename + dev-bump + local tag.
 
-The operator runs this BEFORE the orchestrator (`scripts/release.py`).
+The maintainer runs this BEFORE the orchestrator (`scripts/release.py`).
 The script does the five mechanical pre-publish steps in one invocation:
 
   1. CHANGELOG.md: rename `## [Unreleased]` to `## [<version>] - <YYYY-MM-DD>`
@@ -21,7 +21,7 @@ Order in the canonical flow:
 
   cut_release.py        (this script: CHANGELOG + bump + commit + local tag)
     -> release.py release <version>
-       (orchestrator: build wheel + lift gates, operator gate, twine upload,
+       (orchestrator: build wheel + lift gates, maintainer gate, twine upload,
         public-repo sync, tag push, gh release create, Zenodo poll,
         CITATION back-fill, push origin master + tag)
 
@@ -149,7 +149,7 @@ def check_clean_state(version: str) -> None:
         path = line[3:]
         if path in ("CHANGELOG.md", "pyproject.toml"):
             continue
-        # Ignore untracked operator-in-progress files
+        # Ignore untracked maintainer-in-progress files
         if line.startswith("??"):
             continue
         dirty.append(line)
