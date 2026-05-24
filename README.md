@@ -181,7 +181,7 @@ raters; see
 [`validation/wedge_behavior/STATUS.md`](validation/wedge_behavior/STATUS.md)
 for the honest scope and the path to that evidence. Until the
 main study lands, the firing-rate empirics in the calibration
-report above carry the load; the F1 figure is the operator's
+report above carry the load; the F1 figure is the author's
 prior in-house measurement and is named with that caveat.
 
 ## Documentation

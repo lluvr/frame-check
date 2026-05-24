@@ -1080,7 +1080,7 @@ _HEADERS = {"User-Agent": "FrameCheck/0.1 (claim-verification; contact@clarethiu
 # `URLError: <urlopen error _ssl.c:993: The handshake operation
 # timed out>` lines in production logs that mapped to 0-of-N
 # verified-claims surfaces for users (the "0 verified" symptom the
-# operator reported). 8s is the smallest value that absorbs the
+# builder reported). 8s is the smallest value that absorbs the
 # observed handshake variance without doubling the wait on real
 # provider failures.
 #
@@ -1090,13 +1090,13 @@ _HEADERS = {"User-Agent": "FrameCheck/0.1 (claim-verification; contact@clarethiu
 # timeout only affects whether a single hung socket gets one more
 # read attempt before the outer bound fires.
 #
-# Override via SN_PER_OP_TIMEOUT_SECONDS env var so the operator can
+# Override via SN_PER_OP_TIMEOUT_SECONDS env var so you can
 # tighten when production network paths improve, or further loosen
 # during a transient routing problem to a specific provider.
 def _read_float_env(name: str, default: float) -> float:
     """Read a float env var with a default. A malformed value (non-numeric
-    or zero/negative) falls back to the default with a stderr log so the
-    operator sees it; never raises at module import time. The default is
+    or zero/negative) falls back to the default with a stderr log so you
+    see it; never raises at module import time. The default is
     the fallback for module-level constants that must initialize during
     `import`, where a raised ValueError would prevent the app from
     booting at all."""
@@ -1134,7 +1134,7 @@ _TIMEOUT = _read_float_env("SN_PER_OP_TIMEOUT_SECONDS", 8.0)
 # app.py:1729, which leaves ~10s headroom for the substrate work
 # (detection, framing portrait, Brave fallback) plus render. Override
 # via SN_BUDGET_SECONDS env when production telemetry shows the p95 has
-# drifted (operator reads `[source-network] budget exhausted` log
+# drifted (you read `[source-network] budget exhausted` log
 # frequency to calibrate).
 #
 # Architectural compromise named explicitly: this is a BEST-EFFORT
@@ -1151,7 +1151,7 @@ _TIMEOUT = _read_float_env("SN_PER_OP_TIMEOUT_SECONDS", 8.0)
 #
 # This module exists at TWO paths in the working tree right now:
 # root-level source_network.py (this file; the active import target
-# for the web app) and framecheck_mcp/source_network.py (operator's
+# for the web app) and framecheck_mcp/source_network.py (the
 # in-flight src-layout migration target). Both files MUST carry an
 # equivalent SN_BUDGET_SECONDS + budget-tracking implementation so
 # that whichever path resolves the import gets the budget. When the
@@ -1169,7 +1169,7 @@ SN_BUDGET_SECONDS = float(os.environ.get("SN_BUDGET_SECONDS", "25"))
 # Wikipedia, FRED, Alpha Vantage, World Bank, REST Countries,
 # Wolfram, SEC EDGAR, Github) on every analysis with extractable
 # claims. Pre-2026-04-30 the only signal that a provider was
-# degraded was stderr log lines from _fetch_json; an operator had
+# degraded was stderr log lines from _fetch_json; you had
 # to grep `fly logs` to learn that CoinGecko had been 429-ing all
 # afternoon. Verifications silently degraded.
 #
@@ -1180,7 +1180,7 @@ SN_BUDGET_SECONDS = float(os.environ.get("SN_BUDGET_SECONDS", "25"))
 # and the window length (~3600 entries per provider in the worst
 # case of one error per second). Process-local: matches the
 # existing telemetry patterns and does not need cross-machine
-# aggregation for the operator-grep use case.
+# aggregation for the log-grep use case.
 
 class _ProviderHealth:
     """In-memory rolling-window counter of provider errors.
@@ -1281,7 +1281,7 @@ class _ProviderHealth:
                     "total": total,
                     "by_kind": by_kind,
                     # Backward-compat: pre-2026-05-03 the /health
-                    # consumers (operator dashboards, fly logs greps)
+                    # consumers (dashboards, fly logs greps)
                     # branched on `rate_limited` directly. Keep the
                     # alias so a redeploy of just the source-network
                     # module does not break those callers; they can
@@ -1365,7 +1365,7 @@ def _provider_from_url(url: str) -> str:
 # "0 verified claims" on prod. The 25s outer SN_BUDGET_SECONDS still
 # bounds total per-comparison cost; raising the per-fetch deadline
 # trades a slower-but-completing fetch for the prior fast-but-
-# discarded one. Env-overridable for further operator tuning.
+# discarded one. Env-overridable for further tuning.
 _FETCH_JSON_DEADLINE_SECONDS = float(
     os.environ.get("SN_FETCH_JSON_DEADLINE_SECONDS", "12")
 )
@@ -1427,7 +1427,7 @@ def _urlopen_with_deadline(req, per_op_timeout, total_deadline=None):
             # cannot suppress the original deadline exception. The
             # caller's try/except still catches generic Exception
             # either way, but this guard preserves the exception TYPE
-            # so operator triage from fly logs sees
+            # so triage from fly logs sees
             # "_FuturesTimeoutError" not the suppressed diagnostic
             # exception class. getattr(req, "full_url", str(req))
             # also handles the string-URL case defensively.
@@ -1464,7 +1464,7 @@ def _fetch_json(url, total_deadline=None):
     `fly logs`. Records errors against provider_health so /health
     can surface per-provider degradation. Rate-limit responses (429)
     are tagged as rate_limited specifically because 429 is the
-    actionable operator signal. Caller-side deadline exhaustion is
+    actionable signal. Caller-side deadline exhaustion is
     tagged separately as "deadline" so /health can distinguish "fast-
     fail caller-side bound" from "real provider error".
     """
@@ -2373,13 +2373,13 @@ def verify_wolfram(decomp):
 _SEC_TICKERS = None
 _SEC_TICKERS_LOCK = threading.Lock()
 _SEC_TICKERS_FAIL_AT = 0.0
-# How long to skip retry after a failed tickers download. Operator-
-# overridable via SN_SEC_TICKERS_RETRY_AFTER_SECONDS. The default
+# How long to skip retry after a failed tickers download.
+# Overridable via SN_SEC_TICKERS_RETRY_AFTER_SECONDS. The default
 # balances two costs: too-short retries hammer SEC after a flaky
 # cold-start, too-long retries lock SEC verification out of the
 # worker for an excessive window after the upstream recovers. 60s
 # is a long-enough cool-down to absorb a typical CDN hiccup and a
-# short-enough one that the operator does not see "0 verified" on
+# short-enough one that you do not see "0 verified" on
 # repeated user requests after the network heals.
 _SEC_TICKERS_RETRY_AFTER = float(
     os.environ.get("SN_SEC_TICKERS_RETRY_AFTER_SECONDS", "60")
@@ -3699,9 +3699,9 @@ def verify_claims_source_network(
                         # Log but do not crash. A systematic API
                         # failure (all FRED queries timing out, SEC
                         # returning 403) would otherwise produce
-                        # zero verifications with no operator
+                        # zero verifications with no
                         # visibility. The verifier name is included
-                        # so the operator can identify which source
+                        # so you can identify which source
                         # is failing from `fly logs`.
                         import sys
                         sys.stderr.write(
@@ -3760,7 +3760,7 @@ def verify_claims_source_network(
         )
 
     # Fast-fail short-circuit. Budgets under 100ms are debug / test
-    # configurations: production is 25s, no realistic operator
+    # configurations: production is 25s, no realistic
     # configuration sub-100ms returns useful provider results. Without
     # this guard, the in-loop budget check races against per-claim
     # workers; on fast systems with already-failing workers (e.g.
@@ -3769,7 +3769,7 @@ def verify_claims_source_network(
     # the budget check fires, silently disengaging the budget primitive.
     # Bypassing pool creation entirely under sub-100ms budget makes the
     # fast-fail path deterministic across system speeds and tightens
-    # behavior under operator debugging without changing production.
+    # behavior under debugging without changing production.
     if SN_BUDGET_SECONDS < 0.1:
         budget_exhausted = True
         _log_budget_exhausted(0.0, 0)
@@ -3810,8 +3810,8 @@ def verify_claims_source_network(
                 # only emits results for indices that resolved;
                 # claims that failed simply do not appear in the
                 # downstream verification list and the caller sees
-                # the verified subset. Log to stderr so the
-                # operator can investigate without breaking the
+                # the verified subset. Log to stderr so you
+                # can investigate without breaking the
                 # JSON-RPC channel on stdout.
                 import sys
                 print(
@@ -3932,7 +3932,7 @@ def verify_claims_source_network(
                         # whatever the primary providers established
                         # (typically "unverifiable"); the existing
                         # source_results stay intact. Log to stderr
-                        # so the operator can investigate without
+                        # so you can investigate without
                         # breaking the JSON-RPC channel on stdout.
                         import sys
                         print(

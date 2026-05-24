@@ -6,9 +6,9 @@ when present). The orchestrator's `lift_dry_run` gate at
 `scripts/_release_lib/lift.py:271` catches mismatches AT RELEASE
 TIME by smoke-testing the built wheel against `_read_pyproject_
 version()`. That is too late: a drift introduced between releases
-stays invisible until the next cut, and an operator running the
+stays invisible until the next cut, and running the
 upstream tree directly (e.g., `python3 mcp_server.py --version`)
-sees a stale version with no test surface flagging it.
+shows a stale version with no test surface flagging it.
 
 Why this test exists:
 
@@ -27,13 +27,13 @@ Why this test exists:
     wheel (`scripts/_release_lib/extract.py:rewrite_server_version`),
     so SHIPPED artifacts are always coherent. But the upstream
     drift between releases is still a maintenance trap: an
-    operator who runs the upstream clone directly sees the wrong
+    running the upstream clone directly shows the wrong
     version, and any test that imports `mcp_server` and reads
     `SERVER_VERSION` against the upstream pyproject would fail
     silently.
   - This test catches the drift at PR time so it stays explicit
-    rather than waiting for the release-time gate. If the
-    operator wants to accept the drift between releases as a
+    rather than waiting for the release-time gate. If you
+    want to accept the drift between releases as a
     known pattern, this test surfaces a deliberate decision
     rather than letting silence do the work.
 
@@ -121,13 +121,13 @@ def test_server_version_matches_pyproject():
       (b) any future test that imports mcp_server and reads
           SERVER_VERSION against the upstream pyproject sees a
           coherent value (no silent fail)
-      (c) the bump becomes a pre-release operator step (manual or
+      (c) the bump becomes a pre-release step (manual or
           automated) that is enforced rather than implicit
 
-    If the operator wants to accept upstream drift between
+    If you want to accept upstream drift between
     releases as a known pattern (i.e., not bump until release.py
-    rewrites the public tree), this test will fail and the
-    operator can either bump manually or update the discipline by
+    rewrites the public tree), this test will fail and you
+    can either bump manually or update the discipline by
     deleting / weakening this test with an explicit comment. The
     failure mode being EXPLICIT is the discipline; silence is the
     failure mode the test prevents.
@@ -390,7 +390,7 @@ def test_citation_cff_schema_version_is_supported():
     GitHub citation tab); a silent CFF spec bump that breaks one
     of those resolvers would surface as "your citation does not
     parse" weeks or months after the actual change. Pinning the
-    schema version makes the upgrade an explicit operator decision
+    schema version makes the upgrade an explicit decision
     (read CFF migration notes, update test allowlist, verify
     consumers handle the new schema) rather than an accident.
 

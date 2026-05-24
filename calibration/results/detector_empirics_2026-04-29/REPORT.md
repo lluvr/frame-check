@@ -6,7 +6,7 @@
 
 ## What this measures
 
-Firing rate per FVS detector and per coverage perspective. Genre + voice classification distribution. Absence-cluster dimension incidence. Computed by running `frame_check` over stdio MCP against each document and aggregating the structural fields. **Recall and precision are not reported**; those require gold-standard labels per document, which is operator-authoring work outside this harness.
+Firing rate per FVS detector and per coverage perspective. Genre + voice classification distribution. Absence-cluster dimension incidence. Computed by running `frame_check` over stdio MCP against each document and aggregating the structural fields. **Recall and precision are not reported**; those require gold-standard labels per document, which is authoring work outside this harness.
 
 ## Per-FVS firing rate (presence detection)
 

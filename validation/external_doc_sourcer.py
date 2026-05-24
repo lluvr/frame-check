@@ -2,15 +2,15 @@
 """External-document sourcing helper for the validation main study.
 
 The methodological credibility of the wedge_behavior + baseline_comparison
-main studies depends on documents being sourced OUTSIDE the operator's
+main studies depends on documents being sourced OUTSIDE your
 authoring reach (the agent-as-author confound has to go away). This
-script standardizes that sourcing: the operator picks documents from
+script standardizes that sourcing: you pick documents from
 external sources (web pages, public corpora, archives), pipes them
 through this script, and gets back a structured corpus record with
 provenance metadata + inclusion-criteria validation.
 
-The script does NOT auto-fetch documents from the web. Operator's
-hands on the URL = operator's judgment on representativeness; that
+The script does NOT auto-fetch documents from the web. Your
+hands on the URL = your judgment on representativeness; that
 judgment is the load-bearing input the script cannot proxy.
 
 Usage:
@@ -36,8 +36,8 @@ Usage:
 Output: a JSON object suitable for inclusion in a corpus.json array
 that the wedge_behavior or baseline_comparison harness consumes.
 Includes inclusion-criteria validation (300-2000 words, English,
-analytical-prose) with PASS/FAIL/WARN flags so the operator can
-filter their corpus.
+analytical-prose) with PASS/FAIL/WARN flags so you can
+filter your corpus.
 """
 from __future__ import annotations
 
@@ -60,7 +60,7 @@ def _paragraph_count(text: str) -> int:
 def _english_ratio(text: str) -> float:
     """Crude English-character ratio. Latin alphabet + common
     punctuation. Sufficient for a screening signal; not a language
-    detector. Operator visually confirms English."""
+    detector. You visually confirm English."""
     total = sum(1 for c in text if not c.isspace())
     if not total:
         return 0.0
@@ -177,8 +177,8 @@ def main():
 
     print(json.dumps(record, indent=2, ensure_ascii=False))
 
-    # Surface inclusion-criteria warnings on stderr so they reach the
-    # operator without breaking JSON output piping.
+    # Surface inclusion-criteria warnings on stderr so they reach you
+    # without breaking JSON output piping.
     fails = [k for k, v in inclusion.items()
              if isinstance(v, str) and v.startswith("FAIL")]
     warns = [k for k, v in inclusion.items()

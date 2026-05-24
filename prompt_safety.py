@@ -27,7 +27,7 @@ Two helpers are added on top of the V4.2 primitives:
   * ``SAFETY_INSTRUCTION`` is a one-paragraph instruction the caller
     prepends to the LLM's user message immediately above the wrapped
     block. It tells the model to treat sentinel-bracketed content as
-    data, not instructions. Operator-authored system prompts are not
+    data, not instructions. Builder-authored system prompts are not
     modified; the instruction lives at the user-message boundary.
 """
 

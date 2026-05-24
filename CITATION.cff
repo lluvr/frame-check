@@ -43,7 +43,7 @@ references:
     url: "https://github.com/Clarethium/lodestone"
     license: CC-BY-4.0
     year: 2026
-    notes: "The methodology that grounds Frame Check's analyses is the Clarethium operator methodology canon, published as the Clarethium/lodestone repository under CC-BY-4.0."
+    notes: "The methodology that grounds Frame Check's analyses is the Clarethium methodology canon, published as the Clarethium/lodestone repository under CC-BY-4.0."
   - type: data
     title: "Frame Vocabulary Standard"
     authors:

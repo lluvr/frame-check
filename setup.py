@@ -171,7 +171,7 @@ def _should_skip(rel_dir: str, name: str) -> bool:
         if name in ("cross_check.json", "cross_check.md"):
             return True
 
-    # calibration/: operator CLI scripts. Only results/ ships.
+    # calibration/: CLI scripts. Only results/ ships.
     if rel_dir == "calibration":
         if name.endswith(".py"):
             return True

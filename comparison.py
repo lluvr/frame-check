@@ -221,8 +221,8 @@ def generate_responses(topic: str) -> dict[str, str]:
                 # The user-facing comparison path proceeds with
                 # whichever models succeeded; an empty result for
                 # this model is treated as "this provider was
-                # unavailable for this run." Log to stderr so the
-                # operator can investigate without breaking the
+                # unavailable for this run." Log to stderr so you
+                # can investigate without breaking the
                 # JSON-RPC channel on stdout.
                 import sys
                 print(
@@ -869,7 +869,7 @@ def analyze_model(
             # break the structural analysis path; sn stays empty
             # and the caller surfaces the structural measurements
             # without verification annotations. Log to stderr so
-            # the operator can investigate without breaking the
+            # you can investigate without breaking the
             # JSON-RPC channel on stdout.
             import sys
             print(
@@ -1132,7 +1132,7 @@ def _compose_compare_verdict(
         # Format a frame for verdict prose. Frame NAME only; the
         # FVS-NNN identifier is library jargon and surfaces on the
         # FVS chip (clickable badge linking to the library entry)
-        # rather than in the user-facing verdict sentence. Operator
+        # rather than in the user-facing verdict sentence. The builder
         # flagged the prior "Frame Name (FVS-NNN)" form as noise:
         # readers don't know what FVS is, and the badge already
         # carries the identifier where it earns its space. The fvs
@@ -1223,9 +1223,9 @@ def _compose_compare_takeaway(
     (frame_library.compose_takeaway_questions). Surfaces:
       - frames_per_model: each model's detected frames, capped at
         three per side, with name + FVS id + library link + the
-        operator-curated per-frame question. Lets a reader see at
+        builder-curated per-frame question. Lets a reader see at
         a glance which structural frames each response is doing
-        work through; the per-frame question is the operator-
+        work through; the per-frame question is the builder-
         curated probe to take to an LLM.
       - absent_dimensions: shared blind-spot dimensions (those
         BOTH responses fail to engage) with the canonical
@@ -1280,7 +1280,7 @@ def _compose_compare_takeaway(
                 # /check's suggestion-card surface (name + signal +
                 # definition + question), not just a thinner three-field
                 # subset. Pre-2026-05-06 the compare path stripped this
-                # field on the way through; the operator flagged the
+                # field on the way through; the builder flagged the
                 # missing context as the highest-leverage gap on the
                 # compare top-section.
                 "definition": m.get("definition") or "",
@@ -1300,7 +1300,7 @@ def _compose_compare_takeaway(
     # order." When true, the takeaway panel collapses the per-model
     # block into one shared "Both documents" block instead of
     # rendering the same frame chip + signal + question twice. The
-    # operator flagged the per-side duplicate as visual noise on
+    # builder flagged the per-side duplicate as visual noise on
     # comparisons of near-identical documents (verbatim sample).
     #
     # Comparison key: (fvs_id, name, signal, question) tuple per
@@ -1666,7 +1666,7 @@ def build_cross_model_comparison(
             "shared_blind_note": framing_data["shared_blind_note"],
         }
 
-    # Agreed numbers with per-model context. Operator's call
+    # Agreed numbers with per-model context. Builder's call
     # 2026-05-05: bare-number tags ("383", "200", "31.5") tell the
     # reader nothing about what those numbers mean or where they
     # came from. The richer shape attaches model A's sentence and
@@ -1748,7 +1748,7 @@ def build_cross_model_comparison(
     # numerical agreement). Mirrors /check's framing_portrait_natural
     # role on the compare side: gives the reader a one-glance read of
     # the structural depth before any LLM narrative lands. Zero LLM
-    # cost; rendered immediately in the takeaway panel hero. Operator
+    # cost; rendered immediately in the takeaway panel hero. The builder
     # flagged 2026-05-06 that the compare top-section was missing the
     # complexity and value /check's first section surfaces.
     comparison_portrait = _compose_comparison_portrait(
@@ -2179,7 +2179,7 @@ def compare_responses(responses: dict[str, str]) -> dict[str, Any] | None:
                 # check enforces the comparison contract: at least
                 # two models must analyze successfully or the
                 # comparison is skipped at the caller. Log to stderr
-                # so the operator can investigate without breaking
+                # so you can investigate without breaking
                 # the JSON-RPC channel on stdout.
                 import sys
                 print(

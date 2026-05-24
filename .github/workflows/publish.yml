@@ -9,7 +9,7 @@
 #      begins; protects against the publish-past-archive class of
 #      incident.
 #   2. Build the wheel under a fresh CI environment so the artifact
-#      is reproducible from public source alone (no operator tree
+#      is reproducible from public source alone (no dev tree
 #      involved).
 #   3. Validate: version-sync gate, wheel-content gate, conformance
 #      smoke test against the installed wheel in a clean venv.
@@ -439,7 +439,7 @@ jobs:
         # the release body that was just created and compares it to
         # the annotated tag content. A mismatch fails the workflow,
         # surfacing any future bug class immediately rather than
-        # waiting for an operator to notice the wrong body.
+        # waiting for someone to notice the wrong body.
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

@@ -483,7 +483,7 @@ def handle_resources_list(_params: dict[str, Any]) -> dict[str, Any]:
     every advertised URI to resolve to concrete bytes and a
     stable hash; an entry without a hash is worse than no entry
     because a client cannot pin it. Failures are logged to stderr
-    so operators see the drop. Enforced by three tests in
+    so you see the drop. Enforced by three tests in
     test_mcp_server.py::test_resources_list_carries_content_hash,
     test_every_resource_has_stable_matching_hash, and
     test_resources_list_drops_unreadable_not_hashless.
@@ -930,7 +930,7 @@ def handle_tools_call(params: dict[str, Any]) -> dict[str, Any]:
         if prefer_contract_version == 2:
             _apply_v2_only_preference(payload)
     except Exception as exc:
-        # Log full detail for operator debugging; return sanitized
+        # Log full detail for debugging; return sanitized
         # response to the client. Phase 5 item 7-MCP: the previous
         # response interpolated `{type(exc).__name__}: {exc}` and
         # could leak document content via downstream exception text.
@@ -997,7 +997,7 @@ def _call_frame_compare(arguments: dict[str, Any]) -> dict[str, Any]:
         )
     except Exception as exc:
         # Same Phase 5 item 7-MCP hardening as frame_check: sanitized
-        # response to client, full detail in operator logs only.
+        # response to client, full detail in logs only.
         log(f"frame_compare failed: {type(exc).__name__}")
         log(traceback.format_exc())
         return _sanitize_tool_exception(exc, "frame_compare_internal_error")
@@ -1329,9 +1329,9 @@ def _cli_help() -> int:
 def _cli_version() -> int:
     """Print a one-line install fingerprint for stale-install checks.
 
-    The operator runs `python3 mcp_server.py --version` before a
-    Claude Desktop session they care about, compares against repo
-    HEAD, and knows whether the configured server is current. The
+    You run `python3 mcp_server.py --version` before a
+    Claude Desktop session you care about, compare against repo
+    HEAD, and know whether the configured server is current. The
     single-line format is grep-friendly; the header line names the
     server for disambiguation when multiple MCP servers are
     installed.
@@ -1398,7 +1398,7 @@ def _cli_test() -> int:
     resources/read on one sample from each family) and
     pretty-prints the results.
 
-    An operator installing Frame Check into an MCP client runs
+    You install Frame Check into an MCP client and run
     this first. If any of these surfaces fail here, no client
     will succeed either; the failure location is the first debug
     hint. The sections are headed so the output is skimmable.
@@ -1446,8 +1446,8 @@ def _cli_test() -> int:
 
     # Divergence opt-in path. Exercises FRAME_DIVERGENCE_CONTRACT_v1
     # Part 2 c1.0: include_divergence=True unlocks a top-level
-    # `divergence` block plus two `agent_guidance` additions. The
-    # operator running --test sees the divergence shape work end-to-
+    # `divergence` block plus two `agent_guidance` additions.
+    # Running --test shows the divergence shape work end-to-
     # end without having to craft a custom JSON-RPC call. Summarised
     # to keep the output scannable; full block is reachable via
     # tools/call over stdio.

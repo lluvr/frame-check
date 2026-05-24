@@ -8,7 +8,7 @@ the top level is resolvable inside the wheel-bundled subset
 `INCLUDE_DIRS` directory. A drift here is the bug class that put
 `Clarethium/frame-check` on a red-CI badge for ~3 days post-v0.8.3:
 15 test files were shipping publicly while their target modules
-were operator-only, every one of those tests ImportError'd on the
+were dev-tree-only, every one of those tests ImportError'd on the
 public mirror's `python3 run_tests.py` (commit 112ffbd closes the
 backlog; this test prevents the same bug class from recurring).
 
@@ -229,7 +229,7 @@ def test_every_shipped_test_imports_resolve_on_public_mirror():
     every module it imports is in `pyproject.toml` py-modules or
     under `INCLUDE_DIRS`. Future-drift catcher: if a contributor
     adds `test_new_feature.py` to `INCLUDE_FILES` that imports
-    `feature_x` (operator-only), this test fails at PR time
+    `feature_x` (dev-tree-only), this test fails at PR time
     naming the offending pair plus the three resolution options.
 
     Function-local imports (the `pytest.importorskip(...)` pattern)

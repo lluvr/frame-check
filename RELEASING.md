@@ -2,7 +2,7 @@
 
 This document is the maintainer's reference for cutting a Frame Check
 MCP release. Releases ship through CI from this repository on
-annotated tag push; no operator-laptop publish path exists in the
+annotated tag push; no laptop publish path exists in the
 current architecture.
 
 ## Release pipeline (overview)

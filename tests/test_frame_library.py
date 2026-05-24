@@ -866,18 +866,18 @@ class TestPatternKindField:
 
 
 class TestComposeTakeawayPalette:
-    """Tests for the operator-authored takeaway palette composer.
+    """Tests for the builder-authored takeaway palette composer.
 
     The palette is the multi-frame surface on /check/results: each
-    operator-authored TAKEAWAY_ENTRIES entry surfaces as one button
+    builder-authored TAKEAWAY_ENTRIES entry surfaces as one button
     that drops the user into Claude / GPT with a per-document prompt.
     The composer's job is to filter authored-only entries, fill the
     prompt template with this document's substrate, and tag each
     entry as detected vs divergent so the UI can group them.
 
-    These tests pin the contract; the entries themselves are operator-
+    These tests pin the contract; the entries themselves are builder-
     authored and are NOT exercised here (an empty TAKEAWAY_ENTRIES is
-    the supported default state until the operator authors one).
+    the supported default state until you author one).
     """
 
     def _framing(self, *fvs_ids):
@@ -899,7 +899,7 @@ class TestComposeTakeawayPalette:
 
     def test_lights_up_when_one_entry_authored(self, monkeypatch):
         """A single authored entry produces one palette card. The
-        operator-authored button_label is preserved verbatim; the
+        builder-authored button_label is preserved verbatim; the
         prompt template is filled with substrate."""
         from frame_library import compose_takeaway_palette
         monkeypatch.setattr(
@@ -951,7 +951,7 @@ class TestComposeTakeawayPalette:
     def test_skips_half_authored_entries(self, monkeypatch):
         """An entry missing button_label OR prompt_template is silently
         skipped; a partial entry surfacing as a broken button is worse
-        than the entry not surfacing. Operator authors both fields or
+        than the entry not surfacing. You author both fields or
         neither."""
         from frame_library import compose_takeaway_palette
         monkeypatch.setattr(

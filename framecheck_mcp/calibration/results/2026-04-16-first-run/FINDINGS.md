@@ -329,7 +329,7 @@ the UI.
 | 4 | SEC quarterly disambiguation | **superseded by time_context classifier, landed** (see B.1) |
 | 5 | Gate SEC routing away from country/crypto subjects | **superseded by entity classifier, landed** (see B.3) |
 | 6 | Add spelled-out scale words to number extraction (`scaled_integer` pattern in `extract_numbers_for_matching`) | 1 pattern + multiplier + 16 tests | landed |
-| 7 | Re-run calibration with all API keys set | operator action | queued |
+| 7 | Re-run calibration with all API keys set | builder action | queued |
 | 8 | Refresh 11 stale corpus entries | manual review | queued |
 | 9 | Add `verification.by_entity_type` to Tier A event schema | schema addition + 2 tests | landed (alongside classifier) |
 | 10 | Extend country regex to include multi-word forms (`North Korea`, `South Korea`, `Cote d'Ivoire`, `Dominican Republic`) | regex + 9 tests | landed (post-classifier audit) |
@@ -337,5 +337,5 @@ the UI.
 | 12 | Add `verification.by_time_context` to Tier A event schema | schema addition + 2 tests | landed (alongside time classifier) |
 
 Items 1–3, 5, 6, 9–12 have landed. Items 7 and 8 remain queued
-as operator-level actions that consume API budget or manual
+as actions that consume API budget or manual
 verification time.

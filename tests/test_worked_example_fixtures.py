@@ -1,10 +1,10 @@
 """Worked-example fixtures as regression-test ground truth.
 
 Each ``data/worked_examples/<slug>/data.json`` is a tested specimen:
-the operator captured a real document (or LLM summary), ran it
+the builder captured a real document (or LLM summary), ran it
 through Frame Check, and bundled the resulting payload alongside
 the source text. The bundled ``frame_check_payload`` is the
-operator's claim about what the wheel produces for that document.
+builder's claim about what the wheel produces for that document.
 
 This test loads each fixture, runs the live wheel against the same
 inputs, and asserts the live payload matches the bundled snapshot
@@ -26,7 +26,7 @@ Backlog: only ``grok-on-nvidia-earnings-2026`` carries a
 ``data.json`` snapshot today. Three other worked-example
 directories exist as bare slugs (the writeup MDs reference them)
 but have no machine-readable inputs + payload; capturing those
-is operator-driven follow-on work (re-run the LLM summarization,
+is builder-driven follow-on work (re-run the LLM summarization,
 capture bytes + SHA, save).
 """
 import json
@@ -78,7 +78,7 @@ def test_worked_example_fixture_matches_live_payload(fixture_path):
 
     # Skip fixtures that don't carry both the inputs and a bundled
     # snapshot. Some worked-example data.json files exist as
-    # input-only specimens (no captured payload); operator-driven
+    # input-only specimens (no captured payload); builder-driven
     # follow-on work captures the payload when ready. A skip surfaces
     # the gap as visible work-to-do without failing the suite.
     if not document_text:
