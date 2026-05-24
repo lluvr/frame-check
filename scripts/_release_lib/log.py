@@ -16,9 +16,9 @@ Events:
   STEP_OK        step completed successfully (with optional duration)
   STEP_FAIL      step failed (detail = exception class + message)
   STEP_SKIP      step skipped (already completed in prior run)
-  GATE_PASS      operator approved the public-actions gate
-  GATE_DENY      operator declined the public-actions gate
-  FORCE_CLEAR    operator force-cleared a lock or state (detail = reason)
+  GATE_PASS      maintainer approved the public-actions gate
+  GATE_DENY      maintainer declined the public-actions gate
+  FORCE_CLEAR    maintainer force-cleared a lock or state (detail = reason)
   START_AT       release launched with --start-at; names target step + the
                  list of pre-skipped step IDs (one event per release, not
                  one per pre-skipped step, to keep the log readable)
@@ -26,7 +26,7 @@ Events:
   END_FAIL       orchestration ended in failure (detail = step that failed)
 
 The log lives in `.release/` which is gitignored; logs do not propagate
-across machines. Operator may copy logs out for incident review.
+across machines. The maintainer may copy logs out for incident review.
 """
 
 from __future__ import annotations

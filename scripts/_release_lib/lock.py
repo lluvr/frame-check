@@ -13,13 +13,13 @@ Implementation:
 
 What the lock does NOT cover:
 
-  - Cross-machine coordination. Two operators on two machines could both
+  - Cross-machine coordination. Two maintainers on two machines could both
     acquire their local lock and both run twine upload; PyPI's
     file-uniqueness gate would reject the second one but only after the
     first succeeded. The internal discipline is "one machine handles
     releases" not enforced by code.
   - Long-running stale processes that were forgotten. A pid is "alive"
-    even if the process is hung; the operator runs `release.py unlock
+    even if the process is hung; the maintainer runs `release.py unlock
     --reason ...` to clear, recording why.
 """
 
@@ -147,7 +147,7 @@ class ReleaseLock:
         """Unlink the lock unconditionally; return what was cleared (if any).
 
         The caller is responsible for recording `reason` in the release log.
-        force_clear() is not the normal release() path; it is the operator's
+        force_clear() is not the normal release() path; it is the maintainer's
         manual override for stuck locks.
         """
         existing = self.read()

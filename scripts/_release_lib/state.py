@@ -14,8 +14,8 @@ stopped. The contract:
     advances. A reset() clears state for a fresh attempt; there is no
     "uncomplete" operation.
   - Mismatched-version load is a hard error. If state.json says v0.8.2 and the
-    operator invokes release.py 0.8.3, the orchestrator refuses rather than
-    silently overwriting. The operator must `release.py status` and decide
+    maintainer invokes release.py 0.8.3, the orchestrator refuses rather than
+    silently overwriting. The maintainer must `release.py status` and decide
     explicitly whether to `release.py unlock` and start fresh or resume the
     in-progress version.
 """
@@ -29,7 +29,7 @@ from typing import Any
 
 
 class ReleaseStateError(Exception):
-    """Raised on state-file inconsistencies that need operator intervention."""
+    """Raised on state-file inconsistencies that need maintainer intervention."""
 
 
 class ReleaseState:
@@ -49,7 +49,7 @@ class ReleaseState:
         """Load existing state. Returns True if state existed and was loaded.
 
         Raises ReleaseStateError if the loaded state is for a different
-        version (operator must resolve before continuing).
+        version (maintainer must resolve before continuing).
         """
         if not self.state_path.exists():
             return False
