@@ -1,6 +1,6 @@
 """Backward-compatible wrapper. Real implementation in scripts/_release_lib/close_out.py.
 
-The library module carries the operator-facing docstring and CLI;
+The library module carries the maintainer-facing docstring and CLI;
 argparse's `description=__doc__` resolves to the library's `__doc__`,
 so `--help` output is unchanged from before the refactor. Invoking
 `python3 scripts/cut_release.py [...flags]` defers to
