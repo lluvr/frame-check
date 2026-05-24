@@ -4,7 +4,7 @@
     "document_text": "Replace this with the first pilot document (300-2000 words) selected per PROTOCOL_v1.md sample-selection criteria. The pilot N=3 documents should span recommendation, analysis, and opinion shapes; document drawn from outside data/worked_examples/ and data/adversarial_fixtures/.",
     "source_text": null,
     "provenance": {
-      "selected_by": "operator",
+      "selected_by": "builder",
       "selection_date_utc": "PENDING",
       "rationale": "Pilot document. Selection rationale recorded here before run."
     }

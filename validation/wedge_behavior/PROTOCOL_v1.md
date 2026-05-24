@@ -1,6 +1,6 @@
 # Wedge behavior-change protocol v1
 
-**Status:** pre-registered, not yet executed. Pilot pending operator authorization.
+**Status:** pre-registered, not yet executed. Pilot pending authorization.
 **Date pre-registered:** 2026-04-28
 **Repo path:** `validation/wedge_behavior/`
 
@@ -42,7 +42,7 @@ Exclusion criteria:
 
 Sample size:
 
-- **Pilot:** N=2 documents. Operator authors them and rates them (with the agent rerunning the protocol, the rater is also the prompt-writer, which is a confound the pilot accepts in exchange for rubric calibration speed). Pilot output is a calibrated rubric, not a hypothesis test.
+- **Pilot:** N=2 documents. You author them and rate them (with the agent rerunning the protocol, the rater is also the prompt-writer, which is a confound the pilot accepts in exchange for rubric calibration speed). Pilot output is a calibrated rubric, not a hypothesis test.
 - **Main study:** N=10 documents. Drawn after the pilot rubric stabilizes. At least one document per genre cluster (decision, recommendation, analysis, opinion).
 
 ## Treatment design
@@ -88,15 +88,15 @@ A NEGATIVE result is publishable. Pre-registered analysis requires reporting the
 
 - Pre-registered: items 1, 2, 3 binary outcomes per response, AC1 per item, decision-rule pass/fail.
 - Descriptive: items 4, 5 binary outcomes; per-document narrative ratings; paired qualitative comparison (one paragraph per pair).
-- Robustness: re-run rubric with the operator as sole rater; report whether sole-rater AC1 differs from three-rater AC1 (Bland-Altman-style framing).
+- Robustness: re-run rubric with the builder as sole rater; report whether sole-rater AC1 differs from three-rater AC1 (Bland-Altman-style framing).
 - Outputs: a single results document RESULTS_v1.md in this directory, with the 10 paired responses linked or inlined.
 
 The analysis is registered AS THE PROTOCOL. No additional comparisons after the data is collected; if anything new is wanted, it ships as protocol v2.
 
 ## Pilot scope
 
-- N=2 documents, operator-authored.
-- One rater (operator).
+- N=2 documents, builder-authored.
+- One rater (the builder).
 - Spend ceiling: $1 across both arms of both documents (~4 LLM calls per document, ~$0.05 each at Claude Sonnet pricing).
 - Output: calibrated rubric (clarifications, edge cases noted, AC1 not reported because N=1 rater).
 
@@ -113,7 +113,7 @@ These exclusions are pre-registered so the result cannot be over-claimed. Hence 
 
 ## Honest disclosures
 
-- The operator who pre-registered this protocol is also the agent_guidance author. There is a structural conflict of interest: the prompts being measured are written by the same person who chose what to measure. The mitigation: the rubric is binary and behavior-derived, not author-judgment-derived. Three independent raters at the main study reduce the residual bias.
+- The builder who pre-registered this protocol is also the agent_guidance author. There is a structural conflict of interest: the prompts being measured are written by the same person who chose what to measure. The mitigation: the rubric is binary and behavior-derived, not author-judgment-derived. Three independent raters at the main study reduce the residual bias.
 - The without-tool arm is not a "naive agent"; it is the same agent without the tool call. This is the right comparison for the wedge claim (does the tool change behavior?) but it is NOT the right comparison for "does an agent that has never been trained on frame_check produce shaped output?" That stronger claim requires a different study with a model unaware of Frame Check's existence.
 - Single-model, single-temperature, single-prompt-shape. The result generalizes only as far as those constraints. Generalization beyond is conjecture until the cross-model study runs.
 - The Frame Vocabulary Standard methodology canon at github.com/Clarethium/lodestone cites this protocol as an empirical foothold, not as a definitive validation.
@@ -124,10 +124,10 @@ If the wedge claim survives the main study and replicates at N=30-50 with three-
 
 If the claim does not survive, this becomes the document that names what the wedge does NOT do, which is a different kind of legacy artifact: an honest negative result that other researchers cite when designing their own agent-behavior-change measurements. Either outcome is publishable. The evidence discipline is what makes that true.
 
-## Operator authorization required
+## Authorization required
 
 - Pilot spend (under $1).
-- Operator's rating time on the pilot (estimated 30-60 minutes for N=2 documents).
+- Rating time on the pilot (estimated 30-60 minutes for N=2 documents).
 - Decision after pilot: proceed to main study (N=10), iterate on rubric, or stop.
 
 The protocol is shipped as a standalone document at v1. Changes after this version land as v2 with a delta log; the pre-registration discipline depends on the protocol surviving its own data.

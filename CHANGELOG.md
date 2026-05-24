@@ -72,8 +72,8 @@ The wider field-name pairs `name` ↔ `title` and `fvs_id` ↔
     `frame_library_matches[*].name` carries an absence-qualifier
     (e.g., `'Failure Framing (absent)'`) when the frame fires as
     absence-pattern; `title` is canonical without qualifier.
-    Naive aliasing would conflate distinct content. Operator
-    decision required.
+    Naive aliasing would conflate distinct content. Decision
+    required.
   - `fvs_id` ↔ `frame_id`: same value in current data, safe to
     alias mechanically. Deferred — the `frame_id` rename in
     particular touches more integrations than the URI/URL pair
@@ -138,7 +138,7 @@ semantic risk.
 
 ### Schema alignment: `library_resource_uri` on `divergence.absent_frames`
 
-Operator Phase-2 client validation surfaced an MCP schema
+Phase-2 client validation surfaced an MCP schema
 inconsistency. `decision_readiness.dimensions[*].library_entries[*]`
 emits frame references with the shape
 `{fvs_id, library_resource_uri, public_url}` (see
@@ -151,7 +151,7 @@ that learned the decision_readiness shape and looked for
 The cross-block inconsistency was load-bearing in practice: the
 v1.0.9 Phase-2 protocol document (`Test 2 — Frame Divergence`)
 asked Claude Desktop to cite absent frames by `library_resource_uri`
-per the decision_readiness convention; the operator's client run
+per the decision_readiness convention; the client run
 found the field absent on absent_frames and surfaced this
 correctly.
 
@@ -362,7 +362,7 @@ requiring manual `gh release edit --notes` recovery: commit-message
 fallthrough at v1.0.0 (lightweight tag), annotation overwrite at
 v1.0.1 (actions/checkout second-fetch), backtick command
 substitution at v1.0.2 (`--notes` direct expression interpolation).
-Each was caught by the operator noticing the wrong body AFTER the
+Each was caught by the builder noticing the wrong body AFTER the
 release shipped.
 
 The new `Verify release body matches annotated tag (post-publish
@@ -371,7 +371,7 @@ gate)` step in the github-release job fetches the release body via
 the annotated tag content (with trailing-whitespace normalization
 to absorb gh's line-ending handling), and fails the workflow on a
 mismatch. Any future variant of the release-body bug class fails
-CI loudly at publish time instead of waiting on operator
+CI loudly at publish time instead of waiting on manual
 inspection.
 
 The recovery for a future failure stays the same:
@@ -639,7 +639,7 @@ five latent defects are caught + fixed.
 
 `master` is now protected via `gh api PUT /repos/.../branches/.../
 protection`: force-push blocked, branch deletion blocked, linear
-history required. Operator (admin) keeps bypass for emergency
+history required. The admin keeps bypass for emergency
 recovery (`enforce_admins: false`). No required status checks at
 this posture (lightweight for solo development); raise to
 PR-required-checks when an external contributor lands.
@@ -759,7 +759,7 @@ Five publish-workflow defects are fixed and held — four from the
 
 ## [0.9.4] - 2026-05-09
 
-### Public canon: residual operator-document citations scrubbed
+### Public canon: residual document citations scrubbed
 
 Closes the cleanup arc that began with 0.9.0 retiring the in-tree methodology document and the engine gap-inventory file from the wheel. Several adopter-facing surfaces still cited those documents as load-bearing references and the publish-time CI gate still required one of them. Adopters reading the citable artifacts found dead links and false claims; the publish workflow failed at every tag push.
 
@@ -781,7 +781,7 @@ Docstrings and comments inside shared MCP modules and several test files are rew
 
 ### Wheel-build per-card cleanup
 
-The 0.9.3 lift surfaced a parallel gap: wheel-bundled FVS-NNN library cards still carried `## Cross-family reliability` and `## Vocabulary connections` sections (operator-research version trajectory, evaluation paths, ratification narrative). The public extract pipeline already stripped these via `_clean_library_card`; the wheel-build hook applied only the literal canon-substitution map. The two surfaces had drifted. The hook now runs `_clean_library_card` on every wheel-bundled card, replaces `INDEX.md` with the public adopter index, and drops `README.md` (curator-discipline guide). RECORD regeneration handles the dropped paths so pip install verifies the post-cleanup file set.
+The 0.9.3 lift surfaced a parallel gap: wheel-bundled FVS-NNN library cards still carried `## Cross-family reliability` and `## Vocabulary connections` sections (research version trajectory, evaluation paths, ratification narrative). The public extract pipeline already stripped these via `_clean_library_card`; the wheel-build hook applied only the literal canon-substitution map. The two surfaces had drifted. The hook now runs `_clean_library_card` on every wheel-bundled card, replaces `INDEX.md` with the public adopter index, and drops `README.md` (curator-discipline guide). RECORD regeneration handles the dropped paths so pip install verifies the post-cleanup file set.
 
 ### README adopter-pass
 
@@ -827,12 +827,12 @@ A fresh-eyes audit on the published 0.9.1 wheel surfaced two gap classes that th
 
 ### Public canon discipline: comprehensive cleanup
 
-This release replaces 0.9.0 (which itself superseded the 0.8.x line) as the first wheel that ships construction-clean public canon: documentation, frame catalog, source-comments, and tests have been authored for the adopter audience rather than redacted from internal sources. 0.9.0 was yanked because it still carried operator-research vocabulary in shipped FVS cards and worked-example narrative.
+This release replaces 0.9.0 (which itself superseded the 0.8.x line) as the first wheel that ships construction-clean public canon: documentation, frame catalog, source-comments, and tests have been authored for the adopter audience rather than redacted from internal sources. 0.9.0 was yanked because it still carried research vocabulary in shipped FVS cards and worked-example narrative.
 
 ### Catalog: per-card cleanup
 
 - `data/frame_library/INDEX.md` is rewritten as an adopter-facing data table: the 20 entries with their class, detection state, status, and curation date, plus column semantics. The earlier file additionally carried canon-trajectory rationale and library-version landscape exposition that was not adopter-facing.
-- Per-card `## Cross-family reliability` and `## Vocabulary connections` sections are stripped from the public extract. The numerical reliability values continue to ship live in MCP responses (`library_consensus_ac1` field on each frame match); the per-card prose carrying the operator-research version trajectory does not.
+- Per-card `## Cross-family reliability` and `## Vocabulary connections` sections are stripped from the public extract. The numerical reliability values continue to ship live in MCP responses (`library_consensus_ac1` field on each frame match); the per-card prose carrying the research version trajectory does not.
 - Worked-example markdowns (`data/worked_examples/*.md`) had internal "Note on detection state" blockquotes scrubbed; the adopter-facing teaching points remain.
 
 ### Wheel: scope unchanged from 0.9.0
@@ -854,8 +854,8 @@ The wheel bundles the MCP server contract (`docs/MCP_SERVER.md`), the Frame Dive
 ### Adopter-facing surface
 
 - `AGENTS.md` added at the repo root: guidance for AI coding agents (Claude Code, Cursor, Codex, Aider) that work in the repository, with explicit canon-discipline rules.
-- `README.md`, `CONTRIBUTING.md`, `GOVERNANCE.md`, `SECURITY.md`, `docs/README.md`, `docs/MCP_SERVER.md`, `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`, `docs/RATERS.md`, `NOTICE`, `.github/ISSUE_TEMPLATE/*` rewritten to remove dead-link surface and operator vocabulary.
-- The cleaning replaced `evidence discipline` (operator phrasing) with adopter-facing phrasing throughout.
+- `README.md`, `CONTRIBUTING.md`, `GOVERNANCE.md`, `SECURITY.md`, `docs/README.md`, `docs/MCP_SERVER.md`, `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`, `docs/RATERS.md`, `NOTICE`, `.github/ISSUE_TEMPLATE/*` rewritten to remove dead-link surface and positioning vocabulary.
+- The cleaning replaced `evidence discipline` (positioning phrasing) with adopter-facing phrasing throughout.
 
 ### Note on prior versions
 

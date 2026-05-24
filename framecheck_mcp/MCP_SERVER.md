@@ -72,7 +72,7 @@ python3 mcp_server.py --version
 Emits a single-line fingerprint with `server_version`, `protocol`,
 `git_sha` (plus `+dirty` flag if the working tree has uncommitted
 changes), `frame_library_version`, `corpus_slugs`, `corpus_hash`,
-`python`, and `script` (absolute path). Lets an operator confirm
+`python`, and `script` (absolute path). Lets you confirm
 the MCP install configured in Claude Desktop / Cursor is actually
 running the expected code, not a stale checkout. The `corpus_hash`
 is byte-identical to the hash suffix on
@@ -951,7 +951,7 @@ preserved).
 
 `agent_guidance` carries a top-level `composition_discipline` field
 on every `frame_check` invocation (whether or not divergence is
-included). This field exists because operator testing of the 0.8.0
+included). This field exists because testing of the 0.8.0
 prerelease surfaced a UX failure: an agent that walks the
 measurements one-by-one delivers a statistical readout the user
 cannot act on. The field pushes the insight-led discipline into the

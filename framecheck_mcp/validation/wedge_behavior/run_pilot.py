@@ -3,7 +3,7 @@
 
 Reads a document file, runs frame_check against it locally (via
 mcp_server.handle_tools_call, no network round-trip), and prints
-the two prompt templates the operator can paste into Claude:
+the two prompt templates you can paste into Claude:
 
   - WITHOUT-TOOL ARM: the agent sees only the document and the user
     prompt. No frame_check output. This is the baseline response
@@ -12,7 +12,7 @@ the two prompt templates the operator can paste into Claude:
     AND the frame_check output (which the runner inlines). This is
     the "agent has tool access" response.
 
-Operator workflow:
+Workflow:
 
   1. python3 validation/wedge_behavior/run_pilot.py <doc.md> --user-prompt "..."
   2. Copy the WITHOUT-TOOL ARM block into a fresh Claude session.
@@ -25,11 +25,11 @@ Operator workflow:
   5. Repeat for N=2 documents. The pilot calibrates the rubric;
      N=10 main study comes after.
 
-This runner does NOT make LLM API calls. The operator runs the
-prompts in their Claude session (memory: "I do have the test of
+This runner does NOT make LLM API calls. You run the
+prompts in your Claude session (memory: "I do have the test of
 Claude. We're gonna design the tests to produce the results we
-want."). Keeping the LLM calls operator-driven respects the
-budget envelope and lets the operator verify the prompts before
+want."). Keeping the LLM calls builder-driven respects the
+budget envelope and lets you verify the prompts before
 sending.
 
 Usage:
@@ -43,7 +43,7 @@ Outputs are written to validation/wedge_behavior/results_v1/<slug>/:
   - with_tool_prompt.txt        the prompt for the with-tool arm
   - rubric_form.md              copy of rubric_template.md (rater form)
 
-Operator pastes responses into without.md and with.md alongside.
+You paste responses into without.md and with.md alongside.
 """
 
 import argparse
@@ -164,7 +164,7 @@ def main() -> int:
     if _RUBRIC_TEMPLATE.exists():
         shutil.copy(_RUBRIC_TEMPLATE, out_dir / "rubric_form.md")
 
-    # Stub files for the operator to paste responses into.
+    # Stub files for you to paste responses into.
     without_md = out_dir / "without.md"
     with_md = out_dir / "with.md"
     if not without_md.exists():

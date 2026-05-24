@@ -1,6 +1,6 @@
 """Baseline-comparison harness for the pre-registered protocol.
 
-Reads a corpus of documents (operator-curated, NOT from the bundled
+Reads a corpus of documents (builder-curated, NOT from the bundled
 worked examples — see PROTOCOL_v1.md sample-selection criteria),
 runs each through Frame Check + the pre-registered LLM baseline, and
 captures structured outputs for downstream rater scoring.
@@ -10,8 +10,8 @@ Status of execution chain:
   external services).
 - LLM baseline side: requires an API key for the pre-registered model.
   Default candidate: Claude Sonnet 4.6 (ANTHROPIC_API_KEY supplied
-  by the operator through their secrets infrastructure). Operator
-  selects at run time.
+  by you through your secrets infrastructure). You
+  select at run time.
 - Rater scoring: human-handed; harness only produces inputs for raters
   + a render of the Frame Check payload as readable markdown.
 
@@ -22,11 +22,11 @@ Invocation:
         --llm-model claude-sonnet-4-6 \\
         --runs-per-side 5  # H3 reproducibility test
 
-The harness does NOT execute the LLM call by default; the operator
-passes a --call-llm flag only when running with credentials available
+The harness does NOT execute the LLM call by default; you
+pass a --call-llm flag only when running with credentials available
 and authorization to bill against them. Without --call-llm, the
 harness produces the Frame Check side + a placeholder llm_baseline
-file the operator fills in manually or via a separate authenticated
+file you fill in manually or via a separate authenticated
 invocation.
 
 Pre-registered design constraints (do not modify without versioning
@@ -119,7 +119,7 @@ def run_llm_baseline_placeholder(
     runs: int = 1,
 ) -> list[dict[str, Any]]:
     """Placeholder when --call-llm is not passed. Produces a structured
-    record naming what the operator needs to fill in. Keeps the
+    record naming what you need to fill in. Keeps the
     harness usable without API keys for the Frame Check side."""
     prompt = LLM_PROMPT_TEMPLATE.format(
         document_text=document_text,
@@ -134,9 +134,9 @@ def run_llm_baseline_placeholder(
             "captured_at_utc": None,
             "run_index": i,
             "note": (
-                "Harness invoked without --call-llm. Operator authorization "
-                "required to bill API. Fill in raw_response_text from the "
-                "operator-authenticated LLM call against this exact prompt "
+                "Harness invoked without --call-llm. Authorization "
+                "required to bill API. Fill in raw_response_text from your "
+                "authenticated LLM call against this exact prompt "
                 "+ model + temperature 0.7."
             ),
         }
@@ -229,7 +229,7 @@ def main():
         action="store_true",
         help=(
             "Actually invoke the LLM API. Without this flag, the LLM side "
-            "produces a placeholder file naming what the operator needs to "
+            "produces a placeholder file naming what you need to "
             "fill in. The Frame Check side runs either way."
         ),
     )
@@ -237,7 +237,7 @@ def main():
 
     # --call-llm: drive the LLM-baseline arm via Anthropic API.
     # Without --call-llm, the harness produces a placeholder file
-    # the operator fills in via their authenticated LLM invocation.
+    # you fill in via your authenticated LLM invocation.
     # Either path satisfies pre-reg as long as the prompt template
     # + model + temperature stay locked.
 
@@ -312,7 +312,7 @@ def main():
         print("  3. For H1 + H2 (require raters), score per "
               "rating_rubric_v1.md.")
     else:
-        print("  1. Operator runs the LLM side against each prompt with "
+        print("  1. Run the LLM side against each prompt with "
               "ANTHROPIC_API_KEY or equivalent (or re-run with --call-llm).")
         print("  2. For H3, run analyze_h3.py once LLM responses captured.")
         print("  3. Raters score per rating_rubric_v1.md for H1 + H2.")

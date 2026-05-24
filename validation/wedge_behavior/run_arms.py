@@ -94,7 +94,7 @@ def main():
         choices=("without_first", "with_first"),
         default="without_first",
         help="Arm execution order. Pre-reg says randomize per doc; "
-             "operator picks per invocation.",
+             "you pick per invocation.",
     )
     args = ap.parse_args()
 

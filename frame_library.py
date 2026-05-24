@@ -105,12 +105,12 @@ FVS_NAMES: dict[str, str] = {
 # canonical teaching question for documentation, agent_guidance,
 # and frame_opportunities composition.
 #
-# TODO(operator-authorship): 8 of 20 entries lack a teaching question
+# TODO(authoring): 8 of 20 entries lack a teaching question
 # (FVS-003, 004, 005, 006, 013, 018, 019, 020; all meta-side frames,
 # 3 of 8 are withdrawn from v1 publication: FVS-003, 004, 018, 019).
 # Authoring queue + per-entry construct-hint context lives in
-# OPERATOR_AUTHORING_QUEUE.md. Per the project's "no LLM drafting of
-# substantive content" discipline, teaching questions are operator-
+# AUTHORING_QUEUE.md. Per the project's "no LLM drafting of
+# substantive content" discipline, teaching questions are builder-
 # authored. The harness L7 FAIL is the visible gate that holds until
 # the queue is closed; do not paper over it with placeholder questions.
 # See get_teaching_question() below: it returns None for unauthored
@@ -176,7 +176,7 @@ def get_teaching_question(fvs_id: str) -> str | None:
     return TEACHING_QUESTIONS.get(fvs_id)
 
 
-# Operator-authored takeaway entries per FVS. When an entry is present
+# Builder-authored takeaway entries per FVS. When an entry is present
 # here, the FVS surfaces as a button in the takeaway palette on the
 # /check results page (live and saved). Each button drops the user into
 # Claude / GPT with a per-document prompt that reads the user's document
@@ -208,9 +208,9 @@ def get_teaching_question(fvs_id: str) -> str | None:
 #   {v4_2_reasoning}    V4.2 per-document reasoning text when available
 #
 # Per the "no LLM drafting of substantive content" discipline, every
-# entry is operator-authored. The empty default state is a feature; a
+# entry is builder-authored. The empty default state is a feature; a
 # half-authored palette is worse than none. Adding one entry lights up
-# the palette section live; the operator iterates from there.
+# the palette section live; you iterate from there.
 TAKEAWAY_ENTRIES: dict[str, dict[str, str]] = {
     # FVS-NNN: {
     #     "button_label": "...",
@@ -225,7 +225,7 @@ class _EmptyDefault(dict):
     Used by compose_takeaway_palette so a prompt template referencing a
     substrate variable Frame Check did not provide for THIS document
     silently empties out instead of raising KeyError. Keeps prompt
-    authoring forgiving: the operator can reference {v4_2_reasoning} or
+    authoring forgiving: you can reference {v4_2_reasoning} or
     {blind_spots} without having to guard every reference for the case
     where that piece of substrate did not run.
     """
@@ -238,7 +238,7 @@ def _derive_ac1_tier(ac1_score) -> str:
     """Map a V4.2 AC1 inter-rater agreement score to a reliability
     tier label. Mirrors the cutoffs used elsewhere in results.html
     (strong >= 0.8, moderate >= 0.4, weak >= 0). Returns empty string
-    when the score is None or non-numeric so the operator's prompt
+    when the score is None or non-numeric so your prompt
     template can reference {ac1_tier} without a crash on documents
     where V4.2 did not run.
     """
@@ -293,7 +293,7 @@ def compose_takeaway_palette(
     reasoning, AC1 score and tier, Layer A signal text, importance,
     pattern_kind) plus cross-frame state (voice, claim density,
     sourced percentage, detected/absent FVS lists) so an
-    operator-authored prompt template can weave document-specific
+    builder-authored prompt template can weave document-specific
     findings INTO the prompt body. Without this depth of substrate
     the prompts collapse to slot-filled boilerplate.
 
@@ -305,7 +305,7 @@ def compose_takeaway_palette(
       epistemic:    the document's epistemic dict (sourced_pct, etc.)
       claim_stats:  per-document claim density / count dict
 
-    Substrate variables exposed to operator prompt templates:
+    Substrate variables exposed to prompt templates:
       Per-frame (filled from the matching frame_suggestion +
       V4.2 entry for THIS FVS):
         frame_name, fvs_id, teaching_question
@@ -325,7 +325,7 @@ def compose_takeaway_palette(
         claim_density      numerical claims per 1K words (string)
         sourced_pct        percent sentences sourced (string)
 
-    Missing values fall through _EmptyDefault to "" so the operator's
+    Missing values fall through _EmptyDefault to "" so your
     template can reference any variable without crashing on documents
     where the substrate is partial.
 
@@ -418,10 +418,10 @@ def compose_takeaway_palette(
         try:
             prompt = template.format_map(_EmptyDefault(substrate))
         except (IndexError, ValueError):
-            # Malformed format spec inside the operator's template
-            # (e.g., a stray `{` they did not intend as a placeholder).
-            # Surface the raw template so the entry still appears; the
-            # operator catches the bug on first use rather than the
+            # Malformed format spec inside your template
+            # (e.g., a stray `{` you did not intend as a placeholder).
+            # Surface the raw template so the entry still appears; you
+            # catch the bug on first use rather than the
             # whole palette disappearing.
             prompt = template
 
@@ -466,7 +466,7 @@ def compose_takeaway_questions(
     The takeaway is the user's path from the analysis to a decision.
     It surfaces:
       - Frames the document is doing structural work through, with
-        per-frame reasoning and the operator-curated question
+        per-frame reasoning and the builder-curated question
       - Dimensions the document does not engage with their canonical
         question
       - Concerns Frame Check flagged (AI-interpret blind_spots; empty
@@ -728,7 +728,7 @@ def _compose_takeaway_llm_prompt(
     """Bundle the takeaway substrate into a single prompt the user can
     take to their LLM. Pure structural composition: every line of
     substantive content (frame names, reasoning, questions, blind
-    spots, claims) comes from operator-curated or LLM-pre-computed
+    spots, claims) comes from builder-curated or LLM-pre-computed
     sources. The wrapping prose ("Frame Check analyzed...", "Apply
     these to the document.") is structural format only.
 

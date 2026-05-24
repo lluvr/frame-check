@@ -7,7 +7,7 @@
 ## What ships in this directory
 
 - [`PROTOCOL_v1.md`](PROTOCOL_v1.md) — pre-registered hypotheses (H1 named-absence advantage, H2 source-fidelity advantage, H3 reproducibility advantage), sample-selection criteria, treatment design, locked LLM prompt template.
-- [`run_baseline.py`](run_baseline.py) — harness. Frame Check side runs deterministically (no LLM cost). LLM-baseline side runs via Anthropic API when `--call-llm` is passed (operator-authorized) or produces placeholder records otherwise.
+- [`run_baseline.py`](run_baseline.py) — harness. Frame Check side runs deterministically (no LLM cost). LLM-baseline side runs via Anthropic API when `--call-llm` is passed (when authorized) or produces placeholder records otherwise.
 - [`analyze_h3.py`](analyze_h3.py) — mechanical Jaccard-distance analyzer for the H3 reproducibility measurement. No human rater required.
 - [`rating_rubric_v1.md`](rating_rubric_v1.md) — per-rater rubric for H1 + H2 (when raters are available).
 - [`h3_corpus.json`](h3_corpus.json) — single neutral technical-descriptive document used for the H3 measurement.
@@ -35,7 +35,7 @@ Honest scope: N=1 document, single LLM, single temperature. The pattern (determi
 ## What's needed to close H1, H2
 
 Same constraints as `validation/wedge_behavior/STATUS.md`:
-1. Externally-sourced documents (public LLM-output corpora, random op-eds, Wikipedia featured articles) — eliminates operator-authoring confound.
+1. Externally-sourced documents (public LLM-output corpora, random op-eds, Wikipedia featured articles) — eliminates the self-authoring confound.
 2. Independent raters with Gwet's AC1 reported per item.
 3. PROTOCOL_v2 with rubric refinements applied if the wedge_behavior calibration findings carry over.
 

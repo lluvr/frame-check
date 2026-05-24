@@ -1,6 +1,6 @@
 # Baseline-comparison protocol v1
 
-**Status:** pre-registered, not yet executed. Pilot pending operator authorization.
+**Status:** pre-registered, not yet executed. Pilot pending authorization.
 **Date pre-registered:** 2026-05-11
 **Repo path:** `validation/baseline_comparison/`
 **Sibling protocol:** `validation/wedge_behavior/PROTOCOL_v1.md` (load-bearing-shift measurement on agent responses)
@@ -53,7 +53,7 @@ Exclusion criteria:
 
 Sample size:
 
-- **Pilot:** N=3 documents. Operator selects to span recommendation, analysis, and opinion shapes. Pilot output is rubric calibration, not a hypothesis test.
+- **Pilot:** N=3 documents. You select to span recommendation, analysis, and opinion shapes. Pilot output is rubric calibration, not a hypothesis test.
 - **Main study (H1):** N=20 documents drawn after pilot rubric stabilizes. Two trained raters per document. Inter-rater agreement target Cohen's kappa >= 0.6 (substantial agreement).
 - **Main study (H2):** N=10 paired document-source pairs. Both raters score Frame Check + LLM identification of unsourced numbers against ground truth (which is literal substring presence in source, computable without rater).
 - **Main study (H3):** N=10 documents, 5 runs each side. Jaccard distances computed mechanically.
@@ -64,7 +64,7 @@ For each document, three measurement runs:
 
 1. **Frame Check structural analysis.** `mcp_server.build_epistemic_payload(document_text, source_text=..., include_divergence=True)`. Captures all wire fields (voice, coverage, divergence.absent_frames, verification.source_fidelity, frame_library_matches, decision_readiness).
 
-2. **LLM-prompted framing analysis (baseline).** A single frontier LLM is selected and pinned before the pilot (operator authorization). Default candidate as of pre-registration date (2026-05-11): Claude Sonnet 4.6 at temperature 0.7. The exact model identifier (including any provider-side version suffix) and temperature are recorded in the per-document results record at execution time; same model + temperature + system prompt across all N documents within the same pilot or main-study run. If the default candidate is deprecated by the provider before execution, operator selects the strongest available substitute and records the substitution rationale in the results writeup. The pre-registration commits to the prompt template + the head-to-head methodology, not to a model identifier that may not survive to execution.
+2. **LLM-prompted framing analysis (baseline).** A single frontier LLM is selected and pinned before the pilot (your authorization). Default candidate as of pre-registration date (2026-05-11): Claude Sonnet 4.6 at temperature 0.7. The exact model identifier (including any provider-side version suffix) and temperature are recorded in the per-document results record at execution time; same model + temperature + system prompt across all N documents within the same pilot or main-study run. If the default candidate is deprecated by the provider before execution, you select the strongest available substitute and records the substitution rationale in the results writeup. The pre-registration commits to the prompt template + the head-to-head methodology, not to a model identifier that may not survive to execution.
 
    Prompt template (locked at pre-registration):
    ```
@@ -107,8 +107,8 @@ See `rating_rubric_v1.md` for the per-rater rubric. Pre-registered before pilot.
 
 ## Open questions before execution
 
-- **LLM selection.** Sonnet 4.6 is the default candidate as of pre-reg date. Operator can substitute another frontier model with justification recorded in the results writeup before pilot. The point is to test the strongest plausible baseline, not a weakened one. Pre-registration commits to the prompt + methodology, not a specific model identifier.
-- **Rater compensation.** Compensation rate and rater recruitment is operator territory; documented separately under operator-controlled artifacts.
+- **LLM selection.** Sonnet 4.6 is the default candidate as of pre-reg date. You can substitute another frontier model with justification recorded in the results writeup before pilot. The point is to test the strongest plausible baseline, not a weakened one. Pre-registration commits to the prompt + methodology, not a specific model identifier.
+- **Rater compensation.** Compensation rate and rater recruitment is your responsibility; documented separately.
 - **Source corpus.** Worked examples are EXCLUDED from sample selection. Documents must come from outside the bundled fixtures to avoid contamination.
 
 ## Why this is its own protocol (not a fold-in to wedge_behavior)

@@ -476,7 +476,7 @@ def test_D3_bom_and_rtl_override_tolerated():
 def test_D4_ansi_escape_sequences_inert():
     """ANSI escapes embedded in document_text are inert: the regex
     detector treats them as literal characters. The response wire
-    format JSON-encodes them as \\u001b... so a malicious operator
+    format JSON-encodes them as \\u001b... so a malicious
     log cannot escape via response replay."""
     doc = "\x1b[31mRED\x1b[0m " + _DOC_SAMPLE + " \x1b[2J\x1b[H"
     resp = _frame_check_call(doc)
@@ -744,12 +744,12 @@ def test_F5_resources_list_drops_unreadable_entries_silently():
         )
 
 
-def test_F6_log_message_escapes_control_chars_for_operator_safety():
+def test_F6_log_message_escapes_control_chars_for_safety():
     """A hostile request reaches log() via the dispatcher's
     exception path with raw control characters in the message
     (e.g. a resource URI containing ANSI escape sequences). The
     log helper must escape ASCII C0 controls (except CR/LF/TAB)
-    to \\xNN form so an operator tailing the log live cannot have
+    to \\xNN form so anyone tailing the log live cannot have
     their terminal hijacked. CR/LF/TAB are preserved because they
     are legitimate in multi-line log messages.
 
@@ -768,7 +768,7 @@ def test_F6_log_message_escapes_control_chars_for_operator_safety():
     assert "alert" in sanitized
 
     # CR / LF / TAB are PRESERVED so multi-line traceback messages
-    # still render readably for operators.
+    # still render readably.
     legitimate = "line1\nline2\tindented\r\ndone"
     sanitized = mcp_server._sanitize_log_message(legitimate)
     assert sanitized == legitimate

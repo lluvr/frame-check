@@ -31,7 +31,7 @@ Per-document H1 metrics:
 ## H2: source-fidelity scoring (per paired document)
 
 For each numerical value Output A claims is "not in source":
-- **True-positive (1).** The value is not in the source text by literal substring search (operator computes this mechanically; raters do not score this — the literal-substring test is the ground truth).
+- **True-positive (1).** The value is not in the source text by literal substring search (you compute this mechanically; raters do not score this — the literal-substring test is the ground truth).
 - **False-positive (0).** The value IS in the source text by literal substring search.
 
 For each numerical value Output A claims IS in source:
@@ -57,7 +57,7 @@ This is qualitative texture, not scored. Feeds into the writeup if the main stud
 
 ## Adjudication
 
-Disagreements between raters on H1 (valid vs. invalid-hallucinated) are adjudicated by a third rater (operator or designated tiebreaker). Cohen's kappa is computed across the two-rater pool before adjudication; the kappa figure is reported in the results writeup whether or not adjudication is triggered.
+Disagreements between raters on H1 (valid vs. invalid-hallucinated) are adjudicated by a third rater (you or a designated tiebreaker). Cohen's kappa is computed across the two-rater pool before adjudication; the kappa figure is reported in the results writeup whether or not adjudication is triggered.
 
 ## Output
 

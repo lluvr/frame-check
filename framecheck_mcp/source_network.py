@@ -1071,7 +1071,7 @@ _TIMEOUT = 5
 # app.py:1729, which leaves ~10s headroom for the substrate work
 # (detection, framing portrait, Brave fallback) plus render. Override
 # via SN_BUDGET_SECONDS env when production telemetry shows the p95 has
-# drifted (operator reads `[source-network] budget exhausted` log
+# drifted (you read `[source-network] budget exhausted` log
 # frequency to calibrate).
 #
 # Architectural compromise named explicitly: this is a BEST-EFFORT
@@ -1096,7 +1096,7 @@ SN_BUDGET_SECONDS = float(os.environ.get("SN_BUDGET_SECONDS", "25"))
 # Wikipedia, FRED, Alpha Vantage, World Bank, REST Countries,
 # Wolfram, SEC EDGAR, Github) on every analysis with extractable
 # claims. Pre-2026-04-30 the only signal that a provider was
-# degraded was stderr log lines from _fetch_json; an operator had
+# degraded was stderr log lines from _fetch_json; you had
 # to grep `fly logs` to learn that CoinGecko had been 429-ing all
 # afternoon. Verifications silently degraded.
 #
@@ -1107,7 +1107,7 @@ SN_BUDGET_SECONDS = float(os.environ.get("SN_BUDGET_SECONDS", "25"))
 # and the window length (~3600 entries per provider in the worst
 # case of one error per second). Process-local: matches the
 # existing telemetry patterns and does not need cross-machine
-# aggregation for the operator-grep use case.
+# aggregation for the log-grep use case.
 
 class _ProviderHealth:
     """In-memory rolling-window counter of provider errors.
@@ -1250,7 +1250,7 @@ def _urlopen_with_deadline(req, per_op_timeout, total_deadline=None):
     deadline, or whatever urlopen raises on per-op error. Auto-tags
     deadline-fired exits against provider_health.
 
-    Mirror of source_network.py (root); keep in sync as the operator's
+    Mirror of source_network.py (root); keep in sync as the
     src-layout migration proceeds.
     """
     deadline = (
@@ -3348,9 +3348,9 @@ def verify_claims_source_network(
                         # Log but do not crash. A systematic API
                         # failure (all FRED queries timing out, SEC
                         # returning 403) would otherwise produce
-                        # zero verifications with no operator
+                        # zero verifications with no
                         # visibility. The verifier name is included
-                        # so the operator can identify which source
+                        # so you can identify which source
                         # is failing from `fly logs`.
                         import sys
                         sys.stderr.write(
@@ -3409,7 +3409,7 @@ def verify_claims_source_network(
         )
 
     # Fast-fail short-circuit. Budgets under 100ms are debug / test
-    # configurations: production is 25s, no realistic operator
+    # configurations: production is 25s, no realistic
     # configuration sub-100ms returns useful provider results. Without
     # this guard, the in-loop budget check races against per-claim
     # workers; on fast systems with already-failing workers (e.g.
@@ -3418,9 +3418,9 @@ def verify_claims_source_network(
     # the budget check fires, silently disengaging the budget primitive.
     # Bypassing pool creation entirely under sub-100ms budget makes the
     # fast-fail path deterministic across system speeds and tightens
-    # behavior under operator debugging without changing production.
+    # behavior under debugging without changing production.
     # Mirror of the same guard in source_network.py (root); keep in
-    # sync as the operator's src-layout migration proceeds.
+    # sync as the src-layout migration proceeds.
     if SN_BUDGET_SECONDS < 0.1:
         budget_exhausted = True
         _log_budget_exhausted(0.0, 0)
@@ -3461,8 +3461,8 @@ def verify_claims_source_network(
                 # only emits results for indices that resolved;
                 # claims that failed simply do not appear in the
                 # downstream verification list and the caller sees
-                # the verified subset. Log to stderr so the
-                # operator can investigate without breaking the
+                # the verified subset. Log to stderr so you
+                # can investigate without breaking the
                 # JSON-RPC channel on stdout.
                 import sys
                 print(
@@ -3583,7 +3583,7 @@ def verify_claims_source_network(
                         # whatever the primary providers established
                         # (typically "unverifiable"); the existing
                         # source_results stay intact. Log to stderr
-                        # so the operator can investigate without
+                        # so you can investigate without
                         # breaking the JSON-RPC channel on stdout.
                         import sys
                         print(

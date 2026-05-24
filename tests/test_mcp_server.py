@@ -1121,7 +1121,7 @@ def test_absent_frames_carry_library_resource_uri():
     looks for ``library_resource_uri`` on absent_frames per analogy
     must find the field there.
 
-    Surfaced 2026-05-11 by an operator Phase-2 client run: the
+    Surfaced 2026-05-11 by a builder Phase-2 client run: the
     integration looked for library_resource_uri on absent_frames and
     got None / absent because absent_frames used citation_uri only.
     v1.0.10 adds the alias.
@@ -1656,7 +1656,7 @@ def test_frame_check_schema_hides_advanced_integrator_params():
 def test_lift_dry_run_gate_10_matches_rewriter_policy():
     """The lift wheel-content scan (gate 10 in
     scripts/_release_lib/lift.py) catches references to the
-    operator's upstream development repo if any leaked into the
+    upstream development repo if any leaked into the
     wheel-staged tree.
 
     Two policy properties this test pins so they can't silently drift:
@@ -1676,7 +1676,7 @@ def test_lift_dry_run_gate_10_matches_rewriter_policy():
     that lift.py actually runs.
 
     The ``/`` exclusion in the lookbehind means a URL-prefixed
-    form (``https://`` followed by the operator-tree path) is NOT
+    form (``https://`` followed by the dev-tree path) is NOT
     caught by gate 10 alone. That is the documented intent: the
     rewriter (scripts/_release_lib/extract.py) handles URL-prefixed
     forms in its dedicated pass; gate 10 catches bare-host
@@ -1735,7 +1735,7 @@ def test_lift_dry_run_gate_10_matches_rewriter_policy():
         )
 
     # Excluded by (?!-mcp): the legitimate repo URL ``frame-check-mcp``
-    # is the operator's published wheel name and must not match the
+    # is the published wheel name and must not match the
     # leak pattern.
     legitimate = "github.com/lluvr/frame-check-mcp/issues"  # canon-exempt: leak-detection test fixture
     check(
@@ -5230,7 +5230,7 @@ def test_all_prompts_have_insight_led_discipline():
 
     Pins the user-facing UX shift so a future prompt rewrite cannot
     silently revert to mechanical measurement-walking, which was the
-    failure surfaced in operator testing of the 0.8.0 prerelease."""
+    failure surfaced in testing of the 0.8.0 prerelease."""
     baseline = len(_FAILURES)
     print("=== all four prompts carry insight-led composition discipline ===")
     for prompt_name in [
@@ -5347,7 +5347,7 @@ def test_agent_guidance_carries_composition_discipline():
     prompt-level discipline does not apply; the discipline must live
     in agent_guidance so it travels with every tool response.
 
-    This was the failure surfaced in operator testing of the 0.8.0
+    This was the failure surfaced in testing of the 0.8.0
     prerelease: the second test invoked frame_check via natural
     language, and the agent walked the measurements mechanically
     because the discipline lived only in the four sovereignty
@@ -5830,7 +5830,7 @@ def test_worked_example_reproduces_from_captured_payload():
 
 def test_cli_version_flag():
     """`python3 mcp_server.py --version` prints a single-line install
-    fingerprint with every field the operator needs to verify a
+    fingerprint with every field you need to verify a
     Claude Desktop install against repo HEAD. Pinned so a future
     refactor of the CLI entry point cannot silently drop fields.
 
@@ -5879,8 +5879,8 @@ def test_cli_version_flag():
 
 def test_cli_help_flag():
     """`python3 mcp_server.py --help` prints a usage doc with every
-    supported flag named. The help surface is the first thing an
-    operator consults when the stdio mode does not start; a missing
+    supported flag named. The help surface is the first thing you
+    consult when the stdio mode does not start; a missing
     flag in --help is a documentation discipline gap.
     """
     print("=== --help CLI usage ===")
@@ -7063,7 +7063,7 @@ def test_analysis_carries_structural_genre_classification():
 
 def test_genre_classifies_recommendation_correctly():
     """The agriculture-document fixture (My Pick: Regenerative Ag)
-    must classify as 'recommendation', mirroring the operator's
+    must classify as 'recommendation', mirroring the
     stress-test invocation. Pins the classifier on a real-world
     recommendation fixture so a future change cannot silently
     misroute recommendation documents.
@@ -10613,7 +10613,7 @@ def test_each_composed_entity_carries_claim_level():
     composition_discipline and cannot honor per-level treatment
     differences.
 
-    Uses a recommendation-genre fixture (operator's agriculture
+    Uses a recommendation-genre fixture (the agriculture
     pattern, paraphrased) that triggers FVS detectors and the
     recommendation-without-falsification pattern, exercising the
     full per-level metadata surface.
@@ -11777,8 +11777,8 @@ def test_version_falls_back_to_pipeline_version_txt_when_git_unavailable():
     """In Docker and in a future pip-installable distribution of the
     MCP server, the `git rev-parse` subprocess call returns non-zero
     (no git binary or no .git directory). Without a fallback, the
-    --version fingerprint reports git_sha=unknown, stripping the
-    operator's ability to match a deployed install against a known
+    --version fingerprint reports git_sha=unknown, stripping
+    your ability to match a deployed install against a known
     source revision.
 
     The Dockerfile writes the build-arg GIT_SHA to

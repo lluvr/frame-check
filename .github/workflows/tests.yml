@@ -6,7 +6,7 @@ name: Tests
 # than migrate to pytest in one move, CI respects the existing pattern.
 #
 # Push-on-master trigger removed 2026-05-07 alongside manual-deployment
-# discipline: the operator runs pytest + lift_dry_run locally before
+# discipline: you run pytest + lift_dry_run locally before
 # every push, and the release orchestrator gates a release on the
 # same lift_dry_run + conformance driver. PR-time CI catches changes
 # from contributors before merge; master-push CI duplicated work
@@ -193,7 +193,7 @@ jobs:
           # No external service (codecov.io etc.) is wired here:
           # the report lives in the workflow log and the discipline
           # is to keep the percentage stable or rising. A future
-          # operator who wants a public badge can wire codecov-action
+          # builder who wants a public badge can wire codecov-action
           # in a follow-up; the in-log report is the floor.
           python3 -m pytest -q \
             --cov=. --cov-report=term \

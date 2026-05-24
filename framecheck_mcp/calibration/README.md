@@ -26,7 +26,7 @@ the hard-topics corpus run. Source Network has neither."
   missed".
 - `results/`; dated output directories. Each run writes a human
   report (`REPORT.md`), the raw verdict JSON (`raw_verdicts.json`),
-  and optionally a `FINDINGS.md` companion for operator-authored
+  and optionally a `FINDINGS.md` companion for builder-authored
   decomposition of non-matches.
 
 ## Relationship to other calibration artifacts

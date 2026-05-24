@@ -103,7 +103,7 @@ def _frame_library_version() -> str:
 # provider sections.
 #
 # Pre-fix the dict was hardcoded with version="0.1" / size=33 /
-# seeded_at="2026-04-16". When the operator expanded the corpus to
+# seeded_at="2026-04-16". When the corpus expanded to
 # v1.0, the manifest would have kept claiming v0.1 unless someone
 # remembered to update the constant. The manifest is the construct-
 # honesty receipt; it must not be capable of lying about its own
@@ -511,7 +511,7 @@ def build_compare_manifest(
     `topic_generation_calls` carry the per-call metadata the SSE
     handler captures from each Grok / Gemini invocation. None means
     the corresponding stage did not run on this comparison (mode
-    branch, missing provider, daily cap, or operator-disabled topic
+    branch, missing provider, daily cap, or disabled topic
     mode).
     """
     layers_run: list[dict] = [_structural_substrate_layer()]

@@ -141,7 +141,7 @@ flip `engine_status` from `"beta"` to a stronger statement.
 
 ## v2.0 breaking changes (committed)
 
-Items the operator and adopters can both rely on landing at
+Items the builder and adopters can both rely on landing at
 the next major-version boundary. Each is named here so the
 v2.0 cut is a contract execution, not a discovery exercise.
 

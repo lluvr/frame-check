@@ -3,7 +3,7 @@
 Frame Check has two distribution surfaces:
 
 1. **Web service** at `frame.clarethium.com`: a free public research
-   instrument (currently in operator-controlled deploy hold).
+   instrument (currently in a deploy hold).
 2. **MCP package** `frame-check-mcp` (Python wheel; pip-installable
    for use with Claude Desktop / Cursor / any MCP client). The wheel
    ships the deterministic measurement layer; LLM-augmented surfaces
@@ -42,9 +42,9 @@ security report is a contribution, not a transaction.
 Frame Check has two release postures:
 
 - **Web service** (`frame.clarethium.com`): a live deploy, not a
-  released product with version ranges. The operator's private dev
+  released product with version ranges. The builder's private dev
   tree is the authoritative source; the Fly.io image tracks its
-  master branch with operator-controlled deploy cadence. The public
+  master branch with a controlled deploy cadence. The public
   MCP package source ships from `github.com/Clarethium/frame-check`
   via a public-extract pipeline.
 - **MCP package** (`frame-check-mcp` on PyPI, planned 0.8.0
@@ -99,7 +99,7 @@ vulnerability" above.
 | Date | Surface | Audit | Outcome |
 |---|---|---|---|
 | 2026-04-27 | `frame-check-mcp` 0.8.0 wheel | Pre-publish leakage audit + adversarial harness + client conformance | 16 leakage findings catalogued, 14 closed, 2 partial; 3 dispatcher defects surfaced + closed; 32/32 client round-trips pass. |
-| 2026-04-18 | Web service | Phase 5 cost / origin / abuse hardening | $5 -> $3 daily cap, attacker-hardened error messages, /admin/gates operator endpoint, env-overrides on 7 caps. See commit range `bee2265..f3dce50`. |
+| 2026-04-18 | Web service | Phase 5 cost / origin / abuse hardening | $5 -> $3 daily cap, attacker-hardened error messages, /admin/gates endpoint, env-overrides on 7 caps. See commit range `bee2265..f3dce50`. |
 
 ## Security-sensitive surfaces
 

@@ -58,6 +58,6 @@ The captured `data.json` from the 2026-05-12 execution is bundled in this direct
 
 ## Status
 
-H3 reproducibility hypothesis: **measurement consistent with pre-registered direction at N=1**. Pattern is structural (deterministic substrate vs. stochastic LLM) so generalization is structural; numerical magnitude is doc-dependent and would benefit from a wider sample if the operator wants tighter confidence intervals.
+H3 reproducibility hypothesis: **measurement consistent with pre-registered direction at N=1**. Pattern is structural (deterministic substrate vs. stochastic LLM) so generalization is structural; numerical magnitude is doc-dependent and would benefit from a wider sample if you want tighter confidence intervals.
 
 H1 (named-absence reliability advantage) and H2 (source-fidelity precision advantage) remain pending — they require externally-sourced documents + independent raters per the methodological constraints documented at `validation/wedge_behavior/STATUS.md`.
