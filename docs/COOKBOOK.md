@@ -327,6 +327,3 @@ rather than as advertised FVS detections.
   the divergence-block interface contract.
 - [`data/worked_examples/`](../data/worked_examples/): six published
   worked examples that apply these recipes to real documents.
-- [`docs/VALIDATION_PROGRAM.md`](VALIDATION_PROGRAM.md): the
-  observational and formal validation plans the catalog is being
-  measured against.

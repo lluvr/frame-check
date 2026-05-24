@@ -194,7 +194,6 @@ examples). The full inventory:
 - `docs/MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
 - `docs/COOKBOOK.md`: five recipes for common adopter tasks (frame-check before agent commit, divergence at decision points, source-grounded verification, two-LLM comparison, custom FVS rule)
 - `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`: interface contract for the Frame Divergence emission shape (c1.0)
-- `docs/VALIDATION_PROGRAM.md`: observational + formal validation plans
 - `docs/RATERS.md`: rater protocol for the validation program
 - `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
 - `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (6 entries)

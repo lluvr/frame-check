@@ -362,4 +362,4 @@ This extension pattern is the load-bearing architectural commitment that makes `
 - MCP server implementation: [MCP_SERVER.md](MCP_SERVER.md).
 - FVS library: `data/frame_library/` (FVS-001 through FVS-020).
 - Methodology canon: [github.com/Clarethium/lodestone](https://github.com/Clarethium/lodestone) and [frame.clarethium.com/corpus/methodology/](https://frame.clarethium.com/corpus/methodology/).
-- Validation program: [VALIDATION_PROGRAM.md](VALIDATION_PROGRAM.md).
+- Validation status: [validation/wedge_behavior/STATUS.md](../validation/wedge_behavior/STATUS.md).

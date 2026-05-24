@@ -36,8 +36,8 @@ discipline.
 
 ### "I want to validate the substrate myself"
 
-1. [VALIDATION_PROGRAM.md](VALIDATION_PROGRAM.md): observational and formal
-   validation plans (Phase 1: gold-standard substrate; Phase 2: rater study).
+1. [validation/wedge_behavior/STATUS.md](../validation/wedge_behavior/STATUS.md):
+   current validation status and the pre-registered behavior-change protocol.
 2. [RATERS.md](RATERS.md): Phase 2 rater contract: time commitment,
    deliverable shape, blinding requirement, how to engage.
 3. [`../calibration/results/`](../calibration/results/): per-run REPORT.md
@@ -73,7 +73,6 @@ framing signatures.
   adopter-facing wire contract for the `divergence` block (c1.0 shipping).
 - [MCP_SERVER.md](MCP_SERVER.md): full MCP server reference.
 - [RATERS.md](RATERS.md): Phase 2 rater contract.
-- [VALIDATION_PROGRAM.md](VALIDATION_PROGRAM.md): validation plans.
 
 ## What this index is not
 
