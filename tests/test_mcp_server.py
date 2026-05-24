@@ -4965,10 +4965,10 @@ def test_prompts_get_unknown_returns_invalid_params():
 def test_all_prompts_are_divergence_aware():
     """Each sovereignty prompt must step through the divergence block.
 
-    Load-bearing for the 0.8.0 V4.2-capable-by-default direction per
-    STRATEGY §14. If the sovereignty prompts (the use case the MCP
-    was built around) do not invoke divergence, the headline capability
-    is silently absent from every agent that runs them.
+    Load-bearing for the divergence-capable-by-default direction. If
+    the sovereignty prompts (the use case the MCP was built around)
+    do not invoke divergence, the headline capability is silently
+    absent from every agent that runs them.
 
     Pins that each prompt mentions either 'divergence block' or
     'include_divergence=true' so a future prompt rewrite cannot

@@ -964,7 +964,7 @@ Yanked from PyPI; superseded by 0.9.1. The release renamed the public repository
 
 ### Changed
 
-- 25 supporting documents moved out of the public-repo root to `docs/internal/` to clean up the surface. (Note: the `docs/internal/` subtree was removed entirely in a later release; this entry is preserved for historical accuracy.)
+- 25 supporting documents were moved out of the public-repo root to clean up the surface; they were later removed from the published tree entirely.
 
 ### Source Network
 

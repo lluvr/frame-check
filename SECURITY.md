@@ -44,12 +44,11 @@ Frame Check has two release postures:
 - **Web service** (`frame.clarethium.com`): a live deploy, not a
   released product with version ranges. The public MCP package
   source ships from `github.com/Clarethium/frame-check`.
-- **MCP package** (`frame-check-mcp` on PyPI, planned 0.8.0
-  initial release): semver-versioned. Security fixes for the
-  current minor (0.8.x) ship as patch releases. There is no
-  long-term-support track yet; expect every minor to require an
-  upgrade for security fixes once 0.9.0 lands. This policy may
-  tighten as adoption grows.
+- **MCP package** (`frame-check-mcp` on PyPI): semver-versioned.
+  Security fixes ship as patch releases on the current minor.
+  There is no long-term-support track yet; expect to upgrade to
+  the latest minor for security fixes. This policy may tighten as
+  adoption grows.
 
 Security fixes land on master first. For the wheel, a fix triggers
 a patch release within the timelines named under "Acknowledgment
@@ -124,7 +123,7 @@ these is in scope.
   (privacy posture: never round-trips), and JSON-RPC envelope
   shape violations are in scope. The dispatcher's input-shape
   discipline (params and arguments must be JSON Objects) is
-  pinned by `test_mcp_adversarial.py` (61 tests across 7 attack
+  pinned by `test_mcp_adversarial.py` (63 tests across 7 attack
   classes); regressions surface there. The 0.8.0 audit closed
   three dispatcher defects (D2.1, D2.2, D2.3) where malformed
   input returned `-32603` instead of the documented `-32602`.
@@ -149,9 +148,8 @@ Frame Check is a structural-analysis instrument, not a
 truthfulness verdict. Agent integrators who use Frame Check's
 output as a quality score, truthfulness flag, or editing rule
 that suppresses minority framings are using the tool outside its
-design scope. See `ANTICIPATED_CRITIQUES.md §7 C7.1` and the
-MCP contract's `agent_guidance.dual_use_note` for the
-construct-honesty framing.
+design scope. See the MCP contract's `agent_guidance.dual_use_note`
+for the dual-use framing.
 
 ## Cryptographic identity
 
