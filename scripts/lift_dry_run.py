@@ -1,6 +1,6 @@
 """Backward-compatible wrapper. Real implementation in scripts/_release_lib/lift.py.
 
-The library module carries the operator-facing docstring and the full
+The library module carries the maintainer-facing docstring and the full
 gate sequence. Invoking `python3 scripts/lift_dry_run.py [...flags]`
 defers to `lift.main()` which defaults `argv` to `sys.argv`, preserving
 the established `--skip-urls` / `--skip-content` / `--skip-quality`
