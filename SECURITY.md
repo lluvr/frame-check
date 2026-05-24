@@ -42,11 +42,8 @@ security report is a contribution, not a transaction.
 Frame Check has two release postures:
 
 - **Web service** (`frame.clarethium.com`): a live deploy, not a
-  released product with version ranges. The builder's private dev
-  tree is the authoritative source; the Fly.io image tracks its
-  master branch with a controlled deploy cadence. The public
-  MCP package source ships from `github.com/Clarethium/frame-check`
-  via a public-extract pipeline.
+  released product with version ranges. The public MCP package
+  source ships from `github.com/Clarethium/frame-check`.
 - **MCP package** (`frame-check-mcp` on PyPI, planned 0.8.0
   initial release): semver-versioned. Security fixes for the
   current minor (0.8.x) ship as patch releases. There is no
