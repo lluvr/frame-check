@@ -290,7 +290,7 @@ The contract specified in this document is c1.0. Current status: pre-adoption (n
 
 ### 10.2 Stability commitments emerge from adoption, not from publication date
 
-Binding stability commitments kick in upon first dependent adopter, not upon spec publication. Before that, the contract can evolve freely with changelog disclosure. This prevents premature lock-in against an interface that may need revision during pre-adoption iteration and aligns with STRATEGY §4 "open by design, no artificial urgency."
+Binding stability commitments kick in upon first dependent adopter, not upon spec publication. Before that, the contract can evolve freely with changelog disclosure. This prevents premature lock-in against an interface that may need revision during pre-adoption iteration; the posture is open by design, with no artificial urgency.
 
 Specifically:
 - **Pre-adoption (current state).** Contract changes possible with a changelog entry. No deprecation window required. The contract is subject to change as the product matures and as Parts 3-4 of the spec land.

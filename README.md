@@ -135,9 +135,9 @@ LLM falls short:
   user-keyed). An LLM asked "is this number right" cannot fetch
   primary sources; Frame Check does.
 
-The wedge is not the LLM's job. Frame Check makes it possible for
-the LLM to lean on a deterministic, source-grounded measurement
-layer instead of being asked to do that work in-band.
+Deterministic, source-grounded measurement is not work an LLM is
+suited to do. Frame Check provides that layer so the LLM can lean
+on it instead of being asked to do that work in-band.
 
 ## Worked example
 
@@ -209,7 +209,7 @@ Or directly via pytest:
 
     python3 -m pytest -q
 
-25 test files under `tests/`, ~30 seconds end-to-end. Includes 40 adversarial dispatcher test functions in `tests/test_mcp_adversarial.py` (parametrized into more tests at collection time), per-module 80% coverage gate on the seven wheel-surface modules (`scripts/check_per_module_coverage.py`), the cookbook-recipe contract suite (`tests/test_cookbook_recipes.py`), and the genre-classifier + frame-divergence coverage.
+26 test files under `tests/`, ~30 seconds end-to-end. Includes 40 adversarial dispatcher test functions in `tests/test_mcp_adversarial.py` (parametrized into more tests at collection time), per-module 80% coverage gate on the seven wheel-surface modules (`scripts/check_per_module_coverage.py`), the cookbook-recipe contract suite (`tests/test_cookbook_recipes.py`), and the genre-classifier + frame-divergence coverage.
 
 ## License
 
