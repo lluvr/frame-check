@@ -1081,8 +1081,8 @@ _TIMEOUT = 5
 # already in flight continue until their per-call _TIMEOUT or natural
 # return. They do not extend the user-visible request time but do
 # consume CPU/network until they finish. The proper fix is to migrate
-# the SN call graph to asyncio with task cancellation, which is named
-# in NEXT_STEPS.md as 1.0.0+ territory; until then the budget primitive
+# the SN call graph to asyncio with task cancellation (post-1.0.0
+# work); until then the budget primitive
 # below trades thread-cleanup precision for a bounded user wait, which
 # is the trade the user-facing UX requires today.
 SN_BUDGET_SECONDS = float(os.environ.get("SN_BUDGET_SECONDS", "25"))
