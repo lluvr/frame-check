@@ -1071,7 +1071,7 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
 # Sources
 # ================================================================
 
-_HEADERS = {"User-Agent": "FrameCheck/0.1 (claim-verification; contact@clarethium.com)"}
+_HEADERS = {"User-Agent": "FrameCheck/1.0 (11740211+lluvr@users.noreply.github.com)"}
 # Per-operation socket timeout for outbound provider calls. Bumped
 # from 5s to 8s on 2026-05-06 after production probe from Fly ORD
 # measured a single Wikipedia query (api.php query + extract round
@@ -2384,7 +2384,7 @@ _SEC_TICKERS_FAIL_AT = 0.0
 _SEC_TICKERS_RETRY_AFTER = float(
     os.environ.get("SN_SEC_TICKERS_RETRY_AFTER_SECONDS", "60")
 )
-_SEC_HEADERS = {"User-Agent": "FrameCheck/1.0 (hello@clarethium.com)"}
+_SEC_HEADERS = {"User-Agent": "FrameCheck/1.0 (11740211+lluvr@users.noreply.github.com)"}
 
 
 def _get_sec_tickers():

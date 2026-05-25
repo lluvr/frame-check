@@ -1058,7 +1058,7 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
 # Sources
 # ================================================================
 
-_HEADERS = {"User-Agent": "FrameCheck/0.1 (claim-verification; contact@clarethium.com)"}
+_HEADERS = {"User-Agent": "FrameCheck/1.0 (11740211+lluvr@users.noreply.github.com)"}
 _TIMEOUT = 5
 
 # Wall-clock budget (seconds) for the entire `verify_claims_source_network`
@@ -2174,7 +2174,7 @@ def verify_wolfram(decomp):
 # `is not None` check before acquiring.
 _SEC_TICKERS = None
 _SEC_TICKERS_LOCK = threading.Lock()
-_SEC_HEADERS = {"User-Agent": "FrameCheck/1.0 (hello@clarethium.com)"}
+_SEC_HEADERS = {"User-Agent": "FrameCheck/1.0 (11740211+lluvr@users.noreply.github.com)"}
 
 
 def _get_sec_tickers():
