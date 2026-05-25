@@ -39,7 +39,7 @@ archived destination.
 
 ## Cutting a release (step by step)
 
-Replace `0.9.5` with the version being cut.
+Replace `1.0.13` with the version being cut.
 
 ```bash
 # 1. Confirm working tree is on master and up to date.
@@ -57,26 +57,26 @@ python3 -m pytest -q          # all green
 # These must match exactly; the CI version-sync gate enforces this.
 
 # 4. Update CHANGELOG.md.
-#    Move the [Unreleased] block to [0.9.5] - YYYY-MM-DD with a
+#    Move the [Unreleased] block to [1.0.13] - YYYY-MM-DD with a
 #    short narrative describing what shipped. Keep the Unreleased
 #    header above for the next cycle.
 
 # 5. Commit the cut.
 git add pyproject.toml mcp_server.py CHANGELOG.md
-git commit -m "Cut v0.9.5 release"
+git commit -m "Cut v1.0.13 release"
 
 # 6. Tag with the CHANGELOG section as the annotation.
-#    `awk` extracts the [0.9.5] block; `git tag -a -m` sets the
+#    `awk` extracts the [1.0.13] block; `git tag -a -m` sets the
 #    annotated tag message. The GitHub release body is auto-derived
 #    from this annotation.
-git tag -a v0.9.5 -m "$(awk '/^## \[0.9.5\]/{flag=1} /^## \[0\.9\.[0-4]\]/{flag=0} flag' CHANGELOG.md)"
+git tag -a v1.0.13 -m "$(awk '/^## \[1.0.13\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md)"
 
 # 7. Push the commit and the tag. Order matters: the tag push is
 #    what triggers the publish workflow, and the workflow's
 #    tag-vs-pyproject gate fetches the tag's commit which must be
 #    on master.
 git push origin master
-git push origin v0.9.5
+git push origin v1.0.13
 
 # 8. Watch the workflow.
 gh run watch -R Clarethium/frame-check
@@ -95,8 +95,8 @@ in pyproject during the dev-build window and the suffix is dropped
 at cut time.
 
 Do **not** pre-bump `SERVER_VERSION` past the cut version (e.g.,
-do not set `SERVER_VERSION = "0.9.6"` immediately after cutting
-`0.9.5`). The version-sync gate hard-fails on drift.
+do not set `SERVER_VERSION = "1.0.14"` immediately after cutting
+`1.0.13`). The version-sync gate hard-fails on drift.
 
 ## Pre-release flow
 
@@ -105,8 +105,8 @@ before the final cut, tag a pre-release first:
 
 ```bash
 # Pre-release tag.
-git tag -a v0.9.5rc1 -m "$(awk '/^## \[0.9.5/{flag=1} /^## \[0\.9\.[0-4]\]/{flag=0} flag' CHANGELOG.md)"
-git push origin v0.9.5rc1
+git tag -a v1.0.13rc1 -m "$(awk '/^## \[1.0.13/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md)"
+git push origin v1.0.13rc1
 ```
 
 The publish workflow routes pre-release tags to TestPyPI (not PyPI).
@@ -116,7 +116,7 @@ Verify the artifact installs cleanly:
 python -m venv /tmp/fc-rc1
 /tmp/fc-rc1/bin/pip install --index-url https://test.pypi.org/simple/ \
   --extra-index-url https://pypi.org/simple/ \
-  frame-check-mcp==0.9.5rc1
+  frame-check-mcp==1.0.13rc1
 /tmp/fc-rc1/bin/frame-check-mcp --version
 ```
 
@@ -130,7 +130,7 @@ has a defect serious enough that no adopter should pin to it but
 adopters who already pinned should not have their installs break.
 
 ```bash
-twine yank frame-check-mcp 0.9.5 --reason "<short reason>"
+twine yank frame-check-mcp 1.0.13 --reason "<short reason>"
 ```
 
 Document the yank in the next release's CHANGELOG narrative under a
@@ -143,7 +143,7 @@ unintended content), the recovery sequence is:
 
 1. **Yank** the bad version (above) so new installs don't pick it
    up. The artifact stays available for adopters with explicit pins.
-2. **Cut a fix version** (`0.9.5` becomes `0.9.6`, not retried with
+2. **Cut a fix version** (`1.0.13` becomes `1.0.14`, not retried with
    the same number). PyPI never reuses version numbers; the bad one
    is burned.
 3. **Document** in CHANGELOG: what shipped, why it was bad, what
@@ -201,10 +201,10 @@ The wheel is built from the tag commit alone; no developer-machine
 state contributes. To reproduce a release locally:
 
 ```bash
-git checkout v0.9.5
+git checkout v1.0.13
 python -m pip install --upgrade build
 python -m build --wheel
-# dist/frame_check_mcp-0.9.5-py3-none-any.whl
+# dist/frame_check_mcp-1.0.13-py3-none-any.whl
 ```
 
 Wheel content (file list, hashes) should match the artifact on PyPI
