@@ -204,6 +204,58 @@ grounding decomposition. When `include_divergence=true`, the response
 also carries the `divergence` block described in the "Divergence block"
 section below.
 
+#### `verification.source_fidelity` (when `source_text` is supplied)
+
+```jsonc
+{
+  "verification": {
+    "source_fidelity": {
+      "total_numbers": 25,
+      "in_source": 23,
+      "not_in_source": 2,
+      "unsourced_rate": 0.08,
+      "unsourced_items": [
+        {"value": "100000000", "type": "integer",
+         "context": "NVIDIA RTX now serves 100 million gamers and creators..."},
+        {"value": "198", "type": "integer",
+         "context": "to shareholders of record on March 6. (198 words)"}
+      ],
+      "note": "..."
+    }
+  }
+}
+```
+
+`unsourced_items` (added v1.0.9) is the per-claim diagnostic for the
+`not_in_source` count. Each item carries the literal value, its
+extracted type (integer/decimal/percentage/currency), and the
+claim-sentence context the value appeared in. Use this to surface
+WHICH numbers in the document do not literal-match the source —
+adopters can render the items to the user as "X numbers in the
+document do not appear in the source: [item.value], [item.value], ..."
+or pass them downstream to a verification subroutine.
+
+What the literal-substring match catches and misses:
+
+- **Catches**: same digit string in different prose contexts
+  (e.g., `$22.1B` ≡ `$22.1 billion` because "22.1" matches);
+  percentage variants (`94%` ≡ `94 percent`); currency variants
+  (`$X` ≡ `X dollars`).
+- **Misses (false negatives)**: same number expressed in
+  materially different formats — `$22.1 billion` (digit substring
+  "22.1") will NOT match `$22,100,000,000` (digit substring
+  "22100000000"). Same for rounded vs. precise (`$22.1B` vs.
+  `$22,109,000,000`). Adopters who need format-tolerant matching
+  should layer their own normalization on top.
+- **Catches (avoids false positives)**: a value like `$22` in the
+  document does NOT spuriously match `2022` in source; the matcher
+  scopes by token boundaries, not raw substring.
+
+What the field reports vs. what it does not: this is digit-presence
+in source, not numeric correctness. A number flagged `not_in_source`
+may be derived, rounded, fabricated, or pulled from elsewhere; the
+tool surfaces the deviation, not its cause.
+
 ### `frame_compare`: two-document structural diff
 
 | Parameter | Required | Type | Meaning |
@@ -247,8 +299,7 @@ Per-match shape on both surfaces shares 8 fields (`fvs_id`, `name`,
 `_compare_stream`) catches drift at PR time so a future MCP-side
 field addition that does not propagate to web fails CI immediately.
 
-**Intentional asymmetries** (not bugs, documented in
-NEXT_STEPS.md "Per-match field allowlist" subsection):
+**Intentional asymmetries** (not bugs):
 
 - MCP-only fields per match: `library_url` (named differently from
   web's `url`; points at the public-repo markdown source),
@@ -262,8 +313,7 @@ NEXT_STEPS.md "Per-match field allowlist" subsection):
 - MCP-only top-level analyzers: `genre_classifier`, `frame_deepening`
   (temporal_scope / stakeholder_map / falsification_conditions),
   `absence_clusters`, `frame_opportunities` (opt-in LLM-augmented).
-  Held back from web pending per-classifier expert validation per
-  NEXT_STEPS.md "Substrate-side composition: web exposure".
+  Held back from web pending per-classifier expert validation.
 
 - MCP-only knobs: `compose_budget`, `divergence_rendering`,
   `domain_hint`. Agent-shaped affordances with no web parallel.
@@ -881,37 +931,29 @@ When the divergence block is emitted, `agent_guidance` gains two keys:
   divergence output never implies the user should have used the
   absent frames.
 
-## Clickable library URLs (`library_url` field)
+## Canonical URI/URL quartet on every FVS reference (v1.0.12+)
 
-Every FVS reference in a `frame_check` or `frame_compare` response
-carries a `library_url` field pointing at the entry's markdown source
-on the public GitHub repository
-(`https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-XXX_slug.md`).
-The URL is always resolvable for end-users in MCP clients regardless
-of the hosted-production status. The earlier form pointed at
-`frame.clarethium.com/corpus/library/...`; the GitHub URL is preferred
-because it survives any future hosting transition without rewrites.
+Every record in the payload that identifies a Frame Vocabulary
+Standard entry — `frame_library_matches[*]`, `divergence.absent_frames[*]`,
+`corpus_context.typical_co_fires[*]` / `typical_co_absences[*]`,
+`decision_readiness.dimensions[*].library_entries[*]` /
+`fired_library_entries[*]`, `frame_opportunities.opportunities[*]` —
+carries four URI/URL fields:
 
-The field appears on every site that names an FVS entry:
+| Field | Value | Use |
+|---|---|---|
+| `citation_uri` | `frame-check://library/FVS-XXX` | MCP resource URI; pass to `resources/read` |
+| `library_resource_uri` | `frame-check://library/FVS-XXX` (same value) | Alias of `citation_uri`; same use |
+| `library_url` | `https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-XXX_slug.md` | HTTPS GitHub URL; user-clickable |
+| `public_url` | (same HTTPS URL) | Alias of `library_url`; same use |
 
-- `analysis.frame_library_matches[].library_url`
-- `divergence.absent_frames[].library_url`
-- `divergence.absent_frames[].corpus_context.typical_co_fires[].library_url`
-- `divergence.absent_frames[].corpus_context.typical_co_absences[].library_url`
-- `decision_readiness` profile's per-dimension `library_entries[].public_url` (canon-graph reference shape; same URL form, different field name for legacy compatibility).
+The aliasing is alias-equality invariant: `citation_uri == library_resource_uri` and `library_url == public_url` in every record. Pre-v1.0.12 the field names varied across blocks (`citation_uri` only on `absent_frames` and `typical_co_*`; `library_resource_uri` only on `decision_readiness` and `frame_library_matches`; `library_url` on `absent_frames` and `frame_library_matches`; `public_url` only on `decision_readiness`). v1.0.10 / v1.0.11 / v1.0.12 progressively normalized this so an adopter writing one renderer for FVS references reads the same shape regardless of which block they parse. Integrations that hardcoded any one of the four names remain valid; the v1.0.12 sweep is additive.
 
-The `agent_guidance.how_to_cite_frame_matches` text mandates
-rendering FVS references as markdown links: `[FVS-XXX Frame Title](library_url)`. End-users in MCP clients (Claude Desktop,
-Cursor) cannot click `frame-check://library/...` resource URIs
-because those are MCP-internal; the `library_url` gives them an
-HTTP link they can follow.
+Example payloads in this document show illustrative subsets (often just `citation_uri` + the FVS id) for readability — but the wire emits all four fields on every reference. Pinned by `tests/test_mcp_server.py::test_all_frame_reference_shapes_carry_canonical_uri_url_quartet`.
 
-The MCP `library_resource_uri` (frame-check://) is preserved
-alongside `library_url`; agents running entirely through MCP can
-chain into `resources/read` on the matching entry without a web
-fetch. Both fields point at the same logical entry; the agent
-uses `library_url` for end-user citations and `library_resource_uri`
-for in-conversation resource resolution.
+The `agent_guidance.how_to_cite_frame_matches` text mandates rendering FVS references as markdown links: `[FVS-XXX Frame Title](library_url)`. End-users in MCP clients (Claude Desktop, Cursor) cannot click `frame-check://library/...` URIs because those are MCP-internal; the HTTPS `library_url` / `public_url` gives them an HTTP link they can follow. Agents running entirely through MCP chain the `citation_uri` / `library_resource_uri` into `resources/read` on the matching entry.
+
+The earlier hosted URL form pointed at `frame.clarethium.com/corpus/library/...`; the GitHub URL replaces it because it survives any future hosting transition without rewrites.
 
 ## Suggested next actions (`agent_guidance.suggested_next_actions`)
 
