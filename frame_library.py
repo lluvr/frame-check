@@ -108,8 +108,7 @@ FVS_NAMES: dict[str, str] = {
 # TODO(authoring): 8 of 20 entries lack a teaching question
 # (FVS-003, 004, 005, 006, 013, 018, 019, 020; all meta-side frames,
 # 3 of 8 are withdrawn from v1 publication: FVS-003, 004, 018, 019).
-# Authoring queue + per-entry construct-hint context lives in
-# AUTHORING_QUEUE.md. Per the project's "no LLM drafting of
+# Per the project's "no LLM drafting of
 # substantive content" discipline, teaching questions are builder-
 # authored. The harness L7 FAIL is the visible gate that holds until
 # the queue is closed; do not paper over it with placeholder questions.

@@ -68,16 +68,17 @@ can run independently:
 
 2. **Run the lift dry-run** against a fresh build of the same
    version's source tree (clones the repo, builds the wheel, runs
-   eight gates: clean state, build, `twine check --strict`,
-   install, smoke import, CLI `--version`, conformance driver,
-   inventory leak-check). The leak-check enforces shape-based
+   its full release-gate sequence: clean state, build, `twine check
+   --strict`, install, smoke import, CLI `--version`, conformance
+   driver, inventory leak-check, and further wheel-content, metadata,
+   and state-coherence checks). The leak-check enforces shape-based
    filename patterns and refuses any wheel that ships an artifact
    whose filename matches a configured exclusion shape.
 
        python3 scripts/lift_dry_run.py
 
 3. **Run the MCP client conformance driver** against the installed
-   wheel (drives 32 round-trips through line-delimited JSON-RPC
+   wheel (drives 30 round-trips through line-delimited JSON-RPC
    over stdio, the same wire shape Claude Desktop and Cursor use).
 
        python3 scripts/mcp_conformance_driver.py
@@ -86,7 +87,7 @@ can run independently:
    attack classes A-G, including the dispatcher input-shape
    discipline pinned by the 0.8.0 D2 fixes).
 
-       python3 -m pytest test_mcp_adversarial.py -v
+       python3 -m pytest tests/test_mcp_adversarial.py -v
 
 If any of the four scripts above fail on a released wheel, that is
 a security-relevant regression. File a report per "Reporting a
@@ -125,7 +126,7 @@ these is in scope.
   (privacy posture: never round-trips), and JSON-RPC envelope
   shape violations are in scope. The dispatcher's input-shape
   discipline (params and arguments must be JSON Objects) is
-  pinned by `test_mcp_adversarial.py` (63 tests across 7 attack
+  pinned by `tests/test_mcp_adversarial.py` (63 tests across 7 attack
   classes); regressions surface there. The 0.8.0 audit closed
   three dispatcher defects (D2.1, D2.2, D2.3) where malformed
   input returned `-32603` instead of the documented `-32602`.

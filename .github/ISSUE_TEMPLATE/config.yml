@@ -6,8 +6,13 @@ contact_links:
       External reviewers for Frame Vocabulary Standard canon promotions
       or measurement-construct review. See docs/RATERS.md for scope,
       terms, and how to engage.
-  - name: Direct contact for press, partnership, or sensitive reports
+  - name: Security issue
+    url: https://github.com/Clarethium/frame-check/security/advisories/new
+    about: |
+      Report vulnerabilities via GitHub private vulnerability reporting,
+      per SECURITY.md. Do not open public issues for vulnerabilities.
+  - name: Direct contact for press, partnership, or trademark
     url: mailto:hello@clarethium.com
     about: |
-      Non-public-issue topics including security reports, trademark
-      questions, and partnership inquiries.
+      Non-public-issue topics including trademark questions and
+      partnership inquiries.
