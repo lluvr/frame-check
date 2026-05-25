@@ -273,7 +273,7 @@ def main():
             if "ANTHROPIC_API_KEY" not in os.environ:
                 print("ANTHROPIC_API_KEY not set; --call-llm requires it",
                       file=sys.stderr)
-                return 1
+                sys.exit(1)
             llm_runs = run_llm_baseline_anthropic(
                 document_text, source_text, args.llm_model,
                 runs=args.runs_per_side,

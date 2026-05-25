@@ -93,7 +93,7 @@ class TestCliHelp:
         mcp_server._cli_help()
         out = capsys.readouterr().out
         assert "RESOURCES" in out
-        assert "frame.clarethium.com" in out
+        assert "frame.clarethium.com/corpus/methodology/" in out
 
 
 class TestCliVersion:
