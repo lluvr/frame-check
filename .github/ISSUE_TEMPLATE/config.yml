@@ -11,8 +11,3 @@ contact_links:
     about: |
       Report vulnerabilities via GitHub private vulnerability reporting,
       per SECURITY.md. Do not open public issues for vulnerabilities.
-  - name: Direct contact for press, partnership, or trademark
-    url: mailto:hello@clarethium.com
-    about: |
-      Non-public-issue topics including trademark questions and
-      partnership inquiries.

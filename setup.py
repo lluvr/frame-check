@@ -13,7 +13,7 @@ exists to register two custom build commands:
    mirror.
 
 Why we need (1). The repo carries data files at root (data/,
-calibration/, validation/, FRAME_DIVERGENCE_CONTRACT_v1.md,
+calibration/, validation/,
 pipeline_version.txt). Various tools read those paths directly from
 the repo root in dev mode. The MCP wheel needs them bundled INSIDE
 the framecheck_mcp/ package so a pip-installed user gets the data

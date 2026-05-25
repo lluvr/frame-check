@@ -138,7 +138,6 @@ Concrete rules for agents:
 - Bugs, feature requests, library proposals: GitHub Issues with the
   templates under `.github/ISSUE_TEMPLATE/`.
 - Security: see `SECURITY.md` for the disclosure process.
-- Press, partnership, sensitive reports: `hello@clarethium.com`.
 
 ## When in doubt
 
