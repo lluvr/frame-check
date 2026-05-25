@@ -1375,19 +1375,43 @@ def test_frame_opportunity_record_carries_canonical_uri_url_quartet():
         "teaching_question": "What risks does the document not name?",
     }
 
-    with patch.dict(_os.environ, {"GEMINI_API_KEY": "test-key"}, clear=False):
-        with patch("google.genai.Client", return_value=fake_client):
-            with patch(
-                "llm_cost.extract_gemini_usage", return_value=(100, 20),
-            ):
-                with patch("llm_cost.compute_cost_usd", return_value=0.0001):
-                    rec = frame_opportunities._generate_one_opportunity(
-                        absent_frame=absent_frame,
-                        document_text="Sample document text.",
-                        document_genre="analysis",
-                        user_goal=None,
-                        model="gemini-2.5-flash",
-                    )
+    # google.genai is an optional runtime dependency, imported only when the
+    # opt-in Gemini opportunity path actually fires. It is not in the test
+    # extra, so a clean `pip install -e .[test]` leaves it absent and
+    # `patch("google.genai.Client", ...)` cannot resolve its target. Seed a
+    # stub module so this test runs (rather than erroring) without the real
+    # dependency, mirroring the stub in tests/test_comparison.py. Torn down
+    # in the finally below so no fake module leaks into other test files.
+    import types as _types
+
+    _added_google = "google" not in sys.modules
+    _added_genai = "google.genai" not in sys.modules
+    if _added_genai:
+        _google_mod = sys.modules.setdefault("google", _types.ModuleType("google"))
+        _genai_mod = _types.ModuleType("google.genai")
+        _genai_mod.Client = MagicMock()
+        _google_mod.genai = _genai_mod  # type: ignore[attr-defined]
+        sys.modules["google.genai"] = _genai_mod
+
+    try:
+        with patch.dict(_os.environ, {"GEMINI_API_KEY": "test-key"}, clear=False):
+            with patch("google.genai.Client", return_value=fake_client):
+                with patch(
+                    "llm_cost.extract_gemini_usage", return_value=(100, 20),
+                ):
+                    with patch("llm_cost.compute_cost_usd", return_value=0.0001):
+                        rec = frame_opportunities._generate_one_opportunity(
+                            absent_frame=absent_frame,
+                            document_text="Sample document text.",
+                            document_genre="analysis",
+                            user_goal=None,
+                            model="gemini-2.5-flash",
+                        )
+    finally:
+        if _added_genai:
+            sys.modules.pop("google.genai", None)
+        if _added_google:
+            sys.modules.pop("google", None)
 
     check(
         rec is not None,

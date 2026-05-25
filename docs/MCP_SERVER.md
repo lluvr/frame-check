@@ -299,8 +299,7 @@ Per-match shape on both surfaces shares 8 fields (`fvs_id`, `name`,
 `_compare_stream`) catches drift at PR time so a future MCP-side
 field addition that does not propagate to web fails CI immediately.
 
-**Intentional asymmetries** (not bugs, documented in
-NEXT_STEPS.md "Per-match field allowlist" subsection):
+**Intentional asymmetries** (not bugs):
 
 - MCP-only fields per match: `library_url` (named differently from
   web's `url`; points at the public-repo markdown source),
@@ -314,8 +313,7 @@ NEXT_STEPS.md "Per-match field allowlist" subsection):
 - MCP-only top-level analyzers: `genre_classifier`, `frame_deepening`
   (temporal_scope / stakeholder_map / falsification_conditions),
   `absence_clusters`, `frame_opportunities` (opt-in LLM-augmented).
-  Held back from web pending per-classifier expert validation per
-  NEXT_STEPS.md "Substrate-side composition: web exposure".
+  Held back from web pending per-classifier expert validation.
 
 - MCP-only knobs: `compose_budget`, `divergence_rendering`,
   `domain_hint`. Agent-shaped affordances with no web parallel.
