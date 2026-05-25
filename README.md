@@ -130,8 +130,8 @@ LLM falls short:
   the under-detection-marker pivot rather than confident labels.
   Honest calibration matters more than confident output.
 - **Source verification.** Numeric claims with provider coverage get
-  cross-checked against SEC EDGAR / FRED / World Bank / Alpha
-  Vantage / Wolfram Alpha at provider pricing tiers (zero or
+  cross-checked against SEC EDGAR / FRED / World Bank / REST
+  Countries / Alpha Vantage / Wolfram Alpha at provider pricing tiers (zero or
   user-keyed). An LLM asked "is this number right" cannot fetch
   primary sources; Frame Check does.
 
@@ -166,8 +166,8 @@ ships in the wheel. It carries: per-FVS firing rate across the
 rate per category, genre classification distribution, and absence-
 cluster dimension incidence. The empirics are computed by running
 `frame_check` over stdio MCP against each corpus document and
-aggregating the structural fields, so the report is reproducible
-from the wheel + corpus alone.
+aggregating the structural fields. The calibration corpus is not
+shipped in the public wheel; the report records those results.
 
 The `F1 = 0.36 against expert labelers` figure cited in the
 sections above is from a separate pre-registered validation run
