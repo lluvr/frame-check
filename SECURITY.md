@@ -16,8 +16,10 @@ reports.
 
 ## Reporting a vulnerability
 
-**For non-public reports**: email `hello@clarethium.com` with
-`[security]` in the subject line. Include:
+**For non-public reports**: use GitHub's private vulnerability
+reporting (the repository **Security** tab, then **Report a
+vulnerability**, or <https://github.com/Clarethium/frame-check/security/advisories/new>).
+Include:
 
 - A description of the vulnerability (what, where, how to
   reproduce).
@@ -155,7 +157,7 @@ for the dual-use framing.
 
 The curator's commit signature and keybase/PGP details are not
 currently published. Reports relying on identity verification
-should use direct email to `hello@clarethium.com` and request
+should use GitHub private vulnerability reporting and request
 acknowledgment via a specific channel the reporter trusts.
 
 A PGP key for security-report encryption is planned for the 0.9.0
