@@ -173,7 +173,7 @@ jobs:
         # Runs from /tmp (not the workflow checkout cwd) so import
         # resolution goes to site-packages, not the source tree.
         # Without the cd, sys.path[0]='' resolves to the checkout dir
-        # and shadows the installed wheel — which is how three
+        # and shadows the installed wheel, which is how three
         # broken manifest fields (pipeline_version, frame_library_
         # version, sn_corpus) shipped silently up to v1.0.6 (the
         # smoke step ran from the source tree, where __file__-
@@ -212,21 +212,21 @@ jobs:
           # Failing CI on regression catches the entire bug class.
           m = p['manifest']
           assert m['pipeline_version'] != 'unknown', (
-              'manifest.pipeline_version is unknown — pipeline_version.txt '
+              'manifest.pipeline_version is unknown, pipeline_version.txt '
               'lookup is broken in the wheel layout (regression of v1.0.7 fix)'
           )
           assert m['frame_library_version'] != '0.0.0', (
-              'manifest.frame_library_version is 0.0.0 — '
+              'manifest.frame_library_version is 0.0.0, '
               'data/frame_library/VERSION lookup is broken in the wheel '
               'layout (regression of v1.0.7 fix)'
           )
           assert m['sn_corpus']['version'] != 'unknown', (
-              'manifest.sn_corpus.version is unknown — '
+              'manifest.sn_corpus.version is unknown, '
               'calibration/source_network_corpus.yaml is missing from the '
               'wheel or its lookup is broken (regression of v1.0.7 fix)'
           )
           assert m['sn_corpus']['size'] > 0, (
-              'manifest.sn_corpus.size is 0 — same root cause as '
+              'manifest.sn_corpus.size is 0, same root cause as '
               'sn_corpus.version unknown'
           )
           print('Smoke test passed (manifest self-reporting populated).')
@@ -275,7 +275,7 @@ jobs:
     # was load-bearing-broken: ``github.ref`` is ``refs/tags/v1.0.0``
     # for a tag push, and the substring 'a' is present in ``tags/``,
     # so the condition fired on every final tag (the inverse of intent
-    # — surfaced when v1.0.0 cut routed to TestPyPI instead of PyPI).
+    #, surfaced when v1.0.0 cut routed to TestPyPI instead of PyPI).
     # ``startsWith(github.ref, 'refs/tags/v')`` remains load-bearing
     # to gate against branch refs (``ref_name`` for a branch push is
     # just the branch name, e.g. ``master``, which still contains 'a').
@@ -415,7 +415,7 @@ jobs:
           # the output (every tag's annotation, concatenated) got
           # spliced into the release body. With the env-var
           # interpolation pattern, "$NOTES" is literal expansion
-          # only — backticks inside the value are preserved as
+          # only, backticks inside the value are preserved as
           # characters, not interpreted as command substitution.
           NOTES: ${{ steps.notes.outputs.notes }}
         run: |

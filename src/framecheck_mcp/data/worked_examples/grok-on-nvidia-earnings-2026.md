@@ -14,7 +14,7 @@ frames_detected: [FVS-008, FVS-002, FVS-001, FVS-007]
 featured: true
 domain: finance
 verification_summary: "Layer 4 source_fidelity ratio 92 percent (23 of 25 numbers appear as literal digit substrings in the source). Two numbers did not literal-match, both fiscal-year labels that paraphrase 'a year ago' as 'Q4 of fiscal 2023'. Grounding decomposition: 80 percent grounded, 10 percent fabricated, 10 percent projection; scope_assessment regime saturated, so the source-fidelity rate is the authoritative reading on numerical claims and sentence-level grounding is supplemental."
-hook: The sovereignty instrument's distinguishing capability is that it checks a document against the source it should be grounded in. This is the first worked example to use that capability end-to-end, on an LLM summary of a real public press release.
+hook: The tool's distinguishing capability is that it checks a document against the source it should be grounded in. This is the first worked example to use that capability end-to-end, on an LLM summary of a real public press release.
 ---
 
 ## Context
@@ -240,7 +240,7 @@ it. An agent calling `frame_check` with a `source_text` argument
 gets a reading that framing-only tools cannot produce. This
 example is the first worked walkthrough of that reading.
 
-The sovereignty case carries through. An agent summarising a
+The point carries through. An agent summarising a
 document the user pasted in, or paraphrasing a source it
 retrieved, can invoke `frame_check(document_text=summary,
 source_text=original)` on its own output and surface a

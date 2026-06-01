@@ -139,7 +139,7 @@ def test_worked_example_fixture_matches_live_payload(fixture_path):
         # Epistemic
         "analysis.epistemic.numeric_sentences",
         "analysis.epistemic.sourced_pct",
-        # Claims (counts; per-claim items are not pinned — extractor
+        # Claims (counts; per-claim items are not pinned, extractor
         # evolution stays open as long as the headline counts hold)
         "analysis.claims_extracted.total",
         "analysis.claims_extracted.hedged_count",
@@ -236,7 +236,7 @@ def test_worked_example_fixture_matches_live_payload(fixture_path):
         pytest.fail("\n".join(msg))
 
 
-# Sentinel for "field not present" — distinguished from None so the
+# Sentinel for "field not present", distinguished from None so the
 # allowlist comparison flags missing-vs-explicit-None as drift.
 class _MISSING_TYPE:
     def __repr__(self):

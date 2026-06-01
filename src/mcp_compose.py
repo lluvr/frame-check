@@ -1284,7 +1284,7 @@ def _build_divergence_block(
             # also adds public_url as the alias for library_url so
             # this block emits the full canonical
             # {citation_uri, library_resource_uri, library_url,
-            # public_url} quartet — every frame-reference shape in
+            # public_url} quartet, every frame-reference shape in
             # the payload now reads identically.
             "library_resource_uri": (
                 f"{RESOURCE_SCHEME}://library/{fvs_id}"

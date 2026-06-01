@@ -75,7 +75,7 @@ The wider field-name pairs `name` ↔ `title` and `fvs_id` ↔
     Naive aliasing would conflate distinct content. Decision
     required.
   - `fvs_id` ↔ `frame_id`: same value in current data, safe to
-    alias mechanically. Deferred — the `frame_id` rename in
+    alias mechanically. Deferred, the `frame_id` rename in
     particular touches more integrations than the URI/URL pair
     and warrants explicit consideration.
 
@@ -149,7 +149,7 @@ that learned the decision_readiness shape and looked for
 `library_resource_uri` on absent_frames per analogy got None.
 
 The cross-block inconsistency was load-bearing in practice: the
-v1.0.9 Phase-2 protocol document (`Test 2 — Frame Divergence`)
+v1.0.9 Phase-2 protocol document (`Test 2, Frame Divergence`)
 asked Claude Desktop to cite absent frames by `library_resource_uri`
 per the decision_readiness convention; the client run
 found the field absent on absent_frames and surfaced this
@@ -159,7 +159,7 @@ This release adds `library_resource_uri` to `absent_frames`
 records as an alias for `citation_uri`. Both fields carry
 identical values
 (`frame-check://library/<frame_id>`); pre-v1.0.10 integrations
-using `citation_uri` remain valid. Schema-additive only — no
+using `citation_uri` remain valid. Schema-additive only, no
 fields renamed or removed.
 
 Pinned by
@@ -186,7 +186,7 @@ the COUNT of unsourced numbers
 (`source_fidelity.not_in_source: 2 out of 25`) but not WHICH
 specific numbers. Adopters reading "23/25 in source" got the
 headline but couldn't act on the 8% unsourced rate without
-manually diffing source vs. summary side-by-side — which
+manually diffing source vs. summary side-by-side, which
 defeats the tool's purpose for AI-output auditing.
 
 The internal data was already computed:
@@ -211,7 +211,7 @@ literal-substring check surfaces the deviation; whether the value
 was derived, rounded, pulled from training data, or fabricated is
 downstream interpretation the tool does not claim. The source-
 fidelity capability surfaces presence-in-source, not numeric
-correctness — the construct-honesty boundary is named in the
+correctness, the construct-honesty boundary is named in the
 field's `note` string.
 
 Known limit-class on the literal-substring approach: same number
@@ -237,7 +237,7 @@ frame_library_version, sn_corpus). Phase-1 e2e against the live
 v1.0.7 wheel surfaced a fourth field with the same root cause:
 `mcp_server.py:_install_version_info` has its own SHA detection
 chain (separate from `version.py:_detect_pipeline_version`) that
-also reads `pipeline_version.txt` from `_SCRIPT_DIR` only — so
+also reads `pipeline_version.txt` from `_SCRIPT_DIR` only, so
 `frame-check-mcp --version` reports `git_sha=unknown` on every
 fresh-venv install, even though the manifest field now reports
 the correct SHA.
@@ -255,7 +255,7 @@ CI hardening: the publish.yml smoke step now captures the
 surface alongside the manifest-field assertions added at v1.0.7.
 
 Note on duplication: `mcp_server.py` and `version.py` carry
-parallel SHA-detection chains by design — `mcp_server.py` runs
+parallel SHA-detection chains by design, `mcp_server.py` runs
 git-rev-parse first (so dev always sees the current commit, not
 the last baked SHA), while `version.py:PIPELINE_VERSION` checks
 env var → baked file → git in that order (so production reads
@@ -413,7 +413,7 @@ GitHub Actions substitute the notes content directly into the bash
 script string. Bash then performs command substitution on any
 backticks in the value. The CHANGELOG `[1.0.2]` section included
 the literal text `` `git tag -l --format='%(contents)'` `` in a
-backtick code span — bash ran that as an actual command, the
+backtick code span, bash ran that as an actual command, the
 output (every tag's annotation, concatenated) got spliced into
 the release body, and other backticked code spans (e.g.
 `` `actions/checkout@v4` ``) returned empty (not a real command),
@@ -529,7 +529,7 @@ The `frame_check` and `frame_compare` MCP tool responses include an
 `analysis.manifest` block whose version field was historically
 emitted as `framecheck_version` (no underscore between `frame` and
 `check`). That was a typo introduced in v0.9.1 (commit `12cb0e29`,
-2026-05-07) — every other surface in the codebase (the sibling
+2026-05-07), every other surface in the codebase (the sibling
 `provenance.frame_check_version` field, the
 `FRAME_CHECK_VERSION` Python constant, all worked-example fixtures,
 the version-coherence test) uses the underscore-separated form.
@@ -712,7 +712,7 @@ alone. The `.github/workflows/publish.yml` pipeline (world-state
 preflight + build + sigstore attestation + Trusted Publishing OIDC +
 GitHub release) runs end-to-end on this tag push.
 
-Five publish-workflow defects are fixed and held — four from the
+Five publish-workflow defects are fixed and held, four from the
 0.9.x line, and one more surfaced during this cut itself:
 
 1. The tag-vs-pyproject gate skips under `workflow_dispatch` (no

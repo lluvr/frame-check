@@ -1178,7 +1178,7 @@ def test_typical_co_fires_carry_library_resource_uri():
     itself: an MCP-integrated agent that learned the
     decision_readiness.dimensions[*].library_entries[*] shape
     (which emits library_resource_uri) and looked for the field
-    on co_fires / co_absences per analogy got nothing — those
+    on co_fires / co_absences per analogy got nothing, those
     blocks emitted only citation_uri. Surfaced 2026-05-11 by a
     fresh-eyes schema-coherence audit on the v1.0.10 baseline.
 
@@ -1263,7 +1263,7 @@ def test_all_frame_reference_shapes_carry_canonical_uri_url_quartet():
     Walks the payload looking for dicts that have fvs_id or
     frame_id matching the FVS- prefix and asserts the quartet on
     each. Skips records where library_url is None (entries without
-    canonical filenames — None on both names is consistent).
+    canonical filenames, None on both names is consistent).
     """
     print("=== all frame-reference shapes carry canonical URI/URL quartet ===")
     baseline = len(_FAILURES)
@@ -1423,7 +1423,7 @@ def test_frame_opportunity_record_carries_canonical_uri_url_quartet():
             baseline,
             "test_frame_opportunity_record_carries_canonical_uri_url_quartet",
         )
-        print("  SKIP — record was None (mock setup issue)\n")
+        print("  SKIP, record was None (mock setup issue)\n")
         return
 
     # Quartet presence
