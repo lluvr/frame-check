@@ -73,7 +73,7 @@ These findings still inherit the corpus-level N caveat (current peer groups: 2).
 
 Aggregated across **N = 1 transformation pair**. Each pair is a directional source -> derived comparison.
 
-**Small sample warning.** N = 1 is below the threshold (3) at which per-dimension rates become interpretive. Rates below should be read as raw counts, not as corpus-level findings. The aggregate becomes informative as more transformation pairs are added (see `CORPUS_GENRE_GAPS.md`).
+**Small sample warning.** N = 1 is below the threshold (3) at which per-dimension rates become interpretive. Rates below should be read as raw counts, not as corpus-level findings. The aggregate becomes informative as more transformation pairs are added.
 
 ### Per-dimension movement rate
 
@@ -95,7 +95,7 @@ Of 1 pairs, the count of pairs where the transformation measurably moved a dimen
 
 - **Sample size**: peer N = 12, transformation N = 1. Conclusions about specific LLMs or specific transformation effects need substantially larger N.
 - **Convenience sampling**: the v1 corpus is convenience-sampled from existing worked examples (see methodology page). Selection bias is acknowledged; v2 randomly-sampled component is the planned correction.
-- **Genre coverage**: the corpus is heavily ai_response. Cross-genre claims require corpus expansion (see CORPUS_GENRE_GAPS.md).
+- **Genre coverage**: the corpus is heavily ai_response. Cross-genre claims require corpus expansion.
 - **Profile validation**: per-dimension absolute signals remain experimental until Phase 2 expert validation lands. Comparison signals (peer differs / transformation moved) are LESS dependent on absolute signal validity but still inherit the underlying methodology.
 
 ## Citation

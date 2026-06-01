@@ -23,8 +23,8 @@ you find the one that matches your need.
 The methodology canon ships separately at
 [github.com/Clarethium/lodestone](https://github.com/Clarethium/lodestone)
 and at [frame.clarethium.com/corpus/methodology/](https://frame.clarethium.com/corpus/methodology/).
-That source is the canonical reference for the substrate, frame library,
-validation program, and honest limits.
+That source is the canonical reference for the methodology, frame
+library, and honest limits.
 
 ### "I want to understand frame divergence"
 
@@ -34,23 +34,10 @@ error envelope, versioning commitments. The contract version `c1.0` is the
 shipping interface; future revisions follow the documented compatibility
 discipline.
 
-### "I want to validate the substrate myself"
-
-1. [validation/wedge_behavior/STATUS.md](../validation/wedge_behavior/STATUS.md):
-   current validation status and the pre-registered behavior-change protocol.
-2. [RATERS.md](RATERS.md): Phase 2 rater contract: time commitment,
-   deliverable shape, blinding requirement, how to engage.
-3. [`../calibration/results/`](../calibration/results/): per-run REPORT.md
-   files documenting empirical detector firing rates against the calibration
-   corpus.
-4. [`../validation/decision_readiness/results/`](../validation/decision_readiness/results/):
-   date-stamped harness re-runs of the decision-readiness profile against
-   the validation corpus.
-
 ### "I want to verify the wheel"
 
 The reproducibility verification path is documented in
-[`../SECURITY.md` "How to verify the audit yourself"](../SECURITY.md). It
+[`../.github/SECURITY.md` "How to verify the audit yourself"](../.github/SECURITY.md). It
 walks through installing the wheel, running the conformance driver, the
 adversarial harness, and the canon-discipline audit against any released
 wheel.
@@ -72,10 +59,9 @@ framing signatures.
 - [FRAME_DIVERGENCE_CONTRACT_v1.md](FRAME_DIVERGENCE_CONTRACT_v1.md): the
   adopter-facing wire contract for the `divergence` block (c1.0 shipping).
 - [MCP_SERVER.md](MCP_SERVER.md): full MCP server reference.
-- [RATERS.md](RATERS.md): Phase 2 rater contract.
 
 ## What this index is not
 
 - Not a substitute for reading the canonical documents.
-- Not a release-notes log; see [`../CHANGELOG.md`](../CHANGELOG.md).
+- Not a release-notes log; see [`CHANGELOG.md`](CHANGELOG.md).
 - Not a tutorial; see [`../README.md`](../README.md) for the 60-second install path.

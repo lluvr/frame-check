@@ -65,10 +65,10 @@ The curator does NOT decide:
 
 Two blockers stand between the current state and the first canon promotion:
 
-1. **External reviewer pipeline.** Promotion criterion 2 requires at least two reviewers outside the curator. Recruitment is open; the terms, honest state of what a reviewer would be reviewing, deliverable shape, and upgrade path from reviewer to co-curator are specified in `docs/RATERS.md`.
-2. **Formal review process.** What a reviewer does, the review deliverable format, dissent handling, and appeals are partially specified in `docs/RATERS.md` v0 and are deferred in their full v1 form (see "Explicitly deferred" below). The first external review converts these v0 artifacts into observed practice from which `GOVERNANCE.md v1` extracts the formal review process. Specifying a process against imagined reviewers produces overspecification; the v0 artifacts name terms concretely enough to recruit and loosely enough to update after contact.
+1. **External reviewer pipeline.** Promotion criterion 2 requires at least two reviewers outside the curator. The reviewer terms (what is being reviewed, deliverable shape, and the path from reviewer to co-curator) are agreed when the first reviewer engages, not invented against hypotheticals.
+2. **Formal review process.** What a reviewer does, the review deliverable format, dissent handling, and appeals are deferred in their full form (see "Explicitly deferred" below). The first external review converts the working terms into observed practice from which `GOVERNANCE.md v1` extracts the formal review process. Specifying a process against imagined reviewers produces overspecification.
 
-Once the first reviewer engages, `GOVERNANCE.md v1` and `docs/RATERS.md v1` co-release with the formal review process extracted from observed practice rather than invented from template.
+Once the first reviewer engages, `GOVERNANCE.md v1` documents the formal review process extracted from observed practice rather than invented from template.
 
 ---
 
@@ -78,12 +78,12 @@ These are real governance questions that will be answered when their forcing fun
 
 | Deferred item | Forcing function | Enabling artifact |
 |---------------|------------------|-------------------|
-| Formal review process (reviewer deliverable, format, dissent handling) | First external reviewer engages | `docs/RATERS.md` v0 (outreach + terms + deliverable shape; v1 extracts from observed practice) |
-| Canon-vote disagreement resolution (full v1 rule) | First canon-vote with dissenting reviewer | `docs/RATERS.md` "Editorial independence" paragraph names the both-positions-published default; the provisional rule below names the minimum bright line that governs until the first real disagreement arrives |
+| Formal review process (reviewer deliverable, format, dissent handling) | First external reviewer engages | Working terms agreed at engagement; v1 extracts from observed practice |
+| Canon-vote disagreement resolution (full v1 rule) | First canon-vote with dissenting reviewer | The both-positions-published default; the provisional rule below names the minimum bright line that governs until the first real disagreement arrives |
 | Canon retirement process (who initiates, who decides, transition for external references) | First canon frame challenged on evidence | None yet |
 | Amendment process for this document (what requires RFC, who ratifies) | First governance dispute | None yet |
-| Curator succession (how authority transfers) | Curator transition planning | `docs/RATERS.md` "upgrade path" (reviewer → repeat reviewer → co-curator) is the succession on-ramp |
-| Council / multi-curator model | Library scale exceeds single-curator capacity | `docs/RATERS.md` co-curator terms sketch the first pair; council form is deferred |
+| Curator succession (how authority transfers) | Curator transition planning | Reviewer to repeat reviewer to co-curator on-ramp |
+| Council / multi-curator model | Library scale exceeds single-curator capacity | Deferred until the first co-curator pair forms |
 
 Each is a genuine governance question. None is urgent until its forcing function fires.
 
@@ -96,7 +96,7 @@ The "Canon-vote disagreement resolution" item above is deferred to its full v1 f
 **Provisional rule (governs the first canon promotion only):**
 
 1. **Unanimous support among engaged reviewers required to promote.** If every engaged reviewer recommends "promote" (plain or conditional), the curator may promote per the five INDEX criteria.
-2. **A single "no-promote" verdict from any engaged reviewer blocks promotion at this step.** The entry remains draft. Both verdicts are published per `docs/RATERS.md` Editorial-independence. The dissenting evidence drives the next iteration of the entry and subsequent re-review.
+2. **A single "no-promote" verdict from any engaged reviewer blocks promotion at this step.** The entry remains draft. Both verdicts are published (the editorial-independence default). The dissenting evidence drives the next iteration of the entry and subsequent re-review.
 3. **Curator-override of a dissent requires an `[RFC]` that overturns this provisional rule.** The RFC is published with reasoning and the dissenting reviewer's prior verdict inline. This is deliberately expensive; the cost is the safeguard against a dissent being waved away silently.
 4. **Tied holds (e.g., one "promote," one "hold at draft")** treat "hold" as non-blocking if the "hold" reviewer explicitly opts into "promote if the other reviewer's conditions are met." Otherwise treat as a "no-promote" and apply (2).
 

@@ -431,7 +431,7 @@ to a file on disk.
 ### Validation corpus and decision-readiness profile
 
 The validation corpus is the document set on which the
-decision-readiness profile is measured. Profile output is currently labelled experimental and is **not** surfaced in the live UI; the gate lifts after the Phase 2 rater study (see RATERS.md in the repository).
+decision-readiness profile is measured. Profile output is currently labelled experimental and is **not** surfaced in the live UI.
 
 - `frame-check://corpus/{slug}` - the entry's source document
   (markdown). Slug is alphanumeric + hyphens; traversal-safe.
