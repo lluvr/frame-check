@@ -818,7 +818,7 @@ def test_analysis_includes_decision_readiness_profile():
       - analysis.decision_readiness present
       - methodology metadata (URL + version + status) present
       - All five dimensions present
-      - Status is 'experimental' until Phase 2 validates
+      - Status is 'experimental' until expert validation
     """
     print("=== analysis includes decision-readiness profile ===")
     baseline = len(_FAILURES)
@@ -833,7 +833,7 @@ def test_analysis_includes_decision_readiness_profile():
           f"{profile.get('methodology_url')!r}")
     check(profile.get("status") == "experimental",
           f"decision_readiness.status must be 'experimental' until "
-          f"Phase 2 validation lands; got {profile.get('status')!r}")
+          f"expert validation lands; got {profile.get('status')!r}")
     dims = profile.get("dimensions") or {}
     for required in [
         "coverage", "calibration", "evidence",
@@ -3194,7 +3194,7 @@ def test_explain_framing_prompt_mentions_aggregate_and_corpus():
     resources so agents using the prompt can discover broader-
     pattern context. Without prompt-side discovery, those
     resources exist but are invisible to agents executing the
-    sovereignty prompts."""
+    framing prompts."""
     print("=== prompt explain_framing mentions aggregate + corpus ===")
     baseline = len(_FAILURES)
     resp = mcp_server.dispatch({
@@ -4724,7 +4724,7 @@ def test_prompts_get_returns_messages_with_voice_rules():
 
 
 def test_agent_guidance_names_self_audit_pattern():
-    """The self-audit use case is load-bearing for the sovereignty
+    """The self-audit use case is load-bearing for the core
     narrative: an agent invoking frame_check on its own last
     response. agent_guidance must name that pattern explicitly so an
     agent reading the payload knows the response shape changes
@@ -4741,9 +4741,9 @@ def test_agent_guidance_names_self_audit_pattern():
     )
     note = g["when_invoked_on_own_output"]
     check(
-        "sovereignty" in note.lower(),
-        "self-audit guidance must name the sovereignty case so the "
-        "agent knows why the response shape differs",
+        "decides what to do" in note.lower(),
+        "self-audit guidance must name that the user sees the frame "
+        "and decides, so the agent knows why the response shape differs",
     )
     check(
         "not evaluate" in note.lower()
@@ -4757,7 +4757,7 @@ def test_agent_guidance_names_self_audit_pattern():
 
 
 def test_prompts_get_ai_response_prompt_warns_against_verdict():
-    """The sovereignty-case prompt must also carry verdict
+    """The ai-response-check prompt must also carry verdict
     prohibition against the analyzed AI (not just self). Reading
     an AI response through Frame Check should surface structure,
     never conclude bias."""
@@ -4774,7 +4774,7 @@ def test_prompts_get_ai_response_prompt_warns_against_verdict():
         "(biased / balanced) it prohibits",
     )
     check(
-        "sovereignty" in text.lower() or "user judges" in text.lower(),
+        "not to be told whether to trust it" in text.lower(),
         "prompt must frame the user as the judge, not the tool",
     )
     _assert_no_new_failures(baseline, "test_prompts_get_ai_response_prompt_warns_against_verdict")
@@ -4828,7 +4828,7 @@ def test_server_version_bumped_for_decision_readiness_capability():
 
 
 def test_all_prompts_surface_decision_readiness():
-    """Every sovereignty prompt must instruct the agent to surface
+    """Every framing prompt must instruct the agent to surface
     analysis.decision_readiness when present in the tool response.
     Without prompt-side awareness, the new field exists in the
     payload but agents default to the older surfacing pattern and
@@ -4878,11 +4878,11 @@ def test_all_prompts_surface_decision_readiness():
             f"page; agents cannot route users to the framework",
         )
     _assert_no_new_failures(baseline, "test_all_prompts_surface_decision_readiness")
-    print("  PASS  (all four sovereignty prompts updated)\n")
+    print("  PASS  (all four framing prompts updated)\n")
 
 
 def test_all_prompts_point_at_library_chain_for_decision_readiness():
-    """Every sovereignty prompt that surfaces decision_readiness
+    """Every framing prompt that surfaces decision_readiness
     dimensions must also point the agent at the library chain
     affordance (library_entries[].library_resource_uri) so the
     agent knows it can fetch the canonical pattern entry inline
@@ -4937,7 +4937,7 @@ def test_all_prompts_point_at_library_chain_for_decision_readiness():
 
 
 def test_all_prompts_mention_affects_dimensions_for_matched_frames():
-    """Each sovereignty prompt that surfaces frame_library_matches
+    """Each framing prompt that surfaces frame_library_matches
     must also point at affects_dimensions so agents can bridge a
     matched frame to the decision-readiness dimensions it threatens.
     Without this, agents surface matches and dimensions in parallel
@@ -4987,10 +4987,10 @@ def test_prompts_get_unknown_returns_invalid_params():
 
 
 def test_all_prompts_are_divergence_aware():
-    """Each sovereignty prompt must step through the divergence block.
+    """Each framing prompt must step through the divergence block.
 
     Load-bearing for the divergence-capable-by-default direction. If
-    the sovereignty prompts (the use case the MCP was built around)
+    the framing prompts (the use case the MCP was built around)
     do not invoke divergence, the headline capability is silently
     absent from every agent that runs them.
 
@@ -5017,21 +5017,21 @@ def test_all_prompts_are_divergence_aware():
             has_divergence,
             f"prompt {prompt_name!r} does not mention divergence; "
             f"the 0.8.0 V4.2-capable-by-default direction requires the "
-            f"sovereignty prompts to exercise the divergence block",
+            f"framing prompts to exercise the divergence block",
         )
     _assert_no_new_failures(baseline, "test_all_prompts_are_divergence_aware")
     print("  PASS  (all four prompts are divergence-aware)\n")
 
 
 def test_all_prompts_honor_absence_is_not_prescription():
-    """Each sovereignty prompt that walks the divergence block must
+    """Each framing prompt that walks the divergence block must
     cite agent_guidance.absence_is_not_prescription so the caller's
     model knows that surfaced absences never translate into 'you
     should have used frame X' prescription.
 
     Load-bearing for the faithfulness contract
     (FRAME_DIVERGENCE_CONTRACT_v1 §4.5 and §5.1 guarantee 5). If a
-    sovereignty prompt walks absent_frames without invoking the
+    framing prompt walks absent_frames without invoking the
     absence-is-not-prescription discipline, the prompt becomes a
     prescription engine and the category claim falsifies itself."""
     baseline = len(_FAILURES)
@@ -5366,7 +5366,7 @@ def test_all_prompts_pivot_frame_on_off_methodology():
 def test_agent_guidance_carries_composition_discipline():
     """The agent_guidance dict must carry a composition_discipline
     field that pushes the insight-led discipline into the tool-level
-    surface (not just the sovereignty prompts). When the user invokes
+    surface (not just the framing prompts). When the user invokes
     frame_check via natural language ('call frame_check on this') the
     prompt-level discipline does not apply; the discipline must live
     in agent_guidance so it travels with every tool response.
@@ -5374,7 +5374,7 @@ def test_agent_guidance_carries_composition_discipline():
     This was the failure surfaced in testing of the 0.8.0
     prerelease: the second test invoked frame_check via natural
     language, and the agent walked the measurements mechanically
-    because the discipline lived only in the four sovereignty
+    because the discipline lived only in the four framing
     prompts, not in agent_guidance. Pins the field's presence and
     the five composition rules so a future change cannot strip the
     discipline."""
@@ -5388,7 +5388,7 @@ def test_agent_guidance_carries_composition_discipline():
         "composition_discipline" in guidance,
         "agent_guidance must include a composition_discipline field "
         "so the insight-led shape travels with every tool response, "
-        "not only with sovereignty-prompt invocations",
+        "not only with framing-prompt invocations",
     )
     text = guidance.get("composition_discipline", "")
     check(
@@ -6726,7 +6726,7 @@ def test_divergence_summary_names_clusters_when_present():
 
 
 def test_all_prompts_teach_absence_clusters_lead_when_present():
-    """Sovereignty prompts must teach the agent to lead with the
+    """Framing prompts must teach the agent to lead with the
     absence_cluster reading when divergence.absence_clusters is
     non-empty. Without this, the agent following the prompt may
     walk to absent_frames first and miss the substrate's dimension-
@@ -6778,7 +6778,7 @@ def test_composition_discipline_names_absence_clusters():
     """agent_guidance.composition_discipline must include
     absence_clusters in the named measurements that ground a
     cited insight. Without this, agents invoked via natural language
-    (not via a sovereignty prompt) get the discipline at tool-level
+    (not via a framing prompt) get the discipline at tool-level
     but with no instruction to use the cluster reading; the substrate
     composition surfaces only when a prompt is in play.
     """
@@ -6792,7 +6792,7 @@ def test_composition_discipline_names_absence_clusters():
         "absence_cluster" in text or "absence_clusters" in text,
         "composition_discipline must name absence_clusters as a "
         "valid grounding measurement so natural-language invocations "
-        "(not just sovereignty prompts) carry cluster-first composition",
+        "(not just framing prompts) carry cluster-first composition",
     )
     check(
         "substrate" in text.lower() and "cluster" in text.lower(),
@@ -8443,7 +8443,7 @@ def test_user_goal_promotes_goal_relevant_absences():
 def test_user_goal_audit_applies_no_override():
     """The 'audit' goal is the default-equivalent: the substrate
     applies the existing catalog/coverage/genre ranking without
-    goal-specific override. Pins that audit means 'sovereignty
+    goal-specific override. Pins that audit means 'the neutral
     posture' and not 'no goal at all'.
     """
     baseline = len(_FAILURES)
@@ -8481,7 +8481,7 @@ def test_user_goal_audit_applies_no_override():
     check(
         "audit" in summary.lower(),
         "envelope.divergence_summary must name 'audit' when "
-        "user_goal='audit' (sovereignty posture should be visible "
+        "user_goal='audit' (the neutral posture should be visible "
         "to the agent)",
     )
     _assert_no_new_failures(
@@ -8588,9 +8588,9 @@ def test_how_to_render_divergence_teaches_goal_relevance():
         "parameter so the agent knows where the goal comes from",
     )
     check(
-        "audit" in text and "sovereignty" in text.lower(),
+        "audit" in text and "neutral posture" in text.lower(),
         "how_to_render_divergence must explain that 'audit' is "
-        "the sovereignty posture (no override)",
+        "the neutral posture (no override)",
     )
     _assert_no_new_failures(
         baseline, "test_how_to_render_divergence_teaches_goal_relevance"
@@ -8805,7 +8805,7 @@ def test_agent_guidance_carries_how_to_map_user_intent():
     """Substrate-side composition L5 interface UX (Step 3): the
     agent calling frame_check needs explicit guidance for mapping
     natural-language user requests to the option space the four
-    sovereignty prompts expose (depth, goal, questions). Without
+    framing prompts expose (depth, goal, questions). Without
     this guidance, the agent guesses and the user-intent vocabulary
     layer (Step 2) is invisible to the agent.
 
@@ -9293,8 +9293,8 @@ def test_compose_budget_invalid_value_rejected():
     print("  PASS\n")
 
 
-def test_sovereignty_prompts_advertise_user_intent_arguments():
-    """Substrate-side composition L5 interface UX: each sovereignty
+def test_framing_prompts_advertise_user_intent_arguments():
+    """Substrate-side composition L5 interface UX: each framing
     prompt must advertise the three user-intent arguments (depth,
     goal, questions) so MCP clients surface them as user-facing
     options. Without this, the user has no surface to express their
@@ -9303,7 +9303,7 @@ def test_sovereignty_prompts_advertise_user_intent_arguments():
     """
     baseline = len(_FAILURES)
     print(
-        "=== sovereignty prompts advertise user-intent arguments ==="
+        "=== framing prompts advertise user-intent arguments ==="
     )
     resp = mcp_server.handle_prompts_list({})
     expected_arg_names = {"depth", "goal", "questions"}
@@ -9320,7 +9320,7 @@ def test_sovereignty_prompts_advertise_user_intent_arguments():
         )
     _assert_no_new_failures(
         baseline,
-        "test_sovereignty_prompts_advertise_user_intent_arguments",
+        "test_framing_prompts_advertise_user_intent_arguments",
     )
     print("  PASS\n")
 
@@ -11157,7 +11157,7 @@ def test_envelope_carries_corpus_summary():
 def test_composition_discipline_names_corpus_context():
     """agent_guidance.composition_discipline must name corpus_context
     as a valid grounding measurement. Without this, agents invoked
-    via natural language (not via a sovereignty prompt) lack the
+    via natural language (not via a framing prompt) lack the
     instruction to treat corpus_context as empirical anchoring;
     the field would surface in JSON but not in the discipline.
     """
@@ -12029,7 +12029,7 @@ def main() -> int:
     test_compose_budget_minimal_filters_top_n()
     test_compose_budget_minimal_compresses_agent_guidance()
     test_compose_budget_invalid_value_rejected()
-    test_sovereignty_prompts_advertise_user_intent_arguments()
+    test_framing_prompts_advertise_user_intent_arguments()
     test_prompt_arguments_translate_to_mcp_parameters()
 
     if _FAILURES:

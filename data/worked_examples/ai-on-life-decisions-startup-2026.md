@@ -158,7 +158,7 @@ Check says what structural frame the answer is putting on the
 question, so the reader can see the frame and decide whether to
 inherit it.
 
-This is the sovereignty case. Not "your AI is biased" (Frame
+This is the point. Not "your AI is biased" (Frame
 Check does not produce verdicts). Not "your AI is wrong"
 (correctness is outside the method's remit). Structural: "your
 AI gave you a framework you did not request; the framework covers

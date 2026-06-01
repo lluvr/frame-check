@@ -412,7 +412,7 @@ def handle_initialize(_params: dict[str, Any]) -> dict[str, Any]:
     """Handshake. Advertise the three MCP primitives this server
     supports: tools (frame_check, frame_compare), resources
     (library, worked examples, methodology, calibration) and
-    prompts (self-audit, sovereignty case, challenge, walkthrough).
+    prompts (self-audit, ai-response check, challenge, walkthrough).
     The clientInfo in params is accepted but not used; if future
     versions want to gate features by client, it is available
     here.

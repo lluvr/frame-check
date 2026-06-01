@@ -151,7 +151,7 @@ This section summarizes the canonical commitments so MCP-facing readers can orie
 `mcp_server.py` matches the released wheel reported on the MCP
 `initialize` handshake; the latest published wheel is on PyPI at
 [pypi.org/project/frame-check-mcp](https://pypi.org/project/frame-check-mcp/).
-`frame_check` + `frame_compare`, four sovereignty prompts,
+`frame_check` + `frame_compare`, four framing prompts,
 divergence block on by default (`include_divergence=true`; an
 explicit `false` returns the pre-divergence response shape), FVS
 catalog pinned to library_v3 per `FRAME_DIVERGENCE_CONTRACT_v1`
@@ -194,7 +194,7 @@ Two tools.
 
 | Parameter | Type | Meaning |
 |---|---|---|
-| `prefer_contract_version` | integer (1 or 2) | Coverage contract version the client prefers. `1` (default): emit both v1 `coverage` and v2 `coverage_v2` (Phase 2 compatibility window; v1 deprecated 2026-04-21). `2`: emit only `coverage_v2` and omit v1. See "Coverage v1 and v2 shapes" below. |
+| `prefer_contract_version` | integer (1 or 2) | Coverage contract version the client prefers. `1` (default): emit both v1 `coverage` and v2 `coverage_v2` (compatibility window; v1 deprecated 2026-04-21). `2`: emit only `coverage_v2` and omit v1. See "Coverage v1 and v2 shapes" below. |
 | `domain_hint` | string (enum) | Hint about the document's domain. Currently echoes to `envelope.domain_inferred`; field-level filtering is deferred to a future contract minor version. Removed from the agent-facing schema 0.8.3 because the current implementation has no behavioral effect. |
 | `catalog_version_pin` | string | Pins the FVS catalog used for absent-frame set difference. Currently only `library_v3` is supported (contract c1.0); unsupported pins are coerced with a limitation note in `envelope.limitations`. Removed from the agent-facing schema 0.8.3 because the agent should not be choosing catalog versions per call. |
 
@@ -551,7 +551,7 @@ Each cluster carries:
 
 Clusters are sorted by `signal_strength` (high first), then `canon_coverage_fraction` descending (most under-attended first), then dimension alphabetical for stable tiebreaking. The strongest-cluster-first ordering means a caller's agent that takes the first cluster gets the load-bearing dimension theme without further filtering. When no dimension meets the firing threshold, `absence_clusters` is an empty list and the agent falls back to per-frame composition over `absent_frames`.
 
-The substrate stays deterministic. The cluster builder operates only on canon-graph set membership and aggregation of per-frame `signal_strength`; it never touches document content semantics. The dimension readings are curated text per dimension; new dimensions added to `DIMENSION_LIBRARY_ENTRIES` must add a matching reading in `_DIMENSION_CLUSTER_READINGS` or receive a construct-honest placeholder. The cluster is the substrate's reading; the per-frame walk is the supporting evidence. The agent is instructed (via `agent_guidance.how_to_render_divergence` and the four sovereignty prompts) to lead with the strongest cluster's reading when present.
+The substrate stays deterministic. The cluster builder operates only on canon-graph set membership and aggregation of per-frame `signal_strength`; it never touches document content semantics. The dimension readings are curated text per dimension; new dimensions added to `DIMENSION_LIBRARY_ENTRIES` must add a matching reading in `_DIMENSION_CLUSTER_READINGS` or receive a construct-honest placeholder. The cluster is the substrate's reading; the per-frame walk is the supporting evidence. The agent is instructed (via `agent_guidance.how_to_render_divergence` and the four framing prompts) to lead with the strongest cluster's reading when present.
 
 ### Structural genre classification
 
@@ -830,7 +830,7 @@ The `absent_frames` sort now respects four ranking dimensions, in order:
 
 Goal precedes genre because the user's stated goal is a more direct signal than inferred document classification; signal precedes goal because empirical signal cannot be overridden by user preference. Records without a relevance entry sort with priority 999 so they fall after curated entries.
 
-The `audit` goal is the default-equivalent posture: no goal-specific override is applied; the existing catalog/coverage/genre ranking stands. It is named explicitly so the agent can surface "auditing this document" as a distinct sovereignty posture from the other goals. When `user_goal` is omitted entirely, behavior matches `audit`.
+The `audit` goal is the default-equivalent posture: no goal-specific override is applied; the existing catalog/coverage/genre ranking stands. It is named explicitly so the agent can surface "auditing this document" as a distinct posture from the other goals. When `user_goal` is omitted entirely, behavior matches `audit`.
 
 ### Corpus context (empirical anchoring)
 
@@ -998,7 +998,7 @@ prerelease surfaced a UX failure: an agent that walks the
 measurements one-by-one delivers a statistical readout the user
 cannot act on. The field pushes the insight-led discipline into the
 tool surface so it travels with every response, not only with the
-four sovereignty-prompt invocations.
+four framing-prompt invocations.
 
 The discipline (paraphrased; the field carries the canonical text):
 
@@ -1022,8 +1022,7 @@ The discipline (paraphrased; the field carries the canonical text):
    sharpen this reading; never as scenery.
 5. **ABSENCE IS NOT PRESCRIPTION**. Insights name what the framing
    does, never what the document should have done. The reader
-   decides what to do with the seeing; that is the sovereignty
-   case this tool serves.
+   decides what to do with the seeing; that is what this tool serves.
 6. **PER-LEVEL CLAIM TREATMENT**. The substrate produces three
    qualitatively different kinds of claim, each with its own
    construct discipline. Every composed entity in the payload
@@ -1031,7 +1030,7 @@ The discipline (paraphrased; the field carries the canonical text):
    See "Per-level construct treatment" below for the three
    levels and the per-level discipline.
 
-The four sovereignty prompts (`frame_check_my_response`,
+The four framing prompts (`frame_check_my_response`,
 `frame_check_this_ai_response`, `challenge_document`,
 `explain_framing`) all reference `composition_discipline` in their
 bodies and structure their default response around it. The compact
@@ -1040,9 +1039,9 @@ invitation; the deep measurement walk is the expand path.
 
 ### User-intent interface
 
-The MCP tool parameters (`include_divergence`, `user_goal`, `include_frame_opportunities`, `compose_budget`, etc.) are developer-facing API surface. The end user invoking the substrate via Claude Desktop or another MCP client never types these directly; they invoke a sovereignty prompt by name (or natural language) and the calling agent translates user-intent to MCP parameter values.
+The MCP tool parameters (`include_divergence`, `user_goal`, `include_frame_opportunities`, `compose_budget`, etc.) are developer-facing API surface. The end user invoking the substrate via Claude Desktop or another MCP client never types these directly; they invoke a framing prompt by name (or natural language) and the calling agent translates user-intent to MCP parameter values.
 
-The four sovereignty prompts (`frame_check_my_response`, `frame_check_this_ai_response`, `challenge_document`, `explain_framing`) accept three optional user-intent arguments that surface in the user's vocabulary:
+The four framing prompts (`frame_check_my_response`, `frame_check_this_ai_response`, `challenge_document`, `explain_framing`) accept three optional user-intent arguments that surface in the user's vocabulary:
 
 - `depth`: `"quick"` | `"thorough"` (default `thorough`). The user's mental model is "fast read" vs "deep audit". Translates to `compose_budget=minimal|full`.
 - `goal`: `"decide"` | `"explore"` | `"audit"` | `"challenge"` | `"learn"` (default `audit`). The user's mental model is "what am I trying to do with this reading". Translates to `user_goal` (decide → decide; explore → brainstorm; challenge → audit + adversarial composition note; learn → learn; audit → audit).

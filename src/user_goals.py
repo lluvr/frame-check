@@ -41,7 +41,7 @@ _GOALS = (
 # frame is load-bearing for that goal. Reading-form prose; not
 # verdict-form. The "audit" goal carries an empty list because the
 # existing catalog/coverage/genre logic already serves the
-# sovereignty-audit case.
+# audit case.
 _GOAL_LOAD_BEARING_FRAMES = {
     "decide": [
         (

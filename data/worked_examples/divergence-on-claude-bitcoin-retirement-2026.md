@@ -229,7 +229,7 @@ scope-narrowing-by-relevance is the caller-side move. A different
 document in a different domain would have a different relevant
 subset.
 
-## Reader sovereignty, operationally
+## Reader judgment, operationally
 
 Five of seventeen absences are reader-relevant. Three of those five
 are gaps the reader might want to close (stakeholder, uncertainty,
@@ -273,7 +273,7 @@ this specific document:
 Frame divergence is the AGI-era primitive Frame Check claims.
 Without a worked example, the claim is abstract. This piece makes it concrete in one direction: what
 the MCP surface emits, what the caller-side composition does with
-it, and what the reader-sovereignty constraint looks like in
+it, and what the reader-judgment constraint looks like in
 practice on a real AI-generated document in a real domain.
 
 The pattern generalises. Any agent-integrated use of Frame Check
