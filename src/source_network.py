@@ -2440,10 +2440,17 @@ def _get_sec_tickers():
         # any network call. Updates land via redeploys; SEC ticker
         # churn is roughly weekly so a daily-to-weekly deploy cadence
         # keeps the cache acceptably fresh.
-        bundled_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "data", "sec_company_tickers.json",
-        )
+        # Probe both layouts: top-level (the Docker image bakes the file
+        # at /app/data next to a top-level module) and src-layout dev
+        # (this module lives under src/, so data/ is one level up at the
+        # repo root). First existing candidate wins; absent on the MCP
+        # wheel, which falls through to the runtime fetch below.
+        _here = os.path.dirname(os.path.abspath(__file__))
+        bundled_path = os.path.join(_here, "data", "sec_company_tickers.json")
+        if not os.path.isfile(bundled_path):
+            bundled_path = os.path.join(
+                os.path.dirname(_here), "data", "sec_company_tickers.json",
+            )
         data = None
         try:
             if os.path.isfile(bundled_path):

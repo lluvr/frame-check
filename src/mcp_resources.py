@@ -81,7 +81,10 @@ _PKG_DATA_DIR = os.path.join(_SCRIPT_DIR, "framecheck_mcp")
 if os.path.isdir(os.path.join(_PKG_DATA_DIR, "data")):
     _DATA_ROOT = _PKG_DATA_DIR
 else:
-    _DATA_ROOT = _SCRIPT_DIR
+    # Source tree (src-layout): module under src/, data/ at repo root
+    # one level up. Wheel uses the package-data branch above; this
+    # dev-only fallback never runs at install time.
+    _DATA_ROOT = os.path.dirname(_SCRIPT_DIR)
 
 
 # ── Resource scheme + canon-graph reference shape ─────────────────

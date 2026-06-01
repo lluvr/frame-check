@@ -88,7 +88,11 @@ _PKG_DATA_DIR = os.path.join(_SCRIPT_DIR, "framecheck_mcp")
 if os.path.isdir(os.path.join(_PKG_DATA_DIR, "data")):
     _DATA_ROOT = _PKG_DATA_DIR
 else:
-    _DATA_ROOT = _SCRIPT_DIR
+    # Source tree (src-layout): this module lives under src/; the data/
+    # tree sits at the repo root one level up. In the wheel the branch
+    # above always wins (data ships inside framecheck_mcp/), so this
+    # dev-only fallback never runs at install time.
+    _DATA_ROOT = os.path.dirname(_SCRIPT_DIR)
 
 
 # ── Protocol constants ────────────────────────────────────────────

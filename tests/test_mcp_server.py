@@ -5868,7 +5868,7 @@ def test_cli_version_flag():
     """
     print("=== --version CLI fingerprint ===")
     baseline = len(_FAILURES)
-    server_path = REPO_ROOT / "mcp_server.py"
+    server_path = REPO_ROOT / "src" / "mcp_server.py"
     result = subprocess.run(
         ["python3", str(server_path), "--version"],
         capture_output=True, text=True, timeout=10, cwd=str(REPO_ROOT),
@@ -5909,7 +5909,7 @@ def test_cli_help_flag():
     """
     print("=== --help CLI usage ===")
     baseline = len(_FAILURES)
-    server_path = REPO_ROOT / "mcp_server.py"
+    server_path = REPO_ROOT / "src" / "mcp_server.py"
     result = subprocess.run(
         ["python3", str(server_path), "--help"],
         capture_output=True, text=True, timeout=10, cwd=str(REPO_ROOT),
@@ -5948,7 +5948,7 @@ def test_cli_test_triggers_fvs_matches():
     """
     print("=== --test triggers FVS match ===")
     baseline = len(_FAILURES)
-    server_path = REPO_ROOT / "mcp_server.py"
+    server_path = REPO_ROOT / "src" / "mcp_server.py"
     result = subprocess.run(
         ["python3", str(server_path), "--test"],
         capture_output=True, text=True, timeout=60, cwd=str(REPO_ROOT),
@@ -5984,7 +5984,7 @@ def test_stdio_subprocess_roundtrip():
     """
     print("=== stdio subprocess handshake + tool call ===")
     baseline = len(_FAILURES)
-    server_path = REPO_ROOT / "mcp_server.py"
+    server_path = REPO_ROOT / "src" / "mcp_server.py"
     proc = subprocess.Popen(
         ["python3", str(server_path)],
         stdin=subprocess.PIPE,
@@ -11656,7 +11656,7 @@ def test_stdio_subprocess_handles_rapid_fire_sequential_requests():
     catches handshake regressions; this test catches session drift."""
     print("=== stdio subprocess handles rapid-fire sequential requests ===")
     baseline = len(_FAILURES)
-    server_path = REPO_ROOT / "mcp_server.py"
+    server_path = REPO_ROOT / "src" / "mcp_server.py"
     proc = subprocess.Popen(
         ["python3", str(server_path)],
         stdin=subprocess.PIPE,

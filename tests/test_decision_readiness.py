@@ -820,7 +820,7 @@ def test_library_resource_scheme_matches_mcp_server():
         # remains the lightweight pin (avoids importing the whole
         # module which would run import-time side effects in the
         # test environment).
-        mcp_src = (repo_root / "mcp_resources.py").read_text(encoding="utf-8")
+        mcp_src = (repo_root / "src" / "mcp_resources.py").read_text(encoding="utf-8")
     finally:
         _sys.path.pop(0)
 

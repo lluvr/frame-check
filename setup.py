@@ -199,7 +199,12 @@ def _stage_package_data() -> None:
     exclusions are enforced via _should_skip.
     """
     repo_root = os.path.dirname(os.path.abspath(__file__))
-    pkg_root = os.path.join(repo_root, "framecheck_mcp")
+    # src-layout: the framecheck_mcp data-carrier package lives under
+    # src/ so [tool.setuptools.packages.find] (where = ["src"]) finds
+    # it. Stage bundled data into src/framecheck_mcp so the build
+    # backend packages it; the _DATA_CARRIERS sources stay repo-root
+    # relative (data/, calibration/, validation/, docs/, pipeline_version.txt).
+    pkg_root = os.path.join(repo_root, "src", "framecheck_mcp")
     if not os.path.isdir(pkg_root):
         os.makedirs(pkg_root)
     ignore_cb = _make_ignore(repo_root)

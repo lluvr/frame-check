@@ -81,7 +81,8 @@ def _frame_library_version() -> str:
     # mcp_server.py _DATA_ROOT and frame_library_index.py
     # _DATA_ROOT dual-path resolution.
     candidates = [
-        here / "data" / "frame_library" / "VERSION",
+        # Source tree (src-layout): module under src/, data/ at repo root.
+        here.parent / "data" / "frame_library" / "VERSION",
         here / "framecheck_mcp" / "data" / "frame_library" / "VERSION",
     ]
     for p in candidates:
@@ -141,7 +142,8 @@ def _load_calibration_corpus_meta() -> dict:
     # (surfaced 2026-05-11 by a fresh-venv smoke against
     # frame-check-mcp==1.0.6).
     candidates = [
-        here / "calibration" / "source_network_corpus.yaml",
+        # Source tree (src-layout): module under src/, calibration/ at repo root.
+        here.parent / "calibration" / "source_network_corpus.yaml",
         here / "framecheck_mcp" / "calibration" / "source_network_corpus.yaml",
     ]
     text = None

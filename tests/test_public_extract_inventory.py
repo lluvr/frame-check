@@ -293,7 +293,7 @@ def test_every_shipped_test_imports_resolve_on_public_mirror():
 
 def test_every_py_module_in_pyproject_has_a_source_file():
     """Every name in `pyproject.toml [tool.setuptools] py-modules`
-    must have a corresponding `<name>.py` at the repo root.
+    must have a corresponding `<name>.py` under src/ (src-layout).
 
     Catches the inverse drift class to the test above: a module
     name in `py-modules` whose source file was renamed or
@@ -304,12 +304,13 @@ def test_every_py_module_in_pyproject_has_a_source_file():
     commit that fails CI.
     """
     py_modules = _read_pyproject_py_modules()
+    src_root = REPO_ROOT / "src"
     missing: list[str] = []
     for name in sorted(py_modules):
-        if not (REPO_ROOT / f"{name}.py").exists():
+        if not (src_root / f"{name}.py").exists():
             missing.append(
                 f"`{name}` listed in pyproject py-modules but no "
-                f"`{name}.py` at {REPO_ROOT}. Either restore the "
+                f"`{name}.py` at {src_root}. Either restore the "
                 f"file or remove the name from py-modules."
             )
     assert not missing, (

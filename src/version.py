@@ -106,7 +106,8 @@ def _detect_pipeline_version() -> str:
     # Mirrors the dual-path probe in mcp_server.py _DATA_ROOT and
     # frame_library_index.py _DATA_ROOT.
     candidates = [
-        here / "pipeline_version.txt",
+        # Source tree (src-layout): module under src/, baked SHA at repo root.
+        here.parent / "pipeline_version.txt",
         here / "framecheck_mcp" / "pipeline_version.txt",
     ]
     for baked in candidates:
