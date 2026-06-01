@@ -5,11 +5,11 @@ returns the structured five-dimension profile from existing
 display measurements, or None when the display lacks the minimum
 data needed.
 
-The profile remains experimental until Phase 2 (expert validation)
+The profile remains experimental until expert validation
 lands; these tests pin the SHAPE of the output and the COMPOSITION
 RULE (every dimension is derived from existing measurements, no
 new signals invented). Validity of the dimensions themselves is a
-Phase 2 concern.
+a validation concern.
 """
 
 from decision_readiness import (
@@ -610,7 +610,7 @@ def test_fvs016_firing_augments_evidence_robustness_signal_text():
     (FVS-016)". This mirrors the existing convention (calibration
     mentions FVS-002 in prose, counterfactual mentions FVS-007).
 
-    Why prose matters: the MCP sovereignty prompts instruct agents
+    Why prose matters: the MCP framing prompts instruct agents
     to "name each dimension by its signal_text reading"; agents
     that consume the prose channel without iterating
     fired_library_entries get the named pattern automatically. The
@@ -1110,11 +1110,11 @@ def test_counterfactual_dimension_composes_signals():
 
 def test_profile_status_reflects_pre_validation_phase():
     """The profile status field must say 'experimental' until
-    Phase 2 validation lands. This is the contract that justifies
+    Expert validation lands. This is the contract that justifies
     keeping the profile out of the UI surface."""
     print("=== profile status: experimental until validated ===")
     _check(PROFILE_STATUS == "experimental",
-           f"PROFILE_STATUS should be 'experimental' pre-Phase 2, "
+           f"PROFILE_STATUS should be 'experimental' pre-validation, "
            f"got {PROFILE_STATUS!r}")
     print("  PASS\n")
 

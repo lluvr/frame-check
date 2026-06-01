@@ -1587,7 +1587,7 @@ def _build_divergence_block(
         goal_phrase = (
             " User goal is 'audit'; the substrate applies the "
             "default catalog/coverage/genre ranking with no "
-            "goal-specific override (audit is sovereignty posture: "
+            "goal-specific override (audit is the neutral posture: "
             "see the frame the document chose)."
         )
     else:
@@ -1854,7 +1854,7 @@ def _build_divergence_block(
             "the goal of deciding, FVS-009 absent is load-bearing "
             "because risk-frame absence at decision time leaves "
             "downside structurally invisible'). The 'audit' goal "
-            "applies no override (sovereignty posture); "
+            "applies no override (the neutral posture); "
             "goal_relevance is None on every absent_frame. When "
             "user_goal is omitted, behavior matches 'audit'. "
             "(6.5) Genre-relative ranking (Item 3): when the "
@@ -2429,7 +2429,7 @@ def build_epistemic_payload(
                 "required to distinguish. Density per 1,000 words is a "
                 "rough proxy: higher density correlates with substantive "
                 "coverage but does not prove it. DEPRECATION NOTICE "
-                "(Phase 2, 2026-04-21): coverage (v1) is deprecated. "
+                "(2026-04-21): coverage (v1) is deprecated. "
                 "coverage_v2 is the forward contract; new integrations "
                 "MUST read coverage_v2. The v1 block is retained during "
                 "the compatibility window and will be removed in a future "
@@ -2883,7 +2883,7 @@ def build_epistemic_payload(
         "Adjacency hints for each matched frame (MCP URIs of related library entries, for in-session chaining)",
         "Extracted numeric claims with hedging status",
         "A synthesized portrait and headline describing what the document does to reader perception",
-        "A decision-readiness profile across five dimensions (coverage, calibration, evidence, robustness, counterfactual) with explicit experimental status pending Phase 2 expert validation",
+        "A decision-readiness profile across five dimensions (coverage, calibration, evidence, robustness, counterfactual) with explicit experimental status",
         "Structural genre classification (recommendation / analysis / narrative / advocacy / exploration / instruction) with construct-honest confidence. Classifies on specific marker patterns (first-person pick statements for recommendation; numbered-step procedural patterns for instruction; year-anchored past-event constructions for narrative; etc.) and abstains with classification=null when no markers fire. Empirically the abstention rate is around 54% on the calibration corpus (see calibration/results/detector_empirics_*); this is a feature, not a defect.",
         "Per-frame deepening: temporal_scope (years referenced + projection windows), stakeholder_map (regulators / investors / customers / employees / etc. mentioned vs absent), falsification_conditions (explicit 'would be wrong if' statements when present)",
         "Optional opt-in (include_frame_opportunities=true): LLM-augmented frame opportunities, document-specific questions composed from absent frame teaching questions + document content. Carries cost + non-determinism flag in provenance. Default: not surfaced (deterministic substrate works without LLM).",
@@ -3012,7 +3012,7 @@ def build_epistemic_payload(
             "(5) ABSENCE IS NOT PRESCRIPTION. Compose insights that "
             "name what the framing does, never what the document "
             "should have done. The reader decides what to do with the "
-            "seeing; that is the sovereignty case this tool serves. "
+            "seeing; that is what this tool serves. "
             "(6) PER-LEVEL CLAIM TREATMENT. The substrate produces "
             "four qualitatively different kinds of claim, each with "
             "its own construct discipline: detector_measurement (a "
@@ -3135,7 +3135,7 @@ def build_epistemic_payload(
         "how_to_map_user_intent": (
             "When the user invokes Frame Check via natural language "
             "(not by typing prompt arguments directly), translate "
-            "their intent to the option space the four sovereignty "
+            "their intent to the option space the four framing "
             "prompts expose (depth, goal, questions). The user does "
             "NOT need to know what compose_budget or "
             "include_frame_opportunities are; those are MCP-layer "
@@ -3198,7 +3198,7 @@ def build_epistemic_payload(
             "(coverage, voice, temporal, sourced_pct), name any FVS "
             "matches with their teaching_question, and stop. The "
             "user sees the frame you chose and decides what to do "
-            "with the seeing; that is the sovereignty case this "
+            "with the seeing; that is what this "
             "tool exists to serve. One bound: if your response is "
             "under about 100 words, the density-based detectors are "
             "noisy and category coverage flags should be treated as "

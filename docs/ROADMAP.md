@@ -125,7 +125,7 @@ The MCP payload currently emits both `analysis.coverage`
 plus density-per-1k-words) and `analysis.coverage_v2` (v2,
 per-dimension construct block with detection-confidence
 metadata). v1 carries an inline DEPRECATION NOTICE on its
-`caveat` string flagged at Phase 2 (2026-04-21) pointing
+`caveat` string flagged 2026-04-21 pointing
 adopters at v2 as the forward contract. At v2.0 the v1
 block is removed; only `coverage_v2` remains. Code sites:
 `mcp_compose.py:327` (`_build_coverage_v2`), inline caveat

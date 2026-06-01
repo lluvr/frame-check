@@ -320,7 +320,7 @@ def _spec_fd_v1_index_markdown() -> str:
     scheme = RESOURCE_SCHEME
     part_descriptions = [
         (1, "Category definition and non-negotiables",
-         ("category and sovereignty argument; "
+         ("category and its rationale; "
          "the non-negotiables any implementation must honor")),
         (2, "Contract (c1.0)",
          ("interface contract: operations, inputs, outputs, "
@@ -1238,8 +1238,8 @@ def _list_resources() -> list[dict[str, Any]]:
                 "dimension as the canon-graph projection. JSON "
                 "carries computed_at_utc and a corpus state hash "
                 "that versions findings against the corpus state "
-                "at compute time. Status: experimental (Phase 2 "
-                "validation pending); see /corpus/decision-readiness/."
+                "at compute time. Status: experimental; "
+                "see /corpus/decision-readiness/."
             ),
             "mimeType": "application/json",
         })
@@ -1258,8 +1258,7 @@ def _list_resources() -> list[dict[str, Any]]:
             "description": (
                 f"Decision-readiness validation corpus document "
                 f"for entry {slug}. Plain markdown. Cited by "
-                f"aggregate findings; used as input to the Phase 2 "
-                f"validation harness. Profile.json available "
+                f"aggregate findings. Profile.json available "
                 f"separately at frame-check://corpus/{slug}/profile."
             ),
             "mimeType": "text/markdown",

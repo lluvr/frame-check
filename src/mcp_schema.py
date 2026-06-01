@@ -28,7 +28,7 @@ What lives here:
     _populate_prompt_body: substitute `<<PLACEHOLDER>>` tokens in
       prompt body strings using `_translate_prompt_arguments`
 
-  Prompt template strings (four sovereignty prompts, each carries
+  Prompt template strings (four framing prompts, each carries
   the composition discipline as inline narrative the agent's LLM
   reads when prompts/get fires):
     _PROMPT_SELF_AUDIT (frame_check_my_response)
@@ -109,7 +109,7 @@ _SPEC_VERSION = "FRAME_DIVERGENCE_v1_c1.0"
 
 # ── Prompt argument valid-value sets ──────────────────────────────
 #
-# Per-prompt argument valid values. Each sovereignty prompt accepts
+# Per-prompt argument valid values. Each framing prompt accepts
 # user-intent arguments that translate to MCP-parameter values inside
 # the prompt body. The user types in their own vocabulary (depth:
 # quick/thorough, goal: decide/explore/audit/challenge/learn,
@@ -553,7 +553,7 @@ _PROMPT_EXPLAIN_FRAMING = (
 # ── Prompt registry ───────────────────────────────────────────────
 
 # Standard user-intent argument specs shared across the four
-# sovereignty prompts. All three arguments are optional with
+# framing prompts. All three arguments are optional with
 # defaults; omitting them preserves prior behavior (thorough /
 # audit / no questions).
 _USER_INTENT_PROMPT_ARGS = [
@@ -611,7 +611,7 @@ _PROMPTS = [
             "Self-audit: agent calls frame_check on its own last "
             "response and surfaces the structural framing to the "
             "user without verdict or defensive rewriting. Load-"
-            "bearing for the sovereignty use case: the user sees "
+            "bearing for the core use case: the user sees "
             "what frame their agent chose. Optional arguments: "
             "depth (quick / thorough), goal (decide / explore / "
             "audit / challenge / learn), questions (yes / no)."
@@ -624,7 +624,7 @@ _PROMPTS = [
         "description": (
             "Frame Check on a response from a DIFFERENT AI that "
             "the user pastes in. Structured analysis of what that "
-            "AI did to the user. The sovereignty case: the user "
+            "AI did to the user. The point: the user "
             "is using their own agent to see another AI's framing. "
             "Optional arguments: depth, goal, questions."
         ),

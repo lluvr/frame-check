@@ -8,7 +8,7 @@ Phase 1 was the methodology page. This module is Phase 1.5: the
 profile data structure with backend computation, exposed via the
 JSON download (display.decision_readiness). Deliberately NOT
 surfaced in the UI because the profile remains experimental until
-Phase 2 (expert validation) lands. Power users who download the
+expert validation lands. Power users who download the
 JSON can see the profile and provide feedback on the data structure
 before it becomes a visible signal.
 
@@ -20,8 +20,8 @@ read decision-readiness without re-deriving it from raw fields.
 What this module deliberately does NOT do:
   - Compute a single composite score (rejected by methodology)
   - Apply categorical labels with implied thresholds (rejected)
-  - Generate a guidance sentence (Phase 2 work, after validation)
-  - Adjust for genre (Phase 2 work; document_type-aware
+  - Generate a guidance sentence (future work, after validation)
+  - Adjust for genre (future work; document_type-aware
     interpretation requires validation per genre first)
 
 The output structure pairs every dimensional reading with the
@@ -37,7 +37,7 @@ from typing import Optional
 
 METHODOLOGY_URL = "/corpus/decision-readiness/"
 METHODOLOGY_VERSION = "v0.1"
-PROFILE_STATUS = "experimental"  # bumps to "validated" after Phase 2
+PROFILE_STATUS = "experimental"  # bumps to "validated" once validated
 
 # Canon-graph reference URI scheme. Per-dimension library_entries
 # are emitted as objects {fvs_id, library_resource_uri, public_url}
@@ -485,7 +485,7 @@ def compute_decision_readiness(display: dict) -> Optional[dict]:
         # when FVS-002 fires; counterfactual's mentions Failure
         # Framing when FVS-007 fires. Without this, evidence and
         # robustness would surface the firing only in the structured
-        # field, missing the prose channel that the MCP sovereignty
+        # field, missing the prose channel that the MCP framing
         # prompts instruct agents to use ("name each dimension by
         # its signal_text reading").
         if any(
