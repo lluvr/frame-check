@@ -2,8 +2,8 @@
 
 Frame Check has two distribution surfaces:
 
-1. **Web service** at `frame.clarethium.com`: a free public research
-   instrument (currently in a deploy hold).
+1. **Web service** at `frame.clarethium.com`: a free public analysis
+   tool (currently in a deploy hold).
 2. **MCP package** `frame-check-mcp` (Python wheel; pip-installable
    for use with Claude Desktop / Cursor / any MCP client). The wheel
    ships the deterministic measurement layer; LLM-augmented surfaces
@@ -161,11 +161,10 @@ currently published. Reports relying on identity verification
 should use GitHub private vulnerability reporting and request
 acknowledgment via a specific channel the reporter trusts.
 
-A PGP key for security-report encryption is planned for the 0.9.0
-release window. Until then, reporters who require non-email
-encrypted channels should request a Signal handle in the initial
-contact email and the curator will respond with a verification
-phrase out of band.
+A PGP key for security-report encryption is not yet published.
+Reporters who require non-email encrypted channels should request a
+Signal handle in the initial contact email and the curator will
+respond with a verification phrase out of band.
 
 ---
 
