@@ -1,10 +1,9 @@
 # Code of Conduct
 
-Frame Check is a public research program. Participation, whether
-through code contributions, frame-library candidates, validation
-runs, methodology critique, or issue conversations, is open to
-anyone willing to engage in good faith with the substance of the
-work.
+Frame Check is an open-source tool and frame catalog. Participation,
+whether through code contributions, frame-library candidates,
+methodology critique, or issue conversations, is open to anyone
+willing to engage in good faith with the substance of the work.
 
 ## What we expect
 
@@ -13,8 +12,8 @@ work.
   reasoning, not the conclusion. "This rule misfires on these inputs"
   beats "this rule is wrong"; the former is testable.
 - **Cite what you read.** When you reference a worked example,
-  validation run, frame card, or external source, link it. Honest
-  attribution is the same discipline the tool itself enforces.
+  frame card, or external source, link it. Honest attribution is the
+  same discipline the tool itself enforces.
 - **Honest limits.** State what you tested, what you did not test,
   and what would change your mind. "I checked X but not Y" is more
   valuable than an unbounded claim.
@@ -30,7 +29,7 @@ work.
 ## What is not welcome
 
 - Personal attacks, harassment, threats, or insults directed at
-  contributors, reviewers, raters, or any third party.
+  contributors, reviewers, or any third party.
 - Content that targets people based on protected characteristics
   (race, sex, gender identity or expression, sexual orientation,
   national origin, religion, disability, age).

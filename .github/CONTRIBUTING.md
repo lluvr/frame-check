@@ -1,9 +1,9 @@
 # Contributing to Frame Check
 
-Frame Check is part of a public research program on framing and
-verification. Contributions are welcome on the corpus (frame library,
-methodology, calibration data), the detection engine, the MCP server,
-and the documentation surface.
+Frame Check is an open-source structural framing analysis tool.
+Contributions are welcome on the corpus (frame library, calibration
+data), the detection engine, the MCP server, and the documentation
+surface.
 
 This document covers **how** contributions happen mechanically: file
 layouts, test requirements, PR process, and what a reviewer will check.
@@ -16,26 +16,28 @@ For **who** decides and **when** a contribution becomes canon, see
 
 ```
 frame-check/
-├── data/frame_library/          # 20-entry FVS markdown catalog + INDEX + VERSION
-├── data/worked_examples/        # Published worked examples (multi-LLM comparisons)
-├── data/transmissions/          # Frame Check transmissions (research pieces)
-├── calibration/                 # Calibration corpus + results
-├── validation/                  # Decision-readiness validation runs
-├── framecheck_mcp/              # Wheel-bundle data carrier (data populated at build time)
-├── scripts/                     # Build + release infrastructure
-├── *.py                         # MCP server + framing detectors (flat-modules wheel layout)
-├── tests/test_*.py              # Tests
-└── mcp_server.py                # MCP protocol server entry point
+├── src/                              # sources, installed as top-level modules
+│   ├── mcp_server.py                 # MCP protocol server entry point
+│   ├── *.py                          # framing detectors, comparison, source-network, etc.
+│   └── framecheck_mcp/               # wheel-bundle data carrier (data staged at build time)
+├── data/frame_library/              # 20-entry FVS markdown catalog + INDEX + VERSION
+├── data/worked_examples/            # published worked examples (multi-LLM comparisons)
+├── data/transmissions/              # short essays on framing and verification
+├── calibration/                     # calibration corpus + results
+├── validation/decision_readiness/   # decision-readiness corpus + computed profiles
+├── scripts/                         # build + release infrastructure
+├── docs/                            # adopter-facing references
+└── tests/test_*.py                  # tests
 ```
 
-The flat-modules layout at root is the wheel-bundle convention named in
-`pyproject.toml [tool.setuptools] py-modules`: each *.py at root ships
-as a top-level import on the installed wheel. The `framecheck_mcp/`
-package exists as the data-carrier subdirectory (wheel installs the
-data files under `framecheck_mcp/data/...` so MCP server code resolves
-them via `_DATA_ROOT` lookup). The 1.0.0 release will migrate to a
-src-layout package per `framecheck_mcp/__init__.py` docstring;
-0.8.x preserves the flat layout for stability.
+The package uses a src-layout: sources live under `src/` to keep the
+repo root clean but install as top-level modules
+(`pyproject.toml` `[tool.setuptools] package-dir = {"" = "src"}` plus
+the `py-modules` list), so `import mcp_server` and the
+`mcp_server:cli` entry point resolve exactly as they would on a flat
+install. The `src/framecheck_mcp/` package is the data carrier: the
+build stages data files under `framecheck_mcp/data/...` so the MCP
+server resolves them via its `_DATA_ROOT` lookup.
 
 ---
 
@@ -49,9 +51,9 @@ src-layout package per `framecheck_mcp/__init__.py` docstring;
    would need to overturn explicitly rather than silently.
 3. **Run the full test suite before opening a PR:**
    ```bash
-   python3 -m pytest -q --ignore=test_source_latency.py --ignore=test_phase1_load.py
+   python3 run_tests.py
    ```
-   The suite must stay green.
+   (or `python3 -m pytest -q`). The suite must stay green.
 
 ---
 
@@ -81,10 +83,10 @@ src-layout package per `framecheck_mcp/__init__.py` docstring;
    - `## Generation affordances` with rewrite + counter prompts and
      salient questions
    - `## Worked example`
-3. Run `python3 run_tests.py` to verify all canonical-runner suites
-   pass, including the discipline-boundary tests in
-   `test_v4_2_discipline_boundary.py`. The new entry is auto-discovered
-   by these tests and must comply.
+3. Run `python3 run_tests.py` to verify the suite passes. The new
+   entry is auto-discovered by the frame-library tests
+   (`test_frame_library.py`, `test_frame_library_index.py`) and must
+   comply.
 4. Open a PR. Reviewers will check the reciprocity, the honest-limits
    section, whether the worked example actually exhibits the
    claimed frame, and the post-stress-test paragraphs in the

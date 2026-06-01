@@ -3,7 +3,6 @@
 [![PyPI](https://img.shields.io/pypi/v/frame-check-mcp.svg)](https://pypi.org/project/frame-check-mcp/)
 [![Python](https://img.shields.io/pypi/pyversions/frame-check-mcp.svg)](https://pypi.org/project/frame-check-mcp/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19888849.svg)](https://doi.org/10.5281/zenodo.19888849)
 [![Tests](https://github.com/Clarethium/frame-check/actions/workflows/tests.yml/badge.svg)](https://github.com/Clarethium/frame-check/actions/workflows/tests.yml)
 
 See what any document does not show you.
@@ -174,7 +173,7 @@ Or directly via pytest:
 
     python3 -m pytest -q
 
-26 test files under `tests/`, ~30 seconds end-to-end. Includes 40 adversarial dispatcher test functions in `tests/test_mcp_adversarial.py` (parametrized into more tests at collection time), per-module 80% coverage gate on the seven wheel-surface modules (`scripts/check_per_module_coverage.py`), the cookbook-recipe contract suite (`tests/test_cookbook_recipes.py`), and the genre-classifier + frame-divergence coverage.
+26 test files under `tests/`, ~30 seconds end-to-end. Includes 40 adversarial dispatcher test functions in `tests/test_mcp_adversarial.py` (parametrized into 63 tests at collection time), a per-module 80% coverage gate on the seven wheel-surface modules (`scripts/check_per_module_coverage.py`), the cookbook-recipe contract suite (`tests/test_cookbook_recipes.py`), and the genre-classifier + frame-divergence coverage.
 
 ## License
 
