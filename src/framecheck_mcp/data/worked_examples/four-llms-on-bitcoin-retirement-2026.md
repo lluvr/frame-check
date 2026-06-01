@@ -9,7 +9,7 @@ source_document_author: AI-generated (four distinct models, 2026-04-18 run)
 source_document_type: multi-model LLM responses to a life-decision prompt
 frames_detected: [FVS-008, FVS-001, FVS-015, FVS-007, FVS-012]
 verification_summary: "No numeric claims routed to the Source Network. The LLM responses make forecasting claims (price swings, allocations) that are not empirically verifiable against external authorities."
-hook: Same prompt, four major LLMs, four materially different framing signatures. The sovereignty case: your AI is one framing choice among several, not the framing.
+hook: Same prompt, four major LLMs, four materially different framing signatures. The point: your AI is one framing choice among several, not the framing.
 ---
 
 ## Context
@@ -175,7 +175,7 @@ who sees the four measured side by side sees that the question
 has at least four plausible framings, and that choosing between
 them is work the reader has to do.
 
-This is the sovereignty case in the plainest form. Frame Check
+This is the point in the plainest form. Frame Check
 does not tell the reader which LLM is correct, which is balanced,
 or which to trust. It names the structural shape of each response
 and hands the reader the information they need to not inherit a

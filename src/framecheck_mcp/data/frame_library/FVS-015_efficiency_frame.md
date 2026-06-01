@@ -18,7 +18,7 @@ Organizes information around cost reduction, optimization, speed, throughput, an
 **What this frame makes invisible:**
 - Who bears the cost of the efficiency gain (the stakeholder perspective)
 - Whether the thing being optimized should exist at all (the strategic perspective)
-- What capabilities are lost when a process is automated (the sovereignty perspective)
+- What capabilities are lost when a process is automated (the autonomy perspective)
 - Quality dimensions that efficiency metrics do not capture (creativity, resilience, adaptability, human judgment)
 - The difference between efficiency and effectiveness (doing things right vs doing the right things)
 
@@ -32,7 +32,7 @@ Organizes information around cost reduction, optimization, speed, throughput, an
 
 **When this frame is misleading:** Strategic decisions about WHAT to do (efficiency assumes the activity should continue; strategy questions whether it should). Creative work (efficiency metrics destroy the exploratory waste that produces breakthroughs). Human development (efficiency framing applied to learning, therapy, or growth reduces these to transactions). AI deployment decisions (the question "how much does AI save" hides the question "what does AI cost in human capability").
 
-**Honest limits:** The efficiency frame is pervasive enough that detecting it requires measuring what is ABSENT (stakeholder, strategic, quality, sovereignty dimensions) rather than what is present. The coverage detector can identify when stakeholders, uncertainty, or risks are missing, but it cannot distinguish between "efficiency frame" and "any narrow analytical frame" without semantic understanding of whether the content is specifically about optimization. This entry names the efficiency frame as a specific instance of narrow framing that is especially common in AI-generated content about AI.
+**Honest limits:** The efficiency frame is pervasive enough that detecting it requires measuring what is ABSENT (stakeholder, strategic, quality, autonomy dimensions) rather than what is present. The coverage detector can identify when stakeholders, uncertainty, or risks are missing, but it cannot distinguish between "efficiency frame" and "any narrow analytical frame" without semantic understanding of whether the content is specifically about optimization. This entry names the efficiency frame as a specific instance of narrow framing that is especially common in AI-generated content about AI.
 
 ## Decision-readiness implication
 
@@ -62,7 +62,7 @@ Like the Growth Frame ([FVS-008](/corpus/library/FVS-008.html)), the Efficiency 
 
 **Frame absent:** What errors does the AI make that humans do not? What types of documents require human judgment that the AI cannot replicate? What happens to the legal team's expertise when they stop reading documents? What is the liability exposure when the AI misses a critical clause? Does the 85% time reduction include the time spent correcting AI errors?
 
-**How to read past it:** The efficiency frame says "85% faster." The sovereignty frame says "what legal judgment capability is eroded when lawyers stop reading documents?" Per the sovereignty thesis: the most dangerous failure mode is good outputs that erode human capability.
+**How to read past it:** The efficiency frame says "85% faster." The autonomy frame says "what legal judgment capability is eroded when lawyers stop reading documents?" The most dangerous failure mode is good outputs that erode human capability.
 
 ## Branch applicability
 

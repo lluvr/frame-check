@@ -61,7 +61,7 @@ frame-check-mcp = "mcp_server:cli"
 [tool.setuptools]
 # src-layout: sources live under src/ to keep the repo root clean,
 # but install as TOP-LEVEL modules (package-dir maps the root package
-# "" to src/). The wheel's import surface is unchanged -- `import
+# "" to src/). The wheel's import surface is unchanged: `import
 # mcp_server` and the `mcp_server:cli` entry point resolve exactly as
 # they did under the flat layout. setuptools reads the py-modules
 # names below from src/<name>.py.
@@ -267,7 +267,7 @@ ignore = [
     # error-translation sites where the original exception is
     # intentionally elided to keep the public message shape clean.
     "B904",
-    # B905 (zip-without-explicit-strict) — zip semantics here are
+    # B905 (zip-without-explicit-strict), zip semantics here are
     # always equal-length by construction.
     "B905",
 ]

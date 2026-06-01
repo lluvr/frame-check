@@ -230,7 +230,7 @@ section below.
 `not_in_source` count. Each item carries the literal value, its
 extracted type (integer/decimal/percentage/currency), and the
 claim-sentence context the value appeared in. Use this to surface
-WHICH numbers in the document do not literal-match the source —
+WHICH numbers in the document do not literal-match the source , 
 adopters can render the items to the user as "X numbers in the
 document do not appear in the source: [item.value], [item.value], ..."
 or pass them downstream to a verification subroutine.
@@ -242,7 +242,7 @@ What the literal-substring match catches and misses:
   percentage variants (`94%` ≡ `94 percent`); currency variants
   (`$X` ≡ `X dollars`).
 - **Misses (false negatives)**: same number expressed in
-  materially different formats — `$22.1 billion` (digit substring
+  materially different formats, `$22.1 billion` (digit substring
   "22.1") will NOT match `$22,100,000,000` (digit substring
   "22100000000"). Same for rounded vs. precise (`$22.1B` vs.
   `$22,109,000,000`). Adopters who need format-tolerant matching
@@ -934,10 +934,10 @@ When the divergence block is emitted, `agent_guidance` gains two keys:
 ## Canonical URI/URL quartet on every FVS reference (v1.0.12+)
 
 Every record in the payload that identifies a Frame Vocabulary
-Standard entry — `frame_library_matches[*]`, `divergence.absent_frames[*]`,
+Standard entry, `frame_library_matches[*]`, `divergence.absent_frames[*]`,
 `corpus_context.typical_co_fires[*]` / `typical_co_absences[*]`,
 `decision_readiness.dimensions[*].library_entries[*]` /
-`fired_library_entries[*]`, `frame_opportunities.opportunities[*]` —
+`fired_library_entries[*]`, `frame_opportunities.opportunities[*]` , 
 carries four URI/URL fields:
 
 | Field | Value | Use |
@@ -949,7 +949,7 @@ carries four URI/URL fields:
 
 The aliasing is alias-equality invariant: `citation_uri == library_resource_uri` and `library_url == public_url` in every record. Pre-v1.0.12 the field names varied across blocks (`citation_uri` only on `absent_frames` and `typical_co_*`; `library_resource_uri` only on `decision_readiness` and `frame_library_matches`; `library_url` on `absent_frames` and `frame_library_matches`; `public_url` only on `decision_readiness`). v1.0.10 / v1.0.11 / v1.0.12 progressively normalized this so an adopter writing one renderer for FVS references reads the same shape regardless of which block they parse. Integrations that hardcoded any one of the four names remain valid; the v1.0.12 sweep is additive.
 
-Example payloads in this document show illustrative subsets (often just `citation_uri` + the FVS id) for readability — but the wire emits all four fields on every reference. Pinned by `tests/test_mcp_server.py::test_all_frame_reference_shapes_carry_canonical_uri_url_quartet`.
+Example payloads in this document show illustrative subsets (often just `citation_uri` + the FVS id) for readability, but the wire emits all four fields on every reference. Pinned by `tests/test_mcp_server.py::test_all_frame_reference_shapes_carry_canonical_uri_url_quartet`.
 
 The `agent_guidance.how_to_cite_frame_matches` text mandates rendering FVS references as markdown links: `[FVS-XXX Frame Title](library_url)`. End-users in MCP clients (Claude Desktop, Cursor) cannot click `frame-check://library/...` URIs because those are MCP-internal; the HTTPS `library_url` / `public_url` gives them an HTTP link they can follow. Agents running entirely through MCP chain the `citation_uri` / `library_resource_uri` into `resources/read` on the matching entry.
 

@@ -115,7 +115,7 @@ section (rationale).
 
 Note that the `provenance` block carries only
 `provenance.frame_check_version` (canonical) and never
-emitted the legacy key — the deprecation pair lives in the
+emitted the legacy key, the deprecation pair lives in the
 `manifest` block alone.
 
 ### Remove `analysis.coverage` (v1) block
@@ -135,6 +135,21 @@ Adopters reading `analysis.coverage` today must migrate to
 `analysis.coverage_v2` before the v2.0 cut. The `caveat`
 string in every response carries the migration directive;
 this ROADMAP entry is its committed counterpart.
+
+### Rename the reliability-metadata field keys
+
+The `validation_status` block carries three statistics-named
+keys: `inter_rater_reliability`, `library_v3_consensus_ac1`, and
+`detector_intra_rater_ac1`. The values are honest measurement
+metadata (`not_yet_measured`, `not_applicable`, etc.), but the
+key names read as research-internal rather than adopter-facing.
+At v2.0 these are renamed to plain names (e.g.
+`reliability_status`, `cross_family_agreement`,
+`single_family_consistency`); the values stay the same. This is
+a breaking wire change, which is why it is deferred to the major
+boundary rather than shipped in the 1.x line. Code sites:
+`mcp_compose.py` `validation_status` emitters; adopters reading
+the current keys migrate before the v2.0 cut.
 
 ## v2.0 design questions (uncommitted, revisit at scoping)
 
@@ -166,7 +181,7 @@ Options to weigh at v2.0 scoping:
    over payload size; adopters who don't care about size pay
    nothing they wouldn't have paid.
 2. **Drop the alias names, keep only the canonical pair**
-   (`citation_uri` + `library_url`). Reverses the v1.0.10–12
+   (`citation_uri` + `library_url`). Reverses the v1.0.10-12
    sweep; adopters who hardcoded the alias names break and
    must migrate.
 3. **Gate the aliases behind an opt-in flag** (e.g.,

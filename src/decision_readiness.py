@@ -177,7 +177,7 @@ def library_entry_ref(fvs_id: str) -> dict:
     # Both carry the same value. The v1.0.12 normalization emits
     # both names from this single builder so every caller propagates
     # the full {citation_uri, library_resource_uri, library_url,
-    # public_url} quartet — adopters get one consistent shape
+    # public_url} quartet, adopters get one consistent shape
     # regardless of which block they read from.
     lib_resource_uri = f"{LIBRARY_RESOURCE_SCHEME}://library/{fvs_id}"
     return {
