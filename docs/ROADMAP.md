@@ -72,55 +72,10 @@ process as a contract change.
 | `clarethium_measure`    |    62.6%  |     84.4%  |
 | `comparison`            |    20.9%  |     86.5%  |
 
-## Deferred from v1.0 to v1.0.x
-
-### Validation pre-registration first execution
-
-`validation/wedge_behavior/PROTOCOL_v1.md` is the pre-registered
-behavior-change study. The pre-registered protocol + harness
-shipped end-to-end (`run_pilot.py` + `run_arms.py`); a 2026-05-12
-pipeline smoke test verified the harness drives both arms via
-Anthropic API, captures responses with full metadata, and
-produces rubric-scored output. Smoke-test pilot data is kept in
-the author's local workspace, not committed to this public
-repo (the pilot used self-authored documents and agent-as-rater,
-methodologically pipeline-verification not validation evidence
-— see
-[`validation/wedge_behavior/STATUS.md`](validation/wedge_behavior/STATUS.md)
-for the honest scope).
-
-The smoke test surfaced three rubric calibration findings:
-catalog-naming as distinct evidence on item 1, reading-form
-dominance vs. presence on item 2, and hedge-calibration two
-kinds on item 4. These ship into PROTOCOL_v2 if accepted before
-the main study locks.
-
-The next gate is methodologically credible main-study evidence:
-externally-sourced documents (public LLM-output corpora, random
-op-ed samples, Wikipedia featured articles), three independent
-raters with Gwet's AC1 reliability per item, and PROTOCOL_v2
-locked before execution. Human-driven work; harness is ready to
-drive once the three sourcing conditions are met.
-
-`validation/baseline_comparison/PROTOCOL_v1.md` is the parallel
-study testing information advantage over a frontier LLM prompted
-for framing analysis. Same shape: protocol + harness ready;
-methodologically credible execution awaits the same external
-sourcing + independent-rater conditions.
-
 ## In flight (1.x milestones, no order)
 
 These are pieces of work that were open at v1.0 and stay open
 for the 1.x line. None of them is on a calendar.
-
-### Validation: Track B reader-aid study
-
-A second pre-registered study (alongside the wedge-behavior
-protocol) tests whether the structural surfacing actually helps
-a reader see framing they would otherwise miss. The
-H1/H2/H3 hypothesis structure follows
-`validation/wedge_behavior/PROTOCOL_v1.md`; Track B applies the
-same shape on a reader-task corpus.
 
 ### Catalog: Frame Vocabulary Standard expansion
 
@@ -236,9 +191,6 @@ once shipped longer than v1.0.x).
 - **Streaming MCP transport**: the current stdio JSON-RPC line-
   delimited protocol is enough for desktop clients; remote / web
   MCP transports are an open question.
-- **Independent rater rounds**: beyond the existing `docs/RATERS.md`
-  protocol, expand to a multi-rater consortium with public
-  attribution.
 
 These are entered here as named possibilities, not commitments.
 
@@ -253,8 +205,8 @@ that have already been argued through.
 
 ## What's deliberately not on this roadmap
 
-- **Calendar dates.** Calendar precision is dishonest given the
-  research nature of the program. The contract above is the gate;
+- **Calendar dates.** Calendar precision would be false given how
+  the pieces unblock each other. The contract above is the gate;
   it ships when it ships.
 - **Marketing direction.** Adopters reading this document want to
   know what the artifact will do, not how it will be sold.

@@ -68,8 +68,8 @@ Pass a document and Frame Check returns:
   in historical data, present state, or projections.
 - Frame Vocabulary Standard candidate matches: named frame patterns
   whose rule-based signals fire on the text, each with identification
-  cues and worked examples. Matches are candidate-level; precision
-  against multi-source labeling is an active research question.
+  cues and worked examples. Matches are candidate-level signals, not
+  verified labels.
 - Source-network verification: numeric claims checked against SEC
   EDGAR, FRED, World Bank, REST Countries, Alpha Vantage, and Wolfram
   Alpha where those providers have coverage.
@@ -90,17 +90,14 @@ providers with genuine coverage for the claim type, and it surfaces
 its own calibration results (precision, recall, F1 per provider)
 rather than asserting verdicts without evidence.
 
-Named-pattern detection is a separate reliability layer from the
-structural profile. Detector F1 = 0.36 against expert labelers in a
-pre-registered validation, below the useful threshold of 0.4. The
-pivot to evidence surfacing (under-detection markers,
-density caveats, confidence states) rather than confident labels is
-the load-bearing claim at v0; a reader-aid study (Track B,
-pre-registered) tests whether this surfacing actually helps a reader
-see framing they would otherwise miss.
+Named-pattern detection is a separate, beta layer from the structural
+profile. It surfaces candidate matches, under-detection markers,
+density caveats, and confidence states rather than confident labels,
+so you can see where the tool is unsure instead of trusting an
+overconfident verdict.
 
-Honest limits and the methodology that generates them live in the
-public canon at github.com/Clarethium/lodestone.
+Calibration figures, honest limits, and the methodology behind them
+live in the methodology canon at github.com/Clarethium/lodestone.
 
 ## Why this and not just an LLM
 
@@ -111,8 +108,8 @@ LLM falls short:
 - **Determinism.** The structural layer returns the same numbers for
   the same input across runs, deploys, and model versions. An LLM
   asked "what frames does this document use" gives a different
-  answer each time and a different answer per model. Citable
-  research needs the deterministic shape; opinions can layer on top.
+  answer each time and a different answer per model. Reproducible
+  analysis needs the deterministic shape; opinions can layer on top.
 - **Zero per-query cost.** Frame Check's MCP server makes no LLM
   call server-side. The caller's agent does the prose interpretation
   if the user wants that. This means a frame-check on a 10,000-word
@@ -123,12 +120,10 @@ LLM falls short:
   Frame Vocabulary Standard catalog. An LLM asked "what's missing"
   hallucinates plausible-sounding gaps; Frame Check enumerates
   catalog entries that did not fire on the text and says so.
-- **Calibrated detection.** The named-pattern layer reports detector
-  F1 = 0.36 against expert labelers in a pre-registered validation,
-  below the useful threshold of 0.4. That number is in this README,
-  in the API responses (`engine_status: beta`), and the wheel ships
-  the under-detection-marker pivot rather than confident labels.
-  Honest calibration matters more than confident output.
+- **Calibrated detection.** The named-pattern layer is labelled beta
+  in the API responses (`engine_status: beta`) and surfaces
+  under-detection markers rather than confident labels. You get an
+  honest "this is uncertain" instead of a confident guess.
 - **Source verification.** Numeric claims with provider coverage get
   cross-checked against SEC EDGAR / FRED / World Bank / REST
   Countries / Alpha Vantage / Wolfram Alpha at provider pricing tiers (zero or
@@ -147,8 +142,8 @@ signatures.
 runs Claude Haiku 4.5, GPT-5, Grok 4.1 Fast Reasoning, and Gemini 2.5
 Flash against an investment question and surfaces the per-model
 structural shape: voice, coverage, frame matches, sourcing rate. The
-sovereignty case in plain form: your AI is one framing choice among
-several, not the framing.
+point in plain form: your AI is one framing choice among several, not
+the framing.
 
 Five more published examples live alongside it: framings of an LLM
 response to a life-decision prompt, an AI-company founder essay, an
@@ -157,44 +152,15 @@ on an LLM-summarised earnings release, plus a divergence walk-through
 on Claude's Bitcoin retirement recommendation. See
 [`data/worked_examples/`](data/worked_examples/) for the full set.
 
-## Calibration evidence
-
-The detector-empirics report under
-[`framecheck_mcp/calibration/results/detector_empirics_2026-05-01/REPORT.md`](framecheck_mcp/calibration/results/detector_empirics_2026-05-01/REPORT.md)
-ships in the wheel. It carries: per-FVS firing rate across the
-13-document calibration corpus, coverage perspective addressed
-rate per category, genre classification distribution, and absence-
-cluster dimension incidence. The empirics are computed by running
-`frame_check` over stdio MCP against each corpus document and
-aggregating the structural fields. The calibration corpus is not
-shipped in the public wheel; the report records those results.
-
-The `F1 = 0.36 against expert labelers` figure cited in the
-sections above is from a separate pre-registered validation run
-(detector-vs-labeler agreement, methodology pinned in
-`validation/wedge_behavior/PROTOCOL_v1.md`). The pre-registered
-protocol + harness shipped end-to-end; a 2026-05-12 pipeline
-smoke test verified the harness drives both arms and produces
-rubric-scored output. Methodologically credible main-study
-evidence requires externally-sourced documents and independent
-raters; see
-[`validation/wedge_behavior/STATUS.md`](validation/wedge_behavior/STATUS.md)
-for the honest scope and the path to that evidence. Until the
-main study lands, the firing-rate empirics in the calibration
-report above carry the load; the F1 figure is the author's
-prior in-house measurement and is named with that caveat.
-
 ## Documentation
 
 Browse [`docs/README.md`](docs/README.md) for reading paths organised
-by intent (install + use, evaluate the methodology, understand frame
-divergence, validate the substrate, verify the audit, read the worked
+by intent (install + use, understand frame divergence, read the worked
 examples). The full inventory:
 
 - `docs/MCP_SERVER.md`: MCP server reference (tools, resources, prompts)
 - `docs/COOKBOOK.md`: five recipes for common adopter tasks (frame-check before agent commit, divergence at decision points, source-grounded verification, two-LLM comparison, custom FVS rule)
 - `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`: interface contract for the Frame Divergence emission shape (c1.0)
-- `docs/RATERS.md`: rater protocol for the validation program
 - `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
 - `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (6 entries)
 - The Frame Vocabulary Standard's methodology canon lives at github.com/Clarethium/lodestone
@@ -217,15 +183,14 @@ Apache-2.0 for code; CC-BY-4.0 for the FVS library and worked examples
 
 ## Citation
 
-If Frame Check is useful in your work, see `CITATION.cff` for the
-citable form. Frame Check is authored by Lovro Lucic.
+If Frame Check is useful in your work, see `.github/CITATION.cff` for
+the citable form. Frame Check is authored by Lovro Lucic.
 
 ## Contributing
 
-Sign-off-by-DCO required per `CONTRIBUTING.md`. Governance per
-`GOVERNANCE.md` (BDFL model with named forcing functions for
-canon-promotion decisions). External rater engagement per
-`docs/RATERS.md`.
+Sign-off-by-DCO required per `.github/CONTRIBUTING.md`. Governance per
+`.github/GOVERNANCE.md` (BDFL model with named forcing functions for
+canon-promotion decisions).
 
 ## Issues
 

@@ -322,12 +322,6 @@ decision (see `GOVERNANCE.md`) is required before code can land.
 - **Direction:** `GOVERNANCE.md` describes the curator role and the
   decisions that shape what the project will accept. PRs that
   conflict with it will stall.
-- **Reviewing frames for canon promotion:** a different role from
-  contributing via PR. See `docs/RATERS.md` for the open
-  invitation, terms, deliverable shape, and how to engage. Raters
-  evaluate existing library entries against the five promotion
-  criteria; contributors (this document) add or modify library
-  entries, detection rules, calibration data, or MCP tools.
-- **Author:** Lovro Lucic. See CITATION.cff for contact.
+- **Author:** Lovro Lucic. See `CITATION.cff` for contact.
 
 Licensed: code Apache-2.0, corpus CC-BY-4.0.

@@ -281,39 +281,31 @@ the published mechanism.
    `name`, `dimension`, `class`, `status`; body sections for
    identification cues, worked examples, related entries). The
    `data/frame_library/INDEX.md` file documents the row format.
-2. **Run the rule against a calibration corpus.** The validation
-   harness at `validation/decision_readiness/` runs a candidate
-   rule against the calibration set and reports per-document
-   firing patterns.
+2. **Run the rule against the calibration corpus.** Check the
+   per-document firing patterns: a useful rule fires where you
+   expect it to and stays quiet where it should not.
 3. **Submit a `[RFC]` issue per `GOVERNANCE.md`.** The governance
    file documents which decisions require an RFC. A new FVS entry
    is one of them.
-4. **Pre-register a study.** Following the protocol shape at
-   [`validation/wedge_behavior/PROTOCOL_v1.md`](../validation/wedge_behavior/PROTOCOL_v1.md),
-   pre-register what the rule predicts and what would falsify it.
-5. **Submit the PR.** Sign-off-by-DCO, link the RFC and the
-   pre-registered study, run the full test suite plus
-   `bash scripts/canon_audit.sh`.
+4. **Submit the PR.** Sign-off-by-DCO, link the RFC, run the full
+   test suite plus `bash scripts/canon_audit.sh`.
 
 ### Load-bearing references
 
-- [`CONTRIBUTING.md`](../CONTRIBUTING.md): the mechanical PR flow.
-- [`GOVERNANCE.md`](../GOVERNANCE.md): which decisions require an
+- [`CONTRIBUTING.md`](../.github/CONTRIBUTING.md): the mechanical PR flow.
+- [`GOVERNANCE.md`](../.github/GOVERNANCE.md): which decisions require an
   RFC and the maintainer's authority on canon.
-- [`docs/RATERS.md`](RATERS.md): the rater protocol. New entries
-  enter the catalog after surviving rater rounds, not before.
 - [`Clarethium/lodestone`](https://github.com/Clarethium/lodestone):
   the methodology canon. Pre-public candidate entries live there
   before promotion to the FVS catalog.
 
 ### Honest limits
 
-The catalog is intentionally conservative. An entry that fires on
-the contributor's worked examples but does not survive a rater
-round does not enter the public catalog. The bar at v0.x is "F1 ≥
-0.4 against expert labelers in a pre-registered validation"; below
-that bar, entries surface as candidates in the methodology canon
-rather than as advertised FVS detections.
+The catalog is intentionally conservative. A new entry enters the
+public catalog only after it holds up against the calibration
+corpus and clears the `GOVERNANCE.md` review; until then it
+surfaces as a candidate in the methodology canon rather than as an
+advertised FVS detection.
 
 ---
 
