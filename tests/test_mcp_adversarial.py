@@ -585,7 +585,7 @@ def test_E7_stdio_main_loop_emits_parse_error_for_malformed_line():
     dispatch() unit tests because dispatch() takes a parsed dict.
     Spawn a real subprocess and send a malformed line to verify
     the wire-level ERR_PARSE response."""
-    server_path = REPO / "mcp_server.py"
+    server_path = REPO / "src" / "mcp_server.py"
     proc = subprocess.Popen(
         [sys.executable, str(server_path)],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -624,7 +624,7 @@ def test_E8_stdio_main_loop_rejects_jsonrpc_other_than_2_0():
     ERR_INVALID_REQUEST (-32600). dispatch() does NOT enforce this;
     main() does. The contract is a wire-level invariant so we test
     it via subprocess."""
-    server_path = REPO / "mcp_server.py"
+    server_path = REPO / "src" / "mcp_server.py"
     proc = subprocess.Popen(
         [sys.executable, str(server_path)],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE,

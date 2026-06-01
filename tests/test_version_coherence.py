@@ -79,7 +79,7 @@ def _read_server_version() -> str:
     syntax error elsewhere in the file as an ImportError that
     confuses the failure mode here.
     """
-    path = REPO_ROOT / "mcp_server.py"
+    path = REPO_ROOT / "src" / "mcp_server.py"
     text = path.read_text(encoding="utf-8")
     m = re.search(r'^SERVER_VERSION\s*=\s*"([^"]+)"', text, re.MULTILINE)
     if not m:
@@ -242,7 +242,7 @@ def _read_citation_cff() -> dict:
     callers can index without defensive .get() chains.
     """
     import yaml
-    path = REPO_ROOT / "CITATION.cff"
+    path = REPO_ROOT / ".github" / "CITATION.cff"
     text = path.read_text(encoding="utf-8")
     return yaml.safe_load(text)
 
@@ -255,7 +255,7 @@ def _read_frame_check_version_constant() -> str:
     is a constants file but a syntax error elsewhere could still
     mask as ImportError).
     """
-    path = REPO_ROOT / "version.py"
+    path = REPO_ROOT / "src" / "version.py"
     text = path.read_text(encoding="utf-8")
     m = re.search(r'^FRAME_CHECK_VERSION\s*=\s*"([^"]+)"',
                   text, re.MULTILINE)

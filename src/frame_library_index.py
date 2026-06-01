@@ -43,7 +43,10 @@ _PKG_DATA_DIR = _REPO_ROOT / "framecheck_mcp"
 if (_PKG_DATA_DIR / "data").is_dir():
     _DATA_ROOT = _PKG_DATA_DIR
 else:
-    _DATA_ROOT = _REPO_ROOT
+    # Source tree (src-layout): this module lives under src/, so the
+    # data/ tree is one level up at the repo root. Wheel installs use
+    # the package-data branch above; this fallback is dev-only.
+    _DATA_ROOT = _REPO_ROOT.parent
 _LIBRARY_DIR = _DATA_ROOT / "data" / "frame_library"
 
 

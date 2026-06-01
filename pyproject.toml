@@ -50,8 +50,8 @@ test = [
 Homepage = "https://blog.clarethium.com/frame-check"
 Repository = "https://github.com/Clarethium/frame-check"
 Issues = "https://github.com/Clarethium/frame-check/issues"
-Changelog = "https://github.com/Clarethium/frame-check/blob/master/CHANGELOG.md"
-Security = "https://github.com/Clarethium/frame-check/blob/master/SECURITY.md"
+Changelog = "https://github.com/Clarethium/frame-check/blob/master/docs/CHANGELOG.md"
+Security = "https://github.com/Clarethium/frame-check/blob/master/.github/SECURITY.md"
 Methodology = "https://frame.clarethium.com/corpus/methodology/"
 "Frame Library" = "https://frame.clarethium.com/corpus/library/"
 
@@ -59,6 +59,13 @@ Methodology = "https://frame.clarethium.com/corpus/methodology/"
 frame-check-mcp = "mcp_server:cli"
 
 [tool.setuptools]
+# src-layout: sources live under src/ to keep the repo root clean,
+# but install as TOP-LEVEL modules (package-dir maps the root package
+# "" to src/). The wheel's import surface is unchanged -- `import
+# mcp_server` and the `mcp_server:cli` entry point resolve exactly as
+# they did under the flat layout. setuptools reads the py-modules
+# names below from src/<name>.py.
+package-dir = {"" = "src"}
 # Modules reachable from mcp_server.py via local-import graph;
 # bundling them is required for `import mcp_server` to resolve
 # in a clean environment.
@@ -94,6 +101,7 @@ py-modules = [
 include-package-data = true
 
 [tool.setuptools.packages.find]
+where = ["src"]
 include = ["framecheck_mcp*"]
 
 [tool.setuptools.package-data]
@@ -115,6 +123,10 @@ framecheck_mcp = [
 ]
 
 [tool.pytest.ini_options]
+# src-layout: the sources install as top-level modules but live under
+# src/ in the tree, so src/ must be on sys.path for `import mcp_server`
+# (and siblings) to resolve when running the suite from the repo root.
+pythonpath = ["src"]
 # Replaces the legacy pytest.ini; PEP 518 location keeps all build /
 # test config in pyproject.toml. The two registered settings:
 #
