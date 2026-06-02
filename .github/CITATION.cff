@@ -11,8 +11,8 @@ authors:
     given-names: Lovro
     orcid: "https://orcid.org/0009-0008-9976-6933"
     website: "https://blog.clarethium.com"
-repository-code: "https://github.com/Clarethium/frame-check"
-url: "https://github.com/Clarethium/frame-check"
+repository-code: "https://github.com/lluvr/frame-check"
+url: "https://github.com/lluvr/frame-check"
 abstract: >-
   Frame Check is a structural framing analysis tool. It names which perspectives a document takes,
   which it omits, and how it positions the reader; numerical claims
@@ -49,7 +49,7 @@ references:
       - family-names: Lucic
         given-names: Lovro
         orcid: "https://orcid.org/0009-0008-9976-6933"
-    url: "https://github.com/Clarethium/frame-check/tree/master/data/frame_library"
+    url: "https://github.com/lluvr/frame-check/tree/master/data/frame_library"
     license: CC-BY-4.0
     version: "0.2.0"
     year: 2026

@@ -79,7 +79,7 @@ git push origin master
 git push origin v1.0.13
 
 # 8. Watch the workflow.
-gh run watch -R Clarethium/frame-check
+gh run watch -R lluvr/frame-check
 ```
 
 ## Version-string discipline
@@ -172,7 +172,7 @@ Repeat for TestPyPI:
 - Same settings, environment name `testpypi`.
 
 Add corresponding GitHub environments at
-`https://github.com/Clarethium/frame-check/settings/environments`
+`https://github.com/lluvr/frame-check/settings/environments`
 and protect them with branch-restriction (only `master` can deploy
 to `pypi`).
 

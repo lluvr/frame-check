@@ -6,7 +6,7 @@ shippable to the public mirror -- i.e., every module it imports at
 the top level is resolvable inside the wheel-bundled subset
 (`pyproject.toml [tool.setuptools] py-modules`) or under an
 `INCLUDE_DIRS` directory. A drift here is the bug class that put
-`Clarethium/frame-check` on a red-CI badge for ~3 days post-v0.8.3:
+`lluvr/frame-check` on a red-CI badge for ~3 days post-v0.8.3:
 15 test files were shipping publicly while their target modules
 were dev-tree-only, every one of those tests ImportError'd on the
 public mirror's `python3 run_tests.py` (commit 112ffbd closes the

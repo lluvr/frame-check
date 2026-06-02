@@ -146,7 +146,7 @@ PRODUCTION_STATUS_NOTE = (
     "calibration_corpus fields in this provenance block resolve "
     "directly. Always-resolvable mirrors that survive any future "
     "hosting transition: GitHub repository "
-    "https://github.com/Clarethium/frame-check; PyPI package "
+    "https://github.com/lluvr/frame-check; PyPI package "
     "frame-check-mcp (this server)."
 )
 
@@ -1290,7 +1290,7 @@ def _build_divergence_block(
                 f"{RESOURCE_SCHEME}://library/{fvs_id}"
             ),
             # GitHub URL pointing at the entry's markdown source on
-            # the public repository (Clarethium/frame-check). End-users
+            # the public repository (lluvr/frame-check). End-users
             # in MCP clients (Claude Desktop, Cursor) cannot click
             # frame-check://library/... resource URIs because those
             # are MCP-internal; the library_url gives them an HTTP
@@ -2612,7 +2612,7 @@ def build_epistemic_payload(
                 "fvs_id": f.get("fvs_id"),
                 "name": f.get("name"),
                 # GitHub URL pointing at the entry's markdown source
-                # on the public repository (Clarethium/frame-check).
+                # on the public repository (lluvr/frame-check).
                 # End-users can click this to read the entry directly;
                 # GitHub is always resolvable regardless of hosted-
                 # production status (frame.clarethium.com is paused
@@ -3520,7 +3520,7 @@ def _summarize_per_document(doc: dict[str, Any], text: str) -> dict[str, Any]:
                 "fvs_id": f.get("fvs_id"),
                 "name": f.get("name"),
                 # GitHub URL pointing at the entry's markdown source
-                # on the public repository (Clarethium/frame-check).
+                # on the public repository (lluvr/frame-check).
                 # See the frame_check tool's matching field for the
                 # full rationale; same shape, same resolution
                 # behavior, so a client can handle both surfaces

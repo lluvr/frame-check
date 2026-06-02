@@ -14,5 +14,5 @@ rendered versions at https://frame.clarethium.com/corpus/worked-examples/.
 Contributing a worked example requires the full repository (build
 step, frontmatter template, and editorial review checklist). See
 the project's CONTRIBUTING guide at
-https://github.com/Clarethium/frame-check/blob/master/CONTRIBUTING.md
+https://github.com/lluvr/frame-check/blob/master/CONTRIBUTING.md
 for the full workflow.

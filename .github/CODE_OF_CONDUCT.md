@@ -46,7 +46,7 @@ willing to engage in good faith with the substance of the work.
 
 This Code of Conduct applies to:
 
-- The `Clarethium/frame-check` GitHub repository (issues, PRs,
+- The `lluvr/frame-check` GitHub repository (issues, PRs,
   discussions, code review threads, commit messages).
 - The associated PyPI project page (`frame-check-mcp`).
 - Any conversation about Frame Check on the maintainer's blog

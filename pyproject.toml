@@ -48,10 +48,10 @@ test = [
 
 [project.urls]
 Homepage = "https://blog.clarethium.com/frame-check"
-Repository = "https://github.com/Clarethium/frame-check"
-Issues = "https://github.com/Clarethium/frame-check/issues"
-Changelog = "https://github.com/Clarethium/frame-check/blob/master/docs/CHANGELOG.md"
-Security = "https://github.com/Clarethium/frame-check/blob/master/.github/SECURITY.md"
+Repository = "https://github.com/lluvr/frame-check"
+Issues = "https://github.com/lluvr/frame-check/issues"
+Changelog = "https://github.com/lluvr/frame-check/blob/master/docs/CHANGELOG.md"
+Security = "https://github.com/lluvr/frame-check/blob/master/.github/SECURITY.md"
 Methodology = "https://frame.clarethium.com/corpus/methodology/"
 "Frame Library" = "https://frame.clarethium.com/corpus/library/"
 

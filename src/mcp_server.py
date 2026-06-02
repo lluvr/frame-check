@@ -1320,7 +1320,7 @@ STARTUP AND TROUBLESHOOTING
 RESOURCES
   Public docs:   https://frame.clarethium.com
   Methodology:   https://frame.clarethium.com/corpus/methodology/
-  Repo:          https://github.com/Clarethium/frame-check
+  Repo:          https://github.com/lluvr/frame-check
 """
 
 
