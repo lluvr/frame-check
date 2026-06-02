@@ -6,6 +6,55 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-02
+
+Repository, packaging, and positioning release. **No breaking changes:**
+the wheel's import surface (`import mcp_server`, the `frame-check-mcp`
+entry point), the MCP tool/resource surface, and every wire-payload
+field name and structure are unchanged. Adopters on 1.0.x upgrade with
+no code changes.
+
+### Repository moved to a personal account
+
+The canonical home is now `github.com/lluvr/frame-check` (public),
+transferred from `github.com/Clarethium/frame-check`. GitHub redirects
+the old location. All in-repo URLs (Project-URLs, badges, citations,
+docs) now point at the new home; dead `Clarethium/lodestone` pointers
+were repointed or removed.
+
+### Packaging: src-layout
+
+Sources moved under `src/` (`package-dir = {"" = "src"}`). They still
+install as top-level modules, so the wheel's import surface is
+identical. The repo root drops to 10 files.
+
+### Removed the research/validation apparatus from the bundle
+
+The pre-registered validation studies (`validation/wedge_behavior/`,
+`validation/baseline_comparison/`), the rater protocol, and
+`docs/RATERS.md` no longer ship. The decision-readiness corpus and
+results that back the `aggregate`/`corpus` MCP resources are retained.
+
+### Wire-payload guidance text reworded (non-breaking)
+
+`agent_guidance` strings dropped the "sovereignty" framing (now plain
+reader-judgment language), the "Phase 2 / pre-registered validation"
+framing (status stays `experimental`), and the methodology-as-canon
+positioning. Field names, structure, and values are unchanged; only
+descriptive text changed.
+
+### Documentation
+
+README leads with adopter value; the Zenodo DOI badge was removed (the
+DOI stays in `CITATION.cff`). Methodology references point at
+`frame.clarethium.com/corpus/methodology`. Em-dash sweep across docs
+and comments; CI workflow paths fixed for the src-layout.
+
+Deferred to 2.0 (committed in `ROADMAP.md`): renaming the technical
+"canon" vocabulary (frame-status taxonomy, `canon_*` wire fields, the
+`curator` metadata field) and the reliability-field keys, all breaking
+wire/data changes.
+
 ## [1.0.12] - 2026-05-11
 
 ### Schema coherence: full canonical URI/URL quartet on every frame-reference shape

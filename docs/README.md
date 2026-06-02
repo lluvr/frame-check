@@ -20,11 +20,10 @@ you find the one that matches your need.
 
 ### "I want to evaluate the methodology"
 
-The methodology canon ships separately at
-[github.com/Clarethium/lodestone](https://github.com/Clarethium/lodestone)
-and at [frame.clarethium.com/corpus/methodology/](https://frame.clarethium.com/corpus/methodology/).
-That source is the canonical reference for the methodology, frame
-library, and honest limits.
+The methodology is documented at
+[frame.clarethium.com/corpus/methodology/](https://frame.clarethium.com/corpus/methodology/).
+It is the reference for the methodology, frame library, and honest
+limits.
 
 ### "I want to understand frame divergence"
 

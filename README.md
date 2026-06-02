@@ -96,7 +96,7 @@ so you can see where the tool is unsure instead of trusting an
 overconfident verdict.
 
 Calibration figures, honest limits, and the methodology behind them
-live in the methodology canon at github.com/Clarethium/lodestone.
+live in the methodology at frame.clarethium.com/corpus/methodology.
 
 ## Why this and not just an LLM
 
@@ -162,7 +162,7 @@ examples). The full inventory:
 - `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`: interface contract for the Frame Divergence emission shape (c1.0)
 - `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
 - `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (6 entries)
-- The Frame Vocabulary Standard's methodology canon lives at github.com/Clarethium/lodestone
+- The methodology behind the Frame Vocabulary Standard is documented at frame.clarethium.com/corpus/methodology
 
 ## Running tests
 

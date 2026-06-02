@@ -52,8 +52,7 @@ This Code of Conduct applies to:
 - Any conversation about Frame Check on the maintainer's blog
   (`blog.clarethium.com`) or public talks where the maintainer
   is hosting or moderating.
-- Coordinated cross-repo work that spans Frame Check and the
-  methodology canon at `Clarethium/lodestone`.
+- Coordinated work on Frame Check and its published methodology.
 
 It does not extend to private channels, third-party platforms, or
 the maintainer's other unrelated projects.

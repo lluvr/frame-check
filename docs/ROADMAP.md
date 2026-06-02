@@ -20,7 +20,7 @@ The current PyPI line is `1.0.x`. The next stable target is `1.x`
   PR-blocking and run against the freshly-built wheel on every
   tag push.
 - Methodology citation paths verified against the published Zenodo
-  concept-DOI and the methodology canon at `Clarethium/lodestone`.
+  concept-DOI and the methodology at frame.clarethium.com/corpus/methodology.
 - CI-driven publish from this repository alone (the
   `.github/workflows/publish.yml` pipeline ran end-to-end on
   the v1.0.0 tag push: world-state preflight + build + sigstore
@@ -83,8 +83,8 @@ The FVS catalog ships 20 entries (`data/frame_library/`). The
 catalog is intentionally conservative: entries land only when
 the rule reaches a useful detection rate against the labelers
 and the entry survives a public adoption pass. Pre-1.x candidate
-entries live in the methodology canon at `Clarethium/lodestone`
-and get promoted into the public catalog when ratified.
+entries live with the documented methodology and get promoted into
+the public catalog when ratified.
 
 ### Engine: V4.2 capability re-attempt
 
@@ -150,6 +150,25 @@ a breaking wire change, which is why it is deferred to the major
 boundary rather than shipped in the 1.x line. Code sites:
 `mcp_compose.py` `validation_status` emitters; adopters reading
 the current keys migrate before the v2.0 cut.
+
+### Rename the technical "canon" vocabulary
+
+The canon-as-product *positioning* was removed in 1.1.0 (the
+"methodology canon" framing and the dead lodestone pointers). What
+remains is "canon" used as load-bearing technical vocabulary, which
+cannot be renamed without breaking adopters:
+
+- the frame-status taxonomy `canon / draft / aspirational / retired`
+  (parsed by `frame_library_index.py`, surfaced in citation blocks);
+- the wire field names `canon_size` and `canon_coverage_fraction`
+  and the "canon-graph" concept in the payload;
+- the `**Curator:**` metadata field in the 20 frame cards and the
+  `curator` references in `agent_guidance` strings.
+
+At v2.0 these are renamed to plainer terms (e.g. frame status
+`stable`, `canon_size` -> `catalog_size`, `curator` -> `maintainer`)
+with a migration path for adopters reading the current shapes. This
+is a breaking wire/data change, deferred to the major boundary.
 
 ## v2.0 design questions (uncommitted, revisit at scoping)
 

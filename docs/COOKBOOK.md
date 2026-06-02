@@ -295,17 +295,15 @@ the published mechanism.
 - [`CONTRIBUTING.md`](../.github/CONTRIBUTING.md): the mechanical PR flow.
 - [`GOVERNANCE.md`](../.github/GOVERNANCE.md): which decisions require an
   RFC and the maintainer's authority on canon.
-- [`Clarethium/lodestone`](https://github.com/Clarethium/lodestone):
-  the methodology canon. Pre-public candidate entries live there
-  before promotion to the FVS catalog.
+- [Methodology](https://frame.clarethium.com/corpus/methodology/):
+  the documented methodology behind the catalog.
 
 ### Honest limits
 
 The catalog is intentionally conservative. A new entry enters the
 public catalog only after it holds up against the calibration
 corpus and clears the `GOVERNANCE.md` review; until then it
-surfaces as a candidate in the methodology canon rather than as an
-advertised FVS detection.
+surfaces as a candidate rather than an advertised FVS detection.
 
 ---
 
