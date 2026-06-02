@@ -249,8 +249,8 @@ def _build_provenance(
         "analysis_layer": analysis_layer,
         "analysis_determinism": note,
         "citation": (
-            f"Lucic, L. ({now.year}). Frame Check: a research "
-            f"instrument for framing and verification in documents. "
+            f"Lucic, L. ({now.year}). Frame Check: a structural "
+            f"framing analysis tool. "
             f"https://frame.clarethium.com"
         ),
     }

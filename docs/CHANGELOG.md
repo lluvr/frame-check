@@ -6,6 +6,16 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-06-02
+
+### Fixed
+
+- The citation string in every tool response (`provenance.citation`) and
+  in the two bundled worked-example outputs titled Frame Check "a research
+  instrument for framing and verification in documents." It now reads "a
+  structural framing analysis tool," matching the project description and
+  README. Citation text only — no API, schema, or behavior change.
+
 ## [1.1.0] - 2026-06-02
 
 Repository, packaging, and positioning release. **No breaking changes:**
