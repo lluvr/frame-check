@@ -1579,14 +1579,14 @@ def __getattr__(name: str) -> Any:
         "_FRAME_VERSIONS",
         "_FRAME_ADJACENCY",
     }:
-        # Local import keeps module-level imports of mcp_resources
-        # to a single ``from mcp_resources import ...`` form (avoids
-        # the dual ``import X`` + ``from X import Y`` pattern that
-        # CodeQL py/import-and-import-from flags). The function-scope
-        # import is paid only when external callers dot into the
-        # module for these four cache names.
-        import mcp_resources
-        return getattr(mcp_resources, name)
+        # These four caches live in mcp_resources and are repopulated
+        # there at runtime; forward to the live module object so callers
+        # always see the current value. mcp_resources is already loaded
+        # (the ``from mcp_resources import ...`` above puts it in
+        # sys.modules), so reading it from there avoids a second
+        # ``import mcp_resources`` statement. That keeps the module to a
+        # single import-from form (CodeQL py/import-and-import-from).
+        return getattr(sys.modules["mcp_resources"], name)
     raise AttributeError(
         f"module {__name__!r} has no attribute {name!r}"
     )
