@@ -7,10 +7,13 @@
 
 See what any document does not show you.
 
-Frame Check is a structural framing analysis tool. It names which
-perspectives a document takes, which it omits, and how it positions
-the reader. Numerical claims are cross-checked against authoritative
-sources where coverage exists.
+Frame Check is a deterministic structural framing analysis tool. It
+names which analytical perspectives a document takes, which it omits,
+and how it positions the reader, and it cross-checks the document's
+numeric claims against primary sources a language model can't reach
+(SEC EDGAR, FRED, World Bank, and others). It makes no LLM call of its
+own, so the same document always returns the same reading at no model
+cost.
 
 ## Quickstart (MCP server)
 
