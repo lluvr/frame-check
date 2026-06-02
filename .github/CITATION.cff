@@ -4,7 +4,7 @@ message: >-
   metadata below. The methodology paper and frame library are
   separately citeable research artifacts; see the references block
   for canonical URLs.
-title: "Frame Check: a tool for framing analysis and verification in documents"
+title: "Frame Check: a structural framing analysis tool"
 type: software
 authors:
   - family-names: Lucic
