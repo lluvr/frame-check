@@ -3,7 +3,7 @@ title: Grok summarises NVIDIA earnings: what Layer 4 verification shows when an 
 slug: grok-on-nvidia-earnings-2026
 author: Lovro Lucic
 published: 2026-04-18
-source_document_url: https://github.com/Clarethium/frame-check/tree/master/data/worked_examples/grok-on-nvidia-earnings-2026
+source_document_url: https://github.com/lluvr/frame-check/tree/master/data/worked_examples/grok-on-nvidia-earnings-2026
 source_document_title: Grok 4.1 Fast Reasoning summary of NVIDIA Q4 FY2024 earnings press release (2026-04-18)
 source_document_author: xAI Grok 4.1 Fast Reasoning (`grok-4-1-fast`)
 source_document_type: LLM summary of a public financial press release, analysed against the original source material as source_text

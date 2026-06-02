@@ -18,7 +18,7 @@ reports.
 
 **For non-public reports**: use GitHub's private vulnerability
 reporting (the repository **Security** tab, then **Report a
-vulnerability**, or <https://github.com/Clarethium/frame-check/security/advisories/new>).
+vulnerability**, or <https://github.com/lluvr/frame-check/security/advisories/new>).
 Include:
 
 - A description of the vulnerability (what, where, how to
@@ -45,7 +45,7 @@ Frame Check has two release postures:
 
 - **Web service** (`frame.clarethium.com`): a live deploy, not a
   released product with version ranges. The public MCP package
-  source ships from `github.com/Clarethium/frame-check`.
+  source ships from `github.com/lluvr/frame-check`.
 - **MCP package** (`frame-check-mcp` on PyPI): semver-versioned.
   Security fixes ship as patch releases on the current minor.
   There is no long-term-support track yet; expect to upgrade to

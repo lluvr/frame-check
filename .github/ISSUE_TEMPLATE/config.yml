@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Security issue
-    url: https://github.com/Clarethium/frame-check/security/advisories/new
+    url: https://github.com/lluvr/frame-check/security/advisories/new
     about: |
       Report vulnerabilities via GitHub private vulnerability reporting,
       per SECURITY.md. Do not open public issues for vulnerabilities.

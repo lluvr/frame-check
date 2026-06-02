@@ -104,7 +104,7 @@ PAT_WEB_APP_LIVE_IMPORTS='\b(from|import) (security|annotator|observatory|teleme
 
 # ── Pattern family: OPERATOR_PATHS (FM-PCD-7) ───────────────────────
 # Personal machine paths and operator-private repo URLs.
-PAT_OPERATOR_PATHS='/home/llucic|/Users/lovro|Powerhouse(\.localdomain)?|~/\.claude/projects|\.claude/projects/-home-llucic|github\.com/lluvr/frame-check\b'
+PAT_OPERATOR_PATHS='/home/llucic|/Users/lovro|Powerhouse(\.localdomain)?|~/\.claude/projects|\.claude/projects/-home-llucic|github\.com/lluvr/frame-check-web\b'
 
 # ── Pattern family: OPERATIONAL_STATE (FM-PCD-6) ────────────────────
 # Runtime state files from the live web deploy. None of these have

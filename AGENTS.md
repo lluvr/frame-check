@@ -8,7 +8,7 @@ or `.cursorrules` is. Read it before making changes.
 
 ## What this repo is
 
-`Clarethium/frame-check` is the public canonical repository for the
+`lluvr/frame-check` is the public canonical repository for the
 **Frame Check MCP server**: a structural framing analysis tool
 distributed as the PyPI package `frame-check-mcp`. The MCP server
 gives any MCP-compatible AI client (Claude Desktop, Cursor, Cline,

@@ -944,7 +944,7 @@ carries four URI/URL fields:
 |---|---|---|
 | `citation_uri` | `frame-check://library/FVS-XXX` | MCP resource URI; pass to `resources/read` |
 | `library_resource_uri` | `frame-check://library/FVS-XXX` (same value) | Alias of `citation_uri`; same use |
-| `library_url` | `https://github.com/Clarethium/frame-check/blob/master/data/frame_library/FVS-XXX_slug.md` | HTTPS GitHub URL; user-clickable |
+| `library_url` | `https://github.com/lluvr/frame-check/blob/master/data/frame_library/FVS-XXX_slug.md` | HTTPS GitHub URL; user-clickable |
 | `public_url` | (same HTTPS URL) | Alias of `library_url`; same use |
 
 The aliasing is alias-equality invariant: `citation_uri == library_resource_uri` and `library_url == public_url` in every record. Pre-v1.0.12 the field names varied across blocks (`citation_uri` only on `absent_frames` and `typical_co_*`; `library_resource_uri` only on `decision_readiness` and `frame_library_matches`; `library_url` on `absent_frames` and `frame_library_matches`; `public_url` only on `decision_readiness`). v1.0.10 / v1.0.11 / v1.0.12 progressively normalized this so an adopter writing one renderer for FVS references reads the same shape regardless of which block they parse. Integrations that hardcoded any one of the four names remain valid; the v1.0.12 sweep is additive.
@@ -1392,7 +1392,7 @@ maintenance pause is communicable without protocol changes:
   any transition.
 
 Always-resolvable mirrors: the public GitHub repository at
-`https://github.com/Clarethium/frame-check` and the PyPI
+`https://github.com/lluvr/frame-check` and the PyPI
 package `frame-check-mcp`. Citations resolve against the versioned
 PyPI release (`server_version` field), the brand version
 (`frame_check_version` field, decoupled from the wheel), or the
@@ -1406,7 +1406,7 @@ as Frame Check's, not as your own reading.
 
 ```
 Lucic, L. (YEAR). Frame Check: a tool for framing analysis and
-verification in documents. https://github.com/Clarethium/frame-check
+verification in documents. https://github.com/lluvr/frame-check
 ```
 
 ## License
