@@ -137,9 +137,9 @@ jobs:
       - name: Mypy type-check (public wheel surface)
         # Lenient config: PR-blocking on the public wheel surface.
         run: |
-          mypy mcp_server.py mcp_compose.py mcp_resources.py \
-               mcp_schema.py framing.py comparison.py \
-               clarethium_measure.py
+          mypy src/mcp_server.py src/mcp_compose.py src/mcp_resources.py \
+               src/mcp_schema.py src/framing.py src/comparison.py \
+               src/clarethium_measure.py
       - name: Mypy --strict (v1.0 wheel-surface contract)
         # Strict-blocking. The v1.0 contract commits to
         # ``mypy --strict`` clean on the seven-module wheel surface;
@@ -147,9 +147,9 @@ jobs:
         # at v1.0.0. A regression is a contract violation and must
         # fail PR.
         run: |
-          mypy --strict mcp_server.py mcp_compose.py \
-               mcp_resources.py mcp_schema.py framing.py \
-               comparison.py clarethium_measure.py
+          mypy --strict src/mcp_server.py src/mcp_compose.py \
+               src/mcp_resources.py src/mcp_schema.py src/framing.py \
+               src/comparison.py src/clarethium_measure.py
 
   pytest-smoke:
     # Secondary job: direct pytest invocation against the suites

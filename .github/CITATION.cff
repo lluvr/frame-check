@@ -4,7 +4,7 @@ message: >-
   metadata below. The methodology paper and frame library are
   separately citeable research artifacts; see the references block
   for canonical URLs.
-title: "Frame Check: a research instrument for framing and verification in documents"
+title: "Frame Check: a tool for framing analysis and verification in documents"
 type: software
 authors:
   - family-names: Lucic
@@ -14,8 +14,7 @@ authors:
 repository-code: "https://github.com/Clarethium/frame-check"
 url: "https://github.com/Clarethium/frame-check"
 abstract: >-
-  Frame Check is a structural framing analysis tool and public
-  research program. It names which perspectives a document takes,
+  Frame Check is a structural framing analysis tool. It names which perspectives a document takes,
   which it omits, and how it positions the reader; numerical claims
   are cross-checked against authoritative sources where coverage
   exists. The methodology is deterministic and transparent: every

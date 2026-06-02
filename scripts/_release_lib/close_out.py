@@ -70,8 +70,8 @@ from pathlib import Path
 # truth governs both invocation paths.
 REPO = Path(__file__).resolve().parent.parent.parent
 PYPROJECT = REPO / "pyproject.toml"
-CHANGELOG = REPO / "CHANGELOG.md"
-MCP_SERVER = REPO / "mcp_server.py"
+CHANGELOG = REPO / "docs" / "CHANGELOG.md"
+MCP_SERVER = REPO / "src" / "mcp_server.py"
 
 
 def _strip_dev_suffix(version: str) -> str:
