@@ -1405,7 +1405,7 @@ When surfacing the analysis to a user, quote the Frame Check measurement
 as Frame Check's, not as your own reading.
 
 ```
-Lucic, L. (YEAR). Frame Check: a research instrument for framing and
+Lucic, L. (YEAR). Frame Check: a tool for framing analysis and
 verification in documents. https://github.com/Clarethium/frame-check
 ```
 

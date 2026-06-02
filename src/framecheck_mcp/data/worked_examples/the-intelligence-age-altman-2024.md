@@ -178,7 +178,7 @@ the zero-cost deterministic layer of Frame Check: framing portrait,
 coverage, voice, epistemic, temporal, and frame-library matching.
 The optional AI-assisted interpretation layer (Grok) and the
 source-network verification layer are both inactive for this
-document — there are no numeric claims to verify, and this writeup
+document: there are no numeric claims to verify, and this writeup
 is explicitly about what the structural measurement can and cannot
 say. The construct honesty claim Frame Check makes is that the
 structural layer is enough to surface the shape of the argument.

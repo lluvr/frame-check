@@ -107,7 +107,7 @@ jobs:
           import re, sys, tomllib
           with open("pyproject.toml", "rb") as f:
               pyver = tomllib.load(f)["project"]["version"]
-          text = open("mcp_server.py").read()
+          text = open("src/mcp_server.py").read()
           m = re.search(r'^SERVER_VERSION\s*=\s*"([^"]+)"', text, re.MULTILINE)
           codever = m.group(1) if m else None
           if pyver != codever:

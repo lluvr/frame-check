@@ -659,7 +659,7 @@ def main(argv: list[str] | None = None) -> int:
     #     record (same precedent as scripts/check_no_em_dashes.py
     #     audit-deliverable allowlist).
     step(13, "State coherence (wheel content vs PRODUCTION_STATUS)")
-    mcp_compose_path = REPO / "mcp_compose.py"
+    mcp_compose_path = REPO / "src" / "mcp_compose.py"
     ps_match = re.search(
         r'^PRODUCTION_STATUS\s*=\s*"(active|paused)"',
         mcp_compose_path.read_text(encoding="utf-8"),
@@ -746,7 +746,7 @@ def main(argv: list[str] | None = None) -> int:
     #     post-cut (orchestrator staging dir, [<version>] - <date> is the
     #     renamed section); gate 14 checks whichever applies.
     step(14, "CHANGELOG section for cut version is non-empty")
-    changelog_path = REPO / "CHANGELOG.md"
+    changelog_path = REPO / "docs" / "CHANGELOG.md"
     changelog_text = changelog_path.read_text(encoding="utf-8")
     versioned_re = re.compile(
         rf'^## \[{re.escape(EXPECTED_SERVER_VERSION)}\] - \d{{4}}-\d{{2}}-\d{{2}}\s*$',

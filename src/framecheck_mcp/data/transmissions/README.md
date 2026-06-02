@@ -1,11 +1,11 @@
 # Transmissions
 
-Transmissions are short, evidence-first research pieces published
+Transmissions are short, evidence-first essays published
 at [blog.clarethium.com](https://blog.clarethium.com/). Each one
-reports a specific finding from the research program that feeds
+reports a specific finding from the work behind
 Frame Check. They are the thinking behind the measurement
 instruments, written in a disciplined register the author uses
-for published research (stated claim, evidence, what survived
+for published writing (stated claim, evidence, what survived
 and what did not survive testing, honest limits).
 
 This directory is a curation pass: the transmissions the author

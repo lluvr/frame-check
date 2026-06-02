@@ -54,7 +54,7 @@ The curator decides:
 
 The curator does NOT decide:
 
-- What a reader concludes from a Frame Check analysis. The tool produces analytical scaffolding; readers remain sovereign.
+- What a reader concludes from a Frame Check analysis. The tool produces analytical scaffolding; the reader does the interpreting.
 - What a reader concludes from a worked example. Worked examples are commentary under fair use; the reader does the interpretive work.
 
 ---
@@ -109,7 +109,6 @@ The rule is bounded to the first canon promotion because first-wave promotions c
 ## Relationship to other documents
 
 - **`CONTRIBUTING.md`** references this document for "who decides and when a contribution becomes canon." `CONTRIBUTING.md` continues to own the mechanical contribution workflow (PR format, tests, commit conventions).
-- **`docs/RATERS.md`** is the open invitation and terms document for external reviewers on canon-promotion candidates.
 - **`INDEX.md`** defines the canon-trajectory status taxonomy (`canon` / `draft` / `aspirational` / `retired`).
 
 ---
