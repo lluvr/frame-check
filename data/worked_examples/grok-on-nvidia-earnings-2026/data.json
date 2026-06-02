@@ -1182,7 +1182,7 @@
       "analysis_timestamp_utc": "2026-05-11T19:12:00Z",
       "analysis_layer": "deterministic_structural_plus_verification",
       "analysis_determinism": "Identical input produces identical output. No LLM is invoked in this response.",
-      "citation": "Lucic, L. (2026). Frame Check: a research instrument for framing and verification in documents. https://frame.clarethium.com"
+      "citation": "Lucic, L. (2026). Frame Check: a structural framing analysis tool. https://frame.clarethium.com"
     },
     "manifest": {
       "manifest_version": 1,
