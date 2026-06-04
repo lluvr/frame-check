@@ -7,7 +7,7 @@ source_document_url: https://github.com/lluvr/frame-check/tree/master/data/worke
 source_document_title: Claude Haiku 4.5, GPT-5, Grok 4.1 Fast Reasoning, Gemini 2.5 Flash; responses to a Bitcoin retirement prompt
 source_document_author: AI-generated (four distinct models, 2026-04-18 run)
 source_document_type: multi-model LLM responses to a life-decision prompt
-frames_detected: [FVS-008, FVS-001, FVS-015, FVS-007, FVS-012]
+frames_detected: [FVS-008, FVS-015, FVS-007, FVS-012]
 verification_summary: "No numeric claims routed to the Source Network. The LLM responses make forecasting claims (price swings, allocations) that are not empirically verifiable against external authorities."
 hook: Same prompt, four major LLMs, four materially different framing signatures. The point: your AI is one framing choice among several, not the framing.
 ---
@@ -47,9 +47,9 @@ Per-model structural signature, from the deterministic detectors:
 
 | Model   | Voice         | Covers                              | Missing                                    | Sourced | Frame matches           |
 | ------- | ------------- | ----------------------------------- | ------------------------------------------ | ------- | ----------------------- |
-| Claude  | prescriptive  | causes                              | risks, stakeholders, trends, uncertainty   | 0%      | FVS-008, FVS-001, FVS-007 |
-| GPT-5   | prescriptive  | risks, trends                       | causes, stakeholders, uncertainty          | 0%      | FVS-001, FVS-015        |
-| Grok    | advisory      | risks, trends                       | causes, stakeholders, uncertainty          | 7%      | FVS-001, FVS-015        |
+| Claude  | prescriptive  | causes                              | risks, stakeholders, trends, uncertainty   | 0%      | FVS-008, FVS-007        |
+| GPT-5   | prescriptive  | risks, trends                       | causes, stakeholders, uncertainty          | 0%      | FVS-015                 |
+| Grok    | advisory      | risks, trends                       | causes, stakeholders, uncertainty          | 7%      | FVS-015                 |
 | Gemini  | prescriptive  | risks, stakeholders, trends, uncertainty | causes                                     | 0%      | FVS-012                 |
 
 A few observations the table does not carry:
@@ -73,8 +73,8 @@ A few observations the table does not carry:
 
 ### Frame detections
 
-The frame-library matcher flags five distinct entries across the
-four responses:
+The frame-library matcher flags four distinct entries across the
+responses:
 
 - [FVS-008 Growth Frame](/corpus/library/FVS-008.html), Claude
   only. Triggered by high density of growth-framed vocabulary
@@ -85,13 +85,6 @@ four responses:
   than from a risk-first frame. The teaching question the library
   entry carries: "What would a risk analyst say about this same
   data?"
-
-- [FVS-001 Frame Amplification](/corpus/library/FVS-001.html), three
-  of four responses. Triggered by the pattern of the model extending
-  the frame it opened with (if it opens with "here's why Bitcoin is
-  risky," everything that follows amplifies that). The library entry
-  asks whether increasing detail is evidence of quality or evidence
-  that the analysis is locked in one frame.
 
 - [FVS-015 Efficiency Frame](/corpus/library/FVS-015.html), GPT-5
   and Grok. Triggered by optimisation vocabulary (allocation
