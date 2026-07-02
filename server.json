@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.lluvr/frame-check",
+  "description": "Deterministic structural framing analysis for AI-generated documents: names which analytical perspectives a document takes and omits, how it positions the reader, and which framing patterns it uses, and cross-checks numeric claims against primary sources. Makes no LLM call of its own, so the same document always returns the same reading.",
+  "version": "1.1.2",
+  "repository": {
+    "url": "https://github.com/lluvr/frame-check",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "frame-check-mcp",
+      "version": "1.1.2",
+      "runtimeHint": "uvx",
+      "transport": { "type": "stdio" }
+    }
+  ]
+}
