@@ -51,14 +51,14 @@ rule, not the frame concept:
 | FVS-005 | System Attribution Error | meta-side | n/a | draft | 2026-04-12 |
 | FVS-006 | Identity Framing Asymmetry | meta-side | n/a | draft | 2026-04-12 |
 | FVS-007 | Failure Framing | text-side | yes | draft | 2026-04-12 |
-| FVS-008 | Growth Frame | text-side | retired | draft | 2026-04-18 |
+| FVS-008 | Growth Frame | text-side | yes | draft | 2026-04-18 |
 | FVS-009 | Risk Frame | text-side | yes | draft | 2026-04-12 |
 | FVS-010 | Completeness Illusion | text-side | yes | draft | 2026-04-12 |
 | FVS-011 | Stakeholder Frame | text-side | yes | draft | 2026-04-17 |
 | FVS-012 | Uncertainty Frame | text-side | yes | draft | 2026-04-17 |
 | FVS-013 | Oracle Frame | meta-side | n/a | draft | 2026-04-13 |
 | FVS-014 | Temporal Anchoring | text-side | yes | draft | 2026-04-13 |
-| FVS-015 | Efficiency Frame | text-side | retired | draft | 2026-04-18 |
+| FVS-015 | Efficiency Frame | text-side | yes | draft | 2026-04-18 |
 | FVS-016 | Authority by Citation | text-side | yes | draft | 2026-04-13 |
 | FVS-017 | False Balance | meta-side | n/a | draft | 2026-04-18 |
 | FVS-018 | Scope Narrowing | meta-side | n/a | draft | 2026-04-18 |

@@ -88,7 +88,7 @@ The teaching point preserved from the publish-time analysis (the structural read
 
 GPT-5's response opens with "A quick framework to decide" and then populates the framework with specific questions (unique edge, runway, customer validation, moat, regulatory approach, cofounder, contract constraints). Every subsequent section amplifies the framework-as-the-right-way-to-decide. The user did not ask for a framework. The LLM produced one and then used it to shape the rest of the conversation. The library entry's teaching question is exactly right here: "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?"
 
-A reader looking at the text will also recognise the response is growth-framed at the reading level (FVS-008 territory: "it can be a great move," "edge," "moat," "runway"). The v1 FVS-008 detector retired same-day as FVS-001; the frame concept stands but no v1 rule fires here today. The "What the method missed" section below carries the broader scope-limit reading.
+A reader looking at the text will also recognise the response is growth-framed at the reading level (FVS-008 territory: "it can be a great move," "edge," "moat," "runway"). The v1 FVS-008 detector is active in the current engine but does not fire on this text: the growth-content vocabulary is present, but the Growth Frame signal also requires risks to be absent, and this response covers risks. The frame concept stands at the reading level and no rule fires here today. The "What the method missed" section below carries the broader scope-limit reading.
 
 ## What is visible in the response that the measurements point at
 
@@ -125,11 +125,11 @@ response that the measurements point at:
 
 ## What the method missed
 
-- **Detection layer evolution.** Some v1 deterministic detection rules (FVS-001, FVS-008, FVS-015) were retired when validation evidence showed they fired on cases they should not flag; the V4.2 LLM-judge layer carries those frames now. Frame concepts are stable across detection-layer changes; absence-side analysis remains a reliable surface independent of which detector layer is active.
+- **Detection layer evolution.** Three v1 deterministic detection rules (FVS-001, FVS-008, FVS-015) were retired 2026-04-18 when validation evidence showed they fired on cases they should not flag. FVS-008 and FVS-015 have since returned to active detection (FVS-008 narrowed by a growth-content discriminator); FVS-001 remains retired and the V4.2 LLM-judge layer carries it. Frame concepts are stable across detection-layer changes; absence-side analysis remains a reliable surface independent of which detector layer is active.
 
-- **Density threshold and the Growth Frame that did not trigger (historical reading; FVS-008 v1 also retired).**
+- **Density threshold and the Growth Frame that did not trigger.**
   GPT-5's response is growth-framed at the reading level (edge,
-  moat, runway, great move). At publish time the matcher's threshold for Growth Frame did not fire on this prescriptive career-advice response with mixed register; the FVS-008 v1 rule has since been retired alongside FVS-001. A reader should read this as "the detector's match (or non-match) is a conservative floor; other frames may apply, and current-generation detection will re-examine these via V4.2 LLM-judge."
+  moat, runway, great move). At publish time the matcher did not fire Growth Frame on this prescriptive career-advice response with mixed register. The FVS-008 detector is active in the current engine but still does not fire here: the response covers risks, and the Growth Frame signal requires risks to be absent, so the growth-content vocabulary alone is not sufficient; FVS-001 remains retired. A reader should read this as "the detector's match (or non-match) is a conservative floor; other frames may apply, and current-generation detection will re-examine these via V4.2 LLM-judge."
 
 - **Semantic vs structural.** The detector flagged stakeholders
   as covered because the response uses stakeholder vocabulary at

@@ -45,12 +45,6 @@
           "status": "draft"
         },
         {
-          "fvs_id": "FVS-001",
-          "name": "Frame Amplification",
-          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
-          "status": "draft"
-        },
-        {
           "fvs_id": "FVS-007",
           "name": "Failure Framing (absent)",
           "teaching_question": "What would have to be true for this analysis to be wrong?",
@@ -97,12 +91,6 @@
       "claims_unhedged": 11,
       "frame_matches": [
         {
-          "fvs_id": "FVS-001",
-          "name": "Frame Amplification",
-          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
-          "status": "draft"
-        },
-        {
           "fvs_id": "FVS-015",
           "name": "Efficiency Frame",
           "teaching_question": "Is efficiency the right lens here, or has it been applied by default?",
@@ -148,12 +136,6 @@
       "claims_hedged": 0,
       "claims_unhedged": 15,
       "frame_matches": [
-        {
-          "fvs_id": "FVS-001",
-          "name": "Frame Amplification",
-          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
-          "status": "draft"
-        },
         {
           "fvs_id": "FVS-015",
           "name": "Efficiency Frame",
@@ -292,14 +274,7 @@
       "claims_total": 10,
       "claims_hedged": 0,
       "claims_unhedged": 10,
-      "frame_matches": [
-        {
-          "fvs_id": "FVS-001",
-          "name": "Frame Amplification",
-          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
-          "status": "draft"
-        }
-      ]
+      "frame_matches": []
     },
     "xai_grok": {
       "model_id": "grok-4-1-fast-reasoning",
@@ -338,14 +313,7 @@
       "claims_total": 13,
       "claims_hedged": 0,
       "claims_unhedged": 13,
-      "frame_matches": [
-        {
-          "fvs_id": "FVS-001",
-          "name": "Frame Amplification",
-          "teaching_question": "Is the increasing detail evidence of quality, or evidence that the analysis is locked in one frame?",
-          "status": "draft"
-        }
-      ]
+      "frame_matches": []
     },
     "gemini": {
       "model_id": "gemini-2.5-flash",
@@ -563,5 +531,16 @@
         }
       ]
     }
+  },
+  "_refresh": {
+    "refreshed_at_utc": "2026-06-04",
+    "reason": "FVS-001 Frame Amplification v1 detection rule retired 2026-04-18 (frame_library.py: no _add for FVS-001; sentinel test test_retired_rule_does_not_fire). The original capture predated the retirement and listed FVS-001 in frame_matches for the responses where the v1 rule had fired. This refresh removes the stale FVS-001 entries so frame_matches matches the shipped engine. LLM response bytes are unchanged; only the stale detector-match entries were dropped.",
+    "entries_updated": [
+      "A_bitcoin/claude",
+      "A_bitcoin/openai_gpt",
+      "A_bitcoin/xai_grok",
+      "B_startup/openai_gpt",
+      "B_startup/xai_grok"
+    ]
   }
 }
