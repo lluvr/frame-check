@@ -62,14 +62,14 @@ def _build_display(doc_text: str) -> dict:
     dict suitable for compute_decision_readiness. Mirrors
     curate_corpus._build_display so both ingestion paths produce
     the same shape."""
-    from framecheck.framing import (
+    from framing import (
         detect_coverage,
         detect_voice,
         temporal_orientation,
         detect_epistemic_basis,
     )
-    from framecheck.frame_library import suggest_frames
-    from framecheck.claim_analysis import analyze_claims
+    from frame_library import suggest_frames
+    from claim_analysis import analyze_claims
 
     cov = detect_coverage(doc_text)
     voice = detect_voice(doc_text)
@@ -190,7 +190,7 @@ def main() -> int:
         )
         return 2
 
-    from framecheck.decision_readiness import compute_decision_readiness
+    from decision_readiness import compute_decision_readiness
     display = _build_display(doc_text)
     profile = compute_decision_readiness(display)
     if profile is None:
