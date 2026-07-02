@@ -6,6 +6,8 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-07-02
+
 ### Fixed
 
 - The divergence block no longer reports retired or meta-side (`n/a`)
