@@ -6,6 +6,29 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### Added
+
+- Coverage attribution now reports `markers_unattributed` on each coverage
+  dimension: markers that are counted but cannot be mapped to a sentence
+  (short sentences and headings the tokenizer drops) are surfaced so the
+  headline count and the cited `sentence_matches` reconcile, rather than
+  the difference vanishing silently. Additive output field.
+
+### Fixed
+
+- Temporal orientation no longer mislabels a document with tied past and
+  future markers as present-oriented at 0% present. The dominant tense is
+  now the actual most-frequent tense; the balanced flag (`dominant_margin`
+  == 0) conveys the tie.
+- Coverage analysis on punctuation-sparse input is no longer quadratic in
+  document length. The forward diminisher window is bounded before the
+  search runs, closing a denial-of-service vector on the MCP path
+  (documents up to 1,000,000 chars). Detector output is unchanged.
+- The cross-model comparison verdict no longer contradicts itself when two
+  responses share a frame at different signal densities. It now recognizes
+  the shared frame by identity instead of naming the same frame twice and
+  then asserting the two measure different things.
+
 ## [1.1.1] - 2026-06-02
 
 ### Fixed
