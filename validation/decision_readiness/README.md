@@ -160,9 +160,9 @@ python3 validation/decision_readiness/add_external_corpus_entry.py \
 For a transformation pair (e.g., LLM summary of an existing
 source), pass `--paired-with {source_slug}` and
 `--transformation-kind llm_summary`. For a peer group entry,
-pass `--peer-group {group_name}`. After adding paired or grouped
-entries, re-run `compute_pair_diffs.py` and/or
-`compute_peer_comparisons.py` so the comparison files refresh.
+pass `--peer-group {group_name}`. The bundled corpus ships the
+comparison files (`diff_with_*.json`, `peer_with_*.json`) for its
+existing entries.
 
 See `CORPUS_GENRE_GAPS.md` for which genres need entries and
 suggested public sources.

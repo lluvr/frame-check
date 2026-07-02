@@ -246,14 +246,8 @@ def main() -> int:
             f"  Paired with: {args.paired_with} "
             f"(transformation_kind={args.transformation_kind or 'unspecified'})"
         )
-        print(
-            "  Run compute_pair_diffs.py to generate the diff."
-        )
     if args.peer_group:
-        print(
-            f"  Peer group: {args.peer_group}. Run "
-            f"compute_peer_comparisons.py to update peer comparisons."
-        )
+        print(f"  Peer group: {args.peer_group}.")
     return 0
 
 
