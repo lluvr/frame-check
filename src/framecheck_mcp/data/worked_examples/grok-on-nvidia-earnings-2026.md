@@ -10,7 +10,7 @@ source_document_type: LLM summary of a public financial press release, analysed 
 ground_truth_source_url: https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-fourth-quarter-and-fiscal-2024
 ground_truth_source_title: NVIDIA Announces Financial Results for Fourth Quarter and Fiscal 2024 (press release, 2024-02-21)
 ground_truth_source_author: NVIDIA Corporation
-frames_detected: [FVS-008, FVS-002, FVS-001, FVS-007]
+frames_detected: [FVS-008, FVS-002, FVS-007]
 featured: true
 domain: finance
 verification_summary: "Layer 4 source_fidelity ratio 92 percent (23 of 25 numbers appear as literal digit substrings in the source). Two numbers did not literal-match, both fiscal-year labels that paraphrase 'a year ago' as 'Q4 of fiscal 2023'. Grounding decomposition: 80 percent grounded, 10 percent fabricated, 10 percent projection; scope_assessment regime saturated, so the source-fidelity rate is the authoritative reading on numerical claims and sentence-level grounding is supplemental."
@@ -58,7 +58,8 @@ signature from the deterministic detectors:
   promotional anyway, because the summary inherits the press
   release's own vocabulary ("record," "reached a record," "hit
   a record," "surging demand") and amplifies it. This is the
-  teaching point of FVS-001 and FVS-008 together: the opening
+  FVS-008 growth-frame detection together with the frame-amplification
+  reading (FVS-001, a frame concept whose v1 detector is retired): the opening
   frame of the source becomes the opening frame of the summary,
   and the summary extends rather than audits that frame.
 
@@ -122,8 +123,9 @@ to carry into the writeup.
 
 ## Frame detections
 
-Four frames from the Frame Vocabulary Standard flagged by the
-library matcher:
+Three frames flagged by the library matcher (FVS-008, FVS-002,
+FVS-007), plus a reader-level frame-amplification reading (FVS-001,
+whose v1 detector is retired):
 
 - [FVS-008 Growth Frame](/corpus/library/FVS-008.html). The
   document reasons within growth vocabulary (record, reached a
@@ -140,8 +142,9 @@ library matcher:
   The Grok summary is polished; the frame would be less
   convincing without the fluency.
 
-- [FVS-001 Frame Amplification](/corpus/library/FVS-001.html).
-  The summary opens with "Record Q4 Revenue of $22.1 Billion,
+- [FVS-001 Frame Amplification](/corpus/library/FVS-001.html)
+  (frame concept; its v1 detector is retired, so this is a reader-level
+  reading, not a deterministic match). The summary opens with "Record Q4 Revenue of $22.1 Billion,
   Up 265% Year-Over-Year" and every subsequent section extends
   that frame. The library entry asks: *"Is the increasing
   detail evidence of quality, or evidence that the analysis is
