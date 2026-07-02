@@ -1,8 +1,7 @@
 # Annotated peer-comparison interpretations
 
 Pedagogical material for reading the
-`corpus/{slug}/peer_with_{partner}.json` outputs produced by
-`compute_peer_comparisons.py`. Same convention as the diff
+`corpus/{slug}/peer_with_{partner}.json` outputs. Same convention as the diff
 examples and the rating examples: ILLUSTRATIVE, not consumed
 by any harness.
 

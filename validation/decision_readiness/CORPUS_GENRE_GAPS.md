@@ -91,9 +91,9 @@ already-curated source), add `--paired-with {source_slug}` and
 For a peer-group entry, add `--peer-group {group_name}`.
 
 The validation harness picks up new corpus entries on its next
-run; no registration step is needed. After adding a paired or
-peer-group entry, re-run `compute_pair_diffs.py` and/or
-`compute_peer_comparisons.py` so the comparison files refresh.
+run; no registration step is needed. The bundled corpus ships the
+comparison files (`diff_with_*.json`, `peer_with_*.json`) for its
+existing entries.
 
 If you prefer manual control over the directory structure, the
 fallback path is to create `corpus/{slug}/document.md` +

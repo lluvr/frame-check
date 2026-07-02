@@ -1,8 +1,7 @@
 # Annotated transformation-diff interpretations
 
 Pedagogical material for reading the
-`corpus/{slug}/diff_with_{partner}.json` outputs produced by
-`compute_pair_diffs.py`. Same convention as the rating
+`corpus/{slug}/diff_with_{partner}.json` outputs. Same convention as the rating
 examples: ILLUSTRATIVE annotations that show how to interpret
 the diff artifact, NOT consumed by any harness.
 
