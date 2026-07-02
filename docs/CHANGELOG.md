@@ -6,6 +6,8 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-07-02
+
 ### Added
 
 - Coverage attribution now reports `markers_unattributed` on each coverage
@@ -13,6 +15,14 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
   (short sentences and headings the tokenizer drops) are surfaced so the
   headline count and the cited `sentence_matches` reconcile, rather than
   the difference vanishing silently. Additive output field.
+
+### Changed
+
+- The bundled worked-example outputs and the frame-library detection index
+  were reconciled with the shipped detector state: the retired FVS-001
+  detection rule no longer appears in worked-example `frame_matches`, and
+  FVS-008 / FVS-015 are marked active. Bundled data only; the LLM response
+  text and the detector code are unchanged.
 
 ### Fixed
 
