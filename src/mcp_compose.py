@@ -365,6 +365,13 @@ def _build_coverage_v2(cov: dict[str, Any]) -> dict[str, Any]:
             dim_entry["distinct_sentences_detected"] = int(
                 cat_entry.get("distinct_sentences_detected", 0) or 0
             )
+            # Markers counted but not attributable to a sentence (short
+            # sentences/headings the tokenizer drops). Surfaced so an
+            # agent can see that count and the cited evidence reconcile
+            # rather than assuming sentence_matches is exhaustive.
+            dim_entry["markers_unattributed"] = int(
+                cat_entry.get("markers_unattributed", 0) or 0
+            )
         # Candidate-miss surfacing, when detect_coverage was called with
         # include_candidates=True. Only populated for not-detected
         # dimensions per framing.detect_coverage contract. Construct-

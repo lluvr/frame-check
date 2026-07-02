@@ -232,6 +232,15 @@ _DIMINISHER_PRE_WINDOW = 60  # chars before the match to check
 # does not suppress a genuine match in the current sentence.
 _SENTENCE_END_RE = re.compile(r'[.!?]\s')
 
+# Upper bound on the forward diminisher window. The scan for the
+# marker's sentence end must be capped before it runs: on punctuation-
+# sparse input an uncapped `text[m.end():]` slice plus full-text search
+# is O(n) per match, i.e. O(n^2) overall, which is a denial-of-service
+# vector on the MCP path (documents up to 1,000,000 chars). A diminisher
+# further than this from the marker is not diminishing it anyway. The
+# bound comfortably exceeds any real sentence length.
+_FORWARD_WINDOW_MAX = 1000
+
 # Direct negation that denies existence of the keyword's referent.
 # Separate from the diminisher because it uses a TIGHT window (20
 # chars) anchored to the match position ($). This catches "no
@@ -301,8 +310,10 @@ def _list_substantive_matches(
             pre_window = pre_window[last_sent + 2:]
         if _DIMINISHER_RE.search(pre_window):
             continue
-        # Check forward window for diminishing modifiers
-        post_text = text[m.end():]
+        # Check forward window for diminishing modifiers. Cap the slice
+        # before searching (see _FORWARD_WINDOW_MAX) so punctuation-sparse
+        # text cannot make this O(n) per match.
+        post_text = text[m.end():m.end() + _FORWARD_WINDOW_MAX]
         sent_end = _SENTENCE_END_RE.search(post_text)
         if sent_end:
             post_window = post_text[:sent_end.start()]
@@ -387,7 +398,9 @@ def _list_substantive_spans(
             pre_window = pre_window[last_sent + 2:]
         if _DIMINISHER_RE.search(pre_window):
             continue
-        post_text = text[m.end():]
+        # Cap the forward slice before searching (see _FORWARD_WINDOW_MAX)
+        # so punctuation-sparse text cannot make this O(n) per match.
+        post_text = text[m.end():m.end() + _FORWARD_WINDOW_MAX]
         sent_end = _SENTENCE_END_RE.search(post_text)
         if sent_end:
             post_window = post_text[:sent_end.start()]
@@ -728,9 +741,18 @@ def detect_coverage(
             assert sentence_spans is not None  # narrowed by include_attribution
             sentence_markers: dict[int, list[str]] = {}
             sentence_order: list[int] = []
+            # Some matched markers cannot be mapped to a sentence: the
+            # attribution tokenizer drops fragments of 30 chars or fewer,
+            # so a marker in a short sentence or a heading is counted but
+            # has no containing sentence here. Count these explicitly
+            # rather than dropping them silently, so `count` and the
+            # attribution evidence reconcile and a reader is not misled
+            # that sentence_matches is exhaustive.
+            unattributed = 0
             for marker, start, _end in spans:
                 s_idx = _offset_to_sentence_index(start, sentence_spans)
                 if s_idx is None:
+                    unattributed += 1
                     continue
                 if s_idx not in sentence_markers:
                     sentence_markers[s_idx] = []
@@ -753,6 +775,7 @@ def detect_coverage(
             cat_entry["sentence_matches"] = sentence_matches
             cat_entry["distinct_sentences_detected"] = total_distinct
             cat_entry["sentence_matches_truncated_at_20"] = total_distinct > 20
+            cat_entry["markers_unattributed"] = unattributed
 
         categories[cat] = cat_entry
         if cat_entry["covered"]:
@@ -906,10 +929,18 @@ def temporal_orientation(text: str) -> dict[str, Any]:
         past_pct = result["past"]
         present_pct = result["present"]
         future_pct = result["future"]
-    dominant = (
-        "past" if past > future and past > present
-        else "future" if future > past and future > present
-        else "present"
+    # Dominant tense is the one with the most markers. When two tenses
+    # tie for the lead the pick is arbitrary, and the balanced flag
+    # (dominant_margin == 0) signals the tie to the reader; the label
+    # must still name an actual leading tense, never a trailing one.
+    # A prior ternary fell through to "present" on any tie, which
+    # mislabeled a past/future-balanced document as present-oriented
+    # even when present markers were 0.
+    _tense_counts = {"past": past, "present": present, "future": future}
+    _tense_priority = {"present": 2, "past": 1, "future": 0}
+    dominant = max(
+        _tense_counts,
+        key=lambda k: (_tense_counts[k], _tense_priority[k]),
     )
 
     # Construct: dominant_margin is the lead over the second-place tense.

@@ -1165,10 +1165,23 @@ def _compose_compare_verdict(
         if shared_top:
             return f"Both responses operate in {_frame_label(shared_top)}."
 
-    # 3. Divergent top frames. Both sides have a frame and they
-    # differ. (frames_shared would have caught the matching case
-    # above.)
+    # 3. Both sides have a top frame. frames_shared only catches an
+    # exact match including the signal-density strings, so two responses
+    # in the same frame at different intensities (e.g. Growth Frame at
+    # 5.2/1Kw vs 3.1/1Kw) fall through to here. Compare by frame identity
+    # (FVS id, or name when ids are absent) first: same frame means the
+    # same lens even when density differs, and it would be self-
+    # contradictory to name the same frame twice and then say they
+    # measure different things. Only genuinely different top frames do.
     if a_top and b_top:
+        def _frame_key(f: dict[str, Any] | None) -> str:
+            f = f or {}
+            return (f.get("fvs_id") or "").strip() or (
+                f.get("name") or ""
+            ).strip().lower()
+
+        if _frame_key(a_top) and _frame_key(a_top) == _frame_key(b_top):
+            return f"Both responses operate in {_frame_label(a_top)}."
         return (
             f"{a_name} operates in {_frame_label(a_top)}; "
             f"{b_name} in {_frame_label(b_top)}. "

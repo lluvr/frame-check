@@ -558,6 +558,22 @@ class TestCoverageDetection:
             f"covered={result['covered']}, risk_count={result['categories']['risks']['count']}"
         )
 
+    def test_short_sentence_marker_is_reconciled_not_silently_dropped(self):
+        """A marker in a sentence too short for the attribution tokenizer
+        (<= 30 chars) is counted but has no containing sentence. It must
+        be reported via markers_unattributed so count and the attribution
+        evidence reconcile, rather than vanishing silently."""
+        doc = (
+            "Big risks here. "
+            + "This is a sufficiently long analytical sentence carrying "
+            "substantive content well beyond the tokenizer threshold. " * 3
+        )
+        result = detect_coverage(doc, include_attribution=True)
+        risks = result["categories"]["risks"]
+        assert risks["count"] >= 1
+        assert risks["markers_unattributed"] >= 1
+        assert risks["markers_unattributed"] <= risks["count"]
+
 
 # ================================================================
 # GROUP 3: TEMPORAL ORIENTATION
@@ -693,6 +709,25 @@ class TestTemporalOrientation:
             assert result["past_pct"] == 0
             assert result["present_pct"] == 0
             assert result["future_pct"] == 0
+
+    def test_past_future_tie_does_not_label_present(self):
+        """A document with tied past and future markers and zero present
+        markers must name one of the leading tenses, never fall through
+        to 'present' at 0% present. The balanced signal (dominant_margin
+        == 0) conveys the tie."""
+        doc = (
+            "## Retrospective and outlook\n\n"
+            "The company grew revenue and expanded margins last quarter.\n"
+            "It will launch new products and will scale into new markets "
+            "next year.\n"
+        )
+        result = temporal_orientation(doc)
+        assert result["present_pct"] == 0
+        assert result["dominant"] in ("past", "future"), (
+            f"tie mislabeled as {result['dominant']} at "
+            f"present={result['present_pct']}%"
+        )
+        assert result["dominant_margin"] == 0
 
 
 # ================================================================

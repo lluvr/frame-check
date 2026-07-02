@@ -693,6 +693,31 @@ class TestComposeCompareVerdict:
         assert "GPT-5" in result and "Risk Frame" in result
         assert "different things" in result
 
+    def test_same_frame_different_density_is_not_divergent(self) -> None:
+        # frames_shared is populated only on an exact match including the
+        # signal-density strings, so two responses in the same frame at
+        # different intensities fall through with frames_shared=None. The
+        # verdict must recognize the shared frame by identity rather than
+        # naming it twice and asserting they measure different things.
+        per_model = [
+            {"model_name": "GPT", "frames": [
+                {"name": "Growth Frame", "fvs_id": "FVS-008",
+                 "signal": "x (5.2/1Kw)"}]},
+            {"model_name": "Claude", "frames": [
+                {"name": "Growth Frame", "fvs_id": "FVS-008",
+                 "signal": "y (3.1/1Kw)"}]},
+        ]
+        result = _compose_compare_verdict(
+            verbatim_overlap=None,
+            frames_shared=None,
+            frames_per_model=per_model,
+            agreed_count=0,
+            disagreement_count=0,
+            subject="Both responses",
+        )
+        assert "Both responses operate in Growth Frame" in result
+        assert "different things" not in result
+
     def test_one_sided_frame(self) -> None:
         per_model = [
             {"model_name": "A", "frames": [{"name": "Growth Frame", "fvs_id": "FVS-008"}]},
