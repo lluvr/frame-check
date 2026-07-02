@@ -73,7 +73,7 @@ DIMENSIONS = [
 # the bidirectional canon graph tests in test_canon_graph_consistency.py.
 sys.path.insert(0, str(REPO_ROOT))
 try:
-    from framecheck.decision_readiness import (
+    from decision_readiness import (
         DIMENSION_LIBRARY_ENTRIES,
         library_entry_ref,
         corpus_entry_ref,
