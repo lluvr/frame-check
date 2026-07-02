@@ -51,10 +51,14 @@ bash scripts/canon_audit.sh   # rc=0
 gitleaks detect --no-banner   # no leaks
 python3 -m pytest -q          # all green
 
-# 3. Bump version in two places.
+# 3. Bump version in three places.
 #    - pyproject.toml [project] version
 #    - mcp_server.py SERVER_VERSION
-# These must match exactly; the CI version-sync gate enforces this.
+#    - server.json  version  AND  packages[0].version
+# pyproject and SERVER_VERSION must match exactly (the CI version-sync
+# gate enforces this). server.json carries the same release version so
+# the official MCP registry listing tracks the published package; bump
+# it here, then re-publish the registry entry after the tag (see below).
 
 # 4. Update CHANGELOG.md.
 #    Move the [Unreleased] block to [1.0.13] - YYYY-MM-DD with a
