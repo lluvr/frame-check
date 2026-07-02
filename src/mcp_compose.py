@@ -962,6 +962,14 @@ _CLUSTER_MIN_DOCUMENT_WORDS = 100
 # Tier order for cluster signal_strength aggregation.
 _CLUSTER_TIER_ORDER = {"high": 0, "medium": 1, "low": 2}
 
+# Detection states that mean a frame cannot fire on a document: retired
+# (rule removed after validation) and n/a (meta-side frame with no
+# text-side detector). Frames in these states are excluded from the
+# divergence absent_frames set so agents are not shown phantom absences.
+# Values match INDEX.md's detection column via
+# frame_library_index.parse_detection_states.
+_NON_ACTIVE_DETECTION_STATES = frozenset({"retired", "n/a"})
+
 
 def _build_absence_clusters(
     absent_records: list[dict[str, Any]],
@@ -1185,11 +1193,23 @@ def _build_divergence_block(
     # so each absent frame's tier can be computed in O(1).
     from decision_readiness import dimensions_affecting
 
+    # Detection state per frame (from data/frame_library/INDEX.md), read
+    # once. A frame whose detection is retired or meta-side (n/a) can
+    # never fire on a document, so reporting it as an "absent frame" is a
+    # phantom absence: the agent is told a frame is missing that could
+    # not have been present. Such frames stay available as library
+    # vocabulary via the resources; they are just excluded from the
+    # document-level divergence set below.
+    from frame_library_index import parse_detection_states
+    _detection_states = parse_detection_states()
+
     absent_records: list[dict[str, Any]] = []
     provisional_count = 0
     tier_counts = {"high": 0, "medium": 0, "low": 0}
     for fvs_id, title, md_path, version in library:
         if fvs_id in present_ids:
+            continue
+        if _detection_states.get(fvs_id) in _NON_ACTIVE_DETECTION_STATES:
             continue
 
         # Contract §5.3: no frames currently flagged provisional under

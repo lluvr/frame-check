@@ -366,13 +366,22 @@ def test_claim_extraction_matches_document_density():
 
 def test_divergence_block_present_with_absences():
     """Divergence block fires by default per FRAME_DIVERGENCE_CONTRACT_v1
-    c1.0 and surfaces absent frames."""
+    c1.0 and surfaces absent frames. Only active-detection frames appear
+    as absences: a retired or meta-side (n/a) frame cannot fire, so it is
+    not reported as a phantom absence."""
     p = mcp_server.build_epistemic_payload(DOC)
     d = p.get("divergence")
     check(d is not None, "divergence block present by default")
     absent = d.get("absent_frames", [])
-    check(len(absent) >= 10,
-          f"divergence.absent_frames count >= 10; got {len(absent)}")
+    check(len(absent) >= 5,
+          f"divergence.absent_frames surfaces absences; got {len(absent)}")
+    # No retired or meta-side frames leak in as phantom absences.
+    from frame_library_index import parse_detection_states
+    states = parse_detection_states()
+    leaked = [f["frame_id"] for f in absent
+              if states.get(f["frame_id"]) in ("retired", "n/a")]
+    check(not leaked,
+          f"absent_frames must exclude retired/meta-side frames; leaked {leaked}")
 
 
 def test_provenance_carries_iso_timestamp():

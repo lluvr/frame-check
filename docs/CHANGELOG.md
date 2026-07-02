@@ -6,6 +6,21 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### Fixed
+
+- The divergence block no longer reports retired or meta-side (`n/a`)
+  frames as `absent_frames`. A retired detector or a meta-side frame with
+  no text-side rule can never fire on a document, so surfacing it as a
+  document-level absence was a phantom absence an agent could not act on
+  (e.g. FVS-001, retired, previously appeared with `signal_strength:
+  high`). Such frames remain available as library vocabulary via the
+  resources; only active-detection frames now appear as absences.
+- Re-synced the packaged data staged under `framecheck_mcp/` with the
+  canonical `data/` tree (frame-library detection index and worked-example
+  outputs). The build already re-stages fresh, so shipped wheels were
+  correct; this fixes the stale committed copies that dev-tree reads and
+  a staging-skipped build would otherwise see.
+
 ## [1.1.2] - 2026-07-02
 
 ### Added
