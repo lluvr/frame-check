@@ -153,10 +153,8 @@ the current keys migrate before the v2.0 cut.
 
 ### Rename the technical "canon" vocabulary
 
-The canon-as-product *positioning* was removed in 1.1.0 (the
-"methodology canon" framing and the dead lodestone pointers). What
-remains is "canon" used as load-bearing technical vocabulary, which
-cannot be renamed without breaking adopters:
+The 1.x line keeps "canon" as load-bearing technical vocabulary,
+which cannot be renamed without breaking adopters:
 
 - the frame-status taxonomy `canon / draft / aspirational / retired`
   (parsed by `frame_library_index.py`, surfaced in citation blocks);
