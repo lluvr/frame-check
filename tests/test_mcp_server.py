@@ -2045,7 +2045,7 @@ def test_saturated_source_steers_guidance_to_layer_4():
     """A number-dense source produces the saturated regime; the
     agent_guidance.scope_regime_guidance must then point the agent
     at Layer 4 source_fidelity for numerical claims. This is the
-    epistemic-honesty propagation the canon-play positioning relies
+    epistemic-honesty propagation the guidance contract relies
     on: Frame Check does not silently let an agent quote the wrong
     layer on dense sources."""
     print("=== saturated regime -> guidance cites Layer 4 ===")
