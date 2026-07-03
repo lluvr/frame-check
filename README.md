@@ -166,6 +166,7 @@ examples). The full inventory:
 - `data/frame_library/`: 20-entry Frame Vocabulary Standard catalog
 - `data/worked_examples/`: published worked examples with multi-LLM comparisons + per-document Frame Check analysis (6 entries)
 - The methodology behind the Frame Vocabulary Standard is documented at frame.clarethium.com/corpus/methodology
+- An introduction to Frame Check, covering the four analysis layers with examples of its output: [blog.clarethium.com/frame-check](https://blog.clarethium.com/frame-check)
 
 ## Running tests
 
