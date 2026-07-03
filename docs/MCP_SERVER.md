@@ -1200,7 +1200,7 @@ detection scope; consumers will not see it in `absent_frames`.
 The caller's agent model performs the rendering per the preference
 and the `how_to_render_divergence` guidance.
 
-## Scope regime (canon-play construct honesty)
+## Scope regime (construct honesty)
 
 Layer 11's primary P-detection signal degrades on number-dense sources.
 Monte Carlo measurement: false-positive rate is ~4% with 2 source numbers,

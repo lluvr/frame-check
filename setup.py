@@ -74,15 +74,13 @@ _DATA_CARRIERS = [
     # FRAME_DIVERGENCE_CONTRACT_v1.md is the divergence-block interface
     # contract (load-bearing for adopter integration). Stays.
     #
-    # The methodology paper, the frame-divergence specification draft,
-    # and the v4.2 gap inventory are not bundled in the wheel. They
-    # are part of the public methodology canon hosted separately at
-    # github.com/Clarethium/lodestone and at
+    # Methodology documentation is not bundled in the wheel; the
+    # published methodology pages live at
     # frame.clarethium.com/corpus/methodology/. mcp_resources.py
-    # registers no URIs for those paths when their files are absent
-    # from the wheel layout (the file-presence gate handles it). The
-    # conformance driver's expected resource count tracks the
-    # currently-bundled subset.
+    # registers no URIs for unbundled paths when their files are
+    # absent from the wheel layout (the file-presence gate handles
+    # it). The conformance driver's expected resource count tracks
+    # the currently-bundled subset.
     ("docs/MCP_SERVER.md", "MCP_SERVER.md"),
     ("docs/FRAME_DIVERGENCE_CONTRACT_v1.md", "FRAME_DIVERGENCE_CONTRACT_v1.md"),
     ("pipeline_version.txt", "pipeline_version.txt"),

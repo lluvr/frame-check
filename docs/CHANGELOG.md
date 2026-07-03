@@ -79,7 +79,7 @@ no code changes.
 The canonical home is now `github.com/lluvr/frame-check` (public),
 transferred from `github.com/Clarethium/frame-check`. GitHub redirects
 the old location. All in-repo URLs (Project-URLs, badges, citations,
-docs) now point at the new home; dead `Clarethium/lodestone` pointers
+docs) now point at the new home; dead methodology-canon pointers
 were repointed or removed.
 
 ### Packaging: src-layout
@@ -779,9 +779,8 @@ The 0.9.x stabilization arc closes.
   30/30 PASS at the v1.0.0 cut.
 - **Methodology citation paths.** `CITATION.cff` resolves to the
   Zenodo concept-DOI ([10.5281/zenodo.19888849](https://doi.org/10.5281/zenodo.19888849));
-  the methodology canon at `Clarethium/lodestone` is reachable; the
-  README detector-F1 number cites a study artifact reproducible from
-  corpus + harness.
+  the README detector-F1 number cites a study artifact reproducible
+  from corpus + harness.
 - **CI-driven publish.** v1.0.0 is the first release cut entirely
   from CI on this repository alone (see "CI-driven publish from
   this repository" below).
@@ -872,7 +871,7 @@ Five publish-workflow defects are fixed and held, four from the
 
 Closes the cleanup arc that began with 0.9.0 retiring the in-tree methodology document and the engine gap-inventory file from the wheel. Several adopter-facing surfaces still cited those documents as load-bearing references and the publish-time CI gate still required one of them. Adopters reading the citable artifacts found dead links and false claims; the publish workflow failed at every tag push.
 
-- `CITATION.cff`: drop the dead URL pointing at a methodology file no longer in the public repo, and the false "bundled with the wheel" claim. Point the methodology citation at `github.com/Clarethium/lodestone` (the published methodology canon under CC-BY-4.0).
+- `CITATION.cff`: drop the dead URL pointing at a methodology file no longer in the public repo, and the false "bundled with the wheel" claim. Point the methodology citation at the published methodology canon (CC-BY-4.0).
 - `.github/workflows/publish.yml`: drop the methodology file from the required-files post-build gate. The wheel has not bundled it since 0.9.0; the gate had been failing CI on every tag push (v0.9.1, v0.9.2, v0.9.3 all failed at this step).
 - `schemas/attribution-1.0.0.json`, `mcp_server.py`, `tests/test_mcp_server.py`: drop the "documented in §9.1" citations of the retired methodology document. The attribution schema's authoring home is the JSON file itself; its versioning policy is documented inline.
 - `docs/FRAME_DIVERGENCE_CONTRACT_v1.md`: drop the versioned methodology resource URI (no implementation; the methodology resource auto-deregisters when the file is absent) and the engine gap-inventory citation in the engine-manifest description.
@@ -894,7 +893,7 @@ The 0.9.3 lift surfaced a parallel gap: wheel-bundled FVS-NNN library cards stil
 
 ### README adopter-pass
 
-`README.md` is rewritten to describe the actual 0.9.x wheel content. The Documentation section lists what ships in the wheel today (`MCP_SERVER.md`, `FRAME_DIVERGENCE_CONTRACT_v1.md`, the FVS catalog under `data/frame_library/`, `data/worked_examples/`, governance / contributing / security / citation files) and points at `Clarethium/lodestone` for methodology canon. The repo-only web-app section is removed; the wheel's `METADATA` field is generated from `README.md`, so the README is part of the adopter surface.
+`README.md` is rewritten to describe the actual 0.9.x wheel content. The Documentation section lists what ships in the wheel today (`MCP_SERVER.md`, `FRAME_DIVERGENCE_CONTRACT_v1.md`, the FVS catalog under `data/frame_library/`, `data/worked_examples/`, governance / contributing / security / citation files). The repo-only web-app section is removed; the wheel's `METADATA` field is generated from `README.md`, so the README is part of the adopter surface.
 
 ### Wire-text rename in candidate surfacing
 
@@ -946,7 +945,7 @@ This release replaces 0.9.0 (which itself superseded the 0.8.x line) as the firs
 
 ### Wheel: scope unchanged from 0.9.0
 
-The wheel bundles the MCP server contract (`docs/MCP_SERVER.md`), the Frame Divergence interface contract (`docs/FRAME_DIVERGENCE_CONTRACT_v1.md`), the FVS catalog (`data/frame_library/`), and the worked-examples corpus. The MCP resource registry auto-deregisters resources whose underlying files are absent. The Frame Vocabulary Standard methodology canon lives at `github.com/Clarethium/lodestone`.
+The wheel bundles the MCP server contract (`docs/MCP_SERVER.md`), the Frame Divergence interface contract (`docs/FRAME_DIVERGENCE_CONTRACT_v1.md`), the FVS catalog (`data/frame_library/`), and the worked-examples corpus. The MCP resource registry auto-deregisters resources whose underlying files are absent.
 
 ### Engine: divergence catalog fallback
 

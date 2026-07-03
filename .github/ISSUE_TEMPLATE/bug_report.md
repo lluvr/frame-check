@@ -51,7 +51,3 @@ distinguish:
       (the detection is right but the portrait prose misleads).
 - [ ] The measurement's candidate-miss surfacing is noisy (a
       candidate sentence surfaces that is clearly irrelevant).
-
-See the methodology canon at github.com/Clarethium/lodestone for the
-distinction between a detection error and a framing error in the
-reader-facing prose.
