@@ -88,7 +88,7 @@ jobs:
       id-token: write  # OIDC for sigstore attestation
       attestations: write  # actions/attest-build-provenance write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0  # Full history for git-sha baking
 
@@ -355,10 +355,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-          # actions/checkout@v6 fetches refs but not tag OBJECTS by
+          # actions/checkout@v7 fetches refs but not tag OBJECTS by
           # default. Without ``fetch-tags: true``, the runner sees an
           # annotated tag as if it were lightweight and the Extract
           # release notes step's %(contents) format falls through to
@@ -374,7 +374,7 @@ jobs:
           name: dist
           path: dist/
       - name: Re-fetch annotated tag (work around actions/checkout overwrite)
-        # actions/checkout@v6 with ``fetch-tags: true`` (set above)
+        # actions/checkout@v7 with ``fetch-tags: true`` (set above)
         # does an initial ``+refs/tags/*:refs/tags/*`` fetch that gets
         # the annotated tag object, but its SECOND fetch
         # ``+<commit-sha>:refs/tags/<tag>`` (passed ``--no-tags``)
