@@ -289,7 +289,7 @@ def _format_md_report(payload: dict) -> str:
         "data (e.g., dimension non-comparable in aggregate, OR "
         "fewer than 3 members rated)",
         "",
-        f"## Agreement rate",
+        "## Agreement rate",
         "",
         f"- Agree:           **{counts['agree']}** of {n_total} cells",
         f"- Disagree:        {counts['disagree']} of {n_total}",

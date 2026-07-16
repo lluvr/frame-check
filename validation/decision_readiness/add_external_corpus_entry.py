@@ -195,9 +195,9 @@ def main() -> int:
     profile = compute_decision_readiness(display)
     if profile is None:
         print(
-            f"ERROR: decision_readiness returned None; the text "
-            f"may not produce a meaningful profile (too short or "
-            f"missing structural signals).",
+            "ERROR: decision_readiness returned None; the text "
+            "may not produce a meaningful profile (too short or "
+            "missing structural signals).",
             file=sys.stderr,
         )
         return 1

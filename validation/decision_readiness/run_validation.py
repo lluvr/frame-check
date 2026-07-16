@@ -24,6 +24,7 @@ imports them lazily so the empty-case run does not require them.
 """
 
 import json
+import math
 import sys
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -164,7 +165,7 @@ def _expert_mean(ratings_for_doc: dict, dimension: str) -> Optional[float]:
     if no rater provided a numeric score for the dimension.
     """
     scores = []
-    for rater_id, rating in ratings_for_doc.items():
+    for _rater_id, rating in ratings_for_doc.items():
         per_dim = rating.get("ratings") or {}
         v = per_dim.get(dimension)
         if isinstance(v, (int, float)):
@@ -192,7 +193,7 @@ def _spearman(xs: list, ys: list) -> Optional[float]:
         )
         return None
     rho, _p = spearmanr(xs, ys)
-    if rho != rho:  # NaN check (constant input)
+    if math.isnan(rho):  # NaN check (constant input)
         return None
     return float(rho)
 
