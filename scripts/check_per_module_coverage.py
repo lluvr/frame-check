@@ -73,11 +73,11 @@ def main() -> int:
     for module, floor in FLOORS.items():
         # Resolve to the actual file path on disk so coverage.py
         # can analyze it. We assume the script runs from repo root
-        # where the seven modules sit.
-        path = Path(module)
+        # where src/ holds the seven modules.
+        path = Path("src") / module
         if not path.exists():
             print(
-                f"{module:<30} ERROR: file not found at repo root",
+                f"{module:<30} ERROR: file not found under src/",
                 file=sys.stderr,
             )
             failures.append((module, 0.0, floor))

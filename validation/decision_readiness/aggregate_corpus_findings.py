@@ -42,7 +42,6 @@ underlying data. The date prefix gives chronological order.
 
 import hashlib
 import json
-import re
 import sys
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
@@ -404,7 +403,7 @@ def _aggregate_outlier_counts_by_llm(per_group_outliers: dict) -> dict:
     appearances_per_llm = Counter()
     non_comparable_per_llm = defaultdict(lambda: {dim: 0 for dim in DIMENSIONS})
 
-    for group_name, dims in per_group_outliers.items():
+    for _group_name, dims in per_group_outliers.items():
         # Determine the LLMs in this group via any dimension's
         # values_by_member (they're all the same set).
         group_members = set()
@@ -462,7 +461,7 @@ def _aggregate_peer_findings(peer_files):
     """
     seen_pairs = set()
     pair_records = []
-    for owner_slug, file_path in peer_files:
+    for _owner_slug, file_path in peer_files:
         try:
             data = json.loads(file_path.read_text(encoding="utf-8"))
         except Exception:
@@ -564,7 +563,7 @@ def _collect_llm_fired_patterns(
     """
     fired_counts = Counter()
     docs_examined = 0
-    for group_name, dims in per_group_outliers.items():
+    for _group_name, dims in per_group_outliers.items():
         dim_data = dims.get(dim) or {}
         if dim_data.get("non_comparable"):
             continue
@@ -735,7 +734,7 @@ def _aggregate_diff_findings(diff_files):
     """
     seen_pairs = set()
     pair_records = []
-    for owner_slug, file_path in diff_files:
+    for _owner_slug, file_path in diff_files:
         try:
             data = json.loads(file_path.read_text(encoding="utf-8"))
         except Exception:

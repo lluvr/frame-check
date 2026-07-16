@@ -15,7 +15,6 @@ en-dash is found outside the allowlist below.
 Allowlist entries are file-path-suffix-matched plus a substring match
 against the offending line. Both must match for the line to be allowed.
 """
-import re
 import sys
 
 # (file_suffix, line_substring): if BOTH match the offending line is
@@ -69,7 +68,8 @@ def main() -> int:
         if path.startswith("corpus_site/") or "/corpus_site/" in path:
             continue
         try:
-            text = open(path, encoding="utf-8").read()
+            with open(path, encoding="utf-8") as fh:
+                text = fh.read()
         except (OSError, UnicodeDecodeError):
             # Binary or unreadable file. Skip.
             continue
