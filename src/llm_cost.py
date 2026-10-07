@@ -147,7 +147,7 @@ def extract_grok_usage(response):
 
 
 def extract_proxy_cost_usd(response):
-    """Read cost_in_usd_ticks from a LLM-proxy response, if present.
+    """Read cost_in_usd_ticks from an LLM-proxy response, if present.
 
     LLM proxies set `cost_in_usd_ticks` on the OpenAI-compatible
     response.usage object as an integer count of nano-dollars

@@ -15,10 +15,9 @@ title = "Frame Check gitleaks configuration"
 # zero (an unrelated 32-char hex string elsewhere in the repo will
 # not match because it is not preceded by `FRED_API_KEY=`).
 #
-# The 2026-04-29 leak audit (LEAKAGE_AUDIT_v1.md) motivated these rules. See also the
-# `.gitleaksignore` file for the one allowlisted historical leak
-# location (which has been scrubbed via filter-repo as of the same
-# audit date) and the deliberate test fixtures in detection tests.
+# These rules make a committed provider key detectable at commit
+# time. The deliberate test fixtures in the detection tests are
+# allowlisted below.
 
 [extend]
 # Inherit gitleaks' built-in ruleset (GitHub PATs, AWS, Stripe,

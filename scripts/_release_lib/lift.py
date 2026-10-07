@@ -810,12 +810,19 @@ def main(argv: list[str] | None = None) -> int:
     # in source comments and adopter-facing markdown) exactly because
     # that class lacked any wheel-content canon audit at lift time.
     step(15, "Canon audit on wheel content")
-    audit_script = Path.home() / ".config/clarethium-tools/canon_audit.sh"
+    # The repo's own copy of the audit script is the default. An
+    # override path can be given through CANON_AUDIT_SCRIPT.
+    audit_script = Path(
+        os.environ.get(
+            "CANON_AUDIT_SCRIPT",
+            Path(__file__).resolve().parents[2] / "scripts" / "canon_audit.sh",
+        )
+    )
     if not audit_script.exists():
-        # Internal master is not installed. Soft-warn; the
-        # bdist_wheel hook is the primary defense, and the public-extract
-        # path's canon audit covers the public mirror surface. The
-        # gate is informational without the script.
+        # No audit script found. Soft-warn; the bdist_wheel hook is
+        # the primary defense, and the public-extract path's canon
+        # audit covers the public mirror surface. The gate is
+        # informational without the script.
         print(
             f"  canon_audit.sh not found at {audit_script}; skipping "
             f"wheel-content audit (informational only)"

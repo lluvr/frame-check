@@ -68,7 +68,7 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [1.1.0] - 2026-06-02
 
-Repository, packaging, and positioning release. **No breaking changes:**
+Repository, packaging, and documentation release. **No breaking changes:**
 the wheel's import surface (`import mcp_server`, the `frame-check-mcp`
 entry point), the MCP tool/resource surface, and every wire-payload
 field name and structure are unchanged. Adopters on 1.0.x upgrade with
@@ -100,7 +100,7 @@ results that back the `aggregate`/`corpus` MCP resources are retained.
 `agent_guidance` strings dropped the "sovereignty" framing (now plain
 reader-judgment language), the "Phase 2 / pre-registered validation"
 framing (status stays `experimental`), and the methodology-as-canon
-positioning. Field names, structure, and values are unchanged; only
+wording. Field names, structure, and values are unchanged; only
 descriptive text changed.
 
 ### Documentation
@@ -769,7 +769,7 @@ The 0.9.x stabilization arc closes.
   continue to pass.
 - **Adopter-contract test coverage.** `tests/test_cookbook_recipes.py`
   exercises the cookbook claims and the README "Why this and not
-  just an LLM" positioning claims against the running API at PR
+  just an LLM" comparison claims against the running API at PR
   time.
 - **Conformance driver gate.** `scripts/mcp_conformance_driver.py`
   speaks JSON-RPC over stdio to the freshly-built wheel on every tag
