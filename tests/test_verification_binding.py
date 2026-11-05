@@ -1002,3 +1002,68 @@ def test_a_monthly_rate_is_not_compared_with_an_annual_average(monkeypatch):
 def test_a_number_inside_a_name_is_not_the_claim(sentence, numbers, primary):
     d = decompose_claim({"sentence": sentence, "numbers": numbers})
     assert d.raw_value == primary
+
+
+# ── Names and units ─────────────────────────────────────────────────
+
+@pytest.mark.parametrize("sentence,subject", [
+    (("While Kraft Heinz's net sales slipped to $25.8 billion in fiscal 2024, "
+     "it stayed profitable."), "Kraft Heinz"),
+    ("Although Apple's revenue fell, margins held.", "Apple"),
+    ("The Walt Disney Company's revenue rose.", "Walt Disney Company"),
+])
+def test_a_leading_word_is_not_part_of_a_possessive_name(sentence, subject):
+    assert sn.extract_subject("", sentence) == subject
+
+
+@pytest.mark.parametrize("sentence", [
+    "The Nile River is about 6,650 kilometers long.",
+    "The Rhine runs for 1,230 kilometres.",
+    "The route is 50 kilometer long.",
+])
+def test_kilometres_are_a_distance(sentence):
+    d = decompose_claim({"sentence": sentence, "numbers": ["1"]})
+    assert d.unit == "distance"
+
+
+def test_feet_cannot_confirm_a_claim_in_kilometres():
+    sentence = "The Nile River is about 6,600 kilometers long."
+    passage = "The river is long, reaching 2 kilometers (6,600 ft) deep here."
+    d = _decomp(sentence, 6600, metric="length", unit="distance",
+                subject="Nile River")
+    assert _match_in_text(passage, 6600, sentence, decomp=d)[0] is None
+
+
+# End to end this time: extraction splits numbers into separate claims, so a
+# guard inside decompose_claim never sees the two together.
+@pytest.mark.parametrize("text,kept,dropped", [
+    ("Taipei 101 stands about 620 meters tall.", "620", "101"),
+    ("The Boeing 747 has a wingspan of 68 meters.", "68", "747"),
+    ("Windows 11 reached 500 million users last year.", "500", "11"),
+])
+def test_extraction_drops_a_number_inside_a_name(text, kept, dropped):
+    numbers = [
+        str(n) for c in analyze_claims(text)["claims"] for n in c["numbers"]
+    ]
+    assert any(kept in n for n in numbers), numbers
+    assert not any(n.strip() == dropped for n in numbers), numbers
+
+
+@pytest.mark.parametrize("text,kept", [
+    ("Only 101 people attended the event in the city hall.", "101"),
+    ("Apple reported 2023 revenue of $383.3 billion.", "383.3"),
+    ("Taipei 101 is a tower in Taiwan.", "101"),
+])
+def test_extraction_keeps_real_numbers(text, kept):
+    numbers = [
+        str(n) for c in analyze_claims(text)["claims"] for n in c["numbers"]
+    ]
+    assert any(kept in n for n in numbers), numbers
+
+
+def test_extraction_keeps_a_number_after_an_opening_word():
+    text = "About 500 people attended in 2023, and 120 stayed on afterwards."
+    numbers = [
+        str(n) for c in analyze_claims(text)["claims"] for n in c["numbers"]
+    ]
+    assert any("500" in n for n in numbers), numbers

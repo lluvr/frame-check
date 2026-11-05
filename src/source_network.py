@@ -279,6 +279,11 @@ _PROPER_NOUN_RE = re.compile(
 _POSSESSIVE_SUBJECT_RE = re.compile(
     r"\b((?:[A-Z][\w&.-]*\s+){0,3}[A-Z][\w&.-]*)['\u2019]s\b"
 )
+_LEADING_WORD_RE = re.compile(
+    r'^(?:While|Although|Though|After|Before|As|When|Since|Because|With|Despite|'
+    r'If|In|On|At|For|From|By|Under|Over|But|And|Yet|So|Meanwhile|According|'
+    r'The|A|An)\s+'
+)
 _CALENDAR_WORDS = frozenset({
     "January", "February", "March", "April", "May", "June", "July", "August",
     "September", "October", "November", "December", "Monday", "Tuesday",
@@ -496,9 +501,11 @@ def extract_subject(heading, sentence, topic="", doc_text="", num_raw="",
     # country inside it: "Chipotle Mexican Grill's revenue" is not Mexico.
     if sentence:
         possessive = _POSSESSIVE_SUBJECT_RE.search(sentence)
-        if possessive and is_likely_entity(possessive.group(1)):
-            name = possessive.group(1)
-            if not _COUNTRY_NAMES_RE.fullmatch(name):
+        if possessive:
+            # A capitalized opening word is not part of the name: "While
+            # Kraft Heinz's sales", "The Walt Disney Company's revenue".
+            name = _LEADING_WORD_RE.sub('', possessive.group(1))
+            if is_likely_entity(name) and not _COUNTRY_NAMES_RE.fullmatch(name):
                 return name
 
     # 2. Country names in the sentence (specific pattern, high confidence)
@@ -1102,7 +1109,7 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
         unit = "currency"
     elif raw_value.endswith("%") or "percent" in sentence.lower():
         unit = "percent"
-    elif re.search(r'\b(km|km2|miles?|meters?|metres?|m|ft|feet)\b', sentence, re.IGNORECASE):
+    elif re.search(r'\b(km|km2|kilomet(?:er|re)s?|miles?|meters?|metres?|m|ft|feet)\b', sentence, re.IGNORECASE):
         unit = "distance"
     elif re.search(r'\b(kg|kilograms?|tonnes?|grams?|lbs?|pounds?)\b', sentence, re.IGNORECASE):
         unit = "mass"

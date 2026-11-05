@@ -98,6 +98,35 @@ CANDIDATE_HEDGE_RE = re.compile(
 _SENTENCE_END_RE = re.compile(r'[.!?](?=\s+[A-Z(\[$"\d]|\s*$)|\n')
 
 
+# Capitalized words a real count can follow: "About 500 people".
+_NOT_A_NAME_WORD = frozenset({
+    "About", "Around", "Roughly", "Approximately", "Nearly", "Almost", "Over",
+    "Under", "Only", "Just", "Some", "More", "Less", "Fewer", "Up", "At", "By",
+    "In", "On", "For", "From", "To", "The", "After", "Before", "Since", "With",
+    "Within", "Of", "FY", "Q1", "Q2", "Q3", "Q4",
+})
+
+
+def _is_part_of_a_name(doc_text: str, raw_value: Any) -> bool:
+    """True for the 101 in "Taipei 101 stands 620 meters tall".
+
+    Needs another number in the sentence, since a lone number is all the text
+    offers to check. Checking the 101 found it in the building's own article
+    and confirmed a false height.
+    """
+    raw = str(raw_value).strip()
+    if not raw.isdigit():
+        return False
+    found = re.search(
+        r'\b([A-Z][a-zA-Z]+)\s+' + re.escape(raw) + r'\b(?![.,]\d)', doc_text,
+    )
+    if not found or found.group(1) in _NOT_A_NAME_WORD:
+        return False
+    sentence = _own_sentence(doc_text, raw) or doc_text
+    others = re.sub(r'(?<!\d)' + re.escape(raw) + r'(?!\d)', '', sentence)
+    return bool(re.search(r'\d', others))
+
+
 def _own_sentence(doc_text: str, raw_value: str, max_chars: int = 240) -> str:
     """The sentence or line holding raw_value, or "" if it cannot be found.
 
@@ -181,7 +210,7 @@ def analyze_claims(doc_text: str) -> dict[str, Any]:
                 r'\d+(?:\.\d+)?\s*[-\u2013]\s*' + re.escape(raw),
                 ctx
             ))
-            if is_range_bound:
+            if is_range_bound or _is_part_of_a_name(doc_text, raw):
                 continue
             uncovered_numbers.append(n)
             claimed_values.add(v_norm)  # Prevent duplicates within uncovered

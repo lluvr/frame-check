@@ -13,18 +13,19 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 - Source-network verdicts, so results can change again from 1.2.0. A country
   followed by Canal, Bridge, Strait and similar stays in the subject's name.
   "Runs for" and "stretches for" count as lengths. Reference prose must mention
-  the claimed year to confirm a dollar figure. Within one claim, a number
-  following a capitalized word is not the value when another number exists. SEC
-  does not contradict a sentence with two figures and two metrics, and World
-  Bank does not compare a named month with an annual figure.
+  the claimed year to confirm a dollar figure. SEC does not contradict a sentence
+  with two figures and two metrics, and World Bank does not compare a named month
+  with an annual figure.
+- Extraction drops a bare number after a capitalized name when its sentence has
+  another number, so "Taipei 101 stands about 620 meters tall" is checked on the
+  620 and not the 101. This also removes citation-style numbers such as a working
+  paper's, so claim counts can fall on existing documents.
+- A capitalized opening word is not part of a possessive subject, so "While Kraft
+  Heinz's sales" names Kraft Heinz. "Kilometers" and "kilometres" count as
+  distance, so a figure in feet cannot confirm a claim in kilometers.
 - World Bank area data can confirm a claim but no longer contradicts one, which
   reverses the area contradictions added in 1.2.0. The series reported Canada at
   15.6M square km against a true 9.98M.
-
-### Known issues
-
-- A number in a name can still be extracted as its own claim and confirm on the
-  name: "Taipei 101 stands about 620 meters tall" comes back verified on the 101.
 
 ### Added
 
