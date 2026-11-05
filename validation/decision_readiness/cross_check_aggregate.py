@@ -266,28 +266,28 @@ def _format_md_report(payload: dict) -> str:
         "",
         f"- **Computed at:** {payload['computed_at_utc']}",
         f"- **Aggregate file:** `{payload['aggregate_source']}`",
-        f"- **Ratings discovered:** "
+        (f"- **Ratings discovered:** "
         f"{payload['n_ratings_discovered']} rating "
-        f"file{'s' if payload['n_ratings_discovered'] != 1 else ''}",
-        f"- **Documents with ratings:** "
-        f"{payload['n_docs_with_ratings']}",
+        f"file{'s' if payload['n_ratings_discovered'] != 1 else ''}"),
+        (f"- **Documents with ratings:** "
+        f"{payload['n_docs_with_ratings']}"),
         "",
         "## Methodology",
         "",
-        "The aggregate identifies the **structural outlier** for "
+        ("The aggregate identifies the **structural outlier** for "
         "each (peer group, dimension) cell via per-group median-"
         "distance on Frame Check's signal_value. This cross-check "
         "applies the same median-distance method to expert mean "
         "ratings per dimension per LLM and compares the two outlier "
-        "identifications.",
+        "identifications."),
         "",
         "Three outcomes per cell:",
-        "- **agree**: structural outlier IS the expert outlier "
-        "(or shares it in tie cases)",
+        ("- **agree**: structural outlier IS the expert outlier "
+        "(or shares it in tie cases)"),
         "- **disagree**: structural outlier is NOT the expert outlier",
-        "- **non-comparable**: at least one side has insufficient "
+        ("- **non-comparable**: at least one side has insufficient "
         "data (e.g., dimension non-comparable in aggregate, OR "
-        "fewer than 3 members rated)",
+        "fewer than 3 members rated)"),
         "",
         "## Agreement rate",
         "",
@@ -343,28 +343,28 @@ def _format_md_report(payload: dict) -> str:
     lines += [
         "## What this cross-check tells you",
         "",
-        "- **High agreement**: the structural signal aligns with "
+        ("- **High agreement**: the structural signal aligns with "
         "expert judgment on outlier identification. The aggregate "
         "is a useful proxy for cross-LLM divergence at the dimension "
-        "level.",
-        "- **Low agreement**: the structural signal disagrees with "
+        "level."),
+        ("- **Low agreement**: the structural signal disagrees with "
         "expert judgment. Either the structural proxy is too crude "
         "(needs methodology revision) OR the expert ratings are "
         "noisy (needs more raters per document) OR the dimension "
-        "is itself contested.",
-        "- **Non-comparable**: the comparison cannot be made yet. "
-        "Add ratings or fix the underlying corpus signal.",
+        "is itself contested."),
+        ("- **Non-comparable**: the comparison cannot be made yet. "
+        "Add ratings or fix the underlying corpus signal."),
         "",
         "## What this cross-check does NOT tell you",
         "",
-        "- Whether the absolute signal values are correctly "
+        ("- Whether the absolute signal values are correctly "
         "calibrated to expert ratings (this is a different "
-        "question; see Phase 2 Spearman correlation work)",
-        "- Whether the chosen outliers are the BEST representations "
+        "question; see Phase 2 Spearman correlation work)"),
+        ("- Whether the chosen outliers are the BEST representations "
         "of LLM behavior on these questions (the median-distance "
-        "method has assumptions; alternative outlier methods exist)",
-        "- Anything about LLMs in general (results are corpus-state "
-        "descriptive, not population-inferential)",
+        "method has assumptions; alternative outlier methods exist)"),
+        ("- Anything about LLMs in general (results are corpus-state "
+        "descriptive, not population-inferential)"),
         "",
     ]
     return "\n".join(lines) + "\n"

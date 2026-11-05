@@ -128,7 +128,9 @@ jobs:
       - name: Install quality tools
         run: |
           python -m pip install --upgrade pip
-          pip install ruff mypy
+          # Ruff is pinned: new releases add lints, which would fail this
+          # job on code nobody changed.
+          pip install ruff==0.17.3 mypy
       - name: Ruff lint
         # Strict-blocking. The codebase passes the configured
         # ``[tool.ruff.lint]`` select families (E, F, B, ISC) with

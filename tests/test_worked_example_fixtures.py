@@ -221,8 +221,8 @@ def test_worked_example_fixture_matches_live_payload(fixture_path):
 
     if drift:
         msg = [
-            f"\nFixture {fixture_path.parent.name}: "
-            f"{len(drift)} field(s) drifted from bundled snapshot.",
+            (f"\nFixture {fixture_path.parent.name}: "
+            f"{len(drift)} field(s) drifted from bundled snapshot."),
             "Either the detector regressed (fix the detector) or this is",
             "a deliberate behavior evolution (refresh the snapshot via",
             "the procedure documented in the fixture's frame_check_",

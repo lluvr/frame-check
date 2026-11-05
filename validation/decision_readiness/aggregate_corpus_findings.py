@@ -795,28 +795,28 @@ def _format_md_report(payload: dict) -> str:
         "substantially across genres and questions.",
         "",
         f"- **Computed at:** {computed_at}",
-        f"- **Corpus state hash:** `{corpus_hash}` "
-        f"(SHA-256 prefix; identifies the exact corpus revision)",
-        f"- **Corpus entries:** {n_entries} "
+        (f"- **Corpus state hash:** `{corpus_hash}` "
+        f"(SHA-256 prefix; identifies the exact corpus revision)"),
+        (f"- **Corpus entries:** {n_entries} "
         f"({n_with_profile} with profile.json, "
         f"{n_paired} with paired_with metadata, "
-        f"{n_peer_grouped} with peer_group metadata)",
+        f"{n_peer_grouped} with peer_group metadata)"),
         "",
         "## Peer-comparison findings",
         "",
-        f"Aggregated across **N = {peer['n_pairs']} pairwise peer "
+        (f"Aggregated across **N = {peer['n_pairs']} pairwise peer "
         f"comparisons** in **{peer['n_groups']} peer groups**. "
         f"Each comparison is non-directional; counts below "
         f"represent the number of pairs in which the two peers "
-        f"measurably differed on a given dimension.",
+        f"measurably differed on a given dimension."),
         "",
         "### Per-dimension divergence rate",
         "",
-        f"Of {peer['n_pairs']} pairs, three outcomes per "
+        (f"Of {peer['n_pairs']} pairs, three outcomes per "
         f"dimension: peers measurably differ, peers agree (signals "
         f"comparable and match), or non-comparable (data missing on "
         f"one or both sides; e.g., evidence and robustness when "
-        f"corpus profiles were computed without Source Network).",
+        f"corpus profiles were computed without Source Network)."),
         "",
         "| Dimension | Differ | Agree | Non-comparable | Rate (of comparable) |",
         "|-----------|-------:|------:|---------------:|---------------------:|",
@@ -843,10 +843,10 @@ def _format_md_report(payload: dict) -> str:
         "",
         "### Named library entries per dimension",
         "",
-        "When a dimension diverges in this aggregate, the named "
+        ("When a dimension diverges in this aggregate, the named "
         "patterns in the Frame Vocabulary Standard describe the "
         "structural failure modes that produce the divergence. "
-        "Click through to read the canonical entry for each frame.",
+        "Click through to read the canonical entry for each frame."),
         "",
     ]
     for dim in DIMENSIONS:
@@ -859,8 +859,8 @@ def _format_md_report(payload: dict) -> str:
         "",
         "### Per-peer-group breakdown",
         "",
-        "Counts within each peer group. A group with N members "
-        "yields C(N, 2) pairs.",
+        ("Counts within each peer group. A group with N members "
+        "yields C(N, 2) pairs."),
         "",
     ]
     for group, count in sorted(peer["per_group_pair_count"].items()):
@@ -875,10 +875,10 @@ def _format_md_report(payload: dict) -> str:
     lines += [
         "### Per-LLM participation in differing pairs",
         "",
-        "When two peers differ on a dimension, BOTH peers participated. "
+        ("When two peers differ on a dimension, BOTH peers participated. "
         "These counts are descriptive of HOW OFTEN each LLM is in a "
         "pair where some divergence was measured. Cross-LLM behavioral "
-        "claims require larger N.",
+        "claims require larger N."),
         "",
     ]
     # Outlier table replaces the prior participation table. The
@@ -936,11 +936,11 @@ def _format_md_report(payload: dict) -> str:
             lines.append("| " + " | ".join(row) + " |")
         lines += [
             "",
-            "Legend: Cov = Coverage, Cal = Calibration, "
+            ("Legend: Cov = Coverage, Cal = Calibration, "
             "Evi = Evidence, Rob = Robustness, CF = Counterfactual. "
             "Cell shows outlier-count of comparable-group-count "
             "(n/a when the dimension was non-comparable in every "
-            "group containing this LLM).",
+            "group containing this LLM)."),
         ]
 
     # Cross-question outlier consistency. Consumes the structured
@@ -1043,13 +1043,13 @@ def _format_md_report(payload: dict) -> str:
             "",
             "## Cross-question outlier consistency",
             "",
-            "When the same LLM is identified as the outlier on "
+            ("When the same LLM is identified as the outlier on "
             "the same dimension across multiple distinct peer "
             "groups (different questions), that consistency is a "
             "stronger structural signal than any single-group "
             "outlier identification. The findings below report "
             "every (LLM, dimension) cell where the LLM is the "
-            "outlier in EVERY comparable group it appears in.",
+            "outlier in EVERY comparable group it appears in."),
             "",
         ]
         lines.extend(cross_question_lines)
@@ -1068,16 +1068,16 @@ def _format_md_report(payload: dict) -> str:
         "",
         "## Transformation-diff findings",
         "",
-        f"Aggregated across **N = {diff['n_pairs']} transformation "
+        (f"Aggregated across **N = {diff['n_pairs']} transformation "
         f"pair{'s' if diff['n_pairs'] != 1 else ''}**. Each pair is a "
-        f"directional source -> derived comparison.",
+        f"directional source -> derived comparison."),
         "",
     ]
     if diff["n_pairs"] == 0:
         lines += [
-            "No transformation pairs in corpus yet. Add pairs by "
+            ("No transformation pairs in corpus yet. Add pairs by "
             "declaring `paired_with` and `transformation_kind` in "
-            "two entries' metadata.yaml.",
+            "two entries' metadata.yaml."),
             "",
         ]
     else:
@@ -1088,20 +1088,20 @@ def _format_md_report(payload: dict) -> str:
         # rate for a corpus-level finding.
         if diff["n_pairs"] < 3:
             lines += [
-                f"**Small sample warning.** N = {diff['n_pairs']} "
+                (f"**Small sample warning.** N = {diff['n_pairs']} "
                 f"is below the threshold (3) at which per-"
                 f"dimension rates become interpretive. Rates "
                 f"below should be read as raw counts, not as "
                 f"corpus-level findings. The aggregate becomes "
                 f"informative as more transformation pairs are "
-                f"added (see `CORPUS_GENRE_GAPS.md`).",
+                f"added (see `CORPUS_GENRE_GAPS.md`)."),
                 "",
             ]
         lines += [
             "### Per-dimension movement rate",
             "",
-            f"Of {diff['n_pairs']} pairs, the count of pairs where "
-            f"the transformation measurably moved a dimension:",
+            (f"Of {diff['n_pairs']} pairs, the count of pairs where "
+            f"the transformation measurably moved a dimension:"),
             "",
             "| Dimension | Pairs moved | Rate |",
             "|-----------|------------:|-----:|",
@@ -1128,22 +1128,22 @@ def _format_md_report(payload: dict) -> str:
     lines += [
         "## Honest limits",
         "",
-        f"- **Sample size**: peer N = {peer['n_pairs']}, "
+        (f"- **Sample size**: peer N = {peer['n_pairs']}, "
         f"transformation N = {diff['n_pairs']}. Conclusions about "
         "specific LLMs or specific transformation effects need "
-        "substantially larger N.",
-        "- **Convenience sampling**: the v1 corpus is convenience-"
+        "substantially larger N."),
+        ("- **Convenience sampling**: the v1 corpus is convenience-"
         "sampled from existing worked examples (see methodology "
         "page). Selection bias is acknowledged; v2 randomly-"
-        "sampled component is the planned correction.",
-        "- **Genre coverage**: the corpus is heavily ai_response. "
+        "sampled component is the planned correction."),
+        ("- **Genre coverage**: the corpus is heavily ai_response. "
         "Cross-genre claims require corpus expansion (see "
-        "CORPUS_GENRE_GAPS.md).",
-        "- **Profile validation**: per-dimension absolute signals "
+        "CORPUS_GENRE_GAPS.md)."),
+        ("- **Profile validation**: per-dimension absolute signals "
         "remain experimental until Phase 2 expert validation lands. "
         "Comparison signals (peer differs / transformation moved) "
         "are LESS dependent on absolute signal validity but still "
-        "inherit the underlying methodology.",
+        "inherit the underlying methodology."),
         "",
         "## Citation",
         "",
