@@ -6,6 +6,32 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-05
+
+### Fixed
+
+- Source-network verdicts, so results can change again from 1.2.0. A country
+  followed by Canal, Bridge, Strait and similar stays in the subject's name.
+  "Runs for" and "stretches for" count as lengths. Reference prose must mention
+  the claimed year to confirm a dollar figure.
+
+### Added
+
+- `.github/workflows/registry.yml` publishes `server.json` to the MCP registry,
+  and the README carries the `mcp-name` marker the registry requires. No earlier
+  release can be listed there, because their PyPI READMEs lack the marker.
+
+### Changed
+
+- CI pins ruff, and the lint findings a newer ruff introduced are fixed with no
+  change in behaviour. The release guide has current paths and steps.
+
+### Removed
+
+- `framecheck_mcp/source_network.py` from the wheel. It was a stale copy nothing
+  imported, and it still held the `verify_rest_countries` function that 1.2.0
+  reported as removed.
+
 ## [1.2.0] - 2026-11-05
 
 ### Changed
