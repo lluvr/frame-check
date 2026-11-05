@@ -183,11 +183,7 @@ warn_no_return = true
 warn_unreachable = true
 no_implicit_optional = true
 check_untyped_defs = true
-# Exclude the wheel-build duplicate of source_network.py: it is a
-# staged copy of the data-carrier package; mypy would
-# complain about the duplicated module name.
 exclude = [
-    "src/framecheck_mcp/source_network\\.py",
     "build/",
 ]
 
@@ -226,7 +222,6 @@ ignore_errors = true
 line-length = 100
 target-version = "py310"
 extend-exclude = [
-    "src/framecheck_mcp/source_network.py",  # build-staging duplicate
     "build/",
 ]
 

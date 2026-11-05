@@ -1196,16 +1196,6 @@ _TIMEOUT = _read_float_env("SN_PER_OP_TIMEOUT_SECONDS", 8.0)
 # work); until then the budget primitive
 # below trades thread-cleanup precision for a bounded user wait, which
 # is the trade the user-facing UX requires today.
-#
-# This module exists at TWO paths in the working tree right now:
-# root-level source_network.py (this file; the active import target
-# for the web app) and framecheck_mcp/source_network.py (the
-# in-flight src-layout migration target). Both files MUST carry an
-# equivalent SN_BUDGET_SECONDS + budget-tracking implementation so
-# that whichever path resolves the import gets the budget. When the
-# src-layout migration commits and removes this root-level file,
-# only framecheck_mcp/source_network.py remains; the budget primitive
-# travels with the code unchanged.
 SN_BUDGET_SECONDS = float(os.environ.get("SN_BUDGET_SECONDS", "25"))
 
 
