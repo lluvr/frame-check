@@ -2740,7 +2740,7 @@ def _get_sec_tickers():
 _COMMON_NOUN_BLACKLIST = frozenset({
     # First words of several companies: which one is a guess, and a wrong
     # guess passes off another company's filings as this claim's check.
-    "delta", "united", "american", "national", "general", "first", "chase",
+    "delta", "united", "american", "general", "first", "chase",
     "johnson", "all", "one", "now", "key",
     # Common English nouns that title-case in headings ("Semiconductor",
     # "Technology", "Industry") but are not company names. Without
@@ -3055,7 +3055,6 @@ def verify_sec_edgar(decomp):
         # for all major US public companies (Apple FY2024 ends Sept 2024,
         # NVIDIA FY2026 ends Jan 2026, Microsoft FY2026 ends June 2026).
         # SEC EDGAR's fy field is the FILING year, not the data period.
-        exact_year_match = False
         if target_fy:
             # Two readings of "fiscal 2023". By the filing's own fy tag: its
             # newest row, which is how Target's year ending February 2024
@@ -3072,7 +3071,6 @@ def verify_sec_edgar(decomp):
             ]
             if exact_year_entries:
                 filtered = exact_year_entries
-                exact_year_match = True
             else:
                 # The filings have no such year. A neighbouring year can
                 # neither confirm this claim nor contradict it.
