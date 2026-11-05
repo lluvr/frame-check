@@ -600,7 +600,11 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
 
     patterns = [
         (r'(\d+(?:\.\d+)?)\s*%', "percentage"),
-        (r'[$€£¥₹](\d+(?:\.\d+)?(?:,\d{3})*)', "dollar"),
+        # The second group keeps a scale with the amount. Without it
+        # "$12.5 million" reduced to "$12.5" and matched "$12.5 billion".
+        ((r'[$€£¥₹](\d+(?:\.\d+)?(?:,\d{3})*)'
+         r'((?:\s*(?i:thousand|million|billion|trillion|bn|mn)\b)|[kKmMbBtT](?![a-zA-Z\d&]))?'),
+         "dollar"),
         (r'[$€£¥₹](\d+(?:\.\d+)?(?:,\d{3})*)\s*[-–]\s*[$€£¥₹]?(\d+(?:\.\d+)?(?:,\d{3})*)\s*([MBKmillion|billion|thousand]*)', "dollar_range"),
         (r'(\d+(?:\.\d+)?)[xX]\b', "multiplier"),
         # Scaled integers in the digit + spelled-scale shape, e.g.
@@ -667,10 +671,15 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
                 ctx_start = max(0, m.start() - 50)
                 ctx_end = min(len(text), m.end() + 50)
                 context = re.sub(r'\s+', ' ', text[ctx_start:ctx_end].strip())
-                numbers.append({
+                number = {
                     "value": val, "raw": m.group(0),
                     "context": context, "type": effective_type,
-                })
+                }
+                if num_type == "dollar" and m.group(2):
+                    # value stays unscaled so analyze_claims can still
+                    # pair it with extract_numerical_claims' value.
+                    number["scale"] = m.group(2).strip().lower()
+                numbers.append(number)
     return numbers
 
 
@@ -783,10 +792,58 @@ def _add_commas(val: str) -> str | None:
         return None
 
 
+_SCALE_SPELLINGS: dict[str, tuple[float, tuple[str, ...]]] = {
+    "thousand": (1e3, ("thousand", "k")),
+    "k": (1e3, ("thousand", "k")),
+    "million": (1e6, ("million", "mn", "m")),
+    "mn": (1e6, ("million", "mn", "m")),
+    "m": (1e6, ("million", "mn", "m")),
+    "billion": (1e9, ("billion", "bn", "b")),
+    "bn": (1e9, ("billion", "bn", "b")),
+    "b": (1e9, ("billion", "bn", "b")),
+    "trillion": (1e12, ("trillion", "tn", "t")),
+    "t": (1e12, ("trillion", "tn", "t")),
+}
+# A needle ends where the number does: "$12.5 t" is not "$12.5 thousand"
+# and "$12,500,000" is not "$12,500,000,000".
+_AFTER_SCALED_NEEDLE = r'(?![a-zA-Z\d]|[.,]\d)'
+
+
+def _scaled_dollar_needles(raw: str, val: str, scale: str) -> list[str]:
+    """Every way a source may write an amount with a scale, and no form
+    without one: a bare "$12.5" would match "$12.5 billion"."""
+    currency = raw[0] if raw and raw[0] in "$€£¥₹" else "$"
+    multiplier, spellings = _SCALE_SPELLINGS[scale]
+    needles = [raw] if raw else []
+    for word in spellings:
+        needles.append(f"{currency}{val}{word}")
+        needles.append(f"{currency}{val} {word}")
+    try:
+        whole = round(float(val) * multiplier, 3)
+    except (ValueError, TypeError):
+        return needles
+    if whole == int(whole):
+        needles.append(f"{currency}{int(whole):,}")
+        needles.append(f"{currency}{int(whole)}")
+    return needles
+
+
 def _number_in_source(num: dict[str, Any], source_text: str) -> bool:
     """Check if a number appears in source text."""
     val = num["value"]
     ntype = num["type"]
+
+    if ntype == "dollar" and num.get("scale"):
+        return any(
+            re.search(
+                re.escape(needle) + _AFTER_SCALED_NEEDLE,
+                source_text,
+                re.IGNORECASE,
+            )
+            for needle in _scaled_dollar_needles(
+                (num.get("raw") or "").strip(), val, num["scale"],
+            )
+        )
 
     if ntype == "percentage":
         if re.search(re.escape(val) + r'\s*(?:%|percent)', source_text, re.IGNORECASE):
@@ -841,7 +898,12 @@ def source_matching(doc_text: str, source_text: str) -> dict[str, Any]:
         "total_numbers": total,
         "precision": precision,
         "unsourced_details": [
-            {"value": n["value"], "type": n["type"], "context": n["context"]}
+            {
+                "value": n["value"],
+                "raw": (n.get("raw") or n["value"]).strip(),
+                "type": n["type"],
+                "context": n["context"],
+            }
             for n in not_in_source
         ],
         "reference": REFERENCE["source_matching"],

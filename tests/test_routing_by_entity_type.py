@@ -197,7 +197,8 @@ class TestMacroRoutingPreserved:
         sources = _names(_classify_and_route(d))
         assert "verify_world_bank" in sources
 
-    def test_rest_countries_still_routes_for_population(self):
+    def test_population_routes_to_the_world_bank_only(self):
+        # restcountries.com retired v1-v4; v5 needs an account.
         d = _decomp(
             subject="Germany",
             sentence="Germany has a population of 83 million.",
@@ -205,7 +206,8 @@ class TestMacroRoutingPreserved:
             value=83e6,
         )
         sources = _names(_classify_and_route(d))
-        assert "verify_rest_countries" in sources
+        assert "verify_world_bank" in sources
+        assert "verify_rest_countries" not in sources
 
     @pytest.mark.skipif(
         not os.environ.get("FRED_API_KEY"),

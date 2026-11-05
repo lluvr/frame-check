@@ -95,6 +95,30 @@ CANDIDATE_HEDGE_RE = re.compile(
 )
 
 
+_SENTENCE_END_RE = re.compile(r'[.!?](?=\s+[A-Z(\[]|\s*$)|\n')
+
+
+def _own_sentence(doc_text: str, raw_value: str, max_chars: int = 240) -> str:
+    """The sentence or line holding raw_value, or "" if it cannot be found.
+
+    Short sentences skip extract_numerical_claims and arrive here as
+    bare numbers. A fixed window around one reads into its neighbours:
+    "Net income was $29.76 billion. Microsoft, Amazon..." made Microsoft
+    the subject of NVIDIA's net income.
+    """
+    idx = doc_text.find(raw_value)
+    if idx < 0:
+        return ""
+    end_of_value = idx + len(raw_value)
+    start = 0
+    for m in _SENTENCE_END_RE.finditer(doc_text, 0, idx):
+        start = m.end()
+    tail = _SENTENCE_END_RE.search(doc_text, end_of_value)
+    end = tail.end() if tail else len(doc_text)
+    sentence = doc_text[start:end].strip()
+    return sentence if sentence and len(sentence) <= max_chars else ""
+
+
 def analyze_claims(doc_text: str) -> dict[str, Any]:
     """Extract and analyze individual numerical claims.
 
@@ -166,13 +190,15 @@ def analyze_claims(doc_text: str) -> dict[str, Any]:
         context = num.get("context", num["value"])
         # Trim context to the segment around the number (reduce bleed from neighbors)
         raw_val = num.get("raw", num["value"])
-        idx = context.find(raw_val)
-        if idx >= 0:
-            start = max(0, idx - 30)
-            end = min(len(context), idx + len(raw_val) + 30)
-            tight_context = context[start:end].strip()
-        else:
-            tight_context = context
+        tight_context = _own_sentence(doc_text, raw_val)
+        if not tight_context:
+            idx = context.find(raw_val)
+            if idx >= 0:
+                start = max(0, idx - 30)
+                end = min(len(context), idx + len(raw_val) + 30)
+                tight_context = context[start:end].strip()
+            else:
+                tight_context = context
 
         raw_claims.append({
             "sentence": tight_context,

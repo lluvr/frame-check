@@ -73,8 +73,8 @@ Pass a document and Frame Check returns:
   cues and worked examples. Matches are candidate-level signals, not
   verified labels.
 - Source-network verification: numeric claims checked against SEC
-  EDGAR, FRED, World Bank, REST Countries, Alpha Vantage, and Wolfram
-  Alpha where those providers have coverage.
+  EDGAR, FRED, World Bank, Alpha Vantage, and Wolfram Alpha where those
+  providers have coverage.
 - An optional AI narrative interpreting framing at prose level.
   Labelled distinctly so readers do not conflate language-model
   interpretation with deterministic measurement.

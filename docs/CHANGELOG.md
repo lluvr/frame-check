@@ -6,6 +6,30 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### Fixed
+
+- Source-network verification now checks that a reference describes the
+  claim, not only that the digits agree. SEC EDGAR and Alpha Vantage answer
+  only a metric the claim names. A claim with no year can match only the
+  latest period, and a mismatch there is not a contradiction; neither is a
+  mismatch in a sentence that names two years. SEC citations name the data
+  year and the metric. Reference text must carry the metric near the number
+  in the same unit, must not describe a subgroup, and must share a content
+  word when the metric is generic.
+- Web search snippets are reported as leads and no longer decide a verdict.
+- World Bank checks resolve countries from the World Bank's own list, since
+  restcountries.com retired the API they depended on, and answer area and
+  life expectancy. REST Countries is no longer routed. False population and
+  area totals are contradicted.
+- Metric recognition covers "revenues", "profits", "diameter" and British
+  "kilometres"; hyphenated company names stay whole and resolve to the
+  company named; durations such as "83 years" keep their value.
+- A short sentence is analyzed within its own bounds, so a claim no longer
+  takes its subject from the next sentence.
+- Source matching treats a different dollar scale as a different number:
+  "$12.5 million" no longer matches "$12.5 billion". `unsourced_details`
+  entries carry `raw`.
+
 ## [1.1.3] - 2026-07-02
 
 ### Fixed
@@ -64,7 +88,7 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
   in the two bundled worked-example outputs titled Frame Check "a research
   instrument for framing and verification in documents." It now reads "a
   structural framing analysis tool," matching the project description and
-  README. Citation text only — no API, schema, or behavior change.
+  README. Citation text only; no API, schema, or behavior change.
 
 ## [1.1.0] - 2026-06-02
 
