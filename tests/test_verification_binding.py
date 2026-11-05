@@ -518,13 +518,6 @@ def test_british_spelling_is_an_area():
     ]
 
 
-def test_yearless_area_mismatch_is_a_contradiction(world_bank):
-    r = sn.verify_world_bank(_country(
-        "Germany has an area of 500,000 square kilometres.", 500000,
-        metric="area", unit="distance"))
-    assert r.match_type == "contradicted"
-
-
 def test_a_sentence_naming_two_years_cannot_contradict(apple_sec):
     """"Swung from a loss in fiscal 2023 to a profit in fiscal 2024" must
     not compare the second figure to the first year."""
@@ -965,3 +958,47 @@ def test_reference_revenue_for_the_right_year_matches():
     d = _decomp(sentence, 78e9, metric="revenue", subject="Boeing",
                 time_period="2023")
     assert _match_in_text(passage, 78e9, sentence, decomp=d)[0] is not None
+
+
+# ── Conflicting series, figures and periods ─────────────────────────
+
+def test_area_data_can_confirm_but_never_contradict(world_bank):
+    """The World Bank series reported Canada at 15.6M square km against a true
+    9.98M, so a true claim was contradicted. It is not reliable enough."""
+    r = sn.verify_world_bank(_country(
+        "Germany has an area of 500,000 square kilometres.", 500000,
+        metric="area", unit="distance"))
+    assert r.match_type == "no_data"
+
+
+def test_two_financial_figures_in_a_sentence_cannot_contradict(monkeypatch):
+    _sec_rows(monkeypatch, [_row("2023-12-31", 2023, 176_000_000_000,
+                                 "2023-01-01")])
+    r = verify_sec_edgar(_decomp(
+        "Ford earned about $4.3 billion in net income in 2023 on revenue of "
+        "about $176 billion.", 4.3e9, metric="revenue", subject="Ford",
+        time_period="2023"))
+    assert r.match_type == "no_data"
+
+
+def test_a_monthly_rate_is_not_compared_with_an_annual_average(monkeypatch):
+    monkeypatch.setattr(sn, "_fetch_json", lambda url, *a, **k: (
+        [{}, [{"value": 133.5, "date": "2023"}]] if "/indicator/" in url
+        else [{}, [{"iso2Code": "AR", "name": "Argentina"}]]
+    ))
+    monkeypatch.setattr(sn, "_WB_COUNTRY_CODES", {})
+    r = sn.verify_world_bank(_decomp(
+        "Argentina's annual inflation hit 211.4% in December 2023.", 211.4,
+        metric="", unit="percent", subject="Argentina", time_period="2023"))
+    assert r.match_type == "no_data"
+
+
+@pytest.mark.parametrize("sentence,numbers,primary", [
+    ("Taipei 101 stands about 620 meters tall.", ["101", "620 meters"], "620 meters"),
+    ("The Boeing 747 has a wingspan of 68 meters.", ["747", "68 meters"], "68 meters"),
+    ("Population reached 500 people.", ["500 people"], "500 people"),
+    ("Only 101 people attended.", ["101"], "101"),
+])
+def test_a_number_inside_a_name_is_not_the_claim(sentence, numbers, primary):
+    d = decompose_claim({"sentence": sentence, "numbers": numbers})
+    assert d.raw_value == primary

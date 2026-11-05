@@ -1006,6 +1006,18 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
     # When multiple numbers exist, prefer dollar amounts over percentages.
     # "Revenue of $391B, up 2%" -> primary is $391B, not 2%.
     # Dollar amounts are the verifiable data point. Percentages are derived.
+    # A number that is part of a name is not the claim: Taipei 101 stands
+    # 620 metres tall, and checking "101" found it in the building's article.
+    if len(numbers) > 1:
+        not_names = [
+            n for n in numbers
+            if not re.search(
+                r'\b[A-Z][a-zA-Z]+\s+' + re.escape(str(n).strip()) + r'\b',
+                sentence,
+            )
+        ]
+        numbers = not_names or numbers
+
     raw_value = numbers[0] if numbers else ""
     if len(numbers) > 1:
         for n in numbers:
@@ -2157,6 +2169,10 @@ _WB_COUNTRY_ALIASES = {
 }
 # Filled once per process from the World Bank's own country list.
 _WB_COUNTRY_CODES = {}
+_MONTH_NAME_RE = re.compile(
+    r'\b(January|February|March|April|May|June|July|August|September|'
+    r'October|November|December)\b'
+)
 _AMBIGUOUS_PLACE_NAMES = frozenset({"georgia", "jordan", "chad", "turkey"})
 _WB_TOTAL_INDICATORS = frozenset({
     "SP.POP.TOTL", "NY.GDP.MKTP.CD", "NY.GDP.PCAP.CD", "AG.SRF.TOTL.K2",
@@ -2246,12 +2262,17 @@ def verify_world_bank(decomp):
 
             if diff < 0.05:
                 match_type = "exact" if diff < 0.01 else "close"
-            elif not year and indicator_id not in (
-                "SP.POP.TOTL", "AG.SRF.TOTL.K2",
-            ):
+            elif indicator_id == "AG.SRF.TOTL.K2":
+                # This series put Canada at 15.6M square km against a true
+                # 9.98M. It may confirm; it is not reliable enough to refute.
+                match_type = "no_data"
+            elif _MONTH_NAME_RE.search(decomp.sentence):
+                # A rate for one month against an annual average.
+                match_type = "no_data"
+            elif not year and indicator_id != "SP.POP.TOTL":
                 # With no period named, a moving figure that disagrees
-                # may just be another year's. Population and area move
-                # slowly enough to be wrong regardless.
+                # may just be another year's. Population moves slowly
+                # enough to be wrong regardless.
                 match_type = "no_data"
             elif country.lower() in _AMBIGUOUS_PLACE_NAMES:
                 # Georgia the state has about three times the people.
@@ -3135,6 +3156,16 @@ def verify_sec_edgar(decomp):
     # is the worst error this tool can make.
     if (match_type == "contradicted"
             and len(set(re.findall(r'20[1-3]\d', decomp.sentence))) > 1):
+        return SourceResult(source_name="SEC Filing", match_type="no_data")
+
+    # Same for two figures and two metrics: "$4.3 billion in net income on
+    # revenue of $176 billion" cannot say which metric the first one is.
+    named_metrics = sum(
+        1 for name in _METRIC_CONCEPTS
+        if _METRIC_PATTERNS[name].search(decomp.sentence)
+    )
+    if (match_type == "contradicted" and named_metrics > 1
+            and len(re.findall(r'[$€£]\s*\d', decomp.sentence)) > 1):
         return SourceResult(source_name="SEC Filing", match_type="no_data")
 
     # The year the number describes. XBRL's fy field is the filing's year,
