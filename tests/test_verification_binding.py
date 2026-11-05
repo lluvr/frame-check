@@ -17,6 +17,13 @@ from clarethium_measure import (
     extract_numbers_for_matching,
     source_matching,
 )
+from framing import (
+    detect_coverage,
+    detect_epistemic_basis,
+    detect_voice,
+    framing_portrait_natural,
+    temporal_orientation,
+)
 from source_network import (
     ClaimDecomposition,
     SourceResult,
@@ -534,3 +541,63 @@ def test_one_year_named_twice_still_contradicts(apple_sec):
         "report said.", 420e9, metric="revenue",
     ))
     assert r.match_type == "contradicted"
+
+
+# ── Voice ───────────────────────────────────────────────────────────
+
+def test_the_us_is_not_first_person():
+    text = (
+        "The US unemployment rate was 3.7% in December 2023 according to "
+        "the labor department. US output rose sharply over the same "
+        "period and the US dollar strengthened against the euro as well."
+    )
+    assert detect_voice(text)["we_pct"] == 0
+
+
+def test_lowercase_us_is_still_first_person():
+    text = "The board told us to expect delays across the whole of the program."
+    assert detect_voice(text)["we_pct"] > 0
+
+
+def test_short_imperatives_count():
+    text = (
+        "You should buy this stock now and hold it for the long term. "
+        "Do not wait. Buy today. Act now."
+    )
+    assert detect_voice(text)["imperative_count"] >= 3
+
+
+def test_a_first_person_call_is_not_analytical():
+    assert detect_voice(HERO)["voice"] != "analytical"
+
+
+def test_advisory_portrait_omits_a_zero_reader_share():
+    assert "0% addressed to the reader" not in _portrait(HERO)
+
+
+# ── Attribution is not evidence ─────────────────────────────────────
+
+def _portrait(text):
+    return framing_portrait_natural(
+        detect_coverage(text), temporal_orientation(text), detect_voice(text),
+        detect_epistemic_basis(text), analyze_claims(text),
+    )
+
+
+def test_naming_a_company_is_not_called_evidence():
+    text = (
+        "Apple reported fiscal 2023 revenue of $265.6 billion. NVIDIA "
+        "reported fiscal 2024 revenue of $26.97 billion."
+    )
+    assert "evidence-based" not in _portrait(text)
+
+
+def test_attribution_sentence_counts_sentences_with_numbers():
+    text = (
+        "Apple reported fiscal 2023 revenue of $383.3 billion in its "
+        "annual filing. Net income was $97 billion for the same period. "
+        "The chief executive spoke at length about the road ahead today."
+    )
+    portrait = _portrait(text)
+    assert "of 3 sentences" not in portrait
+    assert "1 of 2 sentences with numbers" in portrait

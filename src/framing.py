@@ -974,7 +974,15 @@ def temporal_orientation(text: str) -> dict[str, Any]:
 # relationship to the reader: are you being analyzed to, sold to,
 # instructed, or shown a reference?
 _YOU_RE = re.compile(r'\byou(?:r|rs?)?\b', re.IGNORECASE)
-_WE_RE = re.compile(r'\b(?:we|our|us)\b', re.IGNORECASE)
+# "us" stays lower case: "US" is a country, and reading it as first person
+# called an unemployment figure promotional.
+_WE_RE = re.compile(r'\b(?:[Ww][Ee]|[Oo][Uu][Rr]|us|Us)\b')
+# A first-person call on what to do. "I would overweight NVDA here" is
+# advice whatever else the text does.
+_FIRST_PERSON_CALL_RE = re.compile(
+    r"\b(?:I|[Ww]e)\s+(?:would\s+(?:overweight|underweight|buy|sell|hold|"
+    r"avoid|invest|recommend|suggest|advise)|recommend|suggest|advise|urge)\b"
+)
 _IMPERATIVE_RE = re.compile(
     r'^(?:use|try|test|start|stop|wait|check|avoid|apply|ensure|'
     r'verify|compare|review|monitor|scroll|pause|log|look|act|'
@@ -1163,7 +1171,15 @@ def detect_voice(text: str) -> dict[str, Any]:
 
     you_count = sum(1 for s in sentences if _YOU_RE.search(s))
     we_count = sum(1 for s in sentences if _WE_RE.search(s))
-    imp_count = sum(1 for s in sentences if _IMPERATIVE_RE.search(s.strip()))
+    # Over every sentence: split_sentences drops short ones for the
+    # ratios above, and "Do not wait." is the shortest kind of directive.
+    short_ones = [
+        s for s in re.split(r'(?<=[.!?])\s+', text.strip())
+        if not any(s in kept for kept in sentences)
+    ]
+    imp_count = sum(
+        1 for s in sentences + short_ones if _IMPERATIVE_RE.search(s.strip())
+    )
     spec_count = sum(1 for s in sentences if _SPEC_RE.search(s))
     promo_count = sum(1 for s in sentences if _PROMO_RE.search(s))
     you_pct = round(you_count / n * 100)
@@ -1190,6 +1206,8 @@ def detect_voice(text: str) -> dict[str, Any]:
         voice = "analytical"
     else:
         voice = cascade[winner_index][0]
+    if voice == "analytical" and _FIRST_PERSON_CALL_RE.search(text):
+        voice = "advisory"
 
     # Winner margin: best margin across all firing rules of the winning
     # class. A prescriptive document activated by rule 1 tightly AND by
@@ -1583,6 +1601,13 @@ _GAP_POSITIVES = {
 }
 
 
+def _addressed_note(voice: dict[str, Any]) -> str:
+    """A first-person call can be advisory with no "you" in it, and
+    "(0% addressed to the reader)" reads as a contradiction."""
+    you_pct = voice.get("you_pct") or 0
+    return f" ({you_pct}% addressed to the reader)" if you_pct else ""
+
+
 def framing_portrait(
     coverage: dict[str, Any],
     temporal: dict[str, Any],
@@ -1652,8 +1677,8 @@ def framing_portrait(
             )
     elif v == "advisory":
         parts.append(
-            f"Advisory document with some direct guidance "
-            f"({voice['you_pct']}% addressed to the reader)."
+            f"Advisory document with some direct guidance"
+            f"{_addressed_note(voice)}."
         )
     else:
         # Analytical is the cascade residual: no prescriptive, promotional,
@@ -1951,8 +1976,8 @@ def framing_portrait_natural(
             )
     elif v == "advisory":
         parts.append(
-            f"Reads as an advisory document with some direct guidance "
-            f"({voice['you_pct']}% addressed to the reader)."
+            f"Reads as an advisory document with some direct guidance"
+            f"{_addressed_note(voice)}."
         )
     else:
         # Cascade-residual analytical. The cascade-aware discipline
@@ -2020,15 +2045,18 @@ def framing_portrait_natural(
             )
     elif numeric > 0 and sourced > 0:
         if sourced_pct >= 70:
+            # Attribution says who the number is credited to. Whether it
+            # holds up is the verification section's call.
             parts.append(
-                f"{sourced_pct}% of claims carry source attribution: "
-                f"an evidence-based structure."
+                f"{sourced_pct}% of sentences credit their numbers to "
+                f"someone. That is attribution, not proof."
             )
         else:
+            attributed = numeric - unsupported
             parts.append(
-                f"{sourced} of {epistemic['total_sentences']} sentences "
-                f"carry source attribution; {unsupported} numerical "
-                f"claims don't."
+                f"{attributed} of {numeric} sentences with numbers "
+                f"{'says' if attributed == 1 else 'say'} where the number "
+                f"came from."
             )
     elif total_claims >= 5 and unhedged / total_claims > 0.8:
         parts.append(

@@ -29,6 +29,9 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 - Source matching treats a different dollar scale as a different number:
   "$12.5 million" no longer matches "$12.5 billion". `unsourced_details`
   entries carry `raw`.
+- Voice: "US" is not first person, short imperatives count, and a
+  first-person recommendation reads as advisory. Attribution wording in the
+  portrait says a number was credited, not that it holds up.
 
 ## [1.1.3] - 2026-07-02
 
