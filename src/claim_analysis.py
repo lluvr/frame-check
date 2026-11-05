@@ -95,7 +95,7 @@ CANDIDATE_HEDGE_RE = re.compile(
 )
 
 
-_SENTENCE_END_RE = re.compile(r'[.!?](?=\s+[A-Z(\[]|\s*$)|\n')
+_SENTENCE_END_RE = re.compile(r'[.!?](?=\s+[A-Z(\[$"\d]|\s*$)|\n')
 
 
 def _own_sentence(doc_text: str, raw_value: str, max_chars: int = 240) -> str:
@@ -106,10 +106,14 @@ def _own_sentence(doc_text: str, raw_value: str, max_chars: int = 240) -> str:
     "Net income was $29.76 billion. Microsoft, Amazon..." made Microsoft
     the subject of NVIDIA's net income.
     """
-    idx = doc_text.find(raw_value)
-    if idx < 0:
+    # The whole number: "5%" must not land inside "25%".
+    found = re.search(
+        r'(?<![\d.,])' + re.escape(raw_value) + r'(?!\d)', doc_text,
+    )
+    if not found:
         return ""
-    end_of_value = idx + len(raw_value)
+    idx = found.start()
+    end_of_value = found.end()
     start = 0
     for m in _SENTENCE_END_RE.finditer(doc_text, 0, idx):
         start = m.end()

@@ -179,7 +179,7 @@ class TestCompanyRoutingPreserved:
 
 
 # ================================================================
-# FRED, World Bank, REST Countries preserved
+# FRED and World Bank preserved
 # ================================================================
 
 class TestMacroRoutingPreserved:
@@ -300,7 +300,7 @@ class TestClassifierDetectCountryAsymmetry:
 
     def test_country_subject_no_country_in_sentence_misses_macro(self):
         # Subject declares the country; sentence does not. _detect_country
-        # scans sentence + heading and finds nothing. WB/REST Countries
+        # scans sentence + heading and finds nothing. WB
         # route is gated on _detect_country, not on the classifier, so
         # macro verifiers are NOT added in this asymmetric case.
         d = _decomp(

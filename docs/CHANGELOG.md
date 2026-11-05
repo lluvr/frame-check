@@ -29,6 +29,25 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 - Source matching treats a different dollar scale as a different number:
   "$12.5 million" no longer matches "$12.5 billion". `unsourced_details`
   entries carry `raw`.
+- SEC EDGAR compares only the level figure a concept holds, so growth rates,
+  per-share figures, margins, gross and operating profit return no data. A
+  fiscal year is read two ways, by the filing's fiscal-year tag and by end
+  date, and contradicted only if it matches neither. Neighbouring years
+  neither confirm nor contradict. Quarters inside 10-K data and year-to-date
+  rows are excluded, and a net loss matches a negative filing.
+- Company lookup uses whole words in SEC file order, and common words no
+  longer resolve to tickers. Subjects prefer a possessive, month and weekday
+  names are not entities, and FRED is asked only about the United States.
+- World Bank checks do not compare a rate with a total, accept a stated
+  country total without the word "population", and do not contradict place
+  names that are also US states or common words.
+- A stated limit ("exceeded $34 trillion") is not contradicted by a different
+  figure. In reference text a lone letter scales a number only when attached,
+  so "3,776 m" is metres. Physical measurements get 2% tolerance rather than
+  5%, and vague height words count only when they name the subject.
+- Source matching respects number boundaries: 5% is not in 25%, 12.5% is not
+  12%, and 500 is not in 1,500.
+- Removed `verify_rest_countries`, which could only return no data.
 - Voice: "US" is not first person, short imperatives count, and a
   first-person recommendation reads as advisory. Attribution wording in the
   portrait says a number was credited, not that it holds up.

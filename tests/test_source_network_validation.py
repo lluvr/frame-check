@@ -26,7 +26,6 @@ from source_network import (
     verify_sec_edgar,
     verify_wikipedia,
     verify_world_bank,
-    verify_rest_countries,
     verify_claims_source_network,
 )
 from claim_analysis import analyze_claims
@@ -46,8 +45,8 @@ APPLE_FY2025_REVENUE = 416.16e9    # SEC EDGAR RevenueFromContractWithCustomer, 
 APPLE_FY2024_REVENUE = 391.04e9    # SEC EDGAR RevenueFromContractWithCustomer, FY2024 end=2024-09-28
 APPLE_FY2023_REVENUE = 383.29e9    # SEC EDGAR RevenueFromContractWithCustomer, FY2023 end=2023-09-30
 
-BHUTAN_POPULATION = 784_043        # REST Countries (current)
-BHUTAN_AREA_KM2 = 38_394           # REST Countries (current)
+BHUTAN_POPULATION = 784_043        # recent total
+BHUTAN_AREA_KM2 = 38_394           # surface area
 BHUTAN_GDP_2023 = 3.013e9          # World Bank NY.GDP.MKTP.CD (2023)
 
 # Confabulated values observed in the hard-topics corpus
@@ -499,26 +498,26 @@ class TestWikipediaFalseMatch:
 
 class TestBhutanVerification:
     """Bhutan tests exercise the country/macro verification path:
-    REST Countries for demographics, World Bank for GDP."""
+    the World Bank for demographics and GDP."""
 
     @pytest.mark.timeout(15)
     def test_bhutan_population_correct(self):
-        """Correct population should verify via REST Countries."""
+        """Correct population should verify via the World Bank."""
         d = _decomp(
             subject="Bhutan", metric="population", value=784043,
             raw_value="784043", unit="count", time_period="",
             sentence="Bhutan has a population of approximately 784,043.",
             heading="Demographics",
         )
-        r = verify_rest_countries(d)
+        r = verify_world_bank(d)
         if r.match_type == "no_data":
             pytest.skip(
-                "REST Countries returned no_data (possible timeout or "
+                "World Bank returned no_data (possible timeout or "
                 "API unavailability). This is an API availability issue, "
                 "not a product bug."
             )
-        assert r.match_type == "exact", (
-            f"Expected exact match for Bhutan population, "
+        assert r.match_type in ("exact", "close"), (
+            f"Expected a match for Bhutan population, "
             f"got {r.match_type} (source_value={r.source_value})"
         )
 
@@ -530,8 +529,8 @@ class TestBhutanVerification:
             sentence="Bhutan has a population of 2.5 million.",
             heading="Demographics",
         )
-        r = verify_rest_countries(d)
-        # 2.5M vs 784K = 219% off. REST Countries uses 5% for close.
+        r = verify_world_bank(d)
+        # 2.5M vs 784K = 219% off.
         # This should NOT match.
         assert r.match_type not in ("exact", "close"), (
             f"Bhutan population 2.5M should not verify "
@@ -540,17 +539,17 @@ class TestBhutanVerification:
 
     @pytest.mark.timeout(15)
     def test_bhutan_area_correct(self):
-        """Correct area should verify via REST Countries."""
+        """Correct area should verify via the World Bank."""
         d = _decomp(
             subject="Bhutan", metric="area", value=38394,
             raw_value="38394", unit="count", time_period="",
             sentence="Bhutan covers an area of 38,394 square kilometers.",
             heading="Geography",
         )
-        r = verify_rest_countries(d)
+        r = verify_world_bank(d)
         if r.match_type == "no_data":
             pytest.skip(
-                "REST Countries returned no_data (possible timeout or "
+                "World Bank returned no_data (possible timeout or "
                 "API unavailability). This is an API availability issue, "
                 "not a product bug."
             )

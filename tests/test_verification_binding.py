@@ -601,3 +601,325 @@ def test_attribution_sentence_counts_sentences_with_numbers():
     portrait = _portrait(text)
     assert "of 3 sentences" not in portrait
     assert "1 of 2 sentences with numbers" in portrait
+
+
+# ── Entity, period, scale ───────────────────────────────────────────
+
+@pytest.mark.parametrize("token,source,expected", [
+    ("$12,500,000", "Revenue was $12,500,000,000 in 2023.", False),
+    ("$12.5 trillion", "Revenue was $12.5 thousand.", False),
+    ("$12.5 million", "Revenue was $12.5 million.", True),
+    ("$5,000", "The fee was $5,000, paid in full.", True),
+])
+def test_needles_stop_at_the_end_of_the_number(token, source, expected):
+    assert _token_in_source(token, source) is expected
+
+
+def _titles(monkeypatch, *rows):
+    monkeypatch.setattr(sn, "_get_sec_tickers", lambda: (
+        {title: (str(i), ticker) for i, (title, ticker) in enumerate(rows)},
+        {},
+    ))
+
+
+def test_lookup_keeps_sec_file_order_not_shortest_title(monkeypatch):
+    """SEC lists by market value, so the first whole-word hit is the parent."""
+    _titles(monkeypatch, ("HONEYWELL INTERNATIONAL INC", "HON"),
+            ("HONEYWELL AERO", "HONA"))
+    assert sn._find_cik("Honeywell")[1] == "HON"
+
+
+def test_lookup_matches_whole_words_only(monkeypatch):
+    _titles(monkeypatch, ("OXFORD INDUSTRIES INC", "OXM"),
+            ("METALS CO", "MTL"), ("FORD MOTOR CO", "F"),
+            ("META PLATFORMS INC", "META"))
+    assert sn._find_cik("Ford")[1] == "F"
+    assert sn._find_cik("Meta")[1] == "META"
+
+
+@pytest.mark.parametrize("sentence,subject", [
+    (("For fiscal 2024, which ended in September, Visa earned net income of "
+     "$19.7 billion."), "Visa"),
+    ("Chipotle Mexican Grill's fiscal 2024 revenue totaled $11.3 billion.",
+     "Chipotle Mexican Grill"),
+    ("The Statue of Liberty stands about 93 metres tall.", "Statue of Liberty"),
+    ("According to its report, UnitedHealth Group's revenue was $400 billion.",
+     "UnitedHealth Group"),
+    ("Angel Falls in Venezuela has a total height of 979 meters.", "Angel Falls"),
+    ("Life expectancy at birth in Italy was about 83 years.", "Italy"),
+    ("The population of Japan is about 125 million.", "Japan"),
+    ("Germany's GDP was about $4 trillion.", "Germany"),
+])
+def test_subject_is_who_the_sentence_is_about(sentence, subject):
+    assert sn.extract_subject("", sentence) == subject
+
+
+def _sec_rows(monkeypatch, rows):
+    monkeypatch.setattr(sn, "_find_cik", lambda s: ("1", "TGT"))
+    body = json.dumps({"units": {"USD": rows}}).encode()
+    monkeypatch.setattr(
+        sn, "_urlopen_with_deadline", lambda req, *args, **kwargs: body,
+    )
+
+
+def _row(end, fy, val, start=None):
+    row = {"form": "10-K", "fp": "FY", "end": end, "fy": fy,
+           "filed": f"{end[:4]}-03-01", "val": val}
+    if start:
+        row["start"] = start
+    return row
+
+
+TARGET = [
+    _row("2023-01-28", 2022, 109_100_000_000, "2022-01-30"),
+    _row("2023-01-28", 2023, 109_100_000_000, "2022-01-30"),
+    _row("2024-02-03", 2023, 107_400_000_000, "2023-01-29"),
+]
+
+
+def test_fiscal_year_follows_the_filing_not_the_end_date(monkeypatch):
+    """Target's fiscal 2023 ended in February 2024. Matching by end year
+    compared the claim with fiscal 2022 and contradicted a true figure."""
+    _sec_rows(monkeypatch, TARGET)
+    r = verify_sec_edgar(_decomp(
+        "Target's revenue for fiscal 2023 was $107.4 billion.", 107.4e9,
+        metric="revenue", subject="Target", time_period="2023"))
+    assert r.match_type == "exact"
+    assert "FY2023" in r.source_text
+
+
+def test_a_quarter_inside_a_10k_is_not_the_annual_figure(monkeypatch):
+    _sec_rows(monkeypatch, [
+        _row("2023-12-31", 2023, 25_000_000_000, "2023-10-01"),
+        _row("2023-12-31", 2023, 96_800_000_000, "2023-01-01"),
+    ])
+    r = verify_sec_edgar(_decomp(
+        "Tesla's revenue in 2023 was $25 billion.", 25e9,
+        metric="revenue", subject="Tesla", time_period="2023"))
+    assert r.match_type == "contradicted"
+    assert r.source_value == 96_800_000_000
+
+
+def test_a_net_loss_matches_a_negative_filing(monkeypatch):
+    _sec_rows(monkeypatch, [_row("2024-12-28", 2024, -18_800_000_000,
+                                 "2023-12-31")])
+    d = decompose_claim(
+        {"sentence": "Intel posted a net loss of $18.8 billion in fiscal 2024.",
+         "numbers": ["$18.8 billion"]})
+    assert d.metric == "profit"
+    assert verify_sec_edgar(d).match_type == "exact"
+
+
+def test_fred_is_only_asked_about_the_united_states(monkeypatch):
+    monkeypatch.setenv("FRED_API_KEY", "x")
+    spain = _decomp("Spain's unemployment rate averaged 11.4% in 2024.", 11.4,
+                    unit="percent", subject="Spain")
+    us = _decomp("The US unemployment rate was 3.7% in 2023.", 3.7,
+                 unit="percent", subject="United States")
+    assert "verify_fred" not in [f.__name__ for f in sn._classify_and_route(spain)]
+    assert "verify_fred" in [f.__name__ for f in sn._classify_and_route(us)]
+
+
+@pytest.mark.parametrize("sentence", [
+    "Germany was home to about 90 million people in 2024.",
+    "About 90 million people lived in Germany in 2024.",
+])
+def test_a_country_total_needs_no_word_population(world_bank, sentence):
+    assert sn.verify_world_bank(_country(sentence, 90e6)).match_type != "no_data"
+
+
+def test_tallest_is_evidence_of_height():
+    sentence = "Mount Fuji rises to an elevation of 3,776 meters."
+    passage = "It is the tallest mountain in Japan, standing 3,776.24 m."
+    d = _decomp(sentence, 3776, metric="height", unit="distance",
+                subject="Mount Fuji")
+    assert _match_in_text(passage, 3776, sentence, decomp=d)[0] is not None
+
+
+# ── Figures a source does not hold ──────────────────────────────────
+
+@pytest.mark.parametrize("sentence,value,metric,unit", [
+    ("NVIDIA's revenue grew 126% in FY2024.", 126, "revenue", "percent"),
+    ("Earnings per share rose to $5.20 in FY2023.", 5.2, "profit", "currency"),
+    ("Apple's gross profit was $169 billion in fiscal 2023.", 169e9, "profit",
+     "currency"),
+    ("Apple's operating profit was $114 billion in fiscal 2023.", 114e9,
+     "profit", "currency"),
+    ("Apple's EBITDA was $125 billion in fiscal 2023.", 125e9, "profit",
+     "currency"),
+    ("Apple's cost of revenue was $214 billion in fiscal 2023.", 214e9,
+     "operating_expenses", "currency"),
+])
+def test_sec_only_compares_the_figure_it_holds(apple_sec, sentence, value,
+                                               metric, unit):
+    r = verify_sec_edgar(_decomp(
+        sentence, value, metric=metric, unit=unit, time_period="2023",
+    ))
+    assert r.match_type == "no_data"
+
+
+def test_sec_will_not_use_a_neighbouring_year(apple_sec):
+    r = verify_sec_edgar(_decomp(
+        "Apple's revenue in fiscal 2021 was $394 billion.", 394e9,
+        metric="revenue", time_period="2021",
+    ))
+    assert r.match_type == "no_data"
+
+
+def test_quarter_ignores_year_to_date_rows(monkeypatch):
+    rows = [
+        {"form": "10-Q", "fp": "Q2", "fy": 2023, "end": "2023-06-30",
+         "start": "2023-01-01", "filed": "2023-08-01", "val": 50_000_000_000},
+        {"form": "10-Q", "fp": "Q2", "fy": 2023, "end": "2023-06-30",
+         "start": "2023-04-01", "filed": "2023-08-01", "val": 25_000_000_000},
+    ]
+    _sec_rows(monkeypatch, rows)
+    r = verify_sec_edgar(_decomp(
+        "Tesla's Q2 2023 revenue was $50 billion.", 50e9, metric="revenue",
+        subject="Tesla", time_period="Q2 2023",
+    ))
+    assert r.match_type == "contradicted"
+    assert r.source_value == 25_000_000_000
+
+
+@pytest.mark.parametrize("sentence,value", [
+    ("Germany's GDP grew 0.3% in 2023.", 0.3),
+    ("Germany's population grew 0.1% in 2023.", 0.1),
+])
+def test_world_bank_does_not_compare_a_rate_with_a_total(world_bank, sentence,
+                                                         value):
+    metric = "gdp" if "GDP" in sentence else "population"
+    r = sn.verify_world_bank(_country(
+        sentence, value, metric=metric, unit="percent", time_period="2023",
+    ))
+    assert r.match_type == "no_data"
+
+
+def test_an_ambiguous_place_name_cannot_contradict(monkeypatch):
+    monkeypatch.setattr(sn, "_fetch_json", lambda url, *a, **k: (
+        [{}, [{"value": 3_700_000, "date": "2023"}]] if "/indicator/" in url
+        else [{}, [{"iso2Code": "GE", "name": "Georgia"}]]
+    ))
+    monkeypatch.setattr(sn, "_WB_COUNTRY_CODES", {})
+    r = sn.verify_world_bank(_decomp(
+        "Georgia's population was 10.9 million in 2023.", 10.9e6,
+        metric="population", unit="count", subject="Georgia",
+        time_period="2023",
+    ))
+    assert r.match_type == "no_data"
+
+
+@pytest.mark.parametrize("subject", ["Now", "Key", "One", "All", "Delta", "United"])
+def test_ordinary_words_do_not_resolve_to_companies(monkeypatch, subject):
+    monkeypatch.setattr(sn, "_get_sec_tickers", lambda: (
+        {"DELTA AIR LINES INC": ("1", "DAL"), "UNITED AIRLINES": ("2", "UAL")},
+        {"NOW": ("3", "NOW"), "KEY": ("4", "KEY"), "ONE": ("5", "ONE"),
+         "ALL": ("6", "ALL")},
+    ))
+    assert sn._find_cik(subject) == (None, None)
+
+
+def test_an_uppercase_ticker_still_resolves(monkeypatch):
+    monkeypatch.setattr(sn, "_get_sec_tickers", lambda: (
+        {}, {"NVDA": ("1", "NVDA")},
+    ))
+    assert sn._find_cik("NVDA")[1] == "NVDA"
+
+
+@pytest.mark.parametrize("token,source,expected", [
+    ("5%", "Growth was 25% last year.", False),
+    ("5%", "Growth was 0.5% last year.", False),
+    ("5%", "Growth was 5% last year.", True),
+    ("12.5%", "Growth was 12% last year.", False),
+    ("500", "We hired 1,500 people.", False),
+    ("$5 million", "It costs $5 more.", False),
+    ("$5 trillion", "It costs $5 to $7 million.", False),
+])
+def test_source_match_boundaries(token, source, expected):
+    assert _token_in_source(token, source) is expected
+
+
+def test_own_sentence_finds_the_whole_number():
+    from claim_analysis import _own_sentence
+    doc = "Margins rose 25% overall. Fees were 5% this year."
+    assert _own_sentence(doc, "5%") == "Fees were 5% this year."
+
+
+def test_own_sentence_splits_before_a_dollar_figure():
+    from claim_analysis import _own_sentence
+    doc = "Revenue was flat, nearly. $5 billion went to capex."
+    assert _own_sentence(doc, "$5 billion") == "$5 billion went to capex."
+
+
+def test_an_altitude_about_something_else_is_not_the_subjects_height():
+    sentence = "Mount Everest is 12,000 metres tall."
+    passage = (
+        "The hot-air balloons were modified to function at up to 12,000 m "
+        "(40,000 ft) altitude."
+    )
+    d = _decomp(sentence, 12000, metric="height", unit="distance",
+                subject="Mount Everest")
+    assert _match_in_text(passage, 12000, sentence, decomp=d)[0] is None
+
+
+def test_fiscal_label_conventions_differ_so_either_year_can_confirm(monkeypatch):
+    """Salesforce's fiscal 2025 ended January 2025, with filings tagged so the
+    fy=2025 rows hold the next year. Trusting the tag contradicted a true
+    figure, so a claim stands if it matches either reading of the year."""
+    _sec_rows(monkeypatch, [
+        _row("2025-01-31", 2024, 37_900_000_000, "2024-02-01"),
+        _row("2026-01-31", 2025, 41_500_000_000, "2025-02-01"),
+    ])
+    r = verify_sec_edgar(_decomp(
+        "Salesforce generated $37.9 billion in revenue during its fiscal 2025.",
+        37.9e9, metric="revenue", subject="Salesforce", time_period="2025"))
+    assert r.match_type == "exact"
+
+
+def test_matching_neither_reading_of_the_year_is_a_contradiction(monkeypatch):
+    _sec_rows(monkeypatch, [
+        _row("2025-01-31", 2024, 37_900_000_000, "2024-02-01"),
+        _row("2026-01-31", 2025, 41_500_000_000, "2025-02-01"),
+    ])
+    r = verify_sec_edgar(_decomp(
+        "Salesforce generated $60 billion in revenue during its fiscal 2025.",
+        60e9, metric="revenue", subject="Salesforce", time_period="2025"))
+    assert r.match_type == "contradicted"
+
+
+@pytest.mark.parametrize("sentence,raw,is_bound", [
+    ("US national debt exceeded $34 trillion in January 2024.", "$34 trillion", True),
+    ("UnitedHealth's revenue climbed past $400 billion.", "$400 billion", True),
+    ("Revenue was over $5 billion in 2023.", "$5 billion", True),
+    ("Revenue was at least $5 billion in 2023.", "$5 billion", True),
+    ("Revenue was nearly $5 billion in 2023.", "$5 billion", False),
+    ("Revenue was $5 billion in 2023, over the target.", "$5 billion", False),
+])
+def test_a_stated_bound_is_recognised(sentence, raw, is_bound):
+    assert sn._states_a_bound(sentence, raw) is is_bound
+
+
+def test_a_bound_cannot_be_contradicted():
+    filing = SourceResult(source_name="SEC Filing", match_type="contradicted",
+                          source_text="x", confidence=0.85)
+    verdict, _c, detail = sn._consensus_for(
+        ClaimDecomposition(
+            sentence="Revenue exceeded $5 billion.", raw_value="$5 billion",
+        ), [filing])
+    assert verdict == "unverifiable"
+
+
+def test_a_physical_measurement_gets_no_five_percent_slack():
+    """457 m must not match a 447 m observation deck."""
+    sentence = "The CN Tower in Toronto is 457 meters tall."
+    passage = "The tall observation deck stands at 447 m above the ground."
+    d = _decomp(sentence, 457, metric="height", unit="distance",
+                subject="CN Tower")
+    assert _match_in_text(passage, 457, sentence, decomp=d)[0] is None
+
+
+def test_a_rounded_physical_measurement_still_matches():
+    sentence = "The Moon is about 384,400 km from Earth."
+    passage = "The Moon orbits Earth at a distance of 378,000 km, on average."
+    d = _decomp(sentence, 384400, metric="", unit="distance", subject="Moon")
+    assert _match_in_text(passage, 384400, sentence, decomp=d)[0] is not None

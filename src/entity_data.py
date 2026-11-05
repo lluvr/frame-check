@@ -19,8 +19,7 @@ The four exports are:
   abbreviations. Case-sensitivity prevents ``us`` (pronoun) and
   ``eu`` (substring of ``neurological``) from spuriously matching.
 - ``_COUNTRY_CANONICAL``: maps abbreviations and demonyms to the
-  canonical country name that REST Countries and World Bank APIs
-  expect.
+  canonical country name that the World Bank API expects.
 - ``_CRYPTO_NAMES``: maps full names and tickers to the canonical
   CoinGecko id used by the verification layer.
 """
@@ -97,7 +96,7 @@ _COUNTRY_ABBREV_RE = re.compile(r'\b(U\.?S\.?A?\.?|U\.?K\.?|EU)\b')
 
 
 # Map abbreviations and demonyms to the canonical name that
-# REST Countries and World Bank APIs expect.
+# the World Bank API expects.
 _COUNTRY_CANONICAL = {
     "US": "United States", "U.S.": "United States", "U.S.A.": "United States",
     "USA": "United States", "U.S.A": "United States",
@@ -121,12 +120,12 @@ _COUNTRY_CANONICAL = {
     "Belgian": "Belgium", "Austrian": "Austria", "Polish": "Poland",
     "Czech": "Czechia", "Hungarian": "Hungary", "Romanian": "Romania",
     "Greek": "Greece", "Portuguese": "Portugal", "Irish": "Ireland",
-    # Alternative country names to canonical REST Countries / World Bank names
+    # Alternative country names to canonical World Bank names
     "Czech Republic": "Czechia", "Swaziland": "Eswatini",
     "East Timor": "Timor-Leste", "Ivory Coast": "Cote d'Ivoire",
     "Cape Verde": "Cabo Verde",
     "Guinea-Bissau": "Guinea-Bissau",  # prevent "Guinea" substring match
-    # Korea disambiguation. REST Countries and World Bank index these
+    # Korea disambiguation. The World Bank indexes these
     # separately; an unqualified "Korea" alone is ambiguous and should
     # stay as "Korea" so the verifier layer can decide how to resolve
     # it, but the explicit "North Korea" / "South Korea" forms must

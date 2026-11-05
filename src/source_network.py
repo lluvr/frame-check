@@ -17,6 +17,7 @@ Architecture:
 
 import os
 import re
+import datetime
 import json
 import sys
 import threading
@@ -270,11 +271,19 @@ def normalize_value(raw, sentence=""):
 # ================================================================
 
 _PROPER_NOUN_RE = re.compile(
-    r'\b([A-Z][a-z]+(?:-[A-Z][a-z]+)*(?:\s+(?:of|the|and|for|in|de|von|van)\s+)?'
-    r'(?:\s+[A-Z][a-z]+)*)\b'
+    r'\b([A-Z][a-zA-Z]*[a-z](?:-[A-Z][a-z]+)*'
+    r'(?:(?:\s+(?:of|the|and|de|von|van))?\s+[A-Z][a-zA-Z]*[a-z])*)\b'
 )
 
 # Common sentence-start words that are NOT proper nouns
+_POSSESSIVE_SUBJECT_RE = re.compile(
+    r"\b((?:[A-Z][\w&.-]*\s+){0,3}[A-Z][\w&.-]*)['\u2019]s\b"
+)
+_CALENDAR_WORDS = frozenset({
+    "January", "February", "March", "April", "May", "June", "July", "August",
+    "September", "October", "November", "December", "Monday", "Tuesday",
+    "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+})
 _SENTENCE_STARTERS = {
     "The", "This", "That", "These", "Those", "It", "Its", "There",
     "Here", "What", "When", "Where", "How", "Why", "Which", "Who",
@@ -483,10 +492,25 @@ def extract_subject(heading, sentence, topic="", doc_text="", num_raw="",
                             return w
                 return clean
 
+    # 2a. A possessive names what the sentence is about, ahead of any
+    # country inside it: "Chipotle Mexican Grill's revenue" is not Mexico.
+    if sentence:
+        possessive = _POSSESSIVE_SUBJECT_RE.search(sentence)
+        if possessive and is_likely_entity(possessive.group(1)):
+            name = possessive.group(1)
+            if not _COUNTRY_NAMES_RE.fullmatch(name):
+                return name
+
     # 2. Country names in the sentence (specific pattern, high confidence)
     if sentence:
         country_match = _COUNTRY_NAMES_RE.search(sentence)
         if country_match:
+            # "Angel Falls in Venezuela": the country locates the subject.
+            before = sentence[:country_match.start()]
+            if re.search(r'\b(?:in|from)\s+(?:the\s+)?$', before):
+                for name in _PROPER_NOUN_RE.findall(before):
+                    if len(name.split()) >= 2 and is_likely_entity(name):
+                        return name
             matched = country_match.group()
             return _COUNTRY_CANONICAL.get(matched, _COUNTRY_CANONICAL.get(matched.title(), matched))
         abbrev_match = _COUNTRY_ABBREV_RE.search(sentence)
@@ -505,9 +529,13 @@ def extract_subject(heading, sentence, topic="", doc_text="", num_raw="",
 
     # 4. Proper nouns in the sentence (Title Case words)
     if sentence:
-        matches = _PROPER_NOUN_RE.findall(sentence)
+        matches = [
+            re.sub(r'^(?:The|A|An)\s+', '', found)
+            for found in _PROPER_NOUN_RE.findall(sentence)
+        ]
         for m in matches:
             if (m not in _SENTENCE_STARTERS
+                    and m not in _CALENDAR_WORDS
                     and len(m) > 2
                     and is_likely_entity(m)):
                 return m
@@ -740,7 +768,7 @@ _METRIC_PATTERNS = {
         re.IGNORECASE,
     ),
     "revenue": re.compile(r'\b(revenues?|sales|turnover)\b', re.IGNORECASE),
-    "profit": re.compile(r'\b(profits?|earnings|net\s+income|EBITDA)\b', re.IGNORECASE),
+    "profit": re.compile(r'\b(profits?|earnings|net\s+income|net\s+loss|EBITDA)\b', re.IGNORECASE),
     "market_cap": re.compile(r'\b(market\s+cap|valuation|valued\s+at)\b', re.IGNORECASE),
     "population": re.compile(r'\b(population|inhabitants|residents|people)\b', re.IGNORECASE),
     "area": re.compile(r'\b(area|square\s+(?:km|miles?|kilomet(?:er|re)s?)|sq\s+km)\b', re.IGNORECASE),
@@ -1597,7 +1625,7 @@ _METRIC_EVIDENCE = {
         r'\b(population|populous|inhabitants|people\s+live)\b',
         re.IGNORECASE),
     "height": re.compile(
-        r'\b(height|tall|elevation|altitude|above\s+sea\s+level|high)\b',
+        r'\b(height|tall\w*|elevation|above\s+sea\s+level)\b',
         re.IGNORECASE),
     "area": re.compile(
         r'\b(area|square\s+(?:km|kilomet\w+|miles?|met\w+)|km2|km²|sq\s+km)\b',
@@ -1618,6 +1646,7 @@ _METRIC_EVIDENCE = {
 # "(12 km in diameter), which orbit at 9,376 km". The word must sit in the
 # number's own clause.
 _CLAUSE_BOUND_METRICS = frozenset({"diameter"})
+_VAGUE_HEIGHT_RE = re.compile(r'\b(altitude|high\w*)\b', re.IGNORECASE)
 
 # Metrics too generic to say what a number measures. These claims have
 # to share a content word with the passage instead.
@@ -1746,6 +1775,11 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
     if is_pct and not is_small:
         tolerance = 0.015  # +/- 1.5%: 80% matches 79-81, not 76-84
 
+    # Measurements are published precisely, so 5% is another object entirely:
+    # 457 m matched a 447 m observation deck.
+    if decomp and decomp.unit in ("distance", "mass"):
+        tolerance = min(tolerance, 0.02)
+
     # Extract all numbers with context windows.
     # Handle scale suffixes (B/billion, M/million, T/trillion, K/thousand)
     # common in web snippets: "$60.922B", "3.8M units", "$1.2T"
@@ -1756,8 +1790,10 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
         "k": 1e3, "thousand": 1e3,
     }
     _NUM_RE = re.compile(
-        r'[\$]?\s*([\d,]+(?:\.\d+)?)\s*'
-        r'(trillion|billion|million|thousand|bn|mn|[TBMKtbmk])?'
+        # A lone letter scales only when attached: "$60.9B" but not
+        # "3,776.24 m", which is metres and read as 3.7 billion.
+        r'[\$]?\s*([\d,]+(?:\.\d+)?)'
+        r'(\s*(?:trillion|billion|million|thousand|bn|mn)|[TBMKtbmk])?'
         r'(?:\b|(?=[\s,.\)\]]))'
     )
 
@@ -1774,7 +1810,7 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
         # Apply scale suffix
         suffix = m.group(2)
         if suffix:
-            scale = _SCALE_SUFFIXES.get(suffix.lower(), 1)
+            scale = _SCALE_SUFFIXES.get(suffix.strip().lower(), 1)
             num_val *= scale
 
         # Get context window (80 chars each side, snapped to word boundaries)
@@ -1862,7 +1898,14 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
                 nearby = _nearby(text, num_start, num_end)
                 if decomp.metric in _CLAUSE_BOUND_METRICS:
                     nearby = _own_clause(text, num_start, num_end)
-                if not evidence.search(nearby):
+                # "up to 12,000 m altitude" may describe a balloon. Vaguer
+                # height words count only when they name the subject too.
+                vague_height = (
+                    decomp.metric == "height"
+                    and _VAGUE_HEIGHT_RE.search(nearby)
+                    and _shares_content_word(subject_words, nearby)
+                )
+                if not evidence.search(nearby) and not vague_height:
                     continue
                 if decomp.metric == "population" and (
                     _SUBGROUP_RE.search(nearby)
@@ -2058,62 +2101,6 @@ def _detect_country(sentence, heading):
     return None
 
 
-def verify_rest_countries(decomp):
-    """Verify country statistics (population, area) against REST Countries.
-
-    REST Countries returns CURRENT data only; there is no time
-    series. A HISTORICAL claim about a country's past population
-    cannot be verified here and must return no_data rather than
-    match the current value against the historical claim and
-    produce a misleading `close` or `verified` verdict by
-    coincidence. The guard below is the typed TimeContext
-    application of that invariant.
-
-    Not routed: restcountries.com retired v1-v4 (v5 needs an account), so
-    this returns no_data. verify_world_bank answers population and area.
-    """
-    if getattr(decomp, "time_period_type", "") == "historical":
-        return SourceResult(source_name="REST Countries", match_type="no_data")
-
-    country = _detect_country(decomp.sentence, decomp.heading)
-    if not country:
-        return SourceResult(source_name="REST Countries", match_type="no_data")
-
-    url = f"https://restcountries.com/v3.1/name/{urllib.parse.quote(country)}?fields=name,population,area,cca3"
-    data = _fetch_json(url)
-    if not data or not isinstance(data, list) or len(data) == 0:
-        return SourceResult(source_name="REST Countries", match_type="no_data")
-
-    c = data[0]
-    pop = c.get("population", 0)
-    area = c.get("area", 0)
-    name = c.get("name", {}).get("common", country)
-
-    # Try matching against population or area
-    for label, source_val in [("population", pop), ("area", area)]:
-        if source_val == 0:
-            continue
-        diff = abs(source_val - decomp.value) / max(abs(decomp.value), 1e-10)
-        if diff < 0.05:
-            match_type = "exact" if diff < 0.01 else "close"
-            return SourceResult(
-                source_name="REST Countries",
-                source_url=f"https://restcountries.com/v3.1/name/{urllib.parse.quote(country)}",
-                source_value=source_val,
-                source_text=f"{name} {label}: {source_val:,.0f}",
-                match_type=match_type,
-                difference_pct=round(diff * 100, 1),
-                confidence=0.85 if match_type == "exact" else 0.7,
-            )
-
-    return SourceResult(
-        source_name="REST Countries",
-        source_url=f"https://restcountries.com/v3.1/name/{urllib.parse.quote(country)}",
-        source_text=f"{name}: population {pop:,.0f}, area {area:,.0f} km2",
-        match_type="no_data",
-    )
-
-
 # ── World Bank ──
 
 def _detect_wb_indicator(sentence, metric):
@@ -2144,6 +2131,16 @@ def _detect_wb_indicator(sentence, metric):
     return None, None
 
 
+# Words that make a head count a country's total. "12 million people in
+# Germany use the service" has none of them.
+_COUNTRY_TOTAL_RE = re.compile(
+    r'\bpopulation\b|'
+    r'\b(?:home\s+to|had|has)\s+[a-z\s]*?[\d.,]+\s*(?:million|billion)?\s+'
+    r'(?:people|residents|inhabitants)\b(?!\s+(?:who|that|use|using))|'
+    r'\b(?:people|residents|inhabitants)\s+lived\s+in\b',
+    re.IGNORECASE,
+)
+
 # Canonical names the World Bank spells differently.
 _WB_COUNTRY_ALIASES = {
     "south korea": "KR", "korea": "KR", "north korea": "KP",
@@ -2154,6 +2151,7 @@ _WB_COUNTRY_ALIASES = {
 }
 # Filled once per process from the World Bank's own country list.
 _WB_COUNTRY_CODES = {}
+_AMBIGUOUS_PLACE_NAMES = frozenset({"georgia", "jordan", "chad", "turkey"})
 _WB_TOTAL_INDICATORS = frozenset({
     "SP.POP.TOTL", "NY.GDP.MKTP.CD", "NY.GDP.PCAP.CD", "AG.SRF.TOTL.K2",
 })
@@ -2201,9 +2199,13 @@ def verify_world_bank(decomp):
     # something: "12 million people in Germany use the service" is true
     # or false independently of how many people live there.
     if indicator_id == "SP.POP.TOTL" and (
-        "population" not in decomp.sentence.lower()
+        not _COUNTRY_TOTAL_RE.search(decomp.sentence)
         or _SUBGROUP_RE.search(decomp.sentence)
     ):
+        return SourceResult(source_name="World Bank", match_type="no_data")
+
+    # A rate against a total: "GDP grew 0.3%" is not a $0.3 economy.
+    if decomp.unit == "percent" and indicator_id in _WB_TOTAL_INDICATORS:
         return SourceResult(source_name="World Bank", match_type="no_data")
 
     iso2 = _wb_country_code(country)
@@ -2244,6 +2246,9 @@ def verify_world_bank(decomp):
                 # With no period named, a moving figure that disagrees
                 # may just be another year's. Population and area move
                 # slowly enough to be wrong regardless.
+                match_type = "no_data"
+            elif country.lower() in _AMBIGUOUS_PLACE_NAMES:
+                # Georgia the state has about three times the people.
                 match_type = "no_data"
             elif indicator_id in _WB_TOTAL_INDICATORS or diff < 1.0:
                 match_type = "contradicted"
@@ -2733,6 +2738,10 @@ def _get_sec_tickers():
 
 
 _COMMON_NOUN_BLACKLIST = frozenset({
+    # First words of several companies: which one is a guess, and a wrong
+    # guess passes off another company's filings as this claim's check.
+    "delta", "united", "american", "national", "general", "first", "chase",
+    "johnson", "all", "one", "now", "key",
     # Common English nouns that title-case in headings ("Semiconductor",
     # "Technology", "Industry") but are not company names. Without
     # this gate the SEC ticker substring match (step 4 below) maps
@@ -2782,7 +2791,9 @@ def _find_cik(subject):
     subject_upper = subject.upper().strip().rstrip(".").rstrip(",")
 
     # 1. Exact ticker match (handles "AAPL", "NVDA", "BRK.B" etc.)
-    if subject_upper in ticker_index:
+    # As written, not case-folded: "Now" and "Key" are words, NOW and KEY are
+    # tickers.
+    if subject_upper in ticker_index and subject.strip() == subject_upper:
         return ticker_index[subject_upper]
 
     # SEC titles spell "COCA COLA CO" where prose says "Coca-Cola".
@@ -2813,14 +2824,17 @@ def _find_cik(subject):
         is_single_word = " " not in subject_upper
         if is_single_word and subject_upper.lower() in _COMMON_NOUN_BLACKLIST:
             return None, None
-        # Shortest title: the company itself rather than a longer-named
-        # affiliate, and not whichever happens to come first in the file.
-        matches = [
-            title for title in titles
-            if subject_upper in title or title in subject_upper
-        ]
-        if matches:
-            return titles[min(matches, key=len)]
+        # Whole words only, so "Ford" is not Oxford and "Meta" is not Metals.
+        # The first hit wins: SEC lists companies by market value, so that is
+        # the parent rather than a spinoff with a shorter name.
+        word = re.compile(r'\b' + re.escape(subject_upper) + r'\b')
+        for title, (cik, ticker) in titles.items():
+            if word.search(title) or (
+                len(title) >= 3 and re.search(
+                    r'\b' + re.escape(title) + r'\b', subject_upper,
+                )
+            ):
+                return cik, ticker
 
     return None, None
 
@@ -2843,6 +2857,44 @@ _METRIC_CONCEPTS = {
     "cash": ["CashAndCashEquivalentsAtCarryingValue",
              "CashCashEquivalentsAndShortTermInvestments"],
 }
+
+
+_SEC_OTHER_FIGURE_RE = re.compile(
+    r'\b(per[\s-]+share|EPS|EBITDA|margins?|gross\s+(?:profit|income)|'
+    r'operating\s+(?:profit|income|margin)|cost\s+of\s+(?:goods|revenue|sales))\b',
+    re.IGNORECASE,
+)
+
+
+def _spans_a_quarter(filing):
+    """False for a year-to-date row, which also carries fp=Q2 or Q3."""
+    start, end = filing.get("start"), filing.get("end")
+    if not start or not end:
+        return True
+    try:
+        days = (
+            datetime.date.fromisoformat(end)
+            - datetime.date.fromisoformat(start)
+        ).days
+    except ValueError:
+        return True
+    return 70 <= days <= 110
+
+
+def _spans_a_year(filing):
+    """False for a quarter reported inside a 10-K. A balance-sheet figure
+    has no start date and is fine."""
+    start, end = filing.get("start"), filing.get("end")
+    if not start or not end:
+        return True
+    try:
+        days = (
+            datetime.date.fromisoformat(end)
+            - datetime.date.fromisoformat(start)
+        ).days
+    except ValueError:
+        return True
+    return 300 <= days <= 400
 
 
 def _end_year(filing):
@@ -2876,6 +2928,12 @@ def verify_sec_edgar(decomp):
     if not concepts_to_try:
         return SourceResult(source_name="SEC Filing", match_type="no_data")
 
+    # Only the level figure a concept holds. A growth rate, a per-share
+    # number or gross profit against net income would "contradict" a true
+    # claim by nine orders of magnitude.
+    if decomp.unit == "percent" or _SEC_OTHER_FIGURE_RE.search(decomp.sentence):
+        return SourceResult(source_name="SEC Filing", match_type="no_data")
+
     cik, ticker = _find_cik(decomp.subject)
     if not cik:
         return SourceResult(source_name="SEC Filing", match_type="no_data")
@@ -2904,6 +2962,13 @@ def verify_sec_edgar(decomp):
         q_match = re.search(r'Q([1-4])', decomp.sentence, re.IGNORECASE)
         if q_match:
             target_quarter = f"Q{q_match.group(1)}"
+
+    # Filings report a net loss as a negative net income.
+    claim_value = decomp.value
+    if metric_lower == "profit" and re.search(
+        r'\bnet\s+loss\b', decomp.sentence, re.IGNORECASE,
+    ):
+        claim_value = -abs(decomp.value)
 
     # Query XBRL for each concept, find the best match
     best_val = None
@@ -2959,6 +3024,7 @@ def verify_sec_edgar(decomp):
             filtered = [
                 u for u in units
                 if u.get("form") == "10-Q" and u.get("fp") == target_quarter
+                and _spans_a_quarter(u)
             ]
             # Do NOT fall back to 10-K. Honest no_data beats a
             # confident contradiction computed against the wrong
@@ -2967,6 +3033,7 @@ def verify_sec_edgar(decomp):
             filtered = [
                 u for u in units
                 if u.get("form") == "10-K" and u.get("fp") == "FY"
+                and _spans_a_year(u)
             ]
 
         # Sort by recency (most recent first)
@@ -2990,28 +3057,26 @@ def verify_sec_edgar(decomp):
         # SEC EDGAR's fy field is the FILING year, not the data period.
         exact_year_match = False
         if target_fy:
+            # Two readings of "fiscal 2023". By the filing's own fy tag: its
+            # newest row, which is how Target's year ending February 2024
+            # counts. By end date: how Salesforce's fiscal 2025 ending January
+            # 2025 counts, tagged fy=2024. Companies differ, and nothing here
+            # says which applies, so the claim is compared with both and only
+            # contradicted if it matches neither.
+            own_year = [f for f in filtered if f.get("fy") == target_fy]
+            newest = max((f.get("end", "") for f in own_year), default="")
             exact_year_entries = [
                 f for f in filtered
                 if _end_year(f) == target_fy
+                or (f.get("fy") == target_fy and f.get("end", "") == newest)
             ]
-            # For quarterly filings, the fiscal year label (fy field)
-            # often differs from the end-date year. Apple Q1 FY2026
-            # ends in Dec 2025 (end_year=2025, fy=2026). Check fy
-            # as an alternative when end-year matching finds nothing.
-            if not exact_year_entries and target_quarter:
-                exact_year_entries = [
-                    f for f in filtered
-                    if f.get("fy") == target_fy
-                ]
             if exact_year_entries:
                 filtered = exact_year_entries
                 exact_year_match = True
             else:
-                filtered = [
-                    f for f in filtered
-                    if _end_year(f) is not None
-                    and abs(_end_year(f) - target_fy) <= 1
-                ]
+                # The filings have no such year. A neighbouring year can
+                # neither confirm this claim nor contradict it.
+                filtered = []
 
         if not target_fy:
             yearless_rows.extend(filtered)
@@ -3021,22 +3086,14 @@ def verify_sec_edgar(decomp):
             val = filing.get("val", 0)
             if val == 0:
                 continue
-            diff = abs(val - decomp.value) / max(abs(decomp.value), 1e-10)
+            diff = abs(val - claim_value) / max(abs(claim_value), 1e-10)
 
-            if exact_year_match:
-                # Exact end-year match: always record. Wrong values
-                # for the right period are how we catch contradictions.
-                if diff < best_diff:
-                    best_diff = diff
-                    best_val = val
-                    best_filing = filing
-            else:
-                # Adjacent-year fallback: only accept close matches
-                # so we don't false-match against the wrong period.
-                if diff < 0.05 and diff < best_diff:
-                    best_diff = diff
-                    best_val = val
-                    best_filing = filing
+            # Wrong values for the right period are how we catch
+            # contradictions.
+            if diff < best_diff:
+                best_diff = diff
+                best_val = val
+                best_filing = filing
 
         # If we found an exact or close match, stop trying other concepts
         if best_diff < 0.03:
@@ -3048,7 +3105,7 @@ def verify_sec_edgar(decomp):
             val = filing.get("val", 0)
             if filing.get("end", "") != latest_end or val == 0:
                 continue
-            diff = abs(val - decomp.value) / max(abs(decomp.value), 1e-10)
+            diff = abs(val - claim_value) / max(abs(claim_value), 1e-10)
             # Agreeing confirms. Disagreeing proves nothing: the claim
             # may well be about a year it did not name.
             if diff < 0.03 and diff < best_diff:
@@ -3080,15 +3137,15 @@ def verify_sec_edgar(decomp):
     # and a 10-K carries comparatives: Apple's FY2016 revenue also appears
     # in its FY2018 10-K, tagged fy=2018.
     fy = best_filing.get("fy", "")
-    data_year = _end_year(best_filing) or fy
+    data_year = target_fy or fy or _end_year(best_filing)
     metric_label = {"profit": "net income"}.get(
         metric_lower, metric_lower.replace("_", " "),
     )
     fp = best_filing.get("fp", "FY")
     form = best_filing.get("form", "10-K")
     filed = best_filing.get("filed", "")
-    val_display = best_val / 1e9 if best_val >= 1e9 else best_val / 1e6
-    val_unit = "B" if best_val >= 1e9 else "M"
+    val_display = best_val / 1e9 if abs(best_val) >= 1e9 else best_val / 1e6
+    val_unit = "B" if abs(best_val) >= 1e9 else "M"
 
     if form == "10-Q":
         filing_label = f"{ticker} {fp} FY{fy} {metric_label}, 10-Q filed {filed}: ${val_display:,.1f}{val_unit}"
@@ -3372,7 +3429,11 @@ def _classify_and_route(decomp):
         sources.append(verify_coingecko)
 
     # Macroeconomic (FRED) - US economic indicators
-    if os.environ.get("FRED_API_KEY"):
+    # US series only: asking FRED about Spain's unemployment compared it with
+    # the US rate and marked a true figure as disputed.
+    if (os.environ.get("FRED_API_KEY")
+            and _detect_country(decomp.sentence, decomp.heading)
+            in (None, "United States")):
         if decomp.metric in ("gdp",) or \
            any(kw in sentence_lower for kw in ["gdp", "unemployment", "inflation",
                "cpi", "interest rate", "federal funds", "money supply",
@@ -3450,6 +3511,37 @@ def _classify_and_route(decomp):
 # ================================================================
 # Consensus
 # ================================================================
+
+_BOUND_WORDS = (
+    r'(?:exceed\w*|over|above|past|more\s+than|at\s+least|beyond|topp\w+|'
+    r'under|below|less\s+than|at\s+most|up\s+to)'
+)
+
+
+def _states_a_bound(sentence, raw_value):
+    """True for "exceeded $34 trillion": a limit, not a value."""
+    if not raw_value:
+        return False
+    return bool(re.search(
+        r'\b' + _BOUND_WORDS + r'\s+(?:about\s+|roughly\s+)?'
+        + re.escape(raw_value.strip()),
+        sentence, re.IGNORECASE,
+    ))
+
+
+def _consensus_for(decomp, results):
+    """_consensus, knowing the claim. A figure different from a stated bound
+    may satisfy it, so a bound is never contradicted."""
+    verdict, confidence, detail = _consensus(results)
+    if verdict == "contradicted" and _states_a_bound(
+        decomp.sentence, decomp.raw_value or "",
+    ):
+        return "unverifiable", 0.0, (
+            "The text states a limit, not a value, so a different figure "
+            "does not contradict it."
+        )
+    return verdict, confidence, detail
+
 
 def _consensus(results):
     """Determine verdict from multiple source results.
@@ -3596,7 +3688,6 @@ _AUTHORITY_SCORES = {
     "Wolfram Alpha": 0.85,
     "Alpha Vantage": 0.75,
     "Wikipedia": 0.7,
-    "REST Countries": 0.65,
     "CoinGecko": 0.6,
 }
 
@@ -4000,7 +4091,7 @@ def verify_claims_source_network(
                         )
 
         # Consensus
-        verdict, confidence, detail = _consensus(source_results)
+        verdict, confidence, detail = _consensus_for(decomp, source_results)
 
         # Find best source for display
         best = None
@@ -4204,7 +4295,9 @@ def verify_claims_source_network(
                             r = results[idx]
                             r.source_results.append(sr)
                             # Re-compute consensus with the new source
-                            verdict, confidence, detail = _consensus(r.source_results)
+                            verdict, confidence, detail = _consensus_for(
+                                r.decomposition, r.source_results,
+                            )
                             r.verdict = verdict
                             r.confidence = confidence
                             r.detail = detail

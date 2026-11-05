@@ -13,7 +13,7 @@ this classifier:
     "Q4 2023".
 
   * Historical claims (2010, 1995) must classify as HISTORICAL
-    so REST Countries / CoinGecko / other current-only verifiers
+    so CoinGecko and other current-only verifiers
     can contradict or return no_data rather than match current
     data against the historical claim.
 

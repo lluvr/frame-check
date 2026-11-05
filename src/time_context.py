@@ -27,10 +27,9 @@ specifically about a quarter. That is false authority; honest
 
 A typed TimeContext lets every verifier make the right call:
 
-  * REST Countries (current-data-only) returns `contradicted`
-    for HISTORICAL claims rather than matching current against
-    the historical value, OR returns `no_data` gracefully so
-    consensus doesn't invent disagreement.
+  * A current-data-only source returns `no_data` for HISTORICAL
+    claims rather than matching current against the historical
+    value, so consensus doesn't invent disagreement.
   * SEC EDGAR filters 10-Q for QUARTERLY claims and returns
     no_data (not annual) when the quarterly data is absent.
   * World Bank queries a specific ANNUAL year rather than

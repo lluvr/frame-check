@@ -807,6 +807,9 @@ _SCALE_SPELLINGS: dict[str, tuple[float, tuple[str, ...]]] = {
 # A needle ends where the number does: "$12.5 t" is not "$12.5 thousand"
 # and "$12,500,000" is not "$12,500,000,000".
 _AFTER_SCALED_NEEDLE = r'(?![a-zA-Z\d]|[.,]\d)'
+# Whole numbers only: "500" is not in "1,500" or "500.5".
+_BEFORE_NUMBER = r'(?<!\d)(?<!\d[,.])'
+_AFTER_NUMBER = r'(?!\d|[.,]\d)'
 
 
 def _scaled_dollar_needles(raw: str, val: str, scale: str) -> list[str]:
@@ -846,30 +849,29 @@ def _number_in_source(num: dict[str, Any], source_text: str) -> bool:
         )
 
     if ntype == "percentage":
-        if re.search(re.escape(val) + r'\s*(?:%|percent)', source_text, re.IGNORECASE):
-            return True
-        if "." in val:
-            int_val = val.split(".")[0]
-            if re.search(re.escape(int_val) + r'\s*(?:%|percent)', source_text, re.IGNORECASE):
-                return True
-        return False
+        # Whole number only: 5% is not in 25% or 0.5%, and 12.5% is not 12%.
+        return bool(re.search(
+            r'(?<![\d.])' + re.escape(val) + r'\s*(?:%|percent)',
+            source_text,
+            re.IGNORECASE,
+        ))
     elif ntype == "dollar":
-        if re.search(r'\$' + re.escape(val), source_text):
+        if re.search(r'\$' + re.escape(val) + _AFTER_NUMBER, source_text):
             return True
         # Try comma-formatted: $45000 -> $45,000
         comma_val = _add_commas(val)
-        if comma_val and re.search(r'\$' + re.escape(comma_val), source_text):
+        if comma_val and re.search(r'\$' + re.escape(comma_val) + _AFTER_NUMBER, source_text):
             return True
         return False
     elif ntype == "multiplier":
-        return bool(re.search(re.escape(val) + r'[xX]', source_text))
+        return bool(re.search(r'(?<![\d.])' + re.escape(val) + r'[xX]', source_text))
     else:
         # Try raw value first
-        if re.search(r'(?<!\d)' + re.escape(val) + r'(?!\d)', source_text):
+        if re.search(_BEFORE_NUMBER + re.escape(val) + _AFTER_NUMBER, source_text):
             return True
         # Try comma-formatted: 2000 -> 2,000
         comma_val = _add_commas(val)
-        if comma_val and re.search(r'(?<!\d)' + re.escape(comma_val) + r'(?!\d)', source_text):
+        if comma_val and re.search(_BEFORE_NUMBER + re.escape(comma_val) + _AFTER_NUMBER, source_text):
             return True
         return False
 
