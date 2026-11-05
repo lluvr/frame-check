@@ -22,7 +22,7 @@
 #
 # Trusted Publishing setup (manual, one-time at pypi.org):
 #   - https://pypi.org/manage/project/frame-check-mcp/settings/publishing/
-#   - Owner: Clarethium, Repository: frame-check, Workflow: publish.yml
+#   - Owner: lluvr, Repository: frame-check, Workflow: publish.yml
 #   - Environment: pypi (final), testpypi (pre-release)
 
 name: publish

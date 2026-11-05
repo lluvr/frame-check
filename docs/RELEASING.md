@@ -26,10 +26,11 @@ which runs five jobs in sequence:
    (`vX.Y.Zrc1`, `vX.Y.Z.dev0`, `vX.Y.ZaN`, `vX.Y.ZbN`). Uploads to
    TestPyPI via Trusted Publishing (OIDC).
 4. **`publish-to-pypi`**: runs only for final tags (no rc / dev / a
-   / b suffix). Uploads to PyPI via Trusted Publishing.
+   / b suffix). Waits for reviewer approval on the `pypi` environment,
+   then uploads to PyPI via Trusted Publishing.
 5. **`github-release`**: creates a GitHub release with the wheel
    attached. The release body is the annotated tag message, which by
-   convention carries the matching `CHANGELOG.md` section so
+   convention carries the matching `docs/CHANGELOG.md` section so
    `git show vX.Y.Z` and the GitHub release page show identical
    release notes.
 
@@ -46,34 +47,40 @@ Replace `1.0.13` with the version being cut.
 git checkout master
 git pull --ff-only origin master
 
-# 2. Verify all CI gates pass on master.
+# 2. Run the test workflow on the branch holding the release, before it
+#    reaches master. tests.yml runs on pull requests and manual dispatch
+#    only, so a direct push to master does not run it, and neither does
+#    the publish workflow.
+gh workflow run tests.yml -R lluvr/frame-check --ref <branch>
+gh run watch -R lluvr/frame-check
+
+#    Then verify all CI gates pass on master.
 bash scripts/canon_audit.sh   # rc=0
 gitleaks detect --no-banner   # no leaks
 python3 -m pytest -q          # all green
 
 # 3. Bump version in three places.
 #    - pyproject.toml [project] version
-#    - mcp_server.py SERVER_VERSION
+#    - src/mcp_server.py SERVER_VERSION
 #    - server.json  version  AND  packages[0].version
 # pyproject and SERVER_VERSION must match exactly (the CI version-sync
 # gate enforces this). server.json carries the same release version so
-# the official MCP registry listing tracks the published package; bump
-# it here, then re-publish the registry entry after the tag (see below).
+# the official MCP registry listing tracks the published package.
 
-# 4. Update CHANGELOG.md.
+# 4. Update docs/CHANGELOG.md.
 #    Move the [Unreleased] block to [1.0.13] - YYYY-MM-DD with a
 #    short narrative describing what shipped. Keep the Unreleased
 #    header above for the next cycle.
 
 # 5. Commit the cut.
-git add pyproject.toml mcp_server.py CHANGELOG.md
+git add pyproject.toml src/mcp_server.py server.json docs/CHANGELOG.md
 git commit -m "Cut v1.0.13 release"
 
 # 6. Tag with the CHANGELOG section as the annotation.
 #    `awk` extracts the [1.0.13] block; `git tag -a -m` sets the
 #    annotated tag message. The GitHub release body is auto-derived
 #    from this annotation.
-git tag -a v1.0.13 -m "$(awk '/^## \[1.0.13\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md)"
+git tag -a v1.0.13 -m "$(awk '/^## \[1.0.13\]/{flag=1; next} /^## \[/{flag=0} flag' docs/CHANGELOG.md)"
 
 # 7. Push the commit and the tag. Order matters: the tag push is
 #    what triggers the publish workflow, and the workflow's
@@ -82,7 +89,14 @@ git tag -a v1.0.13 -m "$(awk '/^## \[1.0.13\]/{flag=1; next} /^## \[/{flag=0} fl
 git push origin master
 git push origin v1.0.13
 
-# 8. Watch the workflow.
+# 8. Watch the workflow, and approve the deployment when it reaches
+#    the `pypi` environment. Nothing reaches PyPI before that approval.
+gh run watch -R lluvr/frame-check
+
+# 9. Once PyPI has the release, publish server.json to the MCP registry
+#    from the tag. The registry checks the PyPI package at that version
+#    and needs `mcp-name: io.github.lluvr/frame-check` in its README.
+gh workflow run registry.yml -R lluvr/frame-check --ref v1.0.13
 gh run watch -R lluvr/frame-check
 ```
 
@@ -109,7 +123,7 @@ before the final cut, tag a pre-release first:
 
 ```bash
 # Pre-release tag.
-git tag -a v1.0.13rc1 -m "$(awk '/^## \[1.0.13/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md)"
+git tag -a v1.0.13rc1 -m "$(awk '/^## \[1.0.13/{flag=1; next} /^## \[/{flag=0} flag' docs/CHANGELOG.md)"
 git push origin v1.0.13rc1
 ```
 
@@ -165,7 +179,7 @@ an API token. Configure once at:
 
 Settings:
 
-- **Owner**: `Clarethium`
+- **Owner**: `lluvr`
 - **Repository name**: `frame-check`
 - **Workflow filename**: `publish.yml`
 - **Environment name**: `pypi` (for final releases)
@@ -178,7 +192,8 @@ Repeat for TestPyPI:
 Add corresponding GitHub environments at
 `https://github.com/lluvr/frame-check/settings/environments`
 and protect them with branch-restriction (only `master` can deploy
-to `pypi`).
+to `pypi`). The `pypi` environment requires reviewer approval, so a
+tag push stops there until a reviewer approves the deployment.
 
 Until this manual setup lands, the `publish-to-pypi` and
 `publish-to-testpypi` jobs will fail at the OIDC exchange step. The

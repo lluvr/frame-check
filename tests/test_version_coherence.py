@@ -45,6 +45,7 @@ shipped wheels via the extract-time rewrite; this test holds it
 for the upstream tree.
 """
 
+import json
 import re
 from pathlib import Path
 
@@ -412,3 +413,19 @@ def test_citation_cff_schema_version_is_supported():
         f"verifying the academic-archival consumers (Zenodo, GitHub "
         f"citation tab, paper bibliographies) handle the new schema."
     )
+
+
+def test_server_json_matches_the_package_version() -> None:
+    """The MCP registry reads both fields, and rejects a version PyPI lacks."""
+    server = json.loads((REPO_ROOT / "server.json").read_text(encoding="utf-8"))
+    version = _read_pyproject_version()
+    assert server["version"] == version
+    assert server["packages"][0]["version"] == version
+
+
+def test_readme_names_the_registry_server() -> None:
+    """The registry proves PyPI ownership from this string in the README,
+    which PyPI freezes per release."""
+    server = json.loads((REPO_ROOT / "server.json").read_text(encoding="utf-8"))
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    assert f"<!-- mcp-name: {server['name']} -->" in readme
