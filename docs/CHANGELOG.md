@@ -6,6 +6,19 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-05
+
+### Changed
+
+- **Verdicts change for existing users.** Expect fewer false confirmations
+  and more unresolved results. Source-network checks now confirm a number
+  only when the reference describes the same claim, and they decline to rule
+  when they cannot tell. Some claims that came back verified or contradicted
+  under earlier versions now come back unverifiable, and some claims that
+  came back unverifiable now get a verdict from the World Bank. Source
+  matching is stricter too, so `in_source` counts can fall on existing
+  documents. Re-baseline anything that pins these results.
+
 ### Fixed
 
 - Source-network verification now checks that a reference describes the
@@ -47,10 +60,15 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
   5%, and vague height words count only when they name the subject.
 - Source matching respects number boundaries: 5% is not in 25%, 12.5% is not
   12%, and 500 is not in 1,500.
-- Removed `verify_rest_countries`, which could only return no data.
 - Voice: "US" is not first person, short imperatives count, and a
   first-person recommendation reads as advisory. Attribution wording in the
   portrait says a number was credited, not that it holds up.
+
+### Removed
+
+- `source_network.verify_rest_countries`. restcountries.com retired the API
+  it called, so it could only return no data. REST Countries is no longer a
+  verification source.
 
 ## [1.1.3] - 2026-07-02
 
