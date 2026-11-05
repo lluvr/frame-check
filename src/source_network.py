@@ -504,6 +504,15 @@ def extract_subject(heading, sentence, topic="", doc_text="", num_raw="",
     # 2. Country names in the sentence (specific pattern, high confidence)
     if sentence:
         country_match = _COUNTRY_NAMES_RE.search(sentence)
+        # "Panama Canal": the country is part of a longer name, unless the
+        # next word is a title-cased ordinary word that only follows it.
+        if country_match:
+            rest = sentence[country_match.end():]
+            named = re.match(r'\s+(Canal|Strait|Bridge|Tunnel|River|Bay|Sea|'
+                             r'Railway|Airlines|Airways|Bank|Dam|Lake|Gulf)\b',
+                             rest)
+            if named:
+                return f"{country_match.group()} {named.group(1)}"
         if country_match:
             # "Angel Falls in Venezuela": the country locates the subject.
             before = sentence[:country_match.start()]
@@ -775,7 +784,7 @@ _METRIC_PATTERNS = {
     "height": re.compile(r'\b(height|tall|elevation|altitude)\b', re.IGNORECASE),
     "diameter": re.compile(r'\b(diameter|radius)\b', re.IGNORECASE),
     "weight": re.compile(r'\b(weight|mass|weighs?|kg|kilograms?|tonnes?)\b', re.IGNORECASE),
-    "length": re.compile(r'\b(length|long|span|arm\s+span|mantle)\b', re.IGNORECASE),
+    "length": re.compile(r'\b(length|long|span|arm\s+span|mantle|runs?\s+for|stretch(?:es)?\s+for)\b', re.IGNORECASE),
     "lifespan": re.compile(r'\b(lifespan|life\s+span|life\s+expectancy|years?\s+old|longevity)\b', re.IGNORECASE),
     "price": re.compile(r'\b(price|cost|priced?\s+at|trading\s+at|worth)\b', re.IGNORECASE),
     "gdp": re.compile(r'\b(GDP|gross\s+domestic\s+product)\b', re.IGNORECASE),
@@ -1633,7 +1642,7 @@ _METRIC_EVIDENCE = {
     "weight": re.compile(
         r'\b(weigh\w*|mass|kg|kilograms?|tonnes?|tons?)\b', re.IGNORECASE),
     "length": re.compile(
-        r'\b(length|long|span|km|kilomet\w+|miles?|met(?:re|er)s?)\b',
+        r'\b(length|long|span|runs?|km|kilomet\w+|miles?|met(?:re|er)s?)\b',
         re.IGNORECASE),
     "gdp": re.compile(
         r'\b(GDP|gross\s+domestic\s+product)\b', re.IGNORECASE),
@@ -1893,6 +1902,13 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
                     continue
             left, right = _sentence_bounds(text, num_start, num_end)
             passage = text[left:right]
+            # A dollar figure for a named year must be from that year. Filings
+            # answer these claims; this only stops reference prose about some
+            # other period confirming one when a filing could not be read.
+            if decomp.unit == "currency" and decomp.time_period:
+                claim_year = re.search(r'20[0-3]\d', decomp.time_period)
+                if claim_year and claim_year.group() not in passage:
+                    continue
             evidence = _METRIC_EVIDENCE.get(decomp.metric)
             if evidence:
                 nearby = _nearby(text, num_start, num_end)

@@ -923,3 +923,45 @@ def test_a_rounded_physical_measurement_still_matches():
     passage = "The Moon orbits Earth at a distance of 378,000 km, on average."
     d = _decomp(sentence, 384400, metric="", unit="distance", subject="Moon")
     assert _match_in_text(passage, 384400, sentence, decomp=d)[0] is not None
+
+
+# ── Reference-text precision ────────────────────────────────────────
+
+@pytest.mark.parametrize("sentence,subject", [
+    ("The Panama Canal runs for about 126 kilometers from ocean to ocean.",
+     "Panama Canal"),
+    ("The Suez Canal is about 193 kilometers long.", "Suez Canal"),
+    ("Japan has a population of 125 million.", "Japan"),
+    ("The population of Peru Today is about 34 million.", "Peru"),
+])
+def test_a_place_inside_a_name_is_not_the_subject(sentence, subject):
+    assert sn.extract_subject("", sentence) == subject
+
+
+def test_runs_for_is_a_length():
+    d = decompose_claim({
+        "sentence": "The Panama Canal runs for about 126 kilometers.",
+        "numbers": ["126 kilometers"],
+    })
+    assert d.metric == "length"
+
+
+def test_reference_revenue_must_be_for_the_year_claimed():
+    """A range over 2009 to 2022 "confirmed" fiscal 2023 revenue while SEC was
+    rate limited."""
+    sentence = "Boeing brought in revenue of about $96 billion in fiscal 2023."
+    passage = (
+        "Research estimated Boeing made between $50 billion to $96 billion "
+        "in revenue from contracts from 2009 through 2022."
+    )
+    d = _decomp(sentence, 96e9, metric="revenue", subject="Boeing",
+                time_period="2023")
+    assert _match_in_text(passage, 96e9, sentence, decomp=d)[0] is None
+
+
+def test_reference_revenue_for_the_right_year_matches():
+    sentence = "Boeing brought in revenue of about $78 billion in fiscal 2023."
+    passage = "In 2023, Boeing reported revenue of $77.8 billion for the year."
+    d = _decomp(sentence, 78e9, metric="revenue", subject="Boeing",
+                time_period="2023")
+    assert _match_in_text(passage, 78e9, sentence, decomp=d)[0] is not None
