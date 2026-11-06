@@ -136,18 +136,18 @@ def test_a_dateline_is_not_the_company():
 
 
 @pytest.mark.parametrize("text,raw,metric", [
-    ("Botswana's GDP was $19.3 billion in 2024 with a population of around "
-     "3.4 million.", "$19.3 billion", "gdp"),
-    ("Botswana's GDP was $19.3 billion in 2024 with a population of around "
-     "3.4 million.", "3.4 million", "population"),
-    ("Slovenia's population of 2.13 million enjoys a life expectancy of "
-     "82.3 years.", "82.3 years", "lifespan"),
+    (("Botswana's GDP was $19.3 billion in 2024 with a population of around "
+      "3.4 million."), "$19.3 billion", "gdp"),
+    (("Botswana's GDP was $19.3 billion in 2024 with a population of around "
+      "3.4 million."), "3.4 million", "population"),
+    (("Slovenia's population of 2.13 million enjoys a life expectancy of "
+      "82.3 years."), "82.3 years", "lifespan"),
     ("Rollins had net income of $526.7 million, or $1.09 per diluted share.",
      "$526.7 million", "profit"),
     ("Rollins had net income of $526.7 million, or $1.09 per diluted share.",
      "$1.09", "eps"),
-    ("Snap-on banked $1.02bn of net income for fiscal 2025 and generated "
-     "about $1.4bn of operating cash flow.", "$1.02bn", "profit"),
+    (("Snap-on banked $1.02bn of net income for fiscal 2025 and generated "
+      "about $1.4bn of operating cash flow."), "$1.02bn", "profit"),
 ])
 def test_each_figure_binds_to_the_metric_beside_it(text, raw, metric):
     assert parse(text)[raw].metric == metric
@@ -275,10 +275,10 @@ def test_a_year_compared_against_is_not_the_figures_year():
 
 
 @pytest.mark.parametrize("sentence,raw,metric", [
-    ("Landstar's revenue for fiscal 2025 was $4.74 billion and net income fell "
-     "to $115 million.", "$4.74 billion", "revenue"),
-    ("Landstar's revenue for fiscal 2025 was $4.74 billion and net income fell "
-     "to $115 million.", "$115 million", "profit"),
+    (("Landstar's revenue for fiscal 2025 was $4.74 billion and net income fell "
+      "to $115 million."), "$4.74 billion", "revenue"),
+    (("Landstar's revenue for fiscal 2025 was $4.74 billion and net income fell "
+      "to $115 million."), "$115 million", "profit"),
     ("Paraguay's 2025 population is at 7.01 million and its GDP at $38 billion.",
      "7.01 million", "population"),
 ])

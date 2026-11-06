@@ -442,7 +442,7 @@ _NON_ENTITY_SUBJECTS.update({
     # Sequence/ordinal
     "first", "last", "next", "previous", "second", "third",
     # What a labeled figure measures: "Inventory: about $4.1 billion"
-    "balance", "capex", "cash", "consumer", "density", "diluted", "eps",
+    "balance", "capex", "cash", "density", "diluted", "eps",
     "exports", "full-year", "gravity", "headline", "highlights", "imports", "inflation", "internet", "inventory", "life",
     "literacy", "per", "population", "temperature", "unemployment",
     "urbanisation", "urbanization",
@@ -1622,7 +1622,6 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
             if metric not in _METRIC_PATTERNS:
                 metric = ""
         if reading["period"]:
-            year_sole = bool(claim.get("year_sole"))
             time_period = reading["period"]
             year_inherited = not reading["period_in_sentence"]
         # The model's sense of what is future is not evidence: it called
