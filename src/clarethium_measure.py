@@ -617,10 +617,10 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
         # must not match as "66 million"). The \b after the scale
         # word prevents "million-dollar" from bleeding into a plural
         # or compound form.
-        (r'(?<![$€£¥₹])(?<!\d)(?<!\.)(\d+(?:\.\d+)?)\s+(thousand|million|billion|trillion)\b',
+        (r'(?<![$€£¥₹])(?<![\d,])(?<!\.)(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)\s+(thousand|million|billion|trillion)\b',
          "scaled_integer"),
-        (r'(?<![$€£¥₹])(?<!\d)(\d+\.\d+)(?!%)', "decimal"),
-        (r'(?<![$€£¥₹])(?<!\d)(?<!\.)(\d{1,3}(?:,\d{3})+)(?!\.\d)(?!%)(?!\d)', "integer_comma"),
+        (r'(?<![$€£¥₹])(?<![\d,])(\d+\.\d+)(?!%)', "decimal"),
+        (r'(?<![$€£¥₹])(?<!\d)(?<!\.)(\d{1,3}(?:,\d{3})+(?:\.\d+)?)(?!%)(?!\d)', "integer_comma"),
         (r'(?<![$€£¥₹])(?<!\d)(?<!\.)(\d+)\s*[MBK]\b', "integer_suffix"),
         (r'(?<![$€£¥₹])(?<!\d)(?<!\.)(\d{2,6})(?!\.\d)(?!%)(?!\d)(?!,\d{3})', "integer"),
     ]
@@ -649,7 +649,7 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
                 scale = m.group(2).lower() if m.lastindex and m.lastindex >= 2 else ""
                 multiplier = _SCALE_MULTIPLIERS.get(scale, 1)
                 with contextlib.suppress(ValueError, TypeError):
-                    scaled = float(val) * multiplier
+                    scaled = float(val.replace(",", "")) * multiplier
                     # Render integers without a trailing .0 so the
                     # downstream claimed_values normalisation in
                     # analyze_claims treats "6000000.0" and "6000000"

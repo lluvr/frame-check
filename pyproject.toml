@@ -82,6 +82,7 @@ py-modules = [
     "frame_library_index",
     "decision_readiness",
     "comparison",
+    "prose",
     "source_network",
     "llm_cost",
     "llm_client",

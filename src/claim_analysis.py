@@ -12,6 +12,7 @@ confidence uniformity across the document.
 """
 
 import re
+from prose import plain_prose
 from typing import Any
 
 from clarethium_measure import (
@@ -165,6 +166,7 @@ def analyze_claims(doc_text: str) -> dict[str, Any]:
         risk_level: "low" | "moderate" | "high"
         risk_explanation: human-readable risk assessment
     """
+    doc_text = plain_prose(doc_text)
     raw_claims = extract_numerical_claims(doc_text)
 
     # Filter extraction artifacts: "000 years" from "110,000 years" where

@@ -31,6 +31,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 import contextlib
 
+from prose import plain_prose
 
 
 # ================================================================
@@ -277,8 +278,8 @@ def normalize_value(raw, sentence=""):
 # ================================================================
 
 _PROPER_NOUN_RE = re.compile(
-    r'\b([A-Z][a-zA-Z]*[a-z](?:-[A-Z][a-z]+)*'
-    r'(?:(?:\s+(?:of|the|and|de|von|van))?\s+[A-Z][a-zA-Z]*[a-z])*)\b'
+    r'\b([A-Z][a-zA-Z]*[a-z](?:-[A-Za-z][a-z]+)*'
+    r'(?:(?:\s+(?:of|the|and|de|von|van|&))?\s+[A-Z][a-zA-Z]*[a-z])*)\b'
 )
 
 # Common sentence-start words that are NOT proper nouns
@@ -328,7 +329,15 @@ _YEAR_REFERENCE_RE = re.compile(
     r'\b(?:the|that|same|this)\s+(?:fiscal\s+)?year\b|\byear[- ]end\b|'
     r'\bannual\b', re.IGNORECASE,
 )
-_CLAUSE_BREAK_RE = re.compile(r',\s+(?:and|while|but|with)\s+|;\s+')
+_CLAUSE_BREAK_RE = re.compile(
+    r',\s+(?:and|while|but|with)\s+|;\s+|'
+    r',\s+or\s+(?=[$€£¥₹])|'
+    r'\s+and\s+(?:generated|spent|reported|posted|earned|had|made)\b|'
+    r'\s+and\s+(?=(?:its\s+|the\s+)?(?:net\s+income|net\s+loss|revenues?|sales|'
+    r'operating\s+\w+|gross\s+\w+|total\s+\w+|GDP|population)\b)|'
+    r'\s+with\s+(?:a|an)\s+(?=\w+\s+of\b)|'
+    r'\s+(?:against|vs\.?|versus)\s+(?=\S*[\d$€£¥₹A-Z])'
+)
 _SENTENCE_STARTERS = {
     "The", "This", "That", "These", "Those", "It", "Its", "There",
     "Here", "What", "When", "Where", "How", "Why", "Which", "Who",
@@ -423,7 +432,55 @@ _NON_ENTITY_SUBJECTS.update({
     "week", "world", "year",
     # Sequence/ordinal
     "first", "last", "next", "previous", "second", "third",
+    # What a labeled figure measures: "Inventory: about $4.1 billion"
+    "balance", "capex", "cash", "consumer", "density", "diluted", "eps",
+    "exports", "full-year", "gravity", "headline", "highlights", "imports", "inflation", "internet", "inventory", "life",
+    "literacy", "per", "population", "temperature", "unemployment",
+    "urbanisation", "urbanization",
+    # People and things a company answers to: "Shareholders received"
+    "dividends", "employees", "engineers", "investors", "shareholders", "staff",
+    # Stock exchanges, named beside a company: "(NYSE: ROL)"
+    "nasdaq", "nyse",
 })
+
+# Words that make a heading a section label rather than a name.
+_SECTION_WORDS = frozenset({
+    "balance", "basics", "cash", "flow", "for", "full", "half", "headline",
+    "highlights", "immediate", "inflation", "income", "metrics", "numbers",
+    "release", "sheet",
+    "snapshot", "standards", "statement", "year",
+})
+_HEADING_FILLER = frozenset({"a", "an", "and", "at", "for", "of", "the", "my", "our"})
+
+
+# Followed by one of these, or by a word ending like a verb, a capitalized word
+# opening a sentence is doing something, so it can be a name. "Apple reported"
+# can; "Around $4 billion", "Rev $4 billion" and "How big" cannot.
+_AFTER_A_NAME = frozenset({
+    "is", "was", "are", "were", "has", "had", "have", "at", "will", "would",
+    "made", "spent", "sold", "paid", "held", "stood", "saw", "lost", "grew",
+    "rose", "fell", "ran", "said", "kept", "took", "built", "drew", "won",
+})
+_NOT_VERB_ENDING_S = frozenset({"this", "its", "his", "us", "plus", "less", "across"})
+
+
+def _reads_as_a_name(word, sentence):
+    """Whether a capitalized word opening a sentence is used as a name."""
+    rest = sentence.lstrip()[len(word):]
+    # "Toro's" and "Starbucks'" own something.
+    if rest[:1] in ("'", "\u2019", ",", ":"):
+        return True
+    if word.endswith("ness"):
+        return False
+    following = re.match(r'\s+([a-z]+)', rest)
+    if not following:
+        return False
+    next_word = following.group(1)
+    return (
+        next_word in _AFTER_A_NAME
+        or next_word.endswith("ed")
+        or (next_word.endswith("s") and next_word not in _NOT_VERB_ENDING_S)
+    )
 
 
 _GENERIC_HEADINGS = {
@@ -482,6 +539,7 @@ def extract_subject(heading, sentence, topic="", doc_text="", num_raw="",
     if heading:
         clean = re.sub(r'^#+\s*', '', heading).strip()
         clean = re.sub(r'^\d+\.\s*', '', clean).strip()
+        clean = clean.split(':')[0].strip()
         if len(clean) >= 3 and clean.lower() not in _GENERIC_HEADINGS:
             # Does the heading contain a recognizable entity?
             has_entity = bool(_COUNTRY_NAMES_RE.search(clean))
@@ -556,6 +614,10 @@ def extract_subject(heading, sentence, topic="", doc_text="", num_raw="",
             name = _LEADING_WORD_RE.sub('', possessive.group(1))
             if is_likely_entity(name) and not _COUNTRY_NAMES_RE.fullmatch(name):
                 return name
+            # "France's Millau Viaduct": the country locates the named thing.
+            owned = _PROPER_NOUN_RE.match(sentence[possessive.end():].lstrip())
+            if owned and is_likely_entity(owned.group(1)):
+                return owned.group(1)
 
     # 2. Country names in the sentence (specific pattern, high confidence)
     if sentence:
@@ -574,6 +636,7 @@ def extract_subject(heading, sentence, topic="", doc_text="", num_raw="",
             before = sentence[:country_match.start()]
             if re.search(r'\b(?:in|from)\s+(?:the\s+)?$', before):
                 for name in _PROPER_NOUN_RE.findall(before):
+                    name = re.sub(r'^(?:The|A|An)\s+', '', name)
                     if len(name.split()) >= 2 and is_likely_entity(name):
                         return name
             matched = country_match.group()
@@ -604,6 +667,9 @@ def extract_subject(heading, sentence, topic="", doc_text="", num_raw="",
                     and m.split()[0] not in _COMMON_OPENERS
                     and len(m) > 2
                     and is_likely_entity(m)):
+                if (' ' not in m and sentence.lstrip().startswith(m)
+                        and not _reads_as_a_name(m, sentence)):
+                    continue
                 return m
 
     # 5. Document primary entity (sentence-level inheritance).
@@ -841,12 +907,21 @@ _METRIC_PATTERNS = {
         r'\b(operating\s+expenses?|opex|cost\s+of\s+(?:goods|revenue|sales))\b',
         re.IGNORECASE,
     ),
+    "operating_cash_flow": re.compile(
+        r'\b(operating\s+cash(?:\s+flow)?|cash\s+(?:flow\s+)?(?:provided\s+by|from)'
+        r'\s+operat\w+(?:\s+activities)?|op\s+cash\s+flow)\b',
+        re.IGNORECASE,
+    ),
+    "total_assets": re.compile(r'\b(total\s+assets)\b', re.IGNORECASE),
+    "inventory": re.compile(r'\b(inventor(?:y|ies))\b', re.IGNORECASE),
+    "capex": re.compile(r'\b(capital\s+expenditures?|capex)\b', re.IGNORECASE),
     "cash": re.compile(
-        r'\b(cash(?:\s+and\s+(?:cash\s+)?equivalents)?|liquidity)\b',
+        r'(?<!free\s)\b(cash(?:\s+and\s+(?:cash\s+)?equivalents)?|liquidity)\b'
+        r'(?!\s+flow)',
         re.IGNORECASE,
     ),
     "revenue": re.compile(r'\b(revenues?|sales|turnover)\b', re.IGNORECASE),
-    "profit": re.compile(r'\b(profits?|earnings|net\s+income|net\s+loss|EBITDA)\b', re.IGNORECASE),
+    "profit": re.compile(r'\b(profits?|earnings|earned|net\s+income|net\s+loss|EBITDA)\b', re.IGNORECASE),
     "market_cap": re.compile(r'\b(market\s+cap|valuation|valued\s+at)\b', re.IGNORECASE),
     "population": re.compile(r'\b(population|inhabitants|residents|people)\b', re.IGNORECASE),
     "area": re.compile(r'\b(area|square\s+(?:km|miles?|kilomet(?:er|re)s?)|sq\s+km)\b', re.IGNORECASE),
@@ -855,8 +930,14 @@ _METRIC_PATTERNS = {
     "weight": re.compile(r'\b(weight|mass|weighs?|kg|kilograms?|tonnes?)\b', re.IGNORECASE),
     "length": re.compile(r'\b(length|long|span|arm\s+span|mantle|runs?\s+for|stretch(?:es)?\s+for)\b', re.IGNORECASE),
     "lifespan": re.compile(r'\b(lifespan|life\s+span|life\s+expectancy|years?\s+old|longevity)\b', re.IGNORECASE),
-    "price": re.compile(r'\b(price|cost|priced?\s+at|trading\s+at|worth)\b', re.IGNORECASE),
-    "gdp": re.compile(r'\b(GDP|gross\s+domestic\s+product)\b', re.IGNORECASE),
+    "price": re.compile(
+        r'\b(price|cost|priced?\s+at|trading\s+at|(?<!economy\sis\s)(?<!economy\swas\s)worth)\b',
+        re.IGNORECASE,
+    ),
+    "gdp": re.compile(
+        r'\b(GDP|gross\s+domestic\s+product|economy\s+(?:is|was)\s+worth)\b',
+        re.IGNORECASE,
+    ),
     "growth": re.compile(r'\b(grew|growth|increase[ds]?|decline[ds]?|change[ds]?)\s+', re.IGNORECASE),
     "count": re.compile(r'\b(species|number\s+of|approximately|about|around|some)\b', re.IGNORECASE),
 }
@@ -865,6 +946,12 @@ _DERIVED_RE = re.compile(
     r'\b(grew|growth|increase[ds]?\s+(?:by|of)|decline[ds]?\s+(?:by|of)|'
     r'change[ds]?\s+(?:by|of)|up\s+\d|down\s+\d|rose\s+\d|fell\s+\d)\b',
     re.IGNORECASE
+)
+
+_COMPARED_YEAR_RE = re.compile(
+    r'\b(?:than|compared\s+(?:to|with)|versus|vs\.?)\s+(?:in\s+|the\s+|fiscal\s+|'
+    r'year\s+|FY\s*)*20[1-3]\d\b',
+    re.IGNORECASE,
 )
 
 _PROJECTION_RE = re.compile(
@@ -1082,6 +1169,38 @@ def _split_multi_figure_claims(claims):
     return out
 
 
+def _heading_names_something(heading, doc_text):
+    """False for "Balance sheet" or "Full-Year 2025 Highlights", which label
+    a section. Reading one as a name checks the figures against nothing, or
+    against whatever page happens to carry those words.
+    """
+    clean = re.sub(r'^#+\s*', '', heading or "").split(':')[0].strip()
+    if _COUNTRY_NAMES_RE.search(clean) or re.search(r'\b[A-Z]{2,}\b', clean):
+        return True
+    words = [
+        w for w in re.findall(r"[A-Za-z][A-Za-z'&.]*", clean)
+        if w.lower() not in _HEADING_FILLER
+    ]
+    if not words or all(w.lower() in _SECTION_WORDS for w in words):
+        return False
+    if all(w[0].isupper() for w in words):
+        return True
+    # Sentence case reads as a label, unless the text uses it as a name.
+    first = words[0]
+    return bool(re.search(r'[a-z,]\s+' + re.escape(first) + r'\b', doc_text))
+
+
+def _prepare_claims(claims, doc_text):
+    """Give each claim the context it needs from the rest of the document."""
+    _enrich_headings(claims, doc_text)
+    for claim in claims:
+        if not _heading_names_something(claim.get("heading"), doc_text):
+            claim["heading"] = ""
+    return _apply_discourse_context(
+        _split_multi_figure_claims(claims), doc_text,
+    )
+
+
 def _apply_discourse_context(claims, doc_text):
     """Attach the subject and year a sentence inherits from those before it.
 
@@ -1107,6 +1226,10 @@ def _apply_discourse_context(claims, doc_text):
         named_so_far = set()
         for earlier in _SENTENCE_BREAK_RE.split(before):
             earlier = earlier.strip()
+            if earlier.startswith('#'):
+                if not _heading_names_something(earlier, doc_text):
+                    continue
+                earlier = re.sub(r'^#+\s*', '', earlier).split(':')[0]
             if not earlier or _ANAPHORIC_OPENING_RE.match(earlier):
                 continue
             named = extract_subject("", earlier)
@@ -1115,12 +1238,18 @@ def _apply_discourse_context(claims, doc_text):
                 named_so_far.add(named)
             for country in _COUNTRY_NAMES_RE.findall(earlier):
                 named_so_far.add(_COUNTRY_CANONICAL.get(country, country))
+        # This paragraph first, then the document: a list under "Balance
+        # sheet" belongs to the year named at the top. An inherited year can
+        # confirm a figure but never refute one.
         year = ""
-        for earlier in reversed(_SENTENCE_BREAK_RE.split(paragraph)):
-            found = _TIME_RE.findall(earlier)
-            if found:
-                last = found[-1]
-                year = last if isinstance(last, str) else last[0]
+        for scope in (paragraph, before):
+            for earlier in reversed(_SENTENCE_BREAK_RE.split(scope)):
+                found = _TIME_RE.findall(earlier)
+                if found:
+                    last = found[-1]
+                    year = last if isinstance(last, str) else last[0]
+                    break
+            if year:
                 break
         out.append({
             **claim,
@@ -1129,6 +1258,31 @@ def _apply_discourse_context(claims, doc_text):
             "subject_ambiguous": len(named_so_far) > 1,
         })
     return out
+
+
+def _metric_beside(sentence, raw_value):
+    """The metric named closest to the figure, so that in "GDP was $19 billion
+    with a population of 3 million" each figure gets its own. A figure's
+    specific name and a broad word inside it end at the same place, and the
+    pattern order prefers the specific one.
+    """
+    at = sentence.find(str(raw_value).strip()) if raw_value else -1
+    if at < 0:
+        for name, pattern in _METRIC_PATTERNS.items():
+            if pattern.search(sentence):
+                return name
+        return ""
+    end = at + len(str(raw_value).strip())
+    best, best_gap = "", None
+    for name, pattern in _METRIC_PATTERNS.items():
+        for found in pattern.finditer(sentence):
+            gap = at - found.end() if found.end() <= at else found.start() - end
+            # "about" and "some" only say it is a count of something.
+            if name == "count":
+                gap += 10_000
+            if best_gap is None or gap < best_gap:
+                best, best_gap = name, gap
+    return best
 
 
 def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
@@ -1186,7 +1340,9 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
         clause_breaks = list(_CLAUSE_BREAK_RE.finditer(head))
         if clause_breaks:
             head = head[clause_breaks[-1].end():]
-        subject = extract_subject(heading, head) if head else ""
+        subject = extract_subject("", head) if head else ""
+        if head and not subject and heading:
+            subject = extract_subject(heading, "")
         # "7.6 percent in Chile": a place right after the figure owns it.
         if figure_at >= 0:
             after = sentence[figure_at + len(str(raw_value).strip()):]
@@ -1211,16 +1367,13 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
     value = normalize_value(raw_value, sentence)
 
     # Detect metric type
-    metric = ""
-    for metric_name, pattern in _METRIC_PATTERNS.items():
-        if pattern.search(sentence):
-            metric = metric_name
-            break
+    metric = _metric_beside(sentence, raw_value)
 
     # Detect time period from sentence, then heading as fallback.
     # Claims under "NVIDIA Fiscal Year 2026 Financial Summary" inherit
     # FY2026 even when the sentence itself has no year.
-    time_match = _TIME_RE.search(sentence)
+    # "lower than in fiscal 2025" is what the figure is set against.
+    time_match = _TIME_RE.search(_COMPARED_YEAR_RE.sub('', sentence))
     if not time_match and heading:
         time_match = _TIME_RE.search(heading)
     time_period = time_match.group(1) if time_match else ""
@@ -1273,10 +1426,10 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
     if (
         any(raw_value.startswith(sym) for sym in "$€£¥₹")
         or any(sym in sentence for sym in "€£¥₹")
-        or any(kw in sentence.lower() for kw in (
-            "dollar", "euro", "pound", "yen", "rupee",
-            "usd", "eur", "gbp", "jpy", "inr",
-        ))
+        or re.search(
+            r'\b(?:dollars?|euros?|pounds?|yen|rupees?|usd|eur|gbp|jpy|inr)\b',
+            sentence, re.IGNORECASE,
+        )
     ):
         unit = "currency"
     elif raw_value.endswith("%") or "percent" in sentence.lower():
@@ -2324,7 +2477,13 @@ def _detect_wb_indicator(sentence, metric):
     to the total-GDP indicator (calibration finding B.2, 2026-04-16).
     """
     text = sentence.lower()
-    if "gdp per capita" in text or "per capita" in text:
+    # A figure's own metric first: "a population of 2 million enjoys a life
+    # expectancy of 82 years" mentions both.
+    if metric == "population":
+        return "SP.POP.TOTL", "Population"
+    if metric == "lifespan":
+        return "SP.DYN.LE00.IN", "Life expectancy"
+    if "per capita" in text or "gdp per head" in text:
         return "NY.GDP.PCAP.CD", "GDP per capita"
     if metric == "gdp" or "gdp" in text or "gross domestic" in text:
         return "NY.GDP.MKTP.CD", "GDP (current US$)"
@@ -2411,6 +2570,10 @@ def verify_world_bank(decomp):
     if not indicator_id:
         return SourceResult(source_name="World Bank", match_type="no_data")
 
+    # A dollar figure is not a head count, whatever words sit beside it.
+    if indicator_id == "SP.POP.TOTL" and decomp.unit == "currency":
+        return SourceResult(source_name="World Bank", match_type="no_data")
+
     # A country's population figure, not a count of people in it who do
     # something: "12 million people in Germany use the service" is true
     # or false independently of how many people live there.
@@ -2464,6 +2627,9 @@ def verify_world_bank(decomp):
                 decomp.year_inherited and not _YEAR_REFERENCE_RE.search(
                     decomp.sentence,
                 )
+                # A country's headcount does not move this far between years,
+                # so the year cannot explain the gap.
+                and not (indicator_id == "SP.POP.TOTL" and diff > 0.15)
             ):
                 match_type = "no_data"
             elif (_MONTH_NAME_RE.search(decomp.sentence)
@@ -3024,7 +3190,11 @@ def _find_cik(subject):
     if subject_upper in ticker_index and subject.strip() == subject_upper:
         return ticker_index[subject_upper]
 
-    # SEC titles spell "COCA COLA CO" where prose says "Coca-Cola".
+    # SEC titles spell "COCA COLA CO" where prose says "Coca-Cola", and
+    # "TRACTOR SUPPLY CO" where it says "Tractor Supply Company".
+    subject_upper = re.sub(
+        r'[,\s]+(?:COMPANY|CORPORATION|INCORPORATED|INC)$', '', subject_upper,
+    )
     spellings = [subject_upper]
     if "-" in subject_upper:
         spellings.append(subject_upper.replace("-", " "))
@@ -3089,6 +3259,10 @@ _METRIC_CONCEPTS = {
     "operating_expenses": ["OperatingExpenses", "CostsAndExpenses"],
     "cash": ["CashAndCashEquivalentsAtCarryingValue",
              "CashCashEquivalentsAndShortTermInvestments"],
+    "operating_cash_flow": ["NetCashProvidedByUsedInOperatingActivities"],
+    "total_assets": ["Assets"],
+    "inventory": ["InventoryNet"],
+    "capex": ["PaymentsToAcquirePropertyPlantAndEquipment"],
 }
 
 
@@ -3100,7 +3274,8 @@ _SEC_BROAD_METRICS = frozenset(
 _SEC_UNIT_KEYS = {"eps": "USD/shares"}
 _SEC_METRIC_LABELS = {
     "profit": "net income", "eps": "diluted EPS",
-    "research_development": "R&D",
+    "research_development": "R&D", "operating_cash_flow": "operating cash flow",
+    "total_assets": "total assets", "capex": "capital expenditures",
 }
 _SEC_OTHER_FIGURE_RE = re.compile(
     r'\b(per[\s-]+share|EPS|EBITDA|margins?|gross\s+(?:profit|income)|'
@@ -3416,10 +3591,12 @@ def verify_sec_edgar(decomp):
         val_display, val_unit = best_val, ""
 
     if form == "10-Q":
-        filing_label = f"{ticker} {fp} FY{fy} {metric_label}, 10-Q filed {filed}: ${val_display:,.1f}{val_unit}"
+        figure = f"${val_display:,.1f}{val_unit}" if val_unit else f"${val_display:,.2f}"
+        filing_label = f"{ticker} {fp} FY{fy} {metric_label}, 10-Q filed {filed}: {figure}"
         filing_url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}&type=10-Q"
     else:
-        filing_label = f"{ticker} FY{data_year} {metric_label}, 10-K filed {filed}: ${val_display:,.2f}{val_unit}" if not val_unit else f"{ticker} FY{data_year} {metric_label}, 10-K filed {filed}: ${val_display:,.1f}{val_unit}"
+        figure = f"${val_display:,.1f}{val_unit}" if val_unit else f"${val_display:,.2f}"
+        filing_label = f"{ticker} FY{data_year} {metric_label}, 10-K filed {filed}: {figure}"
         filing_url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}&type=10-K"
 
     return SourceResult(
@@ -3745,7 +3922,10 @@ def _classify_and_route(decomp):
 
     if not decomp.is_segment and not is_non_company_entity:
         # SEC EDGAR: highest authority for US company filings
-        if has_financial_kw or (decomp.unit == "currency" and has_company and decomp.value > 1e8):
+        # A figure filings hold by name goes there at any size: earnings per
+        # share is a few dollars.
+        if (has_financial_kw or decomp.metric in _METRIC_CONCEPTS
+                or (decomp.unit == "currency" and has_company and decomp.value > 1e8)):
             sources.append(verify_sec_edgar)
 
         # Alpha Vantage: stock data, broader coverage
@@ -4222,17 +4402,14 @@ def _verify_claims_source_network(
     if not claims:
         return []
 
-    # Enrich claims that lack heading context
-    _enrich_headings(claims, doc_text)
+    doc_text = plain_prose(doc_text)
 
     # Compute the document's primary entity once. Sentences that lack
     # their own entity name will inherit this as a fallback subject,
     # so claims like "Common side effects include nausea (44%)" in an
     # Ozempic document get verified as Ozempic claims instead of being
     # rejected as anonymous.
-    claims = _apply_discourse_context(
-        _split_multi_figure_claims(claims), doc_text,
-    )
+    claims = _prepare_claims(claims, doc_text)
     doc_primary_entity = extract_doc_primary_entity(doc_text, topic=topic)
 
     results = []
