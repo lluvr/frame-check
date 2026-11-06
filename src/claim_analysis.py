@@ -104,6 +104,9 @@ _NOT_A_NAME_WORD = frozenset({
     "Under", "Only", "Just", "Some", "More", "Less", "Fewer", "Up", "At", "By",
     "In", "On", "For", "From", "To", "The", "After", "Before", "Since", "With",
     "Within", "Of", "FY", "Q1", "Q2", "Q3", "Q4",
+    "Revenue", "Sales", "Profit", "Income", "Earnings", "Cost", "Costs",
+    "Margin", "Price", "Total", "Net", "Gross", "Growth", "Inflation",
+    "Population", "GDP", "Assets", "Debt", "Employees", "Staff",
 })
 
 

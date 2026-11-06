@@ -6,6 +6,19 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### Fixed
+
+- Documents now carry subject and year across sentences, so "the company" or
+  "its GDP that year" can be checked, and sentences with figures in separate
+  clauses are checked per clause. A figure belongs to the nearest name. Regions
+  and data sources are not subjects. An inherited year, or a subject that is a
+  guess in a document naming several entities, can confirm but not refute.
+- More numbers get checked. SEC filings now answer operating income, gross
+  profit, R&D and diluted EPS, and fetch each concept once per request. "Lowe's"
+  resolves, and "Revenue 500" keeps its number.
+- World Bank does not contradict a sentence naming two years. Vague and
+  life-expectancy figures get 2% tolerance from reference text rather than 5%.
+
 ## [1.2.1] - 2026-11-05
 
 ### Fixed

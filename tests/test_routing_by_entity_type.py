@@ -298,23 +298,16 @@ class TestClassifierDetectCountryAsymmetry:
     asymmetry is visible in the test surface and the next
     engineer does not have to reason it out from scratch."""
 
-    def test_country_subject_no_country_in_sentence_misses_macro(self):
-        # Subject declares the country; sentence does not. _detect_country
-        # scans sentence + heading and finds nothing. WB
-        # route is gated on _detect_country, not on the classifier, so
-        # macro verifiers are NOT added in this asymmetric case.
+    def test_country_subject_no_country_in_sentence_routes_macro(self):
+        # A subject inherited from an earlier sentence counts: "The nation's
+        # GDP" in a document about France is a claim about France.
         d = _decomp(
             subject="France",
             sentence="The nation's GDP was $2.78 trillion in 2022.",
             metric="gdp",
         )
         sources = _names(_classify_and_route(d))
-        assert "verify_world_bank" not in sources, (
-            "asymmetry surfaced: subject-only country detection does not "
-            "drive the macro-verifier branch. If this starts passing "
-            "the classifier has been wired into the macro branch too; "
-            "update the test and RUNBOOK asymmetry note accordingly."
-        )
+        assert "verify_world_bank" in sources
         # But the classifier DID classify and DID gate SEC:
         assert d.entity_type == "country"
         assert "verify_sec_edgar" not in sources

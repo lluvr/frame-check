@@ -1067,3 +1067,289 @@ def test_extraction_keeps_a_number_after_an_opening_word():
         str(n) for c in analyze_claims(text)["claims"] for n in c["numbers"]
     ]
     assert any("500" in n for n in numbers), numbers
+
+
+# ── Whole documents: context has to carry across sentences ──────────
+
+NIKE_DOC = (
+    "Nike's fiscal 2024 ended on May 31, 2024, and it was a slow year. The "
+    "company reported revenue of $51.4 billion, barely above the prior year. "
+    "Net income for the year came in at $5.7 billion. Gross profit reached "
+    "$27.6 billion, while total assets were $38.1 billion."
+)
+POLAND_DOC = (
+    "Poland is one of the largest economies in Central Europe. The country "
+    "had a population of about 44.2 million people in 2023. Its GDP that year "
+    "was roughly $812 billion in current US dollars. Inflation ran at 11.5 "
+    "percent. Life expectancy at birth was 78.3 years."
+)
+MIXED_DOC = (
+    "Walmart reported revenue of $648.1 billion in fiscal 2024. Net income was "
+    "$15.5 billion. Sweden makes a useful comparison. The country's GDP in "
+    "2023 was about $579 billion."
+)
+
+
+def _doc_decomps(text):
+    entity = sn.extract_doc_primary_entity(text)
+    claims = sn._split_multi_figure_claims(analyze_claims(text)["claims"])
+    out = {}
+    for c in sn._apply_discourse_context(claims, text):
+        d = decompose_claim(c, doc_text=text, doc_primary_entity=entity)
+        out[d.raw_value.strip()] = d
+    return out
+
+
+@pytest.mark.parametrize("text,number,subject", [
+    (NIKE_DOC, "$51.4 billion", "Nike"),
+    (NIKE_DOC, "$5.7 billion", "Nike"),
+    (POLAND_DOC, "$812 billion", "Poland"),
+    (POLAND_DOC, "78.3 years", "Poland"),
+    (MIXED_DOC, "$15.5 billion", "Walmart"),
+    (MIXED_DOC, "$579 billion", "Sweden"),
+])
+def test_a_later_sentence_keeps_the_nearest_subject(text, number, subject):
+    assert _doc_decomps(text)[number].subject == subject
+
+
+def test_the_year_carries_across_sentences():
+    d = _doc_decomps(NIKE_DOC)["$5.7 billion"]
+    assert "2024" in d.time_period
+
+
+def test_a_multi_figure_sentence_checks_each_figure():
+    decomps = _doc_decomps(NIKE_DOC)
+    assert "$27.6 billion" in decomps and "$38.1 billion" in decomps
+    assert "assets" not in decomps["$27.6 billion"].sentence
+    assert decomps["$38.1 billion"].subject == "Nike"
+
+
+def test_a_growth_rate_stays_with_its_figure():
+    text = "NVIDIA reported FY2024 revenue of $60.9 billion, up 126% from $26.97 billion."
+    claims = sn._split_multi_figure_claims(analyze_claims(text)["claims"])
+    assert len(claims) == 1
+
+
+def test_an_inherited_year_alone_cannot_contradict(apple_sec):
+    d = _decomp("Revenue is $420 billion.", 420e9, metric="revenue",
+                time_period="2023")
+    d.year_inherited = True
+    assert verify_sec_edgar(d).match_type == "no_data"
+
+
+def test_an_explicit_reference_to_the_year_can_contradict(apple_sec):
+    d = _decomp("Revenue for the year was $420 billion.", 420e9,
+                metric="revenue", time_period="2023")
+    d.year_inherited = True
+    assert verify_sec_edgar(d).match_type == "contradicted"
+
+
+@pytest.mark.parametrize("sentence", [
+    "Life expectancy at birth was 78.3 years.",
+    "Inflation ran at 11.5 percent.",
+    "Merchandise sales were $16.7 billion.",
+    "It was worth $5 billion in current US dollars.",
+])
+def test_ordinary_openings_are_not_subjects(sentence):
+    subject = sn.extract_subject("", sentence)
+    assert subject in ("",), subject
+
+
+REGION_DOC = (
+    "Indonesia is the largest economy in Southeast Asia. Its population was "
+    "281.2 million in 2023. Inflation averaged 3.7 percent, one of the lower "
+    "rates in the European Union. It had 2.3 million square kilometers."
+)
+CHAIN_DOC = (
+    "Sweden makes a useful comparison. The country's GDP in 2023 was about "
+    "$579 billion, less than Walmart's annual sales. It had a population of "
+    "about 12.4 million."
+)
+
+
+@pytest.mark.parametrize("text,number,subject", [
+    (REGION_DOC, "281.2 million", "Indonesia"),
+    (REGION_DOC, "3.7 percent", "Indonesia"),
+    (REGION_DOC, "2.3 million", "Indonesia"),
+    (CHAIN_DOC, "12.4 million", "Sweden"),
+])
+def test_regions_and_passing_mentions_do_not_take_the_subject(text, number,
+                                                              subject):
+    decomps = _doc_decomps(text)
+    key = next(k for k in decomps if number.split()[0] in k)
+    assert decomps[key].subject == subject
+
+
+# ── Coverage: figures filings hold, subjects before the figure ──────
+
+def _concept_rows(monkeypatch, by_concept, unit="USD"):
+    monkeypatch.setattr(sn, "_find_cik", lambda s: ("1", "XYZ"))
+
+    def fetch(req, per_op_timeout=8):
+        concept = req.full_url.rsplit("/", 1)[1].replace(".json", "")
+        rows = by_concept.get(concept)
+        if rows is None:
+            raise OSError("no such concept")
+        return json.dumps({"units": {unit: rows}}).encode()
+
+    monkeypatch.setattr(sn, "_urlopen_with_deadline", fetch)
+
+
+@pytest.mark.parametrize("sentence,metric,value,concept,unit", [
+    ("Starbucks' operating income in fiscal 2024 was $5.4 billion.",
+     "operating_income", 5.4e9, "OperatingIncomeLoss", "USD"),
+    ("Oracle's gross profit in fiscal 2024 was $37 billion.",
+     "gross_profit", 37e9, "GrossProfit", "USD"),
+    ("Deere spent $2.29 billion on research and development in fiscal 2024.",
+     "research_development", 2.29e9, "ResearchAndDevelopmentExpense", "USD"),
+    ("Starbucks' diluted earnings per share in fiscal 2024 were $3.31.",
+     "eps", 3.31, "EarningsPerShareDiluted", "USD/shares"),
+])
+def test_filings_answer_the_other_figures_they_hold(monkeypatch, sentence,
+                                                    metric, value, concept,
+                                                    unit):
+    d = decompose_claim({"sentence": sentence, "numbers": ["1"]})
+    assert d.metric == metric
+    d.value = value
+    d.unit = "currency"
+    d.time_period = "2024"
+    _concept_rows(monkeypatch, {concept: [
+        _row("2024-09-29", 2024, value, "2023-10-02"),
+    ]}, unit=unit)
+    assert verify_sec_edgar(d).match_type == "exact"
+
+
+def test_a_wrong_eps_is_contradicted_against_eps_not_net_income(monkeypatch):
+    d = decompose_claim({
+        "sentence": "Starbucks' diluted earnings per share in fiscal 2024 were $9.",
+        "numbers": ["$9"],
+    })
+    d.value, d.unit, d.time_period = 9.0, "currency", "2024"
+    _concept_rows(monkeypatch, {"EarningsPerShareDiluted": [
+        _row("2024-09-29", 2024, 3.31, "2023-10-02"),
+    ]}, unit="USD/shares")
+    r = verify_sec_edgar(d)
+    assert r.match_type == "contradicted"
+    assert r.source_value == 3.31
+
+
+@pytest.mark.parametrize("text,number,subject", [
+    (("Deere had a strong year. Net income was $7.1 billion as farmers in North "
+     "America and South America pulled back."), "$7.1 billion", "Deere"),
+    (("In fiscal 2024, Home Depot posted net sales of $159.5 billion, a total "
+     "that included SRS Distribution."), "$159.5 billion", "Home Depot"),
+])
+def test_a_name_after_the_figure_does_not_take_the_subject(text, number, subject):
+    assert _doc_decomps(text)[number].subject == subject
+
+
+def test_a_name_only_after_the_figure_is_still_used_alone():
+    d = decompose_claim({"sentence": "Revenue was $5 billion at Apple in 2023.",
+                         "numbers": ["$5 billion"]})
+    assert d.subject == "Apple"
+
+
+def test_a_possessive_company_name_keeps_its_s(monkeypatch):
+    monkeypatch.setattr(sn, "_get_sec_tickers", lambda: (
+        {"LOWES COMPANIES INC": ("1", "LOW")}, {},
+    ))
+    assert sn._find_cik("Lowe")[1] == "LOW"
+
+
+def test_two_years_cannot_contradict_at_the_world_bank(monkeypatch):
+    monkeypatch.setattr(sn, "_fetch_json", lambda url, *a, **k: (
+        [{}, [{"value": 3.2, "date": "2024"}]] if "/indicator/" in url
+        else [{}, [{"iso2Code": "PH", "name": "Philippines"}]]
+    ))
+    monkeypatch.setattr(sn, "_WB_COUNTRY_CODES", {})
+    r = sn.verify_world_bank(_decomp(
+        "Inflation eased to 4.4 percent in 2024 after averaging 6.0 percent "
+        "in 2023.", 6.0, unit="percent", subject="Philippines",
+        time_period="2024"))
+    assert r.match_type == "no_data"
+
+
+@pytest.mark.parametrize("sentence,value,metric,passage", [
+    ("The surface pressure on Mars averages about 8.9 millibars.", 8.9, "count",
+     "The surface pressure on Mars is close to 8.7 at some sites averages."),
+    ("Life expectancy in Indonesia was 60.2 years.", 60.2, "lifespan",
+     "Life expectancy in Indonesia reached 62.0 years old by then."),
+])
+def test_reference_text_gets_no_five_percent_slack_on_vague_figures(
+        sentence, value, metric, passage):
+    d = _decomp(sentence, value, metric=metric, unit="count", subject="Mars")
+    assert _match_in_text(passage, value, sentence, decomp=d)[0] is None
+
+
+def test_revenue_before_a_number_is_not_a_name():
+    numbers = [
+        str(n) for c in analyze_claims("Revenue 500 rose 3% last year.")["claims"]
+        for n in c["numbers"]
+    ]
+    assert any("500" in n for n in numbers), numbers
+
+
+def test_filing_concepts_are_fetched_once_per_request(monkeypatch):
+    calls = []
+
+    def fetch(req, per_op_timeout=8):
+        calls.append(req.full_url)
+        return json.dumps({"units": {"USD": [
+            _row("2023-09-30", 2023, 383_285_000_000, "2022-10-01"),
+        ]}}).encode()
+
+    monkeypatch.setattr(sn, "_find_cik", lambda s: ("320193", "AAPL"))
+    monkeypatch.setattr(sn, "_urlopen_with_deadline", fetch)
+    monkeypatch.setattr(sn, "_query_wikipedia", lambda s: ("", "", 0))
+    monkeypatch.delenv("BRAVE_API_KEY", raising=False)
+    monkeypatch.delenv("ALPHA_VANTAGE_API_KEY", raising=False)
+    text = (
+        "Apple's revenue in fiscal 2023 was $383.3 billion. Apple's sales in "
+        "fiscal 2023 were about $383 billion."
+    )
+    sn.verify_claims_source_network(analyze_claims(text)["claims"], doc_text=text)
+    assert len(calls) == len(set(calls))
+
+
+# ── Comparison documents ────────────────────────────────────────────
+
+COMPARE_DOC = (
+    "Chile and Peru share a long border. In 2023 Chile had about 19.7 million "
+    "people, while Peru had about 33.8 million. Annual-average inflation was "
+    "7.6 percent in Chile, as the central bank worked down an overshoot. "
+    "Unemployment was 8.9 percent that year."
+)
+SOURCE_DOC = (
+    "Kenya is a large economy. World Bank data put GDP at $107.5 billion in "
+    "2023. The modeled unemployment rate was 5.4 percent."
+)
+
+
+@pytest.mark.parametrize("text,number,subject", [
+    (COMPARE_DOC, "19.7 million", "Chile"),
+    (COMPARE_DOC, "33.8 million", "Peru"),
+    (COMPARE_DOC, "7.6 percent", "Chile"),
+    (SOURCE_DOC, "$107.5 billion", "Kenya"),
+    (SOURCE_DOC, "5.4 percent", "Kenya"),
+])
+def test_the_nearest_name_owns_the_figure(text, number, subject):
+    decomps = _doc_decomps(text)
+    key = next(k for k in decomps if number.split()[0] in k)
+    assert decomps[key].subject == subject
+
+
+def test_a_silently_inherited_subject_in_a_comparison_cannot_contradict(world_bank):
+    decomps = _doc_decomps(
+        "Germany and Spain are often compared. Germany has a population of "
+        "about 84 million in 2023. Its neighbour Spain is smaller. The "
+        "population was about 90 million in 2023."
+    )
+    d = decomps["90 million"]
+    assert d.subject_ambiguous
+    assert sn.verify_world_bank(d).match_type == "no_data"
+
+
+def test_a_named_subject_in_a_comparison_can_still_contradict(world_bank):
+    d = _country("Germany has a population of about 12 million in 2023.", 12e6,
+                 time_period="2023")
+    assert sn.verify_world_bank(d).match_type == "contradicted"
