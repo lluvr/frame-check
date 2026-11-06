@@ -99,10 +99,36 @@ def _table_sentences(rows, preamble):
     return out
 
 
+_ALIGNED_ROW_RE = re.compile(
+    r'^(\s*[A-Za-z][A-Za-z ,&()\'-]*?)(\s{2,})(\(?-?\d[\d,]*(?:\.\d+)?\)?)((?:\s{2,}\(?-?\d[\d,]*(?:\.\d+)?\)?)*)\s*$'
+)
+
+
+def _scale_aligned_tables(text):
+    """A plain-text table under "(in thousands)" states its figures without a
+    scale; write the scale onto each figure, except per-share amounts."""
+    scale = _TABLE_SCALE_RE.search(text)
+    if not scale or "|" in text:
+        return text
+    word = scale.group(2).lower().rstrip('s')
+    out = []
+    for line in text.split('\n'):
+        row = _ALIGNED_ROW_RE.match(line)
+        if row and not _PER_SHARE_RE.search(row.group(1)):
+            line = re.sub(
+                r'(?<![\d.])(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d{2,})(?![\d.,])',
+                lambda m: f"{m.group(1)} {word}", line,
+            )
+        out.append(line)
+    return '\n'.join(out)
+
+
 def plain_prose(text):
     """Return text with its formatting read out. Safe to apply twice."""
     if not text:
         return text
+    if not re.search(r'\d (?:thousand|million|billion)\b', text):
+        text = _scale_aligned_tables(text)
     # Someone listed as attending is not what the notes are about.
     for found in _ATTENDEES_RE.finditer(text):
         for name in re.findall(r'\b[A-Z][a-z]+\b', found.group(1)):
@@ -127,7 +153,7 @@ def plain_prose(text):
             while end < len(lines) and lines[end].lstrip().startswith('|'):
                 end += 1
             preamble = "\n".join(out[-4:])
-            out.extend(_table_sentences(lines[i:end], preamble))
+            out.extend(_plain_line(t) for t in _table_sentences(lines[i:end], preamble))
             i = end
             continue
         if _DROPPED_LINE_RE.match(line):
@@ -168,7 +194,12 @@ def _plain_line(line):
         return "# " + (whole_bold.group(1) or whole_bold.group(2)).strip()
     # A list item is its own statement, so it gets an ending.
     was_item = bool(_BULLET_RE.match(line))
-    line = _RUN_IN_LABEL_RE.sub('', line)
+    # "**Worth the trip.**" goes; "**2024: back to profit.**" names the year.
+    label = _RUN_IN_LABEL_RE.match(line)
+    if label and re.search(r'\b(?:19|20)\d{2}\b', label.group()):
+        line = label.group().strip().strip('*').rstrip('.') + '. ' + line[label.end():]
+    else:
+        line = _RUN_IN_LABEL_RE.sub('', line)
     line = _BULLET_RE.sub('', line)
     line = _BOLD_RE.sub(lambda m: m.group(1) or m.group(2), line)
     line = _ITALIC_RE.sub(r'\1', line)
@@ -178,6 +209,11 @@ def _plain_line(line):
     line = _MEMO_LABEL_RE.sub('', line)
     line = _FISCAL_YEAR_RE.sub(r'FY20\1\2', line)
     line = re.sub(r'\bper cent\b', 'percent', line)
+    # "$(52.5)M" is how a statement writes a loss.
+    line = re.sub(
+        r'([$\u20ac\u00a3])\((\d[\d,]*(?:\.\d+)?)\)(\s?(?:bn|mn|[MBK])\b)?',
+        lambda m: f"{m.group(1)}{m.group(2)}{(m.group(3) or '').strip()} (a loss)", line,
+    )
     line = re.sub(r'\b(?:US|U\.S\.|USD)\s?\$', '$', line)
     line = _FISCAL_YEAR_END_RE.sub(r'FY20\1', line)
     for pattern, spelled in _SHORTHAND:

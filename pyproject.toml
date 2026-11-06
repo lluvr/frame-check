@@ -83,6 +83,7 @@ py-modules = [
     "decision_readiness",
     "comparison",
     "prose",
+    "claim_reader",
     "source_network",
     "llm_cost",
     "llm_client",

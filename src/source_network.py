@@ -31,6 +31,8 @@ from dataclasses import dataclass, field
 from typing import Optional
 import contextlib
 
+from claim_analysis import _own_sentence
+from claim_reader import figure_key, read_figures
 from prose import plain_prose
 
 
@@ -71,6 +73,10 @@ class ClaimDecomposition:
     # The year came from an earlier sentence. It can confirm a figure, but
     # refuting one needs the sentence itself to point back at that year.
     year_inherited: bool = False
+    # The inherited year is the only one the text has named so far.
+    year_sole: bool = False
+    # The whole sentence, when the claim is one clause of it.
+    full_sentence: str = ""
     # The subject came from context in a document naming several entities, so
     # which one the sentence means is a guess. It may confirm, not refute.
     subject_ambiguous: bool = False
@@ -211,6 +217,8 @@ def normalize_value(raw, sentence=""):
     # _verify_one). The symbol set matches
     # comparison._CURRENCY_SYMBOLS.
     cleaned = cleaned.lstrip("$€£¥₹~").rstrip("%")
+    # "$(52.5)M": a statement's loss. The sign is applied where it matters.
+    cleaned = re.sub(r'^\((\s*\d[\d,.]*\s*)\)', r'\1', cleaned)
     cleaned = cleaned.replace(",", "")
     # A duration: "83 years" is 83. Reaching float() with the unit attached
     # returned 0, which skips the claim, so no life expectancy was checked.
@@ -909,7 +917,8 @@ _TIME_RE = re.compile(
 #   - "cash" is unambiguous and can sit anywhere.
 _METRIC_PATTERNS = {
     "eps": re.compile(
-        r'\b(earnings\s+per\s+share|EPS|per\s+diluted\s+share)\b', re.IGNORECASE,
+        r'\b(earnings\s+per\s+share|EPS|(?:loss\s+)?per\s+(?:diluted\s+|basic\s+)?share)\b',
+        re.IGNORECASE,
     ),
     "operating_income": re.compile(
         r'\b(operating\s+(?:income|profit)|income\s+from\s+operations)\b',
@@ -945,7 +954,10 @@ _METRIC_PATTERNS = {
     "profit": re.compile(r'\b(profits?|earnings|earned|net\s+income|net\s+loss|EBITDA)\b', re.IGNORECASE),
     "market_cap": re.compile(r'\b(market\s+cap|valuation|valued\s+at)\b', re.IGNORECASE),
     "population": re.compile(r'\b(population|inhabitants|residents|people)\b', re.IGNORECASE),
-    "area": re.compile(r'\b(area|square\s+(?:km|miles?|kilomet(?:er|re)s?)|sq\s+km)\b', re.IGNORECASE),
+    "area": re.compile(
+        r'\b(area|square\s+(?:km|miles?|kilomet(?:er|re)s?)|sq\.?\s+(?:km|mi)|km2|km\u00b2|mi2)(?![a-z])',
+        re.IGNORECASE,
+    ),
     "height": re.compile(r'\b(height|tall|elevation|altitude)\b', re.IGNORECASE),
     "diameter": re.compile(r'\b(diameter|radius)\b', re.IGNORECASE),
     "weight": re.compile(r'\b(weight|mass|weighs?|kg|kilograms?|tonnes?)\b', re.IGNORECASE),
@@ -953,6 +965,10 @@ _METRIC_PATTERNS = {
     "lifespan": re.compile(r'\b(lifespan|life\s+span|life\s+expectancy|years?\s+old|longevity)\b', re.IGNORECASE),
     "price": re.compile(
         r'\b(price|cost|priced?\s+at|trading\s+at|(?<!economy\sis\s)(?<!economy\swas\s)worth)\b',
+        re.IGNORECASE,
+    ),
+    "gdp_per_capita": re.compile(
+        r'\b((?:GDP|income|output)\s+(?:per\s+(?:capita|head|person)|/\s*capita))\b',
         re.IGNORECASE,
     ),
     "gdp": re.compile(
@@ -990,6 +1006,13 @@ _COMPARED_YEAR_RE = re.compile(
     re.IGNORECASE,
 )
 
+_FORECAST_WORDING_RE = re.compile(
+    r'\b(?:forecasts?|projected|projections?|expects?|expected|estimates?|estimated|'
+    r'guidance|guided|target|outlook|could|would|might|may|likely|anticipates?|'
+    r'plans?|aims?|hopes?|bet|guess|think|believe|by\s+20[2-9]\d|20[2-9]\dE|'
+    r'FY\d{2,4}E|next\s+year|will)\b',
+    re.IGNORECASE,
+)
 _PROJECTION_RE = re.compile(
     r'\b(projected|forecast|expected\s+to|will\s+reach|by\s+20[3-9]\d|'
     r'estimated\s+to\s+reach|poised\s+to)\b',
@@ -1201,7 +1224,10 @@ def _split_multi_figure_claims(claims):
             out.append(claim)
             continue
         for clause, held in placed:
-            out.append({**claim, "sentence": clause.strip(), "numbers": held})
+            out.append({
+                **claim, "sentence": clause.strip(), "numbers": held,
+                "full_sentence": claim.get("full_sentence") or sentence,
+            })
     return out
 
 
@@ -1270,6 +1296,42 @@ def _split_prior_figures(claim):
     return out
 
 
+# What the reader calls a metric, where the checkers use another name.
+_PHYSICAL_METRICS = frozenset({"height", "length", "diameter", "weight", "area", "lifespan"})
+_READER_METRIC_NAMES = {"life_expectancy": "lifespan"}
+_READER_INDICATOR_WORDS = {
+    "gdp_per_capita": "per capita", "inflation": "inflation",
+    "unemployment": "unemployment", "life_expectancy": "life expectancy",
+}
+
+
+def _apply_reader(claims, doc_text):
+    """Attach the model's reading of each figure to its claim, one figure to a
+    claim, and add figures the rules missed. With no reading, nothing changes.
+    """
+    figures = read_figures(doc_text)
+    if not figures:
+        return claims
+    by_key = {}
+    for figure in figures:
+        by_key.setdefault(figure_key(figure["figure"]), figure)
+    seen = set()
+    out = []
+    for claim in claims:
+        numbers = [str(n) for n in claim.get("numbers") or []]
+        for number in numbers or [""]:
+            reading = by_key.get(figure_key(number))
+            if reading:
+                seen.add(figure_key(number))
+            out.append({**claim, "numbers": [number] if number else [], "reader": reading})
+    for key, figure in by_key.items():
+        if key in seen or figure["status"] == "not_a_fact":
+            continue
+        sentence = _own_sentence(doc_text, figure["figure"]) or figure["figure"]
+        out.append({"sentence": sentence, "numbers": [figure["figure"]], "reader": figure})
+    return out
+
+
 def _apply_discourse_context(claims, doc_text):
     """Attach the subject and year a sentence inherits from those before it.
 
@@ -1330,6 +1392,9 @@ def _apply_discourse_context(claims, doc_text):
             **claim,
             "inherited_subject": subject,
             "inherited_year": year,
+            "year_sole": len(set(
+                re.findall(r'20[1-3]\d', _without_compared_periods(before))
+            )) == 1,
             "subject_ambiguous": len(named_so_far) > 1,
         })
     return out
@@ -1348,12 +1413,18 @@ def _metric_beside(sentence, raw_value, before_only=False):
                 return name
         return ""
     end = at + len(str(raw_value).strip())
+    # "dividends of $1.60 per share" is a dividend, not earnings per share.
+    if (re.match(r'\s*per\s+share', sentence[end:])
+            and re.search(r'\bdividends?\b', sentence[:at], re.IGNORECASE)):
+        return "dividends_paid"
     best, best_gap = "", None
     for name, pattern in _METRIC_PATTERNS.items():
         for found in pattern.finditer(sentence):
             if before_only and found.end() > at:
                 continue
-            gap = at - found.end() if found.end() <= at else found.start() - end
+            # On a tie the name before the figure wins: "a net loss of $188M as
+            # inventory piled up".
+            gap = at - found.end() if found.end() <= at else found.start() - end + 1
             # "about" and "some" only say it is a count of something.
             if name == "count":
                 gap += 10_000
@@ -1468,9 +1539,10 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
     # EDGAR matches against the right period.
     # A figure set against the current one can confirm the earlier year, but a
     # phrase this loose is not enough to refute it.
-    if not year_inherited and _FIGURE_AFTER_VS_RE.search(
+    after_vs = bool(_FIGURE_AFTER_VS_RE.search(
         sentence[:max(sentence.find(str(raw_value).strip()), 0)],
-    ):
+    ))
+    if after_vs:
         year_inherited = True
     if claim.get("prior_figure"):
         base = re.search(r'20[1-3]\d', time_period)
@@ -1537,6 +1609,32 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
 
     is_segment = _detect_segment_claim(sentence, heading, doc_text, raw_value)
 
+    # The model's reading, already checked against the text, replaces the rules'.
+    reading = claim.get("reader")
+    if reading:
+        if reading["entity"]:
+            subject = reading["entity"]
+            subject_ambiguous = False
+        # A word in the sentence naming what is measured ("radius") is more
+        # exact than the model's broad label ("length").
+        if reading["metric"] and metric not in _PHYSICAL_METRICS:
+            metric = _READER_METRIC_NAMES.get(reading["metric"], reading["metric"])
+            if metric not in _METRIC_PATTERNS:
+                metric = ""
+        if reading["period"]:
+            year_sole = bool(claim.get("year_sole"))
+            time_period = reading["period"]
+            year_inherited = not reading["period_in_sentence"]
+        # The model's sense of what is future is not evidence: it called
+        # reported FY2026 results a forecast. Only wording in the text counts.
+        if (reading["status"] in ("forecast", "opinion")
+                and _FORECAST_WORDING_RE.search(sentence)):
+            claim_type = "projection"
+        # A series is chosen by the words in the sentence: give it the word.
+        word = _READER_INDICATOR_WORDS.get(reading["metric"])
+        if word and word not in sentence.lower():
+            sentence = f"{sentence} ({word})"
+
     return ClaimDecomposition(
         subject=subject,
         metric=metric,
@@ -1545,6 +1643,10 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
         unit=unit,
         time_period=time_period,
         year_inherited=year_inherited,
+        # A figure set against another is explicitly not this year's.
+        full_sentence=claim.get("full_sentence", ""),
+        year_sole=(bool(claim.get("year_sole")) and year_inherited
+                   and not claim.get("prior_figure") and not after_vs),
         subject_ambiguous=subject_ambiguous,
         claim_type=claim_type,
         sentence=sentence,
@@ -2095,6 +2197,11 @@ _SCALE_AND_FILLER_WORDS = frozenset({
 })
 
 _UNIT_FAMILIES = (
+    # Areas first, so "square miles" is not read as miles.
+    ("km2", r'km2|km\u00b2|sq\.?\s*km|square\s+kilomet(?:re|er)s?'),
+    ("mi2", r'mi2|mi\u00b2|sq\.?\s*mi(?:les?)?|square\s+miles?'),
+    ("m2", r'm2|m\u00b2|square\s+met(?:re|er)s?'),
+    ("ft2", r'sq\.?\s*ft|square\s+(?:feet|foot)'),
     ("km", r'km|kilomet(?:re|er)s?'),
     ("cm", r'cm|centimet(?:re|er)s?'),
     ("m", r'm|met(?:re|er)s?'),
@@ -2107,11 +2214,12 @@ _UNIT_FAMILIES = (
     ("yd", r'yards?|yd'),
 )
 _UNIT_ALTERNATION = "|".join(pat for _, pat in _UNIT_FAMILIES)
-_UNIT_TOKEN_RE = re.compile(r'\b(' + _UNIT_ALTERNATION + r')\b', re.IGNORECASE)
+_UNIT_TOKEN_RE = re.compile(r'\b(' + _UNIT_ALTERNATION + r')(?![a-z])', re.IGNORECASE)
 # The unit directly after a number, reading through the far end of a
 # range: "12,000 to 15,260 ft" is in feet.
 _UNIT_AFTER_NUMBER_RE = re.compile(
-    r'\s*(?:(?:to|-|\u2013)\s*[\d,.]+\s*)?(' + _UNIT_ALTERNATION + r')\b',
+    # "630-foot-tall" and "31,722 km2" carry their unit too.
+    r'(?:\s*(?:to|-|\u2013)\s*[\d,.]+)?[\s-]*(' + _UNIT_ALTERNATION + r')(?![a-z])',
     re.IGNORECASE,
 )
 _SENTENCE_BREAK_RE = re.compile(r'(?<=[.!?])\s+(?=[A-Z(\[])|\n+')
@@ -2175,6 +2283,10 @@ def _shares_content_word(claim_words, passage):
     return any(w[:5] in stems for w in claim_words)
 
 
+_EXCLUSIVE_QUALIFIERS = (
+    re.compile(r'\b(radius|diameter)\b'),
+    re.compile(r'\b(land|total|surface|water)\s+area\b'),
+)
 _MONTH_NAMES = (
     r'(?:January|February|March|April|May|June|July|August|September|October|'
     r'November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?'
@@ -2312,7 +2424,11 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
     subject_words = set()
     claim_unit = ""
     if decomp and decomp.unit in ("distance", "mass"):
-        unit_token = _UNIT_TOKEN_RE.search(claim_sentence)
+        # The unit after the claim's own figure, not the sentence's first one.
+        raw = str(decomp.raw_value).strip()
+        at = claim_sentence.find(raw) if raw else -1
+        own = _UNIT_AFTER_NUMBER_RE.match(claim_sentence, at + len(raw)) if at >= 0 else None
+        unit_token = own or _UNIT_TOKEN_RE.search(claim_sentence)
         claim_unit = _unit_family(unit_token.group(1)) if unit_token else ""
     if decomp:
         if decomp.metric:
@@ -2358,6 +2474,30 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
                     continue
             left, right = _sentence_bounds(text, num_start, num_end)
             passage = text[left:right]
+            # A radius is half a diameter, and land area is not total area.
+            nearby = text[max(left, num_start - 60):min(right, num_end + 60)].lower()
+            # A claim about land area needs a page that says land.
+            if (re.search(r'\bland\s+area\b', claim_sentence, re.IGNORECASE)
+                    and not re.search(r'\bland\b', nearby)):
+                continue
+            if any(
+                (said := pattern.findall(claim_sentence.lower()))
+                and (near := pattern.findall(nearby))
+                and said[0] not in near
+                for pattern in _EXCLUSIVE_QUALIFIERS
+            ):
+                continue
+            # "900 steps" is a count; "(906 ft)" is a measurement.
+            claim_raw = str(decomp.raw_value).strip()
+            claim_at = claim_sentence.find(claim_raw) if claim_raw else -1
+            claim_word = re.match(
+                r'\s*([a-z]+)', claim_sentence[claim_at + len(claim_raw):]
+            ) if claim_at >= 0 else None
+            page_unit = _UNIT_AFTER_NUMBER_RE.match(text, num_end)
+            if (claim_word and page_unit and not claim_unit
+                    and not _unit_family(claim_word.group(1))
+                    and claim_word.group(1) not in _SCALE_AND_FILLER_WORDS):
+                continue
             # A dollar figure for a named year must be from that year. Filings
             # answer these claims; this only stops reference prose about some
             # other period confirming one when a filing could not be read.
@@ -2613,6 +2753,12 @@ def _detect_wb_indicator(sentence, metric):
         return "SP.DYN.LE00.IN", "Life expectancy"
     if re.search(r'\bexports?\b', text) and ("of gdp" in text or "share of" in text):
         return "NE.EXP.GNFS.ZS", "Exports of goods and services (% of GDP)"
+    # The figure's own metric decides between the two GDP series: "$16bn,
+    # putting GDP per head at $13,000" names both.
+    if metric == "gdp_per_capita":
+        return "NY.GDP.PCAP.CD", "GDP per capita"
+    if metric == "gdp":
+        return "NY.GDP.MKTP.CD", "GDP (current US$)"
     if ("per capita" in text or "gdp per head" in text or "income per person" in text
             or "gdp per person" in text):
         return "NY.GDP.PCAP.CD", "GDP per capita"
@@ -2748,20 +2894,44 @@ def verify_world_bank(decomp):
             # was already done by normalize_value().
             diff = abs(source_val - decomp.value) / max(abs(decomp.value), 1e-10)
 
-            if diff < 0.05:
+            # Neighbouring years, read only when this one disagrees: whether one
+            # of them could explain it, and which one this figure really is.
+            near_another_year = False
+            stale_year = ""
+            if diff >= max(0.05, _rounding_room(decomp.raw_value)) and year:
+                window = _fetch_json(
+                    f"https://api.worldbank.org/v2/country/{iso2}/indicator/"
+                    f"{indicator_id}?date={int(year) - 2}:{int(year) + 2}"
+                    f"&format=json&per_page=5"
+                )
+                for other in (window[1] or []) if window and len(window) > 1 else []:
+                    if other.get("value") is None or other.get("date") == year:
+                        continue
+                    gap = abs(other["value"] - decomp.value) / max(abs(decomp.value), 1e-10)
+                    near_another_year = near_another_year or gap < 0.10
+                    if gap < 0.01:
+                        stale_year = other.get("date", "")
+            inherited_cannot_refute = (
+                decomp.year_inherited
+                and not _YEAR_REFERENCE_RE.search(decomp.sentence)
+                and near_another_year
+                and not (stale_year and decomp.year_sole
+                         and not _POINTS_ELSEWHERE_RE.search(decomp.sentence))
+            )
+
+            # "3.39 million" is stated to the nearest ten thousand: 3.7% off is
+            # another country's figure, not this one rounded. Between that and
+            # 5% the data's own revisions could explain it, so it says nothing.
+            close_limit = max(0.02, _rounding_room(decomp.raw_value))
+            if diff < close_limit:
                 match_type = "exact" if diff < 0.01 else "close"
+            elif diff < 0.05:
+                match_type = "no_data"
             elif indicator_id == "AG.SRF.TOTL.K2":
                 # This series put Canada at 15.6M square km against a true
                 # 9.98M. It may confirm; it is not reliable enough to refute.
                 match_type = "no_data"
-            elif decomp.subject_ambiguous or (
-                decomp.year_inherited and not _YEAR_REFERENCE_RE.search(
-                    decomp.sentence,
-                )
-                # A country's headcount does not move this far between years,
-                # so the year cannot explain the gap.
-                and not (indicator_id == "SP.POP.TOTL" and diff > 0.15)
-            ):
+            elif decomp.subject_ambiguous or inherited_cannot_refute:
                 match_type = "no_data"
             elif (_MONTH_NAME_RE.search(decomp.sentence)
                   or len(set(re.findall(r'20[0-3]\d', decomp.sentence))) > 1):
@@ -2785,7 +2955,14 @@ def verify_world_bank(decomp):
                 source_name="World Bank",
                 source_url=f"https://data.worldbank.org/indicator/{indicator_id}?locations={iso2}",
                 source_value=source_val,
-                source_text=f"{indicator_name} ({obs_year}): {source_val:,.0f}",
+                source_text=(
+                    f"{indicator_name} ({obs_year}): "
+                    f"{source_val:,.0f}" if abs(source_val) >= 1000
+                    else f"{indicator_name} ({obs_year}): {source_val:,.2f}"
+                ) + (
+                    f". That is the {stale_year} figure."
+                    if stale_year and match_type == "contradicted" else ""
+                ),
                 match_type=match_type,
                 difference_pct=round(diff * 100, 1),
                 confidence=0.9 if match_type == "exact" else 0.75 if match_type == "close" else 0.6,
@@ -3451,6 +3628,16 @@ def _spans_a_year(filing):
     return 300 <= days <= 400
 
 
+def _starts_early_in(filing, year):
+    """A fiscal year named for the year it begins in starts in its first half:
+    Target's fiscal 2023 ran February 2023 to February 2024. A period starting
+    on 2024-12-29 is not fiscal 2024, whatever its tag says."""
+    start = filing.get("start", "")
+    if len(start) < 7 or not start[:4].isdigit():
+        return True
+    return int(start[:4]) == year and start[5:7] <= "06"
+
+
 def _end_year(filing):
     """Extract the calendar year of an XBRL entry's end date.
 
@@ -3461,8 +3648,116 @@ def _end_year(filing):
     """
     end = filing.get("end", "")
     if len(end) >= 4 and end[:4].isdigit():
+        # A 52/53-week year ending in the first days of January is the year
+        # before: Wolverine's fiscal 2025 ended 2026-01-03.
+        if end[4:8] == "-01-" and end[8:10].isdigit() and int(end[8:10]) <= 7:
+            return int(end[:4]) - 1
         return int(end[:4])
     return None
+
+
+def _figure_clause(sentence, raw_value):
+    """The words leading up to a figure, back to the previous figure or
+    comparison: in "income of $63M, compared with a net loss of $119M" the
+    loss belongs to the second figure."""
+    raw = str(raw_value).strip()
+    at = sentence.find(raw) if raw else -1
+    if at < 0:
+        return sentence
+    head = sentence[:at]
+    cut = max(
+        [m.end() for m in re.finditer(r'\d[\d,.]*\s*(?:million|billion|bn|m|M|B)?\b', head)]
+        + [m.end() for m in re.finditer(r'\b(?:compared|versus|vs\.?|from|while|whereas)\b', head)]
+        + [0]
+    )
+    return head[cut:] + raw
+
+
+def _is_loss_per_share(sentence, raw_value):
+    """"a net loss of $200 million, or $1.14 per share" is a loss per share."""
+    raw = str(raw_value).strip()
+    at = sentence.find(raw) if raw else -1
+    if at < 0:
+        return False
+    head = sentence[:at]
+    tail = sentence[at + len(raw):at + len(raw) + 30]
+    if re.match(r'\s*(?:net\s+)?loss\s+per', tail, re.IGNORECASE):
+        return True
+    loss = list(re.finditer(r'\b(?:net\s+)?loss\b', head, re.IGNORECASE))
+    if not loss:
+        return False
+    between = head[loss[-1].end():]
+    # The loss is this figure's when nothing else is named between them.
+    return (bool(re.search(r',\s*or\s*$|\bof\s*$', between))
+            and not re.search(r'\b(?:income|profit|earnings|earned)\b', between, re.IGNORECASE))
+
+
+_ADJUSTED_FIGURE_RE = re.compile(
+    r'\b(?:adjusted|non[- ]gaap|pro\s+forma|excluding|ex-items|organic|underlying|'
+    r'normali[sz]ed|like[- ]for[- ]like|constant[- ]currency|run[- ]rate|trailing|ttm|'
+    r'annuali[sz]ed|combined|backlog)\b',
+    re.IGNORECASE,
+)
+_POINTS_ELSEWHERE_RE = re.compile(
+    r'\b(?:last\s+year|a\s+year\s+(?:ago|earlier|before)|the\s+(?:prior|previous)\s+year|'
+    r'year\s+before|previously|earlier|at\s+the\s+time|back\s+then|in\s+those\s+days|'
+    r'decade|was\s+once|since|historically|prior\s+year|peak|record)\b',
+    re.IGNORECASE,
+)
+
+
+def _rounding_room(raw_value):
+    """How far a figure can sit from the truth and still be correctly rounded:
+    "$4 billion" covers 3.5 to 4.5, "$4.0 billion" only 3.95 to 4.05.
+    """
+    digits = re.search(r'\d[\d,]*(?:\.\d+)?', str(raw_value))
+    if not digits:
+        return 0.0
+    text = digits.group().replace(",", "")
+    try:
+        value = float(text)
+    except ValueError:
+        return 0.0
+    if not value:
+        return 0.0
+    if "." in text:
+        step = 10 ** -len(text.split(".")[1])
+    else:
+        trailing = len(text) - len(text.rstrip("0"))
+        step = 10 ** trailing
+    return 0.5 * step / value
+
+
+def _scale_slip(claim_value, source_value):
+    """The right digits at the wrong scale: $4.2 million for $4.2 billion."""
+    if not claim_value or not source_value:
+        return False
+    ratio = abs(source_value / claim_value)
+    return any(abs(ratio / f - 1) < 0.02 for f in (1e3, 1e6, 1e9, 1e-3, 1e-6, 1e-9))
+
+
+def _sec_other_metric(cik, metric_lower, claim_value, target_fy):
+    """Which other filed figure of that year this number is, if any."""
+    for name, concepts in _METRIC_CONCEPTS.items():
+        if name == metric_lower or name == "eps":
+            continue
+        for concept in concepts[:3]:
+            url = (
+                f"https://data.sec.gov/api/xbrl/companyconcept/"
+                f"CIK{cik}/us-gaap/{concept}.json"
+            )
+            try:
+                data = _sec_concept_data(
+                    cik, concept, urllib.request.Request(url, headers=_SEC_HEADERS),
+                )
+            except Exception:
+                continue
+            for filing in data.get("units", {}).get("USD", []):
+                if (filing.get("form") == "10-K" and _spans_a_year(filing)
+                        and _end_year(filing) == target_fy and filing.get("val")
+                        and abs(filing["val"] / claim_value - 1) < 0.005):
+                    return _SEC_METRIC_LABELS.get(name, name.replace("_", " "))
+    return ""
 
 
 def verify_sec_edgar(decomp):
@@ -3471,7 +3766,7 @@ def verify_sec_edgar(decomp):
     The most authoritative source for US public company data.
     Returns the value the company actually reported to the SEC.
     """
-    if not decomp.subject:
+    if not decomp.subject or not decomp.value:
         return SourceResult(source_name="SEC Filing", match_type="no_data")
 
     # A filing can only speak to a metric the claim names. Treating an
@@ -3523,7 +3818,15 @@ def verify_sec_edgar(decomp):
     # Filings report a net loss as a negative net income.
     claim_value = decomp.value
     if metric_lower == "profit" and re.search(
-        r'\bnet\s+loss\b', decomp.sentence, re.IGNORECASE,
+        r'\b(?:net\s+loss|loss\s+of)\b', _figure_clause(decomp.sentence, decomp.raw_value),
+        re.IGNORECASE,
+    ) or re.search(
+        re.escape(str(decomp.raw_value).strip()) + r'\s*\(a loss\)', decomp.sentence,
+    ):
+        # "$(52.5)M" is how a statement writes a loss.
+        claim_value = -abs(decomp.value)
+    elif metric_lower == "eps" and _is_loss_per_share(
+        decomp.full_sentence or decomp.sentence, decomp.raw_value,
     ):
         claim_value = -abs(decomp.value)
 
@@ -3536,6 +3839,9 @@ def verify_sec_edgar(decomp):
     # for a company with a long filing history. Gathered across concepts
     # because a retired concept's newest row is years out of date.
     yearless_rows = []
+    # Every annual figure read, whatever its year: the evidence for whether
+    # another year could explain a mismatch, and for naming it.
+    annual_rows = []
 
     for concept in concepts_to_try:
         url = (
@@ -3594,6 +3900,7 @@ def verify_sec_edgar(decomp):
                 if u.get("form") == "10-K" and u.get("fp") == "FY"
                 and _spans_a_year(u)
             ]
+            annual_rows.extend(filtered)
 
         # Sort by recency (most recent first)
         filtered.sort(key=lambda x: x.get("end", ""), reverse=True)
@@ -3621,7 +3928,13 @@ def verify_sec_edgar(decomp):
             # 2025 counts, tagged fy=2024. Companies differ, and nothing here
             # says which applies, so the claim is compared with both and only
             # contradicted if it matches neither.
-            own_year = [f for f in filtered if f.get("fy") == target_fy]
+            # A filing's year tag can be wrong (Wolverine tags its year ending
+            # 2026-01-03 as 2024), so it only counts for a period that ends in
+            # that year or early in the next.
+            own_year = [
+                f for f in filtered if f.get("fy") == target_fy
+                and _starts_early_in(f, target_fy)
+            ]
             newest = max((f.get("end", "") for f in own_year), default="")
             exact_year_entries = [
                 f for f in filtered
@@ -3679,9 +3992,38 @@ def verify_sec_edgar(decomp):
     # let grossly wrong claims (82% off) slip through as no_data.
     match_type = (
         "exact" if best_diff < 0.005
-        else "close" if best_diff < 0.03
+        else "close" if best_diff < max(0.03, _rounding_room(decomp.raw_value))
         else "contradicted"
     )
+
+    # A bare figure off by exactly a power of a thousand is a table "in
+    # thousands" whose caption was not read, not a wrong number.
+    if (match_type == "contradicted" and _scale_slip(claim_value, best_val)
+            and not re.search(r'[$\u20ac\u00a3]|\b(?:thousand|million|billion|trillion|bn|mn)\b|\d[MBKmbk]\b',
+                              str(decomp.raw_value))):
+        return SourceResult(source_name="SEC Filing", match_type="no_data")
+
+    # An adjusted figure is a different number from the reported one.
+    if match_type == "contradicted" and _ADJUSTED_FIGURE_RE.search(decomp.sentence):
+        return SourceResult(source_name="SEC Filing", match_type="no_data")
+
+    # What another year or metric would explain, stated with the finding.
+    diagnosis = ""
+    other_years = sorted({
+        _end_year(f) for f in annual_rows
+        if _end_year(f) and target_fy and abs(_end_year(f) - target_fy) <= 2
+        and _end_year(f) != target_fy and f.get("val")
+        and abs(f["val"] - claim_value) / max(abs(claim_value), 1e-10) < 0.01
+    })
+    if match_type == "contradicted":
+        if _scale_slip(claim_value, best_val):
+            diagnosis = "The digits match at a different scale."
+        elif other_years:
+            diagnosis = f"That is the FY{other_years[-1]} figure."
+        elif target_fy and metric_lower != "eps":
+            other_metric = _sec_other_metric(cik, metric_lower, claim_value, target_fy)
+            if other_metric:
+                diagnosis = f"That is the company's {other_metric}."
 
     # With two years in the sentence we cannot tell which one this number
     # belongs to, so a mismatch proves nothing. A true claim contradicted
@@ -3690,11 +4032,24 @@ def verify_sec_edgar(decomp):
             and len(set(re.findall(r'20[1-3]\d', decomp.sentence))) > 1):
         return SourceResult(source_name="SEC Filing", match_type="no_data")
 
-    # A year carried over from an earlier sentence can confirm, but only a
-    # sentence pointing back at it can refute.
+    # A year carried over from an earlier sentence may not be the one meant, so
+    # it only refutes when no neighbouring year fits either. A figure that is
+    # exactly another year's is stale when the text has named just one year and
+    # nothing here points elsewhere.
     if (match_type == "contradicted" and decomp.year_inherited
             and not _YEAR_REFERENCE_RE.search(decomp.sentence)):
-        return SourceResult(source_name="SEC Filing", match_type="no_data")
+        near_another_year = any(
+            _end_year(f) and abs(_end_year(f) - target_fy) <= 2
+            and f.get("val")
+            and abs(f["val"] - claim_value) / max(abs(claim_value), 1e-10) < 0.10
+            for f in annual_rows
+        ) if target_fy else True
+        stale = (
+            other_years and decomp.year_sole
+            and not _POINTS_ELSEWHERE_RE.search(decomp.sentence)
+        )
+        if near_another_year and not stale:
+            return SourceResult(source_name="SEC Filing", match_type="no_data")
     if match_type == "contradicted" and decomp.subject_ambiguous:
         return SourceResult(source_name="SEC Filing", match_type="no_data")
 
@@ -3739,7 +4094,7 @@ def verify_sec_edgar(decomp):
         source_name="SEC Filing",
         source_url=filing_url,
         source_value=best_val,
-        source_text=filing_label,
+        source_text=f"{filing_label}. {diagnosis}" if diagnosis else filing_label,
         match_type=match_type,
         difference_pct=round(best_diff * 100, 1),
         confidence=0.95 if match_type == "exact" else 0.85,
@@ -4545,7 +4900,7 @@ def _verify_claims_source_network(
     # so claims like "Common side effects include nausea (44%)" in an
     # Ozempic document get verified as Ozempic claims instead of being
     # rejected as anonymous.
-    claims = _prepare_claims(claims, doc_text)
+    claims = _apply_reader(_prepare_claims(claims, doc_text), doc_text)
     doc_primary_entity = extract_doc_primary_entity(doc_text, topic=topic)
 
     results = []

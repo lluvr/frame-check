@@ -224,10 +224,14 @@ def test_population_refutes_across_an_inherited_year(monkeypatch):
     assert result.match_type == "contradicted"
 
 
-def test_a_close_population_miss_does_not_refute_across_an_inherited_year(monkeypatch):
-    parsed = parse("We use 2024 data here.\n\nBotswana has a population of 3.4 million people.")
-    result = _world_bank_result(monkeypatch, parsed["3.4 million"], 3_150_000)
-    assert result.match_type == "no_data"
+def test_a_population_a_nearby_year_fits_does_not_refute_across_an_inherited_year(monkeypatch):
+    parsed = parse("We use 2023 and 2024 data here.\n\nBotswana has a population of 3.4 million people.")
+    monkeypatch.setattr(sn, "_wb_country_code", lambda country: "BW")
+    monkeypatch.setattr(sn, "_fetch_json", lambda url, *a, **k: [
+        {"page": 1},
+        [{"value": 3_150_000, "date": "2024"}, {"value": 3_380_000, "date": "2022"}],
+    ])
+    assert sn.verify_world_bank(parsed["3.4 million"]).match_type == "no_data"
 
 
 def test_a_dollar_figure_is_never_compared_to_a_head_count(monkeypatch):
@@ -328,7 +332,7 @@ def test_a_table_of_companies_binds_name_and_metric_and_skips_estimates():
     ("A population of 1.24 million puts GDP per head at about $17,000.",
      "population", "SP.POP.TOTL"),
     ("A population of 1.24 million puts GDP per head at about $17,000.",
-     "gdp", "NY.GDP.PCAP.CD"),
+     "gdp_per_capita", "NY.GDP.PCAP.CD"),
 ])
 def test_the_indicator_follows_the_figures_metric(sentence, metric, indicator):
     assert sn._detect_wb_indicator(sentence, metric)[0] == indicator
@@ -606,3 +610,85 @@ def test_more_ways_of_stating_the_prior_figure(sentence, current, prior):
 def test_equity_figures_set_side_by_side_are_separate():
     parsed = parse("Acme's total assets fell to $2.12 billion in 2025 and shareholders' equity to $1.10 billion.")
     assert parsed["$1.10 billion"].metric == "stockholders_equity"
+
+
+def test_a_statement_style_loss_keeps_its_scale_and_sign():
+    assert "$52.5M (a loss)" in plain_prose("Net loss was $(52.5)M last year.")
+    parsed = parse(
+        "Freight scorecard, calendar 2025 ($ in millions)\n\n"
+        "| Carrier | Net income (loss) |\n|---|---|\n| Heartland Express | $(52.5)M |\n"
+    )
+    d = next(v for k, v in parsed.items() if "52.5" in k)
+    assert d.value == pytest.approx(52_500_000)
+
+
+def test_per_capita_is_its_own_metric():
+    parsed = parse("Albania's GDP reached $30.5bn in 2025, and GDP per head about $13,000.")
+    assert parsed["$30.5bn"].metric == "gdp"
+    head = next(v for k, v in parsed.items() if "13,000" in k)
+    assert head.metric == "gdp_per_capita"
+
+
+def test_a_plain_text_table_in_thousands_keeps_its_scale():
+    doc = (
+        "Cal-Maine Foods, Inc.\nSelected financial data (in thousands, except per share amounts)\n\n"
+        "                    Fiscal 2026      Fiscal 2025\n"
+        "Net sales           2,911,632        4,261,885\n"
+        "Diluted EPS         6.63             24.95\n"
+    )
+    parsed = parse(doc)
+    sales = next(v for k, v in parsed.items() if "2,911,632" in k)
+    assert sales.value == pytest.approx(2_911_632_000)
+    eps = next(v for k, v in parsed.items() if "6.63" in k)
+    assert eps.value == pytest.approx(6.63)
+
+
+def test_a_run_in_label_with_a_year_keeps_the_year():
+    doc = ("Wolverine World Wide timeline.\n\n**2023: shrinking.** Revenue fell.\n\n"
+           "**2024: back to profit.** Net income was $97.5 million.\n")
+    assert parse(doc)["$97.5 million"].time_period == "2024"
+
+
+@pytest.mark.parametrize("claim_text,raw,page", [
+    ("The Gateway Arch is 630 metres tall.", "630",
+     "The Gateway Arch is a 630-foot-tall (192 m) monument."),
+    ("Lake Baikal covers 31,722 square miles and is 636 km long.", "31,722",
+     "Lake Baikal has a surface area of 31,722 km2 (12,248 sq mi)."),
+])
+def test_the_same_digits_in_another_unit_do_not_confirm(claim_text, raw, page):
+    d = sn.decompose_claim({"sentence": claim_text, "numbers": [raw]})
+    value = float(raw.replace(",", ""))
+    assert sn._match_in_text(page, value, claim_text, decomp=d)[0] is None
+
+
+def test_the_same_unit_still_confirms():
+    text = "Lake Baikal covers 31,722 km2 of Siberia."
+    d = sn.decompose_claim({"sentence": text, "numbers": ["31,722"]})
+    page = "Lake Baikal has a surface area of 31,722 km2 (12,248 sq mi)."
+    assert sn._match_in_text(page, 31722.0, text, decomp=d)[0] == 31722.0
+
+
+def test_a_count_of_steps_does_not_match_feet():
+    text = "It's roughly 900 steps from the ground to the second floor of the Eiffel Tower."
+    d = sn.decompose_claim({"sentence": text, "numbers": ["900"]})
+    page = "The upper platform of the Eiffel Tower is 276 m (906 ft) above the ground."
+    assert sn._match_in_text(page, 900.0, text, decomp=d)[0] is None
+
+
+def test_land_area_is_not_total_area():
+    text = "Canada's land area is 9.98 million square kilometres."
+    d = sn.decompose_claim({"sentence": text, "numbers": ["9.98 million"]})
+    page = "Canada has a total area of 9.98 million square kilometres, the second largest."
+    assert sn._match_in_text(page, 9.98e6, text, decomp=d)[0] is None
+
+
+def test_the_metric_before_a_figure_wins_a_tie():
+    parsed = parse("Wolverine posted a net loss of $188.3 million as inventory piled up in 2022.")
+    assert parsed["$188.3 million"].metric == "profit"
+
+
+def test_land_area_needs_the_page_to_say_land():
+    text = "Land area: 9.98 million square kilometres in Canada."
+    d = sn.decompose_claim({"sentence": text, "numbers": ["9.98 million"]})
+    page = "Canada covers 9.98 million square kilometres (3.85 million square miles)."
+    assert sn._match_in_text(page, 9.98e6, text, decomp=d)[0] is None
