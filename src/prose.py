@@ -24,6 +24,30 @@ _ESTIMATE_COLUMN_RE = re.compile(
     r'\b(?:(?:19|20)\d{2}E|est\.?|estimates?|forecast|projected|target|guidance)\b',
     re.IGNORECASE,
 )
+_DASH_DATELINE_RE = re.compile(
+    r'^[A-Z][A-Z .]{2,30}(?:,\s*[A-Z][a-z]+\.?)?\s*(?:--|-|\u2014|\u2013)\s+(?=[A-Z])'
+)
+_ATTENDEES_RE = re.compile(r'^\s*Attendees:\s*(.+)$', re.MULTILINE)
+_FAQ_MARKER_RE = re.compile(r'^\s*[QA]:\s+')
+_DROPPED_LINE_RE = re.compile(
+    r'^\s*(?:TO|FROM|CC|Attendees|Date|Hi\s+\w+,?|Hello\s+\w+,?|Dear\s+\w+,?)(?::.*)?\s*$',
+)
+_MEMO_LABEL_RE = re.compile(r'^\s*(?:RE|Re|Subject):\s+')
+_PERIOD_DATELINE_RE = re.compile(r'^[A-Z][A-Z ]{2,30}\.\s+(?=[A-Z])')
+_FISCAL_YEAR_END_RE = re.compile(r'\bFYE\s+[A-Z][a-z]{2}-(\d{2})\b')
+_SHORTHAND = (
+    (re.compile(r'\b[Rr]ev\b'), 'revenue'),
+    (re.compile(r'\bNI\b'), 'net income'),
+    (re.compile(r'\bOp inc\b'), 'operating income'),
+    (re.compile(r'\bop inc\b'), 'operating income'),
+    (re.compile(r'\bDil EPS\b'), 'diluted EPS'),
+    (re.compile(r'\bYE cash\b'), 'year-end cash'),
+    (re.compile(r'\bGP\b'), 'gross profit'),
+    (re.compile(r'\bInv\b'), 'inventory'),
+    (re.compile(r'\bLTD\b'), 'long-term debt'),
+    (re.compile(r'\bGDP/capita\b'), 'GDP per capita'),
+    (re.compile(r'\bPop\.(?=\s)'), 'population'),
+)
 _RUN_IN_LABEL_RE = re.compile(r'^\s*\*\*[^*\n]{1,40}\.\*\*\s+(?=\S)')
 _ALL_CAPS_TITLE_RE = re.compile(r"^[A-Z][A-Z0-9 ,:&'-]{4,}$")
 
@@ -79,13 +103,19 @@ def plain_prose(text):
     """Return text with its formatting read out. Safe to apply twice."""
     if not text:
         return text
+    # Someone listed as attending is not what the notes are about.
+    for found in _ATTENDEES_RE.finditer(text):
+        for name in re.findall(r'\b[A-Z][a-z]+\b', found.group(1)):
+            text = re.sub(
+                r'(?m)^((?!\s*Attendees:).*?)\b' + name + r'\b', r'\1they', text,
+            )
     lines = text.split('\n')
     # "ATLANTA:" or "MEMO:" opens a document. Later on the same shape is a
     # label such as "GDP:".
     for n, line in enumerate(lines):
         if line.strip():
             if not _ALL_CAPS_TITLE_RE.match(line.strip()):
-                lines[n] = _DATELINE_RE.sub('', line)
+                lines[n] = _PERIOD_DATELINE_RE.sub('', _DATELINE_RE.sub('', line))
             break
     out = []
     i = 0
@@ -100,9 +130,32 @@ def plain_prose(text):
             out.extend(_table_sentences(lines[i:end], preamble))
             i = end
             continue
+        if _DROPPED_LINE_RE.match(line):
+            i += 1
+            continue
+        # A short line with no ending, right above a list, titles that list.
+        if (line.strip() and len(line.split()) <= 5 and line.rstrip()[-1] not in '.:!?'
+                and not line.lstrip().startswith('#')
+                and not _BULLET_RE.match(line)
+                and i + 1 < len(lines) and _BULLET_RE.match(lines[i + 1])):
+            out.append("# " + _plain_line(line).strip())
+            i += 1
+            continue
         out.append(_plain_line(line))
+        # A list item stands alone. The sentence splitter only breaks before a
+        # capital, and an item can open with "$3bn" or "2025 sales".
+        if _BULLET_RE.match(line):
+            out.append("")
         i += 1
     return "\n".join(out)
+
+
+def _spelled_out(spelled, match):
+    """Keep a sentence's capital, which is where the sentence splitter breaks."""
+    before = match.string[:match.start()].rstrip()
+    if not before or before[-1] in '.!?;':
+        return spelled[:1].upper() + spelled[1:]
+    return spelled
 
 
 def _plain_line(line):
@@ -113,18 +166,22 @@ def _plain_line(line):
     whole_bold = re.fullmatch(r'\*\*([^*]+)\*\*:?|__([^_]+)__:?', stripped)
     if whole_bold:
         return "# " + (whole_bold.group(1) or whole_bold.group(2)).strip()
-    # A list item is its own statement; without an ending, the sentence
-    # splitter would run neighbouring items together.
+    # A list item is its own statement, so it gets an ending.
     was_item = bool(_BULLET_RE.match(line))
     line = _RUN_IN_LABEL_RE.sub('', line)
     line = _BULLET_RE.sub('', line)
     line = _BOLD_RE.sub(lambda m: m.group(1) or m.group(2), line)
     line = _ITALIC_RE.sub(r'\1', line)
+    if len(line.split()) > 9:
+        line = _DASH_DATELINE_RE.sub('', line)
+    line = _FAQ_MARKER_RE.sub('', line)
+    line = _MEMO_LABEL_RE.sub('', line)
     line = _FISCAL_YEAR_RE.sub(r'FY20\1\2', line)
     line = re.sub(r'\bper cent\b', 'percent', line)
     line = re.sub(r'\b(?:US|U\.S\.|USD)\s?\$', '$', line)
-    line = re.sub(r'\brev\b', 'revenue', line)
-    line = re.sub(r'\bNI\b', 'net income', line)
+    line = _FISCAL_YEAR_END_RE.sub(r'FY20\1', line)
+    for pattern, spelled in _SHORTHAND:
+        line = pattern.sub(lambda m: _spelled_out(spelled, m), line)
     line = _MILLION_PEOPLE_RE.sub(r'\1 million', line)
     line = _MILLION_COUNT_RE.sub(r'\1\2 million', line)
     if was_item and line.rstrip()[-1:] not in ('.', '!', '?', ':', ''):

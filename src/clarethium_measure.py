@@ -619,6 +619,8 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
         # or compound form.
         (r'(?<![$€£¥₹])(?<![\d,])(?<!\.)(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)\s+(thousand|million|billion|trillion)\b',
          "scaled_integer"),
+        # "Pop. 3.9M": an attached capital is a scale.
+        (r'(?<![$€£¥₹])(?<![\d,.])(\d+\.\d+)[MBK]\b', "decimal_suffix"),
         (r'(?<![$€£¥₹])(?<![\d,])(\d+\.\d+)(?!%)', "decimal"),
         (r'(?<![$€£¥₹])(?<!\d)(?<!\.)(\d{1,3}(?:,\d{3})+(?:\.\d+)?)(?!%)(?!\d)', "integer_comma"),
         (r'(?<![$€£¥₹])(?<!\d)(?<!\.)(\d+)\s*[MBK]\b', "integer_suffix"),
@@ -658,6 +660,8 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
             effective_type = num_type
             if num_type == "integer_comma":
                 effective_type = "integer"
+            elif num_type == "decimal_suffix":
+                effective_type = "decimal"
             elif num_type == "integer_suffix":
                 effective_type = "integer"
             elif num_type == "scaled_integer":

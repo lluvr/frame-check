@@ -43,7 +43,7 @@ Happy to help! Here's a quick rundown of **Tractor Supply Company** for the fisc
 
 def test_formatting_is_read_out_and_stays_read_out():
     once = plain_prose("- **Revenue:** $15.52 billion\n* *note* FY23 up 3 per cent")
-    assert once == "Revenue: $15.52 billion.\nnote FY2023 up 3 percent."
+    assert once == "Revenue: $15.52 billion.\n\nnote FY2023 up 3 percent.\n"
     assert plain_prose(once) == once
 
 
@@ -338,3 +338,271 @@ def test_the_indicator_follows_the_figures_metric(sentence, metric, indicator):
 def test_a_name_ending_in_s_still_counts(name):
     parsed = parse(f"China is a big market. {name} reported revenue of $36.2 billion.")
     assert parsed["$36.2 billion"].subject == name
+
+
+def test_a_fraction_on_the_page_is_not_a_number():
+    text = "Its surface gravity is 1⁄6 of the Moon's, and 3/8 of Mars."
+    decomp = sn.decompose_claim({
+        "sentence": "One orbit takes about 6.1 Earth years.", "numbers": ["6.1"],
+    })
+    assert sn._match_in_text(text, 6.1, decomp.sentence, decomp=decomp)[0] is None
+    assert sn._match_in_text(text, 8.0, "It is 8 of those.")[0] is None
+
+
+def test_a_figure_compared_against_gets_the_earlier_year():
+    parsed = parse(
+        "Federal Signal reported results for the year ended December 31, 2025.\n\n"
+        "Net sales were $2.18 billion, compared with $1.86 billion in 2024, an "
+        "increase. Operating income for the year came to $340.9 million.\n"
+    )
+    assert parsed["$2.18 billion"].time_period == "2025"
+    assert parsed["$1.86 billion"].time_period == "2024"
+    assert parsed["$1.86 billion"].metric == "revenue"
+    assert parsed["$1.86 billion"].year_inherited
+    assert parsed["$340.9 million"].time_period == "2025"
+
+
+@pytest.mark.parametrize("sentence,current,prior", [
+    ("Net sales of Acme were $688.0 million in 2026, up from $620.0 million a year earlier.",
+     "$688.0 million", "$620.0 million"),
+    ("Acme's gross profit declined to $243.9 million in 2026, from $401.8 million in the prior year.",
+     "$243.9 million", "$401.8 million"),
+])
+def test_a_prior_figure_is_checked_against_the_prior_year(sentence, current, prior):
+    parsed = parse(sentence)
+    assert parsed[current].time_period == "2026"
+    assert parsed[prior].time_period == "2025"
+    assert parsed[prior].metric == parsed[current].metric
+
+
+def test_growth_from_an_earlier_figure_stays_one_claim():
+    parsed = parse("Acme's revenue reached $60.9 billion in 2024, up 126% from $26.97 billion.")
+    assert "$26.97 billion" not in parsed
+
+
+@pytest.mark.parametrize("opening", [
+    "Emigration remains", "Builders embedded", "Slowly,", "Mostly", "Quick pass",
+    "Size:", "Radius:", "Tom:", "Directors noted",
+])
+def test_ordinary_openers_are_not_names(opening):
+    parsed = parse(f"Toro reported results for 2025. {opening} $4.51 billion.")
+    assert parsed["$4.51 billion"].subject == "Toro"
+
+
+def test_a_name_with_digits_is_a_name():
+    parsed = parse(
+        "## WD-40 Company: fiscal 2026 snapshot\n\nHere's an overview.\n\n"
+        "### Top line\n- **Net sales:** $688.0 million\n\n"
+        "### Profitability\n- **Operating income:** $139.6 million\n"
+    )
+    assert parsed["$688.0 million"].subject == "WD-40 Company"
+    assert parsed["$139.6 million"].subject == "WD-40 Company"
+    assert sn._find_cik.__name__
+
+
+def test_faq_markers_are_not_names():
+    parsed = parse(
+        "Frequently asked questions about the Moon\n\n"
+        "Q: How big is it?\nA: The Moon's mean radius is 1,737 km.\n\n"
+        "Q: Would I weigh less there?\nA: Yes. Surface gravity is 1.62 m/s2 here.\n"
+    )
+    assert parsed["1.62"].subject == "Moon"
+
+
+def test_a_short_line_above_a_list_titles_it():
+    parsed = parse(
+        "Attendees: Priya, Tom, Reza\n\n"
+        "Dorman\n- Tom: 2025 sales came in at $2.13B, gross profit $897.7M\n\n"
+        "Hexcel\n- Reza: 2025 sales about $1.89B, basically flat\n"
+    )
+    assert parsed["$2.13B"].subject == "Dorman"
+    assert parsed["$897.7M"].subject == "Dorman"
+    assert parsed["$897.7M"].metric == "gross_profit"
+    assert parsed["$1.89B"].subject == "Hexcel"
+
+
+def test_analyst_shorthand_is_read():
+    parsed = parse(
+        "Snack names, FY25 recap\n\nJJSF (FYE Sep-25)\n- Rev $1.58bn, flat y/y\n"
+        "- Op inc $84.3m\n- Dil EPS $3.36\n"
+    )
+    assert parsed["$1.58bn"].subject == "JJSF"
+    assert parsed["$1.58bn"].metric == "revenue"
+    assert parsed["$1.58bn"].time_period == "FY2025"
+    assert parsed["$84.3m"].metric == "operating_income"
+    assert parsed["$3.36"].metric == "eps"
+
+
+def test_a_memo_is_about_its_subject_line():
+    parsed = parse(
+        "MEMORANDUM\n\nTO: Board of Directors\nRE: Albany International Corp., "
+        "review of fiscal 2025 results\n\nThe Company recorded net sales of "
+        "$1.18 billion. The Committee notes that long-term debt stood at "
+        "$612.0 million at year end.\n"
+    )
+    assert parsed["$1.18 billion"].subject.startswith("Albany International")
+    assert parsed["$612.0 million"].subject.startswith("Albany International")
+    assert parsed["$612.0 million"].metric == "long_term_debt"
+
+
+def test_figures_listed_with_only_a_comma_are_separate():
+    parsed = parse("Hexcel's R&D spend was $56.4M in 2025, cash at year end $92.3M.")
+    assert parsed["$56.4M"].metric == "research_development"
+    assert parsed["$92.3M"].metric == "cash"
+
+
+@pytest.mark.parametrize("sentence,indicator", [
+    ("Exports of goods and services were equal to 47.5 percent of GDP in 2024.", "NE.EXP.GNFS.ZS"),
+    ("Roughly 58 percent of residents now live in cities and towns.", "SP.URB.TOTL.IN.ZS"),
+    ("Urbanisation is high, with 95.6% of people in towns.", "SP.URB.TOTL.IN.ZS"),
+    ("Some 82.9% of people had access to electricity in 2024.", "EG.ELC.ACCS.ZS"),
+    ("Internet use covered 58 percent of residents in 2024.", "IT.NET.USER.ZS"),
+    ("Under-five mortality has fallen to 6.4 deaths per 1,000 live births.", "SH.DYN.MORT"),
+    ("Consumer prices rose 28.7 percent in 2022.", "FP.CPI.TOTL.ZG"),
+    ("Joblessness stood at 7.9 percent.", "SL.UEM.TOTL.ZS"),
+    ("Income per person was $5,940 in 2024.", "NY.GDP.PCAP.CD"),
+])
+def test_more_of_the_world_bank_is_read(sentence, indicator):
+    metric = sn.decompose_claim({"sentence": sentence, "numbers": ["1"]}).metric
+    assert sn._detect_wb_indicator(sentence, metric)[0] == indicator
+
+
+def test_a_dividend_per_share_is_not_dividends_paid():
+    parsed = parse("Acme paid dividends of $41.2 million in 2025.")
+    assert parsed["$41.2 million"].metric == "dividends_paid"
+    per_share = parse("Acme paid dividends of $1.60 per share in 2025.")["$1.60"]
+    assert sn.verify_sec_edgar(per_share).match_type == "no_data"
+
+
+def test_a_date_or_citation_on_the_page_is_not_a_measurement():
+    page = "Capture came on 6 March 2015. See Proceedings doi:10.1061/41173(414)200."
+    assert sn._match_in_text(page, 6.1, "One orbit takes 6.1 Earth years.")[0] is None
+    distance = sn.decompose_claim({
+        "sentence": "Builders embedded 410 miles of pipe at Hoover Dam.", "numbers": ["410"],
+    })
+    assert sn._match_in_text(page, 410.0, distance.sentence, decomp=distance)[0] is None
+
+
+def test_a_stated_decimal_needs_more_than_a_round_number():
+    assert sn._match_in_text("It takes 6 years to orbit.", 6.1, "It takes 6.1 years to orbit.")[0] is None
+    assert sn._match_in_text("It takes 6.1 years to orbit.", 6.1, "It takes 6.1 years to orbit.")[0] == 6.1
+
+
+def test_a_measurement_in_another_unit_does_not_confirm():
+    decomp = sn.decompose_claim({
+        "sentence": "Builders embedded 410 miles of pipe at Hoover Dam.", "numbers": ["410"],
+    })
+    page = "The pipe at Hoover Dam ran for 412 feet."
+    assert sn._match_in_text(page, 410.0, decomp.sentence, decomp=decomp)[0] is None
+
+
+@pytest.mark.parametrize("name", ["Micron swung", "Deere beat", "Airbus hit", "Tesla cut"])
+def test_a_name_with_an_irregular_verb_still_counts(name):
+    parsed = parse(f"China is a big market. {name} revenue to $5.0 billion.")
+    assert parsed["$5.0 billion"].subject == name.split()[0]
+
+
+def test_a_rival_in_passing_does_not_take_over_the_subject():
+    parsed = parse(
+        "Micron swung back to profit in 2024. Rivals such as Arista kept pressing, "
+        "and it kept pace with Samsung and SK Hynix.\n\n"
+        "The company reported net income of $778 million.\n"
+    )
+    assert parsed["$778 million"].subject == "Micron"
+
+
+def test_a_figure_after_vs_cannot_refute():
+    parsed = parse("Acme results for fiscal 2025.\n\n- Diluted EPS $3.36 vs $4.45\n")
+    assert parsed["$4.45"].year_inherited
+
+
+def test_a_head_count_of_city_dwellers_is_not_the_urban_share():
+    assert sn._detect_wb_indicator("Germany has an urban population of 12 million.", "population")[0] == "SP.POP.TOTL"
+    assert sn._detect_wb_indicator("The urban population was 71% of people.", "population")[0] == "SP.URB.TOTL.IN.ZS"
+
+
+def test_a_measurement_in_fathoms_does_not_confirm_kilometres():
+    decomp = sn.decompose_claim({
+        "sentence": "It runs for some 890 km at Lake Baikal.", "numbers": ["890"],
+    })
+    page = "Lake Baikal is the deepest lake at 1,642 metres (5,387 feet; 898 fathoms)."
+    assert sn._match_in_text(page, 890.0, decomp.sentence, decomp=decomp)[0] is None
+
+
+@pytest.mark.parametrize("opening", [
+    "MILWAUKEE, Wis. -- Brady Corporation reported results for the year 2026 at last.",
+    "LILONGWE - On a dry morning Brady Corporation reported results for the year 2026.",
+])
+def test_a_dateline_with_a_dash_is_dropped(opening):
+    parsed = parse(f"{opening}\n\nNet earnings of $205.4 million.\n")
+    assert parsed["$205.4 million"].subject == "Brady Corporation"
+
+
+def test_a_ticker_title_with_a_dash_stays():
+    parsed = parse("POOL - FY25 wrap\nRev $5.29B, basically flat vs FY24 $5.31B. NI $406M.\n")
+    assert parsed["$5.29B"].subject == "POOL"
+    assert parsed["$5.29B"].time_period == "FY2025"
+    assert parsed["$5.31B"].time_period == "2024"
+    assert parsed["$406M"].subject == "POOL"
+
+
+def test_a_question_word_is_not_part_of_the_name():
+    parsed = parse("Q: Is Baikal long?\nA: Very. It runs for some 636 km from end to end.\n")
+    assert parsed["636"].subject == "Baikal"
+
+
+@pytest.mark.parametrize("line,raw,metric", [
+    ("Stockholders' equity reached roughly $1.96 billion in 2025.", "$1.96 billion", "stockholders_equity"),
+    ("Long-term debt stood at about $1.02 billion in 2025.", "$1.02 billion", "long_term_debt"),
+    ("Financial position. Total assets fell to $2.12 billion in 2025.", "$2.12 billion", "total_assets"),
+])
+def test_labels_are_not_names(line, raw, metric):
+    parsed = parse(f"Kinsale reported results for 2025.\n\n{line}\n")
+    assert parsed[raw].subject == "Kinsale"
+    assert parsed[raw].metric == metric
+
+
+def test_shorthand_labels_are_spelled_out():
+    parsed = parse("POOL - FY25 wrap\nEBIT $780M. GP $1.57B.\nInv $1.03B, watch it. LTD $1.19B.\n")
+    assert parsed["$1.57B"].metric == "gross_profit"
+    assert parsed["$1.03B"].metric == "inventory"
+    assert parsed["$1.19B"].metric == "long_term_debt"
+    assert parsed["$1.19B"].subject == "POOL"
+
+
+def test_slide_shorthand_keeps_country_scale_and_metric():
+    parsed = parse(
+        "Slide 2 - Georgia at a glance\n- GDP $38.1B (2025)\n- Pop. 3.9M\n"
+        "- GDP/capita $9.7K\n"
+    )
+    assert parsed["3.9M"].value == pytest.approx(3_900_000)
+    assert parsed["3.9M"].metric == "population"
+    assert parsed["3.9M"].subject == "Georgia"
+    assert sn._detect_wb_indicator(parsed["$9.7K"].sentence, parsed["$9.7K"].metric)[0] == "NY.GDP.PCAP.CD"
+
+
+def test_people_listed_as_attendees_are_not_subjects():
+    parsed = parse(
+        "Kennametal coverage sync\nAttendees: JL, Priya, Sam (Omar out)\n\n"
+        "- Net income $342.4M. Sam thinks this overstates run rate.\n"
+        "- Inventory $780M at year end\n"
+    )
+    assert parsed["$780M"].subject == "Kennametal"
+
+
+@pytest.mark.parametrize("sentence,current,prior", [
+    ("Acme's net sales declined to $1.79 billion in 2026 from $1.91 billion the year before.",
+     "$1.79 billion", "$1.91 billion"),
+    ("Acme's sales were $2.36B in 2026 vs $1.97B prior year.", "$2.36B", "$1.97B"),
+    ("Acme's net sales of $1.66 billion in 2026, up 9.8% from $1.51 billion in the prior year.",
+     "$1.66 billion", "$1.51 billion"),
+])
+def test_more_ways_of_stating_the_prior_figure(sentence, current, prior):
+    parsed = parse(sentence)
+    assert parsed[current].time_period == "2026"
+    assert parsed[prior].time_period == "2025"
+
+
+def test_equity_figures_set_side_by_side_are_separate():
+    parsed = parse("Acme's total assets fell to $2.12 billion in 2025 and shareholders' equity to $1.10 billion.")
+    assert parsed["$1.10 billion"].metric == "stockholders_equity"
