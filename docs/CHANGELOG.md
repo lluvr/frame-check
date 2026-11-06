@@ -6,6 +6,14 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-11-06
+
+### Changed
+
+- **Verdicts change for existing users.** Documents now carry subject and year
+  across sentences, so more numbers get checked and some come back with a
+  different verdict. Re-baseline anything that pins these results.
+
 ### Fixed
 
 - Documents now carry subject and year across sentences, so "the company" or
