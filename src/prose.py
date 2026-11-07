@@ -85,7 +85,10 @@ def _table_sentences(rows, preamble):
             if _ESTIMATE_COLUMN_RE.search(column):
                 continue
             if scale and _PLAIN_NUMBER_RE.match(cell):
-                symbol = "$" if scale.group(1) else ""
+                # "(in millions of US dollars)" says dollars after the scale.
+                symbol = "$" if (scale.group(1) or re.search(
+                    r'\b(?:of\s+)?(?:US\s+)?dollars\b|\bUSD\b', preamble, re.IGNORECASE,
+                )) else ""
                 if _PER_SHARE_RE.search(label):
                     cell = f"{symbol}{cell}"
                 else:
@@ -184,6 +187,11 @@ def _spelled_out(spelled, match):
     return spelled
 
 
+def _loss(currency, digits, scale):
+    """'$340.3 million (a loss)': a word scale is spaced, a suffix is not."""
+    return f"{currency}{digits}{' ' if len(scale) > 2 else ''}{scale} (a loss)"
+
+
 def _plain_line(line):
     stripped = line.strip()
     if _ALL_CAPS_TITLE_RE.match(stripped):
@@ -211,8 +219,11 @@ def _plain_line(line):
     line = re.sub(r'\bper cent\b', 'percent', line)
     # "$(52.5)M" is how a statement writes a loss.
     line = re.sub(
-        r'([$\u20ac\u00a3])\((\d[\d,]*(?:\.\d+)?)\)(\s?(?:bn|mn|[MBK])\b)?',
-        lambda m: f"{m.group(1)}{m.group(2)}{(m.group(3) or '').strip()} (a loss)", line,
+        r'([$\u20ac\u00a3])\((\d[\d,]*(?:\.\d+)?)\)'
+        r'(\s?(?:bn|mn|[MBK])\b|\s+(?:thousand|million|billion|trillion)\b)?',
+        # The scale stays with the figure: "$340.3 (a loss) million" was read
+        # as $340.30.
+        lambda m: _loss(m.group(1), m.group(2), (m.group(3) or '').strip()), line,
     )
     line = re.sub(r'\b(?:US|U\.S\.|USD)\s?\$', '$', line)
     line = _FISCAL_YEAR_END_RE.sub(r'FY20\1', line)

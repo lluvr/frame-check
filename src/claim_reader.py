@@ -79,6 +79,10 @@ def _call_model(document):
     client = xai_openai_client()
     if client is None:
         return ""
+    # The SDK retries twice by default, which made a 12 second timeout take
+    # 37 and used up the verification budget. The second reading running
+    # alongside is the redundancy.
+    client = client.with_options(max_retries=0)
     response = client.chat.completions.create(
         model=GROK_MODEL,
         messages=[

@@ -947,6 +947,10 @@ _METRIC_PATTERNS = {
     "research_development": re.compile(
         r'\b(research\s+and\s+development|R&D)\b', re.IGNORECASE,
     ),
+    "cost_of_revenue": re.compile(
+        r'\b(cost\s+of\s+(?:revenues?|sales|goods(?:\s+(?:and\s+services\s+)?sold)?))\b',
+        re.IGNORECASE,
+    ),
     "operating_expenses": re.compile(
         r'\b(operating\s+expenses?|opex|cost\s+of\s+(?:goods|revenue|sales))\b',
         re.IGNORECASE,
@@ -1028,6 +1032,10 @@ _COMPARED_YEAR_RE = re.compile(
     re.IGNORECASE,
 )
 
+_EXTREME_RE = re.compile(
+    r'\b(?:peak(?:ed|s)?|highest|lowest|all-time|high\s+of|low\s+of|topped\s+out|bottomed)\b',
+    re.IGNORECASE,
+)
 _FORECAST_WORDING_RE = re.compile(
     r'\b(?:forecasts?|projected|projections?|expects?|expected|estimates?|estimated|'
     r'guidance|guided|target|outlook|could|would|might|may|likely|anticipates?|'
@@ -2346,6 +2354,12 @@ def _shares_content_word(claim_words, passage):
     return any(w[:5] in stems for w in claim_words)
 
 
+_DIMENSION_WORDS = (
+    (r'\b(?:deep|depth)\b', "depth"),
+    (r'\b(?:across|wide|width|diameter|radius)\b', "breadth"),
+    (r'\b(?:tall|height|elevation|altitude)\b', "height"),
+    (r'\b(?:long|length)\b', "length"),
+)
 _EXCLUSIVE_QUALIFIERS = (
     re.compile(r'\b(radius|diameter)\b'),
     re.compile(r'\b(land|total|surface|water)\s+area\b'),
@@ -2406,14 +2420,7 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
     ):
         # And as precise as written: "7,611 m" is not a "7,650 metres" nearby,
         # unless the text hedges it ("about 384,400 km").
-        raw = str(decomp.raw_value).strip()
-        at = claim_sentence.find(raw) if raw else -1
-        hedge = (r'\b(?:about|around|roughly|approximately|nearly|almost|some|close\s+to|'
-                 r'over|more\s+than|under|less\s+than)\s+')
-        hedged = (
-            re.search(hedge + r'$', claim_sentence[max(0, at - 25):at], re.IGNORECASE)
-            if at > 0 else re.search(hedge + r'[$\d]', claim_sentence, re.IGNORECASE)
-        )
+        hedged = _hedged(claim_sentence, decomp.raw_value)
         tolerance = min(tolerance, 0.02 if hedged else max(
             0.003, 2 * _rounding_room(decomp.raw_value)))
 
@@ -2497,13 +2504,15 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
     metric_keywords = set()
     subject_words = set()
     claim_unit = ""
-    if decomp and decomp.unit in ("distance", "mass"):
-        # The unit after the claim's own figure, not the sentence's first one.
+    if decomp:
+        # The unit after the claim's own figure, not the sentence's first one,
+        # and whatever the figure was classed as: "about 780 ft" is in feet.
         raw = str(decomp.raw_value).strip()
         at = claim_sentence.find(raw) if raw else -1
         own = _UNIT_AFTER_NUMBER_RE.match(claim_sentence, at + len(raw)) if at >= 0 else None
-        unit_token = own or _UNIT_TOKEN_RE.search(claim_sentence)
-        claim_unit = _unit_family(unit_token.group(1)) if unit_token else ""
+        if not own and decomp.unit in ("distance", "mass"):
+            own = _UNIT_TOKEN_RE.search(claim_sentence)
+        claim_unit = _unit_family(own.group(1)) if own else ""
     if decomp:
         if decomp.metric:
             # Metric keywords score higher (revenue vs profit disambiguation)
@@ -2550,6 +2559,15 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
             passage = text[left:right]
             # A radius is half a diameter, and land area is not total area.
             nearby = text[max(left, num_start - 60):min(right, num_end + 60)].lower()
+            # Depth, width, height and length are different measurements:
+            # "780 ft across" is not "790 ft deep".
+            claim_dims = {d for w, d in _DIMENSION_WORDS if re.search(w, claim_sentence, re.IGNORECASE)}
+            page_dims = {
+                d for w, d in _DIMENSION_WORDS
+                if re.search(w, text[max(left, num_start - 15):min(right, num_end + 25)], re.IGNORECASE)
+            }
+            if len(claim_dims) == 1 and page_dims and not (claim_dims & page_dims):
+                continue
             # A claim about land area needs a page that says land.
             if (re.search(r'\bland\s+area\b', claim_sentence, re.IGNORECASE)
                     and not re.search(r'\bland\b', nearby)):
@@ -2845,6 +2863,9 @@ def _detect_wb_indicator(sentence, metric):
     if "life expectancy" in text or metric == "lifespan":
         return "SP.DYN.LE00.IN", "Life expectancy"
     if "inflation" in text or "cpi" in text or "consumer prices" in text:
+        # Core or PCE inflation is another index than the headline rate.
+        if re.search(r'\b(?:core|pce|personal\s+consumption)\b', text):
+            return None, None
         return "FP.CPI.TOTL.ZG", "Inflation rate"
     if "unemployment" in text or "jobless" in text:
         return "SL.UEM.TOTL.ZS", "Unemployment rate"
@@ -3029,6 +3050,10 @@ def verify_world_bank(decomp):
             elif country.lower() in _AMBIGUOUS_PLACE_NAMES:
                 # Georgia the state has about three times the people.
                 match_type = "no_data"
+            elif indicator_id.startswith("NY.GDP") and decomp.unit != "currency":
+                # "the economy added 3 million jobs" beside the word GDP is
+                # not a figure for GDP. Only money can disagree with it.
+                match_type = "no_data"
             elif indicator_id in _WB_TOTAL_INDICATORS or diff < 1.0:
                 match_type = "contradicted"
             else:
@@ -3134,19 +3159,58 @@ _FRED_SPECS = (
     (r"real\s+gdp", "GDPC1", 1e9, False, {}, "billions of chained 2017 dollars"),
     (r"gdp|gross\s+domestic\s+product|economic\s+output", "GDP", 1e9, False, {}, "billions of dollars"),
     (r"unemployment|jobless", "UNRATE", 1, True, {}, "percent"),
-    (r"inflation|consumer\s+prices|\bcpi\b", "CPIAUCSL", 1, True, {"units": "pc1"},
+    # Core and PCE are other indexes: "core CPI ended 2023 at 3.9%" against
+    # the headline series read 3.4% and contradicted a true figure.
+    (r"core\s+pce|core\s+personal\s+consumption", "PCEPILFE", 1, True, {"units": "pc1"},
      "percent change from a year earlier"),
-    (r"federal\s+funds|fed\s+funds|(?:effective\s+)?funds\s+rate|policy\s+rate|interest\s+rate",
+    (r"\bpce\b|personal\s+consumption\s+expenditures?", "PCEPI", 1, True, {"units": "pc1"},
+     "percent change from a year earlier"),
+    (r"core\s+(?:cpi|consumer\s+prices?(?:\s+index)?)", "CPILFENS", 1, True, {"units": "pc1"},
+     "percent change from a year earlier"),
+    # The unadjusted index is the one behind the published headline figure:
+    # 9.1% in June 2022, against 8.9% on the seasonally adjusted series.
+    (r"inflation|consumer\s+prices|\bcpi\b", "CPIAUCNS", 1, True, {"units": "pc1"},
+     "percent change from a year earlier"),
+    (r"federal\s+funds|fed\s+funds|(?:effective\s+)?funds\s+rate|policy\s+rate|interest\s+rates?",
      "FEDFUNDS", 1, True, {}, "percent"),
-    (r"mortgage\s+rate", "MORTGAGE30US", 1, True, {}, "percent"),
-    (r"10-year\s+treasury|treasury\s+yield", "DGS10", 1, True, {}, "percent"),
+    (r"mortgage\s+(?:interest\s+)?rates?|30-year\s+fixed", "MORTGAGE30US", 1, True, {}, "percent"),
+    (r"2-year\s+(?:treasury|yield|note)", "DGS2", 1, True, {}, "percent"),
+    (r"5-year\s+(?:treasury|yield|note)", "DGS5", 1, True, {}, "percent"),
+    (r"30-year\s+(?:treasury|bond)", "DGS30", 1, True, {}, "percent"),
+    (r"10-year\s+(?:treasury|yield|note)|treasury\s+(?:yield|rate)", "DGS10", 1, True, {}, "percent"),
     (r"national\s+debt|federal\s+debt|public\s+debt", "GFDEBTN", 1e6, False,
      {"aggregation_method": "eop"}, "millions of dollars"),
 )
+# Words just before a series' name that make it another measure: "core
+# inflation", "credit card interest rate", "15-year mortgage rate", "the
+# 7-year Treasury yield". The general series must not answer for them.
+_FRED_QUALIFIED = {
+    "CPIAUCNS": re.compile(
+        r'\b(?:core|pce|personal\s+consumption|food|energy|shelter|rent|services|goods|'
+        r'wage|producer|ppi|import|export|medical|housing|chained|super-?core)\b'
+        r'[\w\s-]{0,12}$', re.IGNORECASE),
+    "PCEPI": re.compile(r'\bcore\b[\w\s-]{0,6}$', re.IGNORECASE),
+    "FEDFUNDS": re.compile(
+        r'\b(?:credit[\s-]+card|card|auto|car|student|loan|mortgage|deposit|savings?|'
+        r'account|prime|bank|cd|personal|real|neutral|lending|borrowing|consumer)\b'
+        r'[\w\s-]{0,12}$', re.IGNORECASE),
+    "MORTGAGE30US": re.compile(
+        r'\b(?:15-year|20-year|5/1|adjustable|arm|jumbo|fha|va)\b[\w\s-]{0,12}$', re.IGNORECASE),
+    "DGS10": re.compile(r'\b(?!10-)\d+-(?:year|month|week)\b[\w\s-]{0,4}$', re.IGNORECASE),
+}
 _FRED_MONTH_RE = re.compile(
     r'\b(January|February|March|April|May|June|July|August|September|October|'
     r'November|December)\s+(20[0-3]\d)\b'
 )
+_FRED_RANGE_RE = re.compile(
+    r'(\d+(?:\.\d+)?)\s*%?\s*(?:-|to|\u2013)\s*(\d+(?:\.\d+)?)\s*%')
+_FRED_YEAR_END_RE = re.compile(
+    r'\b(?:ended|end\s+of|year[- ]end|close\s+of|closed\s+out)\s+(?:the\s+year|(20[0-3]\d))',
+    re.IGNORECASE)
+_FRED_PART_OF_YEAR_RE = re.compile(
+    r'\b(?:that|same|this|the)\s+(?:same\s+)?(?:month|week|day|quarter)\b|'
+    r'\b(?:briefly|intraday|daily|weekly|reached|hit|topped|touched|spiked|surged\s+to)\b',
+    re.IGNORECASE)
 _MONTH_NUMBERS = {
     m: i for i, m in enumerate((
         "January", "February", "March", "April", "May", "June", "July",
@@ -3154,14 +3218,38 @@ _MONTH_NUMBERS = {
 }
 
 
+def _figure_sentence(sentence, raw):
+    """The sentence holding the figure, when several were joined: a flattened
+    table row, or a label appended after the full stop."""
+    at = sentence.find(raw) if raw else -1
+    if at < 0:
+        return sentence
+    start = max(sentence.rfind(". ", 0, at), sentence.rfind("; ", 0, at))
+    end = min((i for i in (sentence.find(". ", at), sentence.find("; ", at)) if i >= 0),
+              default=len(sentence))
+    return sentence[start + 2 if start >= 0 else 0:end + 1]
+
+
 def _fred_spec(decomp):
-    """The series named closest to the figure."""
-    sentence = decomp.sentence
+    """The series named closest to the figure, in the figure's own sentence
+    if it names one."""
     raw = str(decomp.raw_value).strip()
+    own = _figure_sentence(decomp.sentence, raw)
+    for sentence in ((own, decomp.sentence) if own != decomp.sentence else (own,)):
+        found = _fred_spec_in(sentence, raw)
+        if found:
+            return found
+    return None
+
+
+def _fred_spec_in(sentence, raw):
     at = sentence.find(raw) if raw else -1
     best, best_gap = None, None
     for spec in _FRED_SPECS:
+        qualified = _FRED_QUALIFIED.get(spec[1])
         for found in re.finditer(spec[0], sentence, re.IGNORECASE):
+            if qualified and qualified.search(sentence[max(0, found.start() - 40):found.start()]):
+                continue
             gap = abs(found.start() - at) if at >= 0 else 0
             if best_gap is None or gap < best_gap:
                 best, best_gap = spec, gap
@@ -3200,15 +3288,48 @@ def verify_fred(decomp):
     the year's average, or a named month. Rates are compared in points."""
     api_key = os.environ.get("FRED_API_KEY", "")
     spec = _fred_spec(decomp) if api_key else None
-    if not spec or not decomp.value:
+    is_range = bool(re.search(r'\d\s*%?\s*(?:-|to|\u2013)\s*\d', str(decomp.raw_value)))
+    if not spec or not (decomp.value or is_range):
         return SourceResult(source_name="FRED", match_type="no_data")
     _, series_id, scale, is_rate, extra, unit_desc = spec
+    # "raised rates 11 times" is a count, not a rate.
+    if is_rate and decomp.unit != "percent" and not is_range:
+        return SourceResult(source_name="FRED", match_type="no_data")
 
     year_match = re.search(r'20[0-3]\d', decomp.time_period or "")
-    month = _FRED_MONTH_RE.search(decomp.sentence)
+    raw_text = str(decomp.raw_value)
+    # Basis points are a change or a restatement; they are not the rate.
+    if re.search(r'basis\s+points?|\bbps?\b', decomp.sentence[
+            decomp.sentence.find(raw_text.strip()):][:len(raw_text) + 20], re.IGNORECASE):
+        return SourceResult(source_name="FRED", match_type="no_data")
+    span = re.search(r'(\d+(?:\.\d+)?)\s*%?\s*(?:-|to|\u2013)\s*(\d+(?:\.\d+)?)\s*%', raw_text)
+    at = decomp.sentence.find(raw_text.strip())
+    if not span and at >= 0:
+        # One end of a range the sentence states: "a target range of 5.25% to
+        # 5.50%" split into two figures is still a range.
+        span = next((m for m in _FRED_RANGE_RE.finditer(decomp.sentence)
+                     if m.start() <= at < m.end()), None)
+    # The month nearest the figure: "5.33% through August 2024, then 4.48% by
+    # December 2024" puts 4.48 in December.
+    months = list(_FRED_MONTH_RE.finditer(decomp.sentence))
+    month = min(
+        months, key=lambda m: abs(m.start() - at) + (0 if m.start() >= at else 5),
+    ) if months else None
+    month = (month.group(1), month.group(2)) if month else None
+    # "Core CPI ended 2023 at 3.9%" is December's figure, not the year's
+    # average. The last day may differ from December's average, so it can
+    # confirm, not refute.
+    full = decomp.full_sentence or decomp.sentence
+    year_end = None if month else (_FRED_YEAR_END_RE.search(decomp.sentence)
+                                   or _FRED_YEAR_END_RE.search(full))
+    if year_end and (year_end.group(1) or year_match):
+        month = ("December", year_end.group(1) or year_match.group())
+    # A figure for part of the year ("reached 7.79% that same month") is not
+    # refuted by the year's average.
+    part_of_year = bool(year_end) or bool(_FRED_PART_OF_YEAR_RE.search(full))
     params = {"series_id": series_id, "api_key": api_key, "file_type": "json", **extra}
     if month:
-        first = f"{month.group(2)}-{_MONTH_NUMBERS[month.group(1)]:02d}-01"
+        first = f"{month[1]}-{_MONTH_NUMBERS[month[0]]:02d}-01"
         params.update(frequency="m", observation_start=first, observation_end=first)
     else:
         params.setdefault("aggregation_method", "avg")
@@ -3246,6 +3367,20 @@ def verify_fred(decomp):
         own = rows[-1]
         others = []
 
+    if span and is_rate:
+        # A target range: a rate inside it confirms; outside, the range may be
+        # a target rather than the effective rate, so it proves nothing.
+        low, high = sorted((float(span.group(1)), float(span.group(2))))
+        inside = low - 0.005 <= own[1] <= high + 0.005
+        return SourceResult(
+            source_name="FRED",
+            source_url=f"https://fred.stlouisfed.org/series/{series_id}",
+            source_value=own[1],
+            source_text=f"{series_id} {own[0][:7]}: {own[1]:,.2f} {unit_desc}",
+            match_type="close" if inside else "no_data",
+            confidence=0.8 if inside else 0.0,
+        )
+
     def gap(value):
         if is_rate:
             return abs(value - decomp.value)
@@ -3258,6 +3393,8 @@ def verify_fred(decomp):
         match_type = "exact" if diff <= room / 2 else "close"
     elif not year_match and not month:
         # With no period named, another year may be the one meant.
+        match_type = "no_data"
+    elif part_of_year and (year_end or not month):
         match_type = "no_data"
     elif (decomp.year_inherited and not _YEAR_REFERENCE_RE.search(decomp.sentence)
           and any(gap(r[1]) <= 2 * room for r in others)):
@@ -3508,7 +3645,14 @@ def verify_wikidata(decomp):
     # written: "2.79 million" in 2021 is not 2,751,862.
     room = max(0.005 if (same_year or not is_count) else 0.02,
                _rounding_room(decomp.raw_value))
-    if diff < 0.005:
+    stated = _rounding_room(decomp.raw_value)
+    if (not is_count and stated < 0.001 and max(0.001, 3 * stated) <= diff < room
+            and not _hedged(decomp.sentence, decomp.raw_value)):
+        # "4,487 m" is stated to the metre. Surveys differ by a few metres
+        # (Mont Blanc 4,808 against 4,805.6), not by nine: that is a slip
+        # (the Matterhorn is 4,478). Too close to refute, too far to confirm.
+        match_type = "no_data"
+    elif diff < 0.005:
         match_type = "exact"
     elif diff < room:
         match_type = "close"
@@ -3981,6 +4125,7 @@ _METRIC_CONCEPTS = {
     "revenue": _REVENUE_CONCEPTS,
     "profit": ["NetIncomeLoss", "NetIncomeLossAvailableToCommonStockholdersBasic"],
     "operating_expenses": ["OperatingExpenses", "CostsAndExpenses"],
+    "cost_of_revenue": ["CostOfRevenue", "CostOfGoodsAndServicesSold"],
     "cash": ["CashAndCashEquivalentsAtCarryingValue",
              "CashCashEquivalentsAndShortTermInvestments"],
     "operating_cash_flow": ["NetCashProvidedByUsedInOperatingActivities"],
@@ -4099,6 +4244,9 @@ def _is_loss_per_share(sentence, raw_value):
     tail = sentence[at + len(raw):at + len(raw) + 30]
     if re.match(r'\s*(?:net\s+)?loss\s+per', tail, re.IGNORECASE):
         return True
+    # "Loss per share: around $10.73."
+    if re.search(r'\bloss\s+per\s+(?:diluted\s+|basic\s+)?share\b[^.;$]{0,25}$', head, re.IGNORECASE):
+        return True
     loss = list(re.finditer(r'\b(?:net\s+)?loss\b', head, re.IGNORECASE))
     if not loss:
         return False
@@ -4120,6 +4268,46 @@ _POINTS_ELSEWHERE_RE = re.compile(
     r'decade|was\s+once|since|historically|prior\s+year|peak|record)\b',
     re.IGNORECASE,
 )
+
+
+_FOREIGN_CURRENCY_RE = re.compile(
+    '[\u20ac\u00a3\u00a5\u20b9\u20a9]|\\b(?:EUR|GBP|JPY|CNY|RMB|INR|CHF|CAD|AUD|'
+    'euros?|pounds?\\s+sterling|yen|yuan|rupees?|francs?)\\b')
+
+
+def _in_parentheses(sentence, raw_value):
+    """True for "(1.51)" or "$(52.5)", how a statement writes a negative."""
+    digits = re.search(r'\d[\d,]*(?:\.\d+)?', str(raw_value))
+    if not digits:
+        return False
+    return bool(re.search(r'\(\s*\$?\s*' + re.escape(digits.group()) + r'\s*\)',
+                          sentence))
+
+
+def _is_a_ratio(sentence, raw_value):
+    """A split or a ratio, "50-for-1" or "3:1", names no amount to check."""
+    digits = re.search(r'\d[\d,]*(?:\.\d+)?', str(raw_value))
+    if not digits:
+        return False
+    d = re.escape(digits.group())
+    return bool(re.search(
+        r'(?<![\d.])' + d + r'\s*(?:-\s*for\s*-\s*|\s+for\s+|:)\s*\d+(?!\.\d)|'
+        r'(?<![\d.])\d+\s*(?:-\s*for\s*-\s*|:)\s*' + d + r'(?![\d.])',
+        sentence, re.IGNORECASE,
+    ) and re.search(r'\bsplit|\bratio|-for-|\d\s*:\s*\d', sentence, re.IGNORECASE))
+
+
+_HEDGE = (r'\b(?:about|around|roughly|approximately|nearly|almost|some|close\s+to|'
+          r'over|more\s+than|under|less\s+than)\s+')
+
+
+def _hedged(sentence, raw_value):
+    """Whether the text loosens the figure: "about 384,400 km"."""
+    raw = str(raw_value).strip()
+    at = sentence.find(raw) if raw else -1
+    if at > 0:
+        return bool(re.search(_HEDGE + r'$', sentence[max(0, at - 25):at], re.IGNORECASE))
+    return bool(re.search(_HEDGE + r'[$\d]', sentence, re.IGNORECASE))
 
 
 def _rounding_room(raw_value):
@@ -4202,6 +4390,12 @@ def verify_sec_edgar(decomp):
     ):
         return SourceResult(source_name="SEC Filing", match_type="no_data")
 
+    # Filings are in dollars. "R&D EUR904.7M" is another currency, or a slip,
+    # and the same digits in dollars must not confirm it.
+    if _FOREIGN_CURRENCY_RE.search(_figure_clause(decomp.sentence, decomp.raw_value)
+                                   or str(decomp.raw_value)):
+        return SourceResult(source_name="SEC Filing", match_type="no_data")
+
     cik, ticker = _find_cik(decomp.subject)
     if not cik:
         return SourceResult(source_name="SEC Filing", match_type="no_data")
@@ -4244,6 +4438,9 @@ def verify_sec_edgar(decomp):
     elif metric_lower == "eps" and _is_loss_per_share(
         decomp.full_sentence or decomp.sentence, decomp.raw_value,
     ):
+        claim_value = -abs(decomp.value)
+    elif _in_parentheses(decomp.sentence, decomp.raw_value):
+        # "Diluted EPS (1.51)": a statement's parentheses are a minus sign.
         claim_value = -abs(decomp.value)
 
     # Query XBRL for each concept, find the best match
@@ -4888,6 +5085,15 @@ def _consensus_for(decomp, results):
     verdict, confidence, detail = _consensus(results)
     # A metric the sentence never names can confirm a figure, not refute it:
     # "Drinkware did $1.09 billion" read as revenue is a segment, not a total.
+    # A peak or a low is one month or one week; a source's figure for the
+    # period is an average. It may confirm, never refute.
+    raw = str(decomp.raw_value).strip()
+    at = decomp.sentence.find(raw) if raw else -1
+    near = decomp.sentence[max(0, at - 60):at + len(raw) + 30] if at >= 0 else decomp.sentence
+    if verdict in ("contradicted", "disputed") and _EXTREME_RE.search(near):
+        return "unverifiable", 0.0, (
+            "The text states a peak or a low, which a period figure cannot refute."
+        )
     if verdict in ("contradicted", "disputed") and decomp.metric_inferred:
         return "unverifiable", 0.0, (
             "The sentence does not say what this figure measures, so a "
@@ -4995,6 +5201,12 @@ _GROWTH_RE = re.compile(
 )
 
 
+# Growth of a subset or a restated base, which the reported totals cannot test.
+_SUBSET_GROWTH_RE = re.compile(
+    r'\b(?:comparable|same[- ]store|like[- ]for[- ]like|comps?|system[- ]?wide|organic|'
+    r'constant[- ]currency|segment|retail\s+sales)\b', re.IGNORECASE)
+
+
 def check_derivations(results):
     """Post-process Source Network results to flag fabricated derivations.
 
@@ -5011,39 +5223,49 @@ def check_derivations(results):
             if heading not in verified_values:
                 verified_values[heading] = []
             verified_values[heading].append(
-                (r.decomposition.value, r.best_source)
+                (r.decomposition.value, getattr(r.decomposition, "metric", "") or "")
             )
 
     for r in results:
         if r.decomposition.claim_type != "derived":
             continue
+        # A source that confirmed the figure outranks arithmetic on figures
+        # that may be another measure.
+        if r.verdict in ("verified", "close"):
+            continue
 
         sentence = r.decomposition.sentence
         # Check for growth rate claims
         gm = _GROWTH_RE.search(sentence)
-        if gm:
-            claimed_pct = float(gm.group(1))
-            # Find two base values in the same section that could be
-            # current and prior period values
-            heading = r.decomposition.heading
-            if heading and heading in verified_values:
-                values = [v for v, _ in verified_values[heading]]
-                # Try all pairs as (current, prior)
-                for i, current in enumerate(values):
-                    for j, prior in enumerate(values):
-                        if i == j or prior == 0:
-                            continue
-                        actual_pct = (current - prior) / abs(prior) * 100
-                        if abs(actual_pct - claimed_pct) > 2.0:
-                            r.verdict = "contradicted"
-                            r.confidence = 0.8
-                            r.detail = (
-                                f"Claimed {claimed_pct}% growth. "
-                                f"Based on verified values "
-                                f"({current:,.0f} and {prior:,.0f}), "
-                                f"actual change is {actual_pct:+.1f}%."
-                            )
-                            return  # One derivation contradiction is enough
+        if not gm:
+            continue
+        claimed_pct = float(gm.group(1))
+        heading = r.decomposition.heading
+        metric = getattr(r.decomposition, "metric", "") or ""
+        # Only two figures of the growth claim's own metric can test it. Any
+        # pair in the section used to do, so a true 7.9% rise in comparable
+        # sales was refuted by revenue against net income.
+        if (not metric or not _sentence_names_metric(sentence, metric)
+                or _SUBSET_GROWTH_RE.search(sentence)):
+            continue
+        values = [v for v, m in verified_values.get(heading, []) if m == metric]
+        pairs = [(c, p) for i, c in enumerate(values) for j, p in enumerate(values)
+                 if i != j and p]
+        if not pairs:
+            continue
+        changes = [(c, p, (c - p) / abs(p) * 100) for c, p in pairs]
+        if any(abs(pct - claimed_pct) <= 2.0 for _, _, pct in changes):
+            continue
+        current, prior, actual_pct = min(changes, key=lambda x: abs(x[2] - claimed_pct))
+        r.verdict = "contradicted"
+        r.confidence = 0.8
+        r.detail = (
+            f"Claimed {claimed_pct}% growth. "
+            f"Based on verified values "
+            f"({current:,.0f} and {prior:,.0f}), "
+            f"actual change is {actual_pct:+.1f}%."
+        )
+        return  # One derivation contradiction is enough
 
 
 # ================================================================
@@ -5426,6 +5648,18 @@ def _verify_claims_source_network(
                 verdict="projection",
                 confidence=0.0,
                 detail="Projection. Cannot be verified against current data.",
+            )
+
+        # A split ratio is not an amount: "50-for-1" was compared as EPS.
+        if _is_a_ratio(decomp.sentence, decomp.raw_value):
+            return SourceNetworkResult(
+                claim_numbers=claim.get("numbers", []),
+                claim_sentence=claim.get("sentence", ""),
+                decomposition=decomp,
+                source_results=[],
+                verdict="unverifiable",
+                confidence=0.0,
+                detail="A ratio, not an amount a source can check.",
             )
 
         # Skip if no subject or value

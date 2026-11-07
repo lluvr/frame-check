@@ -34,6 +34,25 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 - "St. Louis" and similar abbreviations no longer split a sentence and lose
   its subject.
+- True US macro figures are no longer contradicted by the wrong series. Core
+  CPI, PCE, core PCE, the 2, 5 and 30-year Treasury yields and the mortgage
+  rate are checked against their own series, and "core inflation", a credit
+  card or loan interest rate, or a Treasury maturity with no series here is
+  left unverified rather than read against the headline figure.
+- A year-end figure ("ended 2023 at 3.9%") is read in December; a figure for
+  part of the year, one end of a stated range, or a count ("raised rates 11
+  times") is never contradicted by the year's average.
+- A growth rate is only contradicted by two figures of its own metric, never
+  when a source confirmed it, and never for comparable or same-store sales.
+- A figure in parentheses is read as negative, a figure in another currency
+  is not compared with a filing in dollars, and a split ratio ("50-for-1") is
+  not read as an amount.
+- A count beside the word GDP is not compared with GDP, and core inflation is
+  not compared with the World Bank's headline rate.
+- A measurement stated to the unit is no longer confirmed by a value 0.1 to
+  0.5 percent away.
+- The claim reader no longer retries past its timeout, which could use up
+  the whole verification budget.
 
 ## [1.2.2] - 2026-11-06
 

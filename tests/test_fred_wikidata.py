@@ -64,7 +64,7 @@ def test_fred_rate_tolerance_is_in_points_not_percent(fred):
 
 def test_fred_inflation_is_the_yearly_change_in_prices(fred):
     data, urls = fred
-    data["CPIAUCSL"] = {2023: 4.12696}
+    data["CPIAUCNS"] = {2023: 4.12}
     r = sn.verify_fred(claim("US inflation was 4.1% in 2023.", "4.1%"))
     assert r.match_type in ("exact", "close")
     assert "units=pc1" in urls[0]
@@ -351,3 +351,18 @@ def test_a_subject_named_in_its_own_sentence_can_be_refuted_in_a_busy_document(w
     d = claim("The Gateway Arch in St. Louis is 630 metres tall.", "630")
     d.subject_ambiguous = True  # the document names several things
     assert sn.verify_wikidata(d).match_type == "contradicted"
+
+
+def test_a_measurement_stated_to_the_metre_is_not_confirmed_nine_metres_off(wikidata):
+    """heldout_docs_v12: "Matterhorn: 4,487 m" (transposed digits) came back
+    verified against 4,478 m, because a measurement within 0.5% was exact."""
+    wikidata["Q1374"] = {"label": "Matterhorn", "claims": {"P2044": [_quantity(4478, "Q11573")]}}
+    off = sn.verify_wikidata(claim("The Matterhorn has an elevation of 4,487 m.", "4,487"))
+    assert off.match_type not in ("exact", "close")
+    assert sn.verify_wikidata(claim("The Matterhorn has an elevation of 4,478 m.", "4,478")).match_type == "exact"
+    assert sn.verify_wikidata(claim("The Matterhorn has an elevation of about 4,500 m.", "4,500")).match_type in ("exact", "close")
+
+
+def test_a_survey_difference_of_a_few_metres_still_confirms(wikidata):
+    wikidata["Q583"] = {"label": "Mont Blanc", "claims": {"P2044": [_quantity(4805.59, "Q11573")]}}
+    assert sn.verify_wikidata(claim("Mont Blanc has an elevation of 4,808 m.", "4,808")).match_type in ("exact", "close")
