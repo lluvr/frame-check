@@ -6,6 +6,35 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-11-07
+
+### Added
+
+- **FRED by period.** US macroeconomic figures (GDP, unemployment, CPI
+  inflation, the funds rate, mortgage and Treasury rates, federal debt) are
+  checked against the year or month they name. Rates are compared in points,
+  and a stale figure is named: "That is the 2022 figure." Needs `FRED_API_KEY`.
+- **Wikidata.** Heights and elevations, lengths, areas, diameters and radii,
+  masses, city populations and company headcounts are checked in the claim's
+  own unit, and a unit slip is named: "The figure is right in feet, not
+  metres."
+
+### Changed
+
+- **Verdicts change for existing users.** Re-baseline anything that pins
+  these results.
+- The optional claim reader (`CLAIM_READER=on`, off by default) reads each
+  document twice and keeps only what both readings agree on, so a verdict
+  does not flip between runs. A metric that only the reader supplies can
+  confirm a figure but not refute it.
+- When Wikidata holds a value and disagrees, a matching Wikipedia passage no
+  longer confirms the figure.
+
+### Fixed
+
+- "St. Louis" and similar abbreviations no longer split a sentence and lose
+  its subject.
+
 ## [1.2.2] - 2026-11-06
 
 ### Changed
