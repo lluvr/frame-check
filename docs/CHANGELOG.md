@@ -51,8 +51,9 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
   not compared with the World Bank's headline rate.
 - A measurement stated to the unit is no longer confirmed by a value 0.1 to
   0.5 percent away.
-- The claim reader no longer retries past its timeout, which could use up
-  the whole verification budget.
+- The claim reader no longer retries past its timeout, and has a hard
+  deadline, so a slow or stalled model call falls back to the rule-based
+  reading instead of using up the whole verification budget.
 
 ## [1.2.2] - 2026-11-06
 

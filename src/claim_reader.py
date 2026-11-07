@@ -17,6 +17,7 @@ import logging
 import os
 import re
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 log = logging.getLogger(__name__)
@@ -191,8 +192,20 @@ def read_figures(document):
     with _cache_lock:
         if key in _cache:
             return _cache[key]
-    with ThreadPoolExecutor(max_workers=2) as pool:
-        first, second = pool.map(_one_reading, [document, document])
+    # A hard deadline: the SDK's timeout bounds each socket read, so a reply
+    # that trickles in could otherwise hold the check past its budget.
+    pool = ThreadPoolExecutor(max_workers=2)
+    futures = [pool.submit(_one_reading, document) for _ in range(2)]
+    deadline = time.monotonic() + READER_TIMEOUT_SECONDS + 1
+    readings = []
+    for future in futures:
+        try:
+            readings.append(future.result(timeout=max(0.0, deadline - time.monotonic())))
+        except Exception:
+            _record_failure("deadline")
+            readings.append(None)
+    pool.shutdown(wait=False)
+    first, second = readings
     if first is None and second is None:
         return []
     if first is None or second is None:

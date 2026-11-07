@@ -308,3 +308,16 @@ def test_a_loss_in_parentheses_keeps_its_spelled_out_scale():
     from prose import plain_prose
     text = plain_prose("Net loss in 2023 was $(340.3) million.")
     assert "$340.3 million (a loss)" in text
+
+
+def test_a_hung_reader_gives_up_at_its_deadline(monkeypatch):
+    """The SDK timeout bounds each socket read, not the call: a reply that
+    trickles in can hold the whole check. The reading has its own deadline."""
+    import time
+    monkeypatch.setenv("CLAIM_READER", "on")
+    monkeypatch.setattr(claim_reader, "enabled", lambda: True)
+    monkeypatch.setattr(claim_reader, "READER_TIMEOUT_SECONDS", 0.3)
+    monkeypatch.setattr(claim_reader, "_call_model", lambda doc: time.sleep(3) or "")
+    start = time.monotonic()
+    assert claim_reader.read_figures("Acme made $5 billion in 2024 (hung).") == []
+    assert time.monotonic() - start < 1.5
