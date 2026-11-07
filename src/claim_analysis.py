@@ -96,7 +96,8 @@ CANDIDATE_HEDGE_RE = re.compile(
 )
 
 
-_SENTENCE_END_RE = re.compile(r'[.!?](?=\s+[A-Z(\[$"\d]|\s*$)|\n')
+# "St. Louis" and "Acme Inc. reported" are one sentence.
+_SENTENCE_END_RE = re.compile(r'(?:(?<!\bSt)(?<!\bMt)(?<!\bFt)(?<!\bDr)(?<!\bMr)(?<!\bMs)(?<!\bMrs)(?<!\bJr)(?<!\bSr)(?<!\bCo)(?<!\bInc)(?<!\bLtd)(?<!\bCorp)(?<!\bNo)(?<!\bvs)(?<!\bGen)(?<!\bGov)(?<!\bSen)(?<!\bRep)(?<!\bProf)\.|[!?])(?=\s+[A-Z(\[$"\d]|\s*$)|\n')
 
 
 # Capitalized words a real count can follow: "About 500 people".

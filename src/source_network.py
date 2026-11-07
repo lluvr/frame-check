@@ -77,6 +77,10 @@ class ClaimDecomposition:
     year_sole: bool = False
     # The whole sentence, when the claim is one clause of it.
     full_sentence: str = ""
+    # The document points at the US economy and names no other country.
+    doc_is_us: bool = False
+    # The metric came from the claim reader; the sentence names none.
+    metric_inferred: bool = False
     # The subject came from context in a document naming several entities, so
     # which one the sentence means is a guess. It may confirm, not refute.
     subject_ambiguous: bool = False
@@ -141,6 +145,9 @@ class SourceResult:
     # the same digits is a lead for the reader to follow, not a check:
     # _consensus never lets it decide a verdict.
     is_web_search: bool = False
+    # A structured source holds the value and it differs, though not by
+    # enough to call the claim wrong. Text matches cannot then confirm it.
+    disagrees: bool = False
 
 
 def _timed_verify(fn, decomp):
@@ -642,6 +649,18 @@ def extract_subject(heading, sentence, topic="", doc_text="", num_raw="",
             if owned and is_likely_entity(owned.group(1)):
                 return owned.group(1)
 
+    # 2a'. "Lake Titicaca (Peru/Bolivia)": a place in parentheses after a name
+    # only locates it.
+    if sentence:
+        located = re.match(
+            r'\s*(?:The\s+)?((?:[A-Z][\w&.\'-]*\s+){0,4}[A-Z][\w&.\'-]*)\s*\(([^)]*)\)',
+            sentence,
+        )
+        if (located and _COUNTRY_NAMES_RE.search(located.group(2))
+                and not _COUNTRY_NAMES_RE.fullmatch(located.group(1))
+                and is_likely_entity(located.group(1))):
+            return located.group(1)
+
     # 2. Country names in the sentence (specific pattern, high confidence)
     if sentence:
         country_match = _COUNTRY_NAMES_RE.search(sentence)
@@ -938,6 +957,9 @@ _METRIC_PATTERNS = {
         re.IGNORECASE,
     ),
     "total_assets": re.compile(r'\b(total\s+assets)\b', re.IGNORECASE),
+    "employees": re.compile(
+        r'\b(employees|employed|employs|workforce|headcount|staff\s+of)\b', re.IGNORECASE,
+    ),
     "stockholders_equity": re.compile(
         r"\b((?:stock|share)holders['\u2019]?\s+equity)\b", re.IGNORECASE,
     ),
@@ -1252,9 +1274,23 @@ def _heading_names_something(heading, doc_text):
     return bool(re.search(r'[a-z,]\s+' + re.escape(first) + r'\b', doc_text))
 
 
+def _doc_is_us(doc_text):
+    """Whether a document is about the US economy: it points at US
+    institutions and names no other country."""
+    if not doc_text or not _US_NAMED_RE.search(doc_text):
+        return False
+    others = {
+        _COUNTRY_CANONICAL.get(c, c) for c in _COUNTRY_NAMES_RE.findall(doc_text)
+    } - {"United States", "U.S", "U.S.", "US", "USA", "America"}
+    return not others
+
+
 def _prepare_claims(claims, doc_text):
     """Give each claim the context it needs from the rest of the document."""
     _enrich_headings(claims, doc_text)
+    us = _doc_is_us(doc_text)
+    for claim in claims:
+        claim["doc_is_us"] = us
     for claim in claims:
         if not _heading_names_something(claim.get("heading"), doc_text):
             claim["heading"] = ""
@@ -1297,6 +1333,22 @@ def _split_prior_figures(claim):
 
 
 # What the reader calls a metric, where the checkers use another name.
+_READER_METRIC_WORDS = {
+    "inflation": r'\b(?:inflation|consumer\s+prices|cpi)\b',
+    "unemployment": r'\b(?:unemployment|jobless)',
+    "life_expectancy": r'\blife\s+expectancy\b',
+}
+
+
+def _sentence_names_metric(sentence, reader_metric):
+    """Whether the sentence's own words name the metric the reader gave."""
+    words = _READER_METRIC_WORDS.get(reader_metric)
+    if words:
+        return bool(re.search(words, sentence, re.IGNORECASE))
+    compiled = _METRIC_PATTERNS.get(reader_metric)
+    return bool(compiled and compiled.search(sentence))
+
+
 _PHYSICAL_METRICS = frozenset({"height", "length", "diameter", "weight", "area", "lifespan"})
 _READER_METRIC_NAMES = {"life_expectancy": "lifespan"}
 _READER_INDICATOR_WORDS = {
@@ -1328,7 +1380,10 @@ def _apply_reader(claims, doc_text):
         if key in seen or figure["status"] == "not_a_fact":
             continue
         sentence = _own_sentence(doc_text, figure["figure"]) or figure["figure"]
-        out.append({"sentence": sentence, "numbers": [figure["figure"]], "reader": figure})
+        out.append({
+            "sentence": sentence, "numbers": [figure["figure"]], "reader": figure,
+            "doc_is_us": _doc_is_us(doc_text),
+        })
     return out
 
 
@@ -1611,6 +1666,7 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
 
     # The model's reading, already checked against the text, replaces the rules'.
     reading = claim.get("reader")
+    metric_inferred = False
     if reading:
         if reading["entity"]:
             subject = reading["entity"]
@@ -1618,6 +1674,9 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
         # A word in the sentence naming what is measured ("radius") is more
         # exact than the model's broad label ("length").
         if reading["metric"] and metric not in _PHYSICAL_METRICS:
+            metric_inferred = not metric and not _sentence_names_metric(
+                sentence, reading["metric"],
+            )
             metric = _READER_METRIC_NAMES.get(reading["metric"], reading["metric"])
             if metric not in _METRIC_PATTERNS:
                 metric = ""
@@ -1644,6 +1703,8 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
         year_inherited=year_inherited,
         # A figure set against another is explicitly not this year's.
         full_sentence=claim.get("full_sentence", ""),
+        doc_is_us=bool(claim.get("doc_is_us")),
+        metric_inferred=metric_inferred,
         year_sole=(bool(claim.get("year_sole")) and year_inherited
                    and not claim.get("prior_figure") and not after_vs),
         subject_ambiguous=subject_ambiguous,
@@ -1902,6 +1963,8 @@ def _provider_from_url(url: str) -> str:
     ``coingecko`` / ``wikipedia`` / ``fred`` / ``alpha_vantage`` /
     ``world_bank`` / ``rest_countries`` / ``wolfram`` / ``sec_edgar`` /
     ``github``) or ``"unknown"``. Strict suffix match (``host ==
+    if "wikidata" in host:
+        return "wikidata"
     domain`` or ``host.endswith('.' + domain)``) so an attacker-
     controlled hostname such as ``alphavantage.evil.com`` cannot be
     misclassified as the legitimate provider. The closed-enum return
@@ -2221,7 +2284,8 @@ _UNIT_AFTER_NUMBER_RE = re.compile(
     r'(?:\s*(?:to|-|\u2013)\s*[\d,.]+)?[\s-]*(' + _UNIT_ALTERNATION + r')(?![a-z])',
     re.IGNORECASE,
 )
-_SENTENCE_BREAK_RE = re.compile(r'(?<=[.!?])\s+(?=[A-Z(\[])|\n+')
+# "St. Louis" and "Acme Inc. reported" are one sentence.
+_SENTENCE_BREAK_RE = re.compile(r'(?<=[.!?])(?<!\bSt\.)(?<!\bMt\.)(?<!\bFt\.)(?<!\bDr\.)(?<!\bMr\.)(?<!\bMs\.)(?<!\bMrs\.)(?<!\bJr\.)(?<!\bSr\.)(?<!\bCo\.)(?<!\bInc\.)(?<!\bLtd\.)(?<!\bCorp\.)(?<!\bNo\.)(?<!\bvs\.)(?<!\bGen\.)(?<!\bGov\.)(?<!\bSen\.)(?<!\bRep\.)(?<!\bProf\.)\s+(?=[A-Z(\[])|\n+')
 
 
 def _unit_family(token):
@@ -2340,7 +2404,18 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
         or decomp.metric in _WEAK_METRICS
         or decomp.metric == "lifespan"
     ):
-        tolerance = min(tolerance, 0.02)
+        # And as precise as written: "7,611 m" is not a "7,650 metres" nearby,
+        # unless the text hedges it ("about 384,400 km").
+        raw = str(decomp.raw_value).strip()
+        at = claim_sentence.find(raw) if raw else -1
+        hedge = (r'\b(?:about|around|roughly|approximately|nearly|almost|some|close\s+to|'
+                 r'over|more\s+than|under|less\s+than)\s+')
+        hedged = (
+            re.search(hedge + r'$', claim_sentence[max(0, at - 25):at], re.IGNORECASE)
+            if at > 0 else re.search(hedge + r'[$\d]', claim_sentence, re.IGNORECASE)
+        )
+        tolerance = min(tolerance, 0.02 if hedged else max(
+            0.003, 2 * _rounding_room(decomp.raw_value)))
 
     # Extract all numbers with context windows.
     # Handle scale suffixes (B/billion, M/million, T/trillion, K/thousand)
@@ -2922,9 +2997,19 @@ def verify_world_bank(decomp):
             # another country's figure, not this one rounded. Between that and
             # 5% the data's own revisions could explain it, so it says nothing.
             close_limit = max(0.02, _rounding_room(decomp.raw_value))
-            if diff < close_limit:
-                match_type = "exact" if diff < 0.01 else "close"
-            elif diff < 0.05:
+            is_close, is_exact, is_gray = (
+                diff < close_limit, diff < 0.01, diff < 0.05,
+            )
+            if indicator_id not in _WB_TOTAL_INDICATORS:
+                # A rate or a life expectancy is compared in points: 83.2 years
+                # against 84.04 is a different country's figure, not 1% off.
+                points = abs(source_val - decomp.value)
+                near = max(0.15, _rate_room(decomp.raw_value))
+                is_close, is_exact = points <= near, points <= 0.05
+                is_gray = points <= max(0.5, 2 * near)
+            if is_close:
+                match_type = "exact" if is_exact else "close"
+            elif is_gray:
                 match_type = "no_data"
             elif indicator_id == "AG.SRF.TOTL.K2":
                 # This series put Canada at 15.6M square km against a true
@@ -3042,91 +3127,423 @@ def verify_coingecko(decomp):
 
 # ── FRED (Federal Reserve Economic Data) ──
 
-_FRED_SERIES = {
-    "gdp": ("GDP", "billions", 1e9),
-    "gross domestic product": ("GDP", "billions", 1e9),
-    "real gdp": ("GDPC1", "billions_chained_2017", 1e9),
-    "unemployment": ("UNRATE", "percent", 1),
-    "unemployment rate": ("UNRATE", "percent", 1),
-    "inflation": ("FPCPITOTLZGUSA", "percent", 1),
-    "inflation rate": ("FPCPITOTLZGUSA", "percent", 1),
-    "cpi": ("CPIAUCSL", "index", 1),
-    "consumer price index": ("CPIAUCSL", "index", 1),
-    "federal funds rate": ("FEDFUNDS", "percent", 1),
-    "interest rate": ("FEDFUNDS", "percent", 1),
-    "fed funds": ("FEDFUNDS", "percent", 1),
-    "national debt": ("GFDEBTN", "millions", 1e6),
-    "debt": ("GFDEBTN", "millions", 1e6),
-    "population": ("POPTHM", "thousands", 1e3),
-    "housing starts": ("HOUST", "thousands", 1e3),
-    "industrial production": ("INDPRO", "index", 1),
-    "retail sales": ("RSXFS", "millions", 1e6),
-    "trade balance": ("BOPGSTB", "millions", 1e6),
-    "money supply": ("M2SL", "billions", 1e9),
-    "m2": ("M2SL", "billions", 1e9),
+# What each phrase means in FRED: series, scale to units, whether the figure
+# is a rate compared in points, and extra query parameters. Phrases are
+# matched nearest to the figure first.
+_FRED_SPECS = (
+    (r"real\s+gdp", "GDPC1", 1e9, False, {}, "billions of chained 2017 dollars"),
+    (r"gdp|gross\s+domestic\s+product|economic\s+output", "GDP", 1e9, False, {}, "billions of dollars"),
+    (r"unemployment|jobless", "UNRATE", 1, True, {}, "percent"),
+    (r"inflation|consumer\s+prices|\bcpi\b", "CPIAUCSL", 1, True, {"units": "pc1"},
+     "percent change from a year earlier"),
+    (r"federal\s+funds|fed\s+funds|(?:effective\s+)?funds\s+rate|policy\s+rate|interest\s+rate",
+     "FEDFUNDS", 1, True, {}, "percent"),
+    (r"mortgage\s+rate", "MORTGAGE30US", 1, True, {}, "percent"),
+    (r"10-year\s+treasury|treasury\s+yield", "DGS10", 1, True, {}, "percent"),
+    (r"national\s+debt|federal\s+debt|public\s+debt", "GFDEBTN", 1e6, False,
+     {"aggregation_method": "eop"}, "millions of dollars"),
+)
+_FRED_MONTH_RE = re.compile(
+    r'\b(January|February|March|April|May|June|July|August|September|October|'
+    r'November|December)\s+(20[0-3]\d)\b'
+)
+_MONTH_NUMBERS = {
+    m: i for i, m in enumerate((
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"), start=1)
 }
 
 
+def _fred_spec(decomp):
+    """The series named closest to the figure."""
+    sentence = decomp.sentence
+    raw = str(decomp.raw_value).strip()
+    at = sentence.find(raw) if raw else -1
+    best, best_gap = None, None
+    for spec in _FRED_SPECS:
+        for found in re.finditer(spec[0], sentence, re.IGNORECASE):
+            gap = abs(found.start() - at) if at >= 0 else 0
+            if best_gap is None or gap < best_gap:
+                best, best_gap = spec, gap
+    return best
+
+
+_US_NAMED_RE = re.compile(
+    r'\b(?:U\.\s?S\.?(?:\s|$)|US\b|USA\b|United\s+States|America(?:n|\'s)?\b|'
+    r'federal\s+(?:reserve|funds|debt|government)|the\s+Fed\b|Freddie\s+Mac|Fannie\s+Mae|'
+    r'Treasury|Bureau\s+of\s+(?:Labor|Economic)|\bBLS\b|\bBEA\b|FRED\b)',
+)
+
+
+def _fred_applies(decomp):
+    """FRED's series are American. A figure that does not say so may be any
+    country's: Rwanda's GDP was once checked against the US."""
+    if not _fred_spec(decomp):
+        return False
+    country = _claim_country(decomp)
+    is_us = country in ("United States", "U.S", "U.S.", "US", "USA", "America")
+    if country and not is_us:
+        return False
+    return bool(is_us or _US_NAMED_RE.search(decomp.sentence)
+                or _US_NAMED_RE.search(decomp.heading or "") or decomp.doc_is_us)
+
+
+def _rate_room(raw_value):
+    """Half the last stated decimal, in points: "3.6%" covers 3.55 to 3.65."""
+    digits = re.search(r'\d+(?:\.(\d+))?', str(raw_value))
+    places = len(digits.group(1)) if digits and digits.group(1) else 0
+    return max(0.05, 0.5 * 10 ** -places)
+
+
 def verify_fred(decomp):
-    """Verify macroeconomic claims against FRED."""
+    """US macroeconomic figures against FRED, for the period the claim names:
+    the year's average, or a named month. Rates are compared in points."""
     api_key = os.environ.get("FRED_API_KEY", "")
-    if not api_key:
+    spec = _fred_spec(decomp) if api_key else None
+    if not spec or not decomp.value:
         return SourceResult(source_name="FRED", match_type="no_data")
+    _, series_id, scale, is_rate, extra, unit_desc = spec
 
-    # Find the matching FRED series
-    sentence_lower = decomp.sentence.lower()
-    series_id = None
-    unit_desc = ""
-    unit_scale = 1
-
-    for keyword, (sid, udesc, uscale) in _FRED_SERIES.items():
-        if keyword in sentence_lower or keyword in decomp.metric:
-            series_id = sid
-            unit_desc = udesc
-            unit_scale = uscale
-            break
-
-    if not series_id:
-        return SourceResult(source_name="FRED", match_type="no_data")
-
-    # Query FRED for the most recent observation
-    url = (
-        f"https://api.stlouisfed.org/fred/series/observations"
-        f"?series_id={series_id}&api_key={api_key}"
-        f"&file_type=json&sort_order=desc&limit=5"
+    year_match = re.search(r'20[0-3]\d', decomp.time_period or "")
+    month = _FRED_MONTH_RE.search(decomp.sentence)
+    params = {"series_id": series_id, "api_key": api_key, "file_type": "json", **extra}
+    if month:
+        first = f"{month.group(2)}-{_MONTH_NUMBERS[month.group(1)]:02d}-01"
+        params.update(frequency="m", observation_start=first, observation_end=first)
+    else:
+        params.setdefault("aggregation_method", "avg")
+        params["frequency"] = "a"
+        if year_match:
+            target = int(year_match.group())
+            params.update(observation_start=f"{target - 2}-01-01",
+                          observation_end=f"{target + 2}-12-31")
+        else:
+            now = datetime.date.today().year
+            params.update(observation_start=f"{now - 2}-01-01",
+                          observation_end=f"{now}-12-31")
+    data = _fetch_json(
+        "https://api.stlouisfed.org/fred/series/observations?"
+        + urllib.parse.urlencode(params)
     )
-    data = _fetch_json(url)
-    if not data or "observations" not in data:
+    rows = [
+        (o["date"], float(o["value"]) * scale)
+        for o in (data or {}).get("observations", [])
+        if o.get("value") not in (None, "", ".")
+    ]
+    if not rows:
         return SourceResult(source_name="FRED", match_type="no_data")
 
-    # Find the most recent non-null observation
-    for obs in data["observations"]:
-        if obs.get("value") and obs["value"] != ".":
-            source_val_raw = float(obs["value"])
-            source_val = source_val_raw * unit_scale
-            obs_date = obs.get("date", "")
+    if month:
+        own = rows[0]
+        others = []
+    elif year_match:
+        named = [r for r in rows if r[0].startswith(year_match.group())]
+        if not named:
+            return SourceResult(source_name="FRED", match_type="no_data")
+        own = named[0]
+        others = [r for r in rows if r is not own]
+    else:
+        own = rows[-1]
+        others = []
 
-            diff = abs(source_val - decomp.value) / max(abs(decomp.value), 1e-10)
-            if diff < 0.01:
-                match_type = "exact"
-            elif diff < 0.05:
-                match_type = "close"
-            elif diff < 0.15:
-                match_type = "close"
+    def gap(value):
+        if is_rate:
+            return abs(value - decomp.value)
+        return abs(value - decomp.value) / max(abs(decomp.value), 1e-10)
+
+    room = _rate_room(decomp.raw_value) if is_rate else max(0.02, _rounding_room(decomp.raw_value))
+    diff = gap(own[1])
+    stale = [r[0][:4] for r in others if gap(r[1]) <= room]
+    if diff <= room:
+        match_type = "exact" if diff <= room / 2 else "close"
+    elif not year_match and not month:
+        # With no period named, another year may be the one meant.
+        match_type = "no_data"
+    elif (decomp.year_inherited and not _YEAR_REFERENCE_RE.search(decomp.sentence)
+          and any(gap(r[1]) <= 2 * room for r in others)):
+        match_type = "no_data"
+    elif not is_rate and diff < max(0.05, 2 * room):
+        match_type = "no_data"
+    elif not is_rate and not 0.25 <= own[1] / decomp.value <= 4:
+        # Orders of magnitude off is another economy or a misread scale.
+        match_type = "no_data"
+    else:
+        match_type = "contradicted"
+
+    shown = own[1] / scale
+    period = own[0][:7] if month else own[0][:4]
+    text = f"{series_id} {period}: {shown:,.2f} {unit_desc}"
+    if match_type == "contradicted" and stale:
+        text += f". That is the {stale[-1]} figure."
+    return SourceResult(
+        source_name="FRED",
+        source_url=f"https://fred.stlouisfed.org/series/{series_id}",
+        source_value=own[1],
+        source_text=text,
+        match_type=match_type,
+        difference_pct=round(
+            (abs(own[1] - decomp.value) / max(abs(decomp.value), 1e-10)) * 100, 1),
+        confidence=0.95 if match_type == "exact" else 0.85,
+    )
+
+
+# ── Wikidata (structured measurements) ──
+
+_WIKIDATA_API = "https://www.wikidata.org/w/api.php"
+# Wikidata unit item -> (dimension, factor to the base unit).
+_WD_UNITS = {
+    "Q11573": ("m", 1.0), "Q828224": ("m", 1000.0), "Q174728": ("m", 0.01),
+    "Q3710": ("m", 0.3048), "Q253276": ("m", 1609.344), "Q482798": ("m", 0.9144),
+    "Q712226": ("m2", 1e6), "Q25343": ("m2", 1.0), "Q232291": ("m2", 2589988.110336),
+    "Q35852": ("m2", 1e4), "Q81292": ("m2", 4046.8564224), "Q857027": ("m2", 0.09290304),
+    "Q11570": ("kg", 1.0), "Q191118": ("kg", 1000.0), "Q100995": ("kg", 0.45359237),
+}
+# A claim's unit family -> (dimension, factor, name for messages).
+_UNIT_FAMILY_BASE = {
+    "km": ("m", 1000.0, "kilometres"), "m": ("m", 1.0, "metres"),
+    "cm": ("m", 0.01, "centimetres"), "ft": ("m", 0.3048, "feet"),
+    "mi": ("m", 1609.344, "miles"), "yd": ("m", 0.9144, "yards"),
+    "fathom": ("m", 1.8288, "fathoms"),
+    "km2": ("m2", 1e6, "square kilometres"), "m2": ("m2", 1.0, "square metres"),
+    "mi2": ("m2", 2589988.110336, "square miles"), "ft2": ("m2", 0.09290304, "square feet"),
+    "kg": ("kg", 1.0, "kilograms"), "t": ("kg", 1000.0, "tonnes"), "lb": ("kg", 0.45359237, "pounds"),
+}
+_WD_METRIC_PROPERTIES = {
+    # Height counts elevation too: a mountain's height is its elevation.
+    "height": ("P2048", "P2044"), "length": ("P2043",), "area": ("P2046",),
+    "weight": ("P2067",), "population": ("P1082",), "employees": ("P1128",),
+}
+_WD_COUNTS = frozenset({"population", "employees"})
+# Definitions differ between sources for lakes, rivers and coastlines, so a
+# measurement has to be this far off before it is called wrong.
+_WD_REFUTE_GAP = 0.15
+
+
+_DEPTH_RE = re.compile(r'\b(?:depth|deep)\b', re.IGNORECASE)
+
+
+def _wd_properties(decomp):
+    sentence = decomp.sentence.lower()
+    # "a maximum depth of 1,332 feet" is neither a length nor a height.
+    if decomp.metric in ("length", "height") and _DEPTH_RE.search(sentence):
+        return ()
+    # Wikidata's area is the total, water included; land area is another figure.
+    if decomp.metric == "area" and re.search(r'\b(?:land|water)\s+area\b', sentence):
+        return ()
+    if decomp.metric == "diameter":
+        if "radius" in sentence:
+            return ("P2120",)
+        if "diameter" in sentence:
+            return ("P2386",)
+        return ()
+    return _WD_METRIC_PROPERTIES.get(decomp.metric, ())
+
+
+def _claim_unit_family(decomp):
+    """The unit written after the claim's own figure."""
+    sentence = decomp.sentence
+    raw = str(decomp.raw_value).strip()
+    at = sentence.find(raw) if raw else -1
+    if at >= 0:
+        after = re.sub(
+            r'^\s*(?:thousand|million|billion)\b', '', sentence[at + len(raw):],
+            flags=re.IGNORECASE,
+        )
+        own = _UNIT_AFTER_NUMBER_RE.match(after)
+        if own:
+            return _unit_family(own.group(1))
+    return ""
+
+
+def _wikidata_applies(decomp):
+    if not decomp.subject or not _wd_properties(decomp):
+        return False
+    # The World Bank answers a country's population, and a filing a company's.
+    if decomp.metric == "population" and _COUNTRY_NAMES_RE.fullmatch(decomp.subject):
+        return False
+    return True
+
+
+# Subject -> (candidate ids, entities). A document names the same thing in
+# several sentences, and Wikidata rate-limits searches. Only successful
+# lookups are kept, so a timeout is retried next time.
+_WIKIDATA_CACHE = {}
+_WIKIDATA_CACHE_LIMIT = 512
+_WIKIDATA_CACHE_LOCK = threading.Lock()
+
+
+def _wikidata_lookup(subject):
+    key = subject.lower()
+    with _WIKIDATA_CACHE_LOCK:
+        if key in _WIKIDATA_CACHE:
+            return _WIKIDATA_CACHE[key]
+    found = _fetch_json(
+        f"{_WIKIDATA_API}?" + urllib.parse.urlencode({
+            "action": "wbsearchentities", "search": subject, "language": "en",
+            "type": "item", "limit": 5, "format": "json",
+        })
+    )
+    if found is None:
+        return [], {}
+    ids = [hit["id"] for hit in found.get("search", [])][:5]
+    entities = {}
+    if ids:
+        fetched = _fetch_json(
+            f"{_WIKIDATA_API}?" + urllib.parse.urlencode({
+                "action": "wbgetentities", "ids": "|".join(ids),
+                "props": "claims|labels|aliases", "languages": "en", "format": "json",
+            })
+        )
+        if fetched is None:
+            return ids, {}
+        entities = fetched.get("entities", {})
+    with _WIKIDATA_CACHE_LOCK:
+        if len(_WIKIDATA_CACHE) >= _WIKIDATA_CACHE_LIMIT:
+            _WIKIDATA_CACHE.clear()
+        _WIKIDATA_CACHE[key] = (ids, entities)
+    return ids, entities
+
+
+def _wd_year(statement):
+    for qualifier in statement.get("qualifiers", {}).get("P585", []):
+        time = qualifier.get("datavalue", {}).get("value", {}).get("time", "")
+        found = re.match(r'[+-]?(\d{4})', time)
+        if found:
+            return int(found.group(1))
+    return None
+
+
+def verify_wikidata(decomp):
+    """Measurements, city populations and headcounts against Wikidata's
+    typed values, converted to the claim's unit."""
+    properties = _wd_properties(decomp)
+    subject = re.sub(r'^(?:The|A|An)\s+', '', decomp.subject or "")
+    # "Willis Tower (Chicago)": the aside is not part of the name.
+    subject = re.sub(r'\s*\([^)]*\)', '', subject).strip()
+    if not properties or not subject or not decomp.value:
+        return SourceResult(source_name="Wikidata", match_type="no_data")
+    is_count = decomp.metric in _WD_COUNTS
+    family = "" if is_count else _claim_unit_family(decomp)
+    if not is_count and family not in _UNIT_FAMILY_BASE:
+        return SourceResult(source_name="Wikidata", match_type="no_data")
+    if is_count:
+        dimension, claim_base = None, decomp.value
+    else:
+        dimension, factor, _ = _UNIT_FAMILY_BASE[family]
+        claim_base = decomp.value * factor
+
+    ids, entities = _wikidata_lookup(subject)
+    if not ids:
+        return SourceResult(source_name="Wikidata", match_type="no_data")
+
+    # The first match that holds the property, preferring one named exactly:
+    # "Mercury" the element has no radius.
+    chosen, named = None, False
+    for qid in ids:
+        entity = entities.get(qid) or {}
+        statements = [
+            st for prop in properties
+            for st in entity.get("claims", {}).get(prop, [])
+            if st.get("rank") != "deprecated"
+        ]
+        if not statements:
+            continue
+        names = {entity.get("labels", {}).get("en", {}).get("value", "").lower()}
+        names |= {a.get("value", "").lower() for a in entity.get("aliases", {}).get("en", [])}
+        exact = subject.lower() in names
+        if chosen is None or (exact and not named):
+            chosen, named = (qid, entity, statements), exact
+        if exact:
+            break
+    if not chosen:
+        return SourceResult(source_name="Wikidata", match_type="no_data")
+    qid, entity, statements = chosen
+
+    values = []
+    for statement in statements:
+        value = statement.get("mainsnak", {}).get("datavalue", {}).get("value", {})
+        try:
+            amount = float(str(value.get("amount", "")).lstrip("+"))
+        except ValueError:
+            continue
+        if is_count:
+            values.append((amount, _wd_year(statement)))
+            continue
+        unit = _WD_UNITS.get(str(value.get("unit", "")).rsplit("/", 1)[-1])
+        if unit and unit[0] == dimension:
+            values.append((amount * unit[1], None))
+    if not values:
+        return SourceResult(source_name="Wikidata", match_type="no_data")
+
+    year_match = re.search(r'20[0-3]\d|19\d\d', decomp.time_period or "")
+    # Refuting needs the thing named in this very sentence: "Ganymede: radius
+    # of 2,631 km" was once checked against Pluto from the line before.
+    # Named in its own sentence, it is not the ambiguous inherited kind.
+    in_sentence = bool(re.search(
+        r'(?<!\w)' + re.escape(subject) + r'(?!\w)', decomp.sentence, re.IGNORECASE,
+    ))
+    can_refute = named and not is_count and in_sentence
+    same_year = False
+    pool = values
+    if is_count:
+        dated = [v for v in values if v[1]]
+        if year_match and dated:
+            same = [v for v in dated if v[1] == int(year_match.group())]
+            if same:
+                pool, can_refute = same, named and in_sentence
+                same_year = True
             else:
-                match_type = "contradicted" if diff < 2.0 else "no_data"
+                nearest = min(dated, key=lambda v: abs(v[1] - int(year_match.group())))
+                pool = [nearest]
+        elif dated:
+            latest = max(v[1] for v in dated)
+            pool = [v for v in dated if v[1] == latest]
 
-            return SourceResult(
-                source_name="FRED",
-                source_url=f"https://fred.stlouisfed.org/series/{series_id}",
-                source_value=source_val,
-                source_text=f"{series_id} ({obs_date}): {source_val_raw:,.1f} {unit_desc}",
-                match_type=match_type,
-                difference_pct=round(diff * 100, 1),
-                confidence=0.95 if match_type == "exact" else 0.8,
-            )
+    def gap(value):
+        return abs(value - claim_base) / max(abs(claim_base), 1e-10)
 
-    return SourceResult(source_name="FRED", match_type="no_data")
+    best = min(pool, key=lambda v: gap(v[0]))
+    diff = gap(best[0])
+    # A count for the year it names, or a measurement, is as precise as it is
+    # written: "2.79 million" in 2021 is not 2,751,862.
+    room = max(0.005 if (same_year or not is_count) else 0.02,
+               _rounding_room(decomp.raw_value))
+    if diff < 0.005:
+        match_type = "exact"
+    elif diff < room:
+        match_type = "close"
+    elif (diff > _WD_REFUTE_GAP and can_refute
+          and 0.25 <= best[0] / claim_base <= 4):
+        # Beyond the largest unit slip (feet for metres is 3.3x), a gap means
+        # another thing was measured: Peru's area for Lake Titicaca's.
+        match_type = "contradicted"
+    else:
+        match_type = "no_data"
+
+    label = entity.get("labels", {}).get("en", {}).get("value", subject)
+    if is_count:
+        shown = f"{best[0]:,.0f}" + (f" ({best[1]})" if best[1] else "")
+    else:
+        shown = f"{best[0] / factor:,.1f} {_UNIT_FAMILY_BASE[family][2]}"
+    text = f"{label} on Wikidata: {shown}"
+    if match_type == "contradicted" and not is_count:
+        for other, (dim, other_factor, other_name) in _UNIT_FAMILY_BASE.items():
+            if dim == dimension and other != family and any(
+                abs(decomp.value * other_factor - v[0]) / max(v[0], 1e-10) < 0.01
+                for v in pool
+            ):
+                text += f". The figure is right in {other_name}, not {_UNIT_FAMILY_BASE[family][2]}."
+                break
+    return SourceResult(
+        source_name="Wikidata",
+        source_url=f"https://www.wikidata.org/wiki/{qid}",
+        source_value=best[0],
+        source_text=text,
+        match_type=match_type,
+        difference_pct=round(diff * 100, 1),
+        confidence=0.85 if match_type == "exact" else 0.75,
+        disagrees=match_type == "no_data",
+    )
 
 
 # ── Alpha Vantage (company financials) ──
@@ -4366,13 +4783,12 @@ def _classify_and_route(decomp):
     # Macroeconomic (FRED) - US economic indicators
     # US series only: asking FRED about Spain's unemployment compared it with
     # the US rate and marked a true figure as disputed.
-    if (os.environ.get("FRED_API_KEY")
-            and _claim_country(decomp) in (None, "United States")):
-        if decomp.metric in ("gdp",) or \
-           any(kw in sentence_lower for kw in ["gdp", "unemployment", "inflation",
-               "cpi", "interest rate", "federal funds", "money supply",
-               "national debt", "industrial production", "retail sales"]):
-            sources.append(verify_fred)
+    if os.environ.get("FRED_API_KEY") and _fred_applies(decomp):
+        sources.append(verify_fred)
+
+    # Measurements, city populations and headcounts (Wikidata)
+    if _wikidata_applies(decomp):
+        sources.append(verify_wikidata)
 
     # Company financials: SEC EDGAR (definitive) + Alpha Vantage (fallback).
     #
@@ -4470,6 +4886,21 @@ def _consensus_for(decomp, results):
     """_consensus, knowing the claim. A figure different from a stated bound
     may satisfy it, so a bound is never contradicted."""
     verdict, confidence, detail = _consensus(results)
+    # A metric the sentence never names can confirm a figure, not refute it:
+    # "Drinkware did $1.09 billion" read as revenue is a segment, not a total.
+    if verdict in ("contradicted", "disputed") and decomp.metric_inferred:
+        return "unverifiable", 0.0, (
+            "The sentence does not say what this figure measures, so a "
+            "different figure for the metric it was read as does not refute it."
+        )
+    confirming = [r for r in results if r.match_type in ("exact", "close")]
+    if (verdict in ("verified", "close")
+            and any(r.disagrees for r in results)
+            and all(r.source_name == "Wikipedia" or r.is_web_search for r in confirming)):
+        dissent = next(r for r in results if r.disagrees)
+        return "unverifiable", 0.0, (
+            f"{dissent.source_name} gives a different value: {dissent.source_text}"
+        )
     if verdict == "contradicted" and _states_a_bound(
         decomp.sentence, decomp.raw_value or "",
     ):
@@ -4899,6 +5330,9 @@ def _verify_claims_source_network(
     # so claims like "Common side effects include nausea (44%)" in an
     # Ozempic document get verified as Ozempic claims instead of being
     # rejected as anonymous.
+    # The budget starts before the reader, so a slow model call cannot push
+    # the whole check past the caller's own limit.
+    sn_orchestrator_start = time.monotonic()
     claims = _apply_reader(_prepare_claims(claims, doc_text), doc_text)
     doc_primary_entity = extract_doc_primary_entity(doc_text, topic=topic)
 
@@ -4923,8 +5357,8 @@ def _verify_claims_source_network(
     # deadline added the same day, it bounds the worker's wall-clock
     # in two ways: (a) workers exit voluntarily at provider boundaries
     # when they observe budget exhausted, (b) urlopen calls themselves
-    # cannot block past the per-call deadline.
-    sn_orchestrator_start = time.monotonic()
+    # cannot block past the per-call deadline. The clock started above, before
+    # the claim reader.
 
     def _budget_exhausted_in_worker():
         """Return True when the SN_BUDGET_SECONDS deadline has elapsed.

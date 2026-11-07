@@ -692,3 +692,14 @@ def test_land_area_needs_the_page_to_say_land():
     d = sn.decompose_claim({"sentence": text, "numbers": ["9.98 million"]})
     page = "Canada covers 9.98 million square kilometres (3.85 million square miles)."
     assert sn._match_in_text(page, 9.98e6, text, decomp=d)[0] is None
+
+
+@pytest.mark.parametrize("text,raw,subject", [
+    ("Intro line here. The Gateway Arch in St. Louis is 630 metres tall.", "630", "Gateway Arch"),
+    ("Intro line here. Mt. Everest rises 8,849 metres above the sea.", "8,849", "Everest"),
+    ("Intro line here. Acme Inc. reported revenue of $4.2 billion in 2025.", "$4.2 billion", "Acme"),
+])
+def test_an_abbreviation_does_not_end_the_sentence(text, raw, subject):
+    from claim_analysis import _own_sentence
+    assert subject.split()[0] in _own_sentence(text, raw)
+    assert subject in parse(text)[raw].subject

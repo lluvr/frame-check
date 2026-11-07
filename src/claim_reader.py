@@ -17,10 +17,12 @@ import logging
 import os
 import re
 import threading
+from concurrent.futures import ThreadPoolExecutor
 
 log = logging.getLogger(__name__)
 
-READER_TIMEOUT_SECONDS = float(os.environ.get("CLAIM_READER_TIMEOUT", "20"))
+# Within the 25-second verification budget, leaving the sources most of it.
+READER_TIMEOUT_SECONDS = float(os.environ.get("CLAIM_READER_TIMEOUT", "12"))
 _MAX_DOC_CHARS = 14000
 _CACHE_LIMIT = 64
 _cache = {}
@@ -133,8 +135,51 @@ def _validated(raw, document):
     return out
 
 
+def _agreed(first, second):
+    """What two independent readings agree on. A field they differ on is left
+    to the rules, and a figure only one of them found is dropped: one model
+    call read "Drinkware did $1.09 billion" as revenue and the next did not.
+    """
+    other = {f["figure"]: f for f in second}
+    out = []
+    for figure in first:
+        twin = other.get(figure["figure"])
+        if twin is None:
+            continue
+        merged = {"figure": figure["figure"]}
+        for field in ("entity", "metric", "attribute", "period"):
+            merged[field] = figure[field] if figure[field] == twin[field] else ""
+        merged["period_in_sentence"] = figure["period_in_sentence"] and twin["period_in_sentence"]
+        merged["status"] = figure["status"] if figure["status"] == twin["status"] else "stated"
+        out.append(merged)
+    return out
+
+
+def _one_reading(document):
+    try:
+        return _validated(_call_model(document), document)
+    except Exception as exc:
+        # The rule-based reading stands. Never let the reader break a check.
+        log.warning("claim reader failed: %s", type(exc).__name__)
+        _record_failure(type(exc).__name__)
+        return None
+
+
+def _record_failure(kind):
+    try:
+        from source_network import provider_health
+        provider_health.record_error("claim_reader", kind)
+    except Exception:
+        pass
+
+
 def read_figures(document):
-    """The validated reading of a document, or [] when it cannot be had."""
+    """The validated reading of a document, or [] when it cannot be had.
+
+    Two readings run in parallel and only what both say is kept, so a verdict
+    does not flip between runs on the same text. If one call fails, the other
+    is used alone.
+    """
     if not document or not enabled():
         return []
     document = document[:_MAX_DOC_CHARS]
@@ -142,12 +187,14 @@ def read_figures(document):
     with _cache_lock:
         if key in _cache:
             return _cache[key]
-    try:
-        figures = _validated(_call_model(document), document)
-    except Exception as exc:
-        # The rule-based reading stands. Never let the reader break a check.
-        log.warning("claim reader failed: %s", type(exc).__name__)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first, second = pool.map(_one_reading, [document, document])
+    if first is None and second is None:
         return []
+    if first is None or second is None:
+        figures = first if first is not None else second
+    else:
+        figures = _agreed(first, second)
     with _cache_lock:
         if len(_cache) >= _CACHE_LIMIT:
             _cache.clear()
