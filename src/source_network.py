@@ -79,6 +79,9 @@ class ClaimDecomposition:
     full_sentence: str = ""
     # The document points at the US economy and names no other country.
     doc_is_us: bool = False
+    # The document says its figures are annual averages ("Here are the annual
+    # averages you asked for"), so a rate in it is not December's.
+    doc_says_averages: bool = False
     # The metric came from the claim reader; the sentence names none.
     metric_inferred: bool = False
     # The subject came from context in a document naming several entities, so
@@ -1187,6 +1190,10 @@ def _detect_segment_claim(sentence, heading, doc_text="", raw_value=""):
     text = f"{sentence} {heading}"
     if _matches_segment_signal(text):
         return True
+    if _labels_a_business_line(sentence, heading, raw_value):
+        return True
+    if _listed_as_a_part(sentence, raw_value):
+        return True
 
     # Backward-window fallback in the original document text. Segment
     # qualifiers come BEFORE the dollar amount ("Automotive revenue
@@ -1218,6 +1225,61 @@ def _detect_segment_claim(sentence, heading, doc_text="", raw_value=""):
                 if _matches_segment_signal(lookback):
                     return True
     return False
+
+
+# A bullet's label that names what is measured, when, or the whole company.
+_LABEL_NOT_A_LINE_RE = re.compile(
+    r'\b(?:revenues?|sales|income|loss|profit|earnings|margins?|cash|dividends?|'
+    r'total|net|gross|full[\s-]year|fy|fiscal|quarter|q[1-4]|outlook|guidance|'
+    r'years?|20\d\d|headcount|employees|staff|debt|assets|liabilit\w*|equity|capex|'
+    r'spending|buybacks?|repurchases?|shares?|stock|price|market|valuation|ebitda|'
+    r'bottom\s+line|top\s+line|summary|overall|consolidated|highlights?|key|'
+    r'results?|growth|returns?|costs?|expenses?|tax|backlog|bookings|'
+    r'comparable|same[\s-]store|comps|customers|users|subscribers|members|'
+    r'units|deliveries|stores|restaurants|locations)\b',
+    re.IGNORECASE,
+)
+
+
+_PART_CUE_RE = re.compile(
+    r'\b(?:including|of\s+which|comprising|consisting\s+of|made\s+up\s+of|'
+    r'split\s+between|broken\s+down\s+into)\b', re.IGNORECASE)
+
+
+def _listed_as_a_part(sentence, raw_value):
+    """"Total revenue was $254.5 billion, including net sales of $249.6
+    billion and membership fees of $4.83 billion": the figures after
+    "including" are parts of the one before it."""
+    raw = str(raw_value or "").strip()
+    at = (sentence or "").find(raw) if raw else -1
+    if at <= 0:
+        return False
+    cue = _PART_CUE_RE.search(sentence, 0, at)
+    # A figure before the cue is the whole the parts belong to.
+    return bool(cue and re.search(r'\d', sentence[:cue.start()]))
+
+
+def _labels_a_business_line(sentence, heading, raw_value):
+    """"Wizards of the Coast & Digital Gaming: revenue up 10% to $1.46
+    billion" labels a business line, so the figure is that line's, not the
+    company's. A label naming a measure, a period or the company is not."""
+    label = re.match(r'\s*([^:]{3,60}):\s', sentence or "")
+    if not label:
+        return False
+    at = sentence.find(str(raw_value).strip()) if raw_value else -1
+    if at != -1 and at < label.end():
+        return False
+    words = label.group(1)
+    if _LABEL_NOT_A_LINE_RE.search(words):
+        return False
+    if any(p.search(words) for p in _METRIC_PATTERNS.values()):
+        return False
+    # The company itself, named in the heading: "Hasbro: revenue of $5B".
+    named = {w.lower() for w in re.findall(r'[A-Za-z]{3,}', heading or "")}
+    if any(w.lower() in named for w in re.findall(r'[A-Za-z]{3,}', words)):
+        return False
+    # A business line is a name: at least one capitalized word.
+    return bool(re.search(r'\b[A-Z][a-z]', words))
 
 
 def _matches_segment_signal(text):
@@ -1305,6 +1367,13 @@ def _prepare_claims(claims, doc_text):
     return _apply_discourse_context(
         _split_multi_figure_claims(claims), doc_text,
     )
+
+
+_EVENT_ASIDE_RE = re.compile(
+    r'\([^()]*\b(?:before|after|since|following|prior\s+to|ahead\s+of|'
+    r'pre-split|post-split)\b[^()]*\)',
+    re.IGNORECASE,
+)
 
 
 def _without_compared_periods(sentence):
@@ -1586,7 +1655,10 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
     # Claims under "NVIDIA Fiscal Year 2026 Financial Summary" inherit
     # FY2026 even when the sentence itself has no year.
     # "lower than in fiscal 2025" is what the figure is set against.
-    time_match = _TIME_RE.search(_without_compared_periods(sentence))
+    # "(before the stock split in 2024)" dates an event, not the figure.
+    time_match = _TIME_RE.search(
+        _EVENT_ASIDE_RE.sub('', _without_compared_periods(sentence)),
+    )
     if not time_match and heading:
         time_match = _TIME_RE.search(heading)
     time_period = time_match.group(1) if time_match else ""
@@ -1712,6 +1784,7 @@ def decompose_claim(claim, topic="", doc_text="", doc_primary_entity=""):
         # A figure set against another is explicitly not this year's.
         full_sentence=claim.get("full_sentence", ""),
         doc_is_us=bool(claim.get("doc_is_us")),
+        doc_says_averages=bool(doc_text and _DOC_AVERAGES_RE.search(doc_text)),
         metric_inferred=metric_inferred,
         year_sole=(bool(claim.get("year_sole")) and year_inherited
                    and not claim.get("prior_figure") and not after_vs),
@@ -2364,12 +2437,60 @@ _EXCLUSIVE_QUALIFIERS = (
     re.compile(r'\b(radius|diameter)\b'),
     re.compile(r'\b(land|total|surface|water)\s+area\b'),
 )
+# A height to the tip needs a page that says tip; to the roof, roof.
+_HEIGHT_POINTS = (("roof", r'\broof'), ("tip", r'\b(?:tip|spire|antenna|pinnacle)'),
+                  ("architectural", r'\barchitectural'))
 _MONTH_NAMES = (
     r'(?:January|February|March|April|May|June|July|August|September|October|'
     r'November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?'
 )
 _MONTH_AFTER_RE = re.compile(r'\s+' + _MONTH_NAMES + r'\b')
 _MONTH_BEFORE_RE = re.compile(_MONTH_NAMES + r'\s+$')
+
+
+# Each family is one kind of event, in its word forms.
+_EVENT_FAMILIES = [re.compile(r'\b(?:' + f + r')\b', re.IGNORECASE) for f in (
+    r'found(?:ed|ing|ation|er)', r'incorporat\w*', r'establish\w*',
+    r'open(?:ed|ing|s)', r'complet(?:ed|ion)', r'built|construct\w*',
+    r'discover\w*', r'born|birth', r'died|death', r'independen\w*',
+    r'launch\w*', r'releas\w*', r'elect\w*', r'acqui\w*', r'merg\w*',
+    r'renam\w*', r'settl\w*', r'charter\w*', r'dedicat\w*', r'inaugurat\w*',
+    r'ratif\w*', r'sign(?:ed|ing)', r'declar\w*', r'abolish\w*', r'dissol\w*',
+    r'annex\w*', r'host\w*', r'ascent|ascended|summit\w*',
+)]
+
+
+def _year_event_words(sentence, raw_value):
+    """The kinds of event named in the clause just before a year, which the
+    page has to name too: "incorporated as a city in 1884" needs the page's
+    1884 to be an incorporation."""
+    raw = str(raw_value or "").strip()
+    at = sentence.find(raw) if raw else -1
+    if at <= 0:
+        return []
+    clause = re.split(r'[,;:]|\band\b', sentence[max(0, at - 60):at])[-1]
+    families = [f for f in _EVENT_FAMILIES if f.search(clause)]
+    # "incorporated as a city" is not the year it became a town.
+    kind = _PLACE_KIND_RE.search(clause)
+    if families and kind:
+        families.append(re.compile(r'\b' + kind.group(1) + r'\b', re.IGNORECASE))
+        families = [_all_of(families)]
+    return families
+
+
+_PLACE_KIND_RE = re.compile(
+    r'\bas\s+an?\s+(city|town|village|borough|county|state|province|republic|'
+    r'kingdom|colony|territory|dominion)\b', re.IGNORECASE)
+
+
+class _all_of:
+    """Matches a passage only when every pattern does."""
+
+    def __init__(self, patterns):
+        self.patterns = patterns
+
+    def search(self, text):
+        return all(p.search(text) for p in self.patterns)
 
 
 def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
@@ -2423,6 +2544,12 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
         hedged = _hedged(claim_sentence, decomp.raw_value)
         tolerance = min(tolerance, 0.02 if hedged else max(
             0.003, 2 * _rounding_room(decomp.raw_value)))
+    # A count written to the last unit is a census figure, not a rounding:
+    # 2,731,571 is the 2016 census, not "close" to 2021's 2,794,356.
+    if (decomp and decomp.unit == "count" and not is_year
+            and _rounding_room(decomp.raw_value) < 1e-4
+            and not _hedged(claim_sentence, decomp.raw_value)):
+        tolerance = min(tolerance, 0.005)
 
     # Extract all numbers with context windows.
     # Handle scale suffixes (B/billion, M/million, T/trillion, K/thousand)
@@ -2572,6 +2699,12 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
             if (re.search(r'\bland\s+area\b', claim_sentence, re.IGNORECASE)
                     and not re.search(r'\bland\b', nearby)):
                 continue
+            claim_points = [w for name, w in _HEIGHT_POINTS
+                            if re.search(w, claim_sentence, re.IGNORECASE)]
+            if (len(claim_points) == 1 and decomp.metric in ("height", "")
+                    and decomp.unit == "distance"
+                    and not re.search(claim_points[0], nearby, re.IGNORECASE)):
+                continue
             if any(
                 (said := pattern.findall(claim_sentence.lower()))
                 and (near := pattern.findall(nearby))
@@ -2596,6 +2729,20 @@ def _match_in_text(text, claim_value, claim_sentence, tolerance=0.05,
             if decomp.unit == "currency" and decomp.time_period:
                 claim_year = re.search(r'20[0-3]\d', decomp.time_period)
                 if claim_year and claim_year.group() not in passage:
+                    continue
+            # A count for the year the claim names: "2,731,571 at the 2021
+            # census" is not "its 2016 population of 2,731,571".
+            if decomp.unit == "count" and not is_year and not decomp.year_inherited:
+                claim_year = re.search(r'(?:19|20)\d\d', decomp.time_period or "")
+                page_year = re.search(r'\b((?:19|20)\d\d)\b[^.\d]{0,30}$',
+                                      text[max(left, num_start - 40):num_start])
+                if claim_year and page_year and page_year.group(1) != claim_year.group():
+                    continue
+            # A year is confirmed by the event it dates: "incorporated as a
+            # city in 1884" is not "In 1884, the HBC established a shop".
+            if is_year:
+                event = _year_event_words(claim_sentence, decomp.raw_value)
+                if event and not any(f.search(passage) for f in event):
                     continue
             evidence = _METRIC_EVIDENCE.get(decomp.metric)
             if evidence:
@@ -3028,7 +3175,11 @@ def verify_world_bank(decomp):
                 near = max(0.15, _rate_room(decomp.raw_value))
                 is_close, is_exact = points <= near, points <= 0.05
                 is_gray = points <= max(0.5, 2 * near)
-            if is_close:
+            if (indicator_id.endswith((".CD", ".KD"))
+                    and _FOREIGN_CURRENCY_RE.search(str(decomp.raw_value))):
+                # The series is in US dollars: "¥33,800" is not 33,797 dollars.
+                match_type = "no_data"
+            elif is_close:
                 match_type = "exact" if is_exact else "close"
             elif is_gray:
                 match_type = "no_data"
@@ -3047,12 +3198,22 @@ def verify_world_bank(decomp):
                 # may just be another year's. Population moves slowly
                 # enough to be wrong regardless.
                 match_type = "no_data"
+            elif (decomp.subject and not _COUNTRY_NAMES_RE.fullmatch(decomp.subject)
+                  and not _COUNTRY_ABBREV_RE.fullmatch(decomp.subject)
+                  and country.lower() not in decomp.subject.lower()):
+                # "Phoenix ... the fifth-largest city in the US" is about
+                # Phoenix: the country's figure says nothing against it.
+                match_type = "no_data"
             elif country.lower() in _AMBIGUOUS_PLACE_NAMES:
                 # Georgia the state has about three times the people.
                 match_type = "no_data"
             elif indicator_id.startswith("NY.GDP") and decomp.unit != "currency":
                 # "the economy added 3 million jobs" beside the word GDP is
                 # not a figure for GDP. Only money can disagree with it.
+                match_type = "no_data"
+            elif indicator_id.endswith((".ZS", ".ZG")) and decomp.unit != "percent":
+                # A rate cannot disagree with a count: "payrolls grew by 6.7
+                # million" against the unemployment rate.
                 match_type = "no_data"
             elif indicator_id in _WB_TOTAL_INDICATORS or diff < 1.0:
                 match_type = "contradicted"
@@ -3198,19 +3359,77 @@ _FRED_QUALIFIED = {
         r'\b(?:15-year|20-year|5/1|adjustable|arm|jumbo|fha|va)\b[\w\s-]{0,12}$', re.IGNORECASE),
     "DGS10": re.compile(r'\b(?!10-)\d+-(?:year|month|week)\b[\w\s-]{0,4}$', re.IGNORECASE),
 }
-_FRED_MONTH_RE = re.compile(
-    r'\b(January|February|March|April|May|June|July|August|September|October|'
-    r'November|December)\s+(20[0-3]\d)\b'
-)
 _FRED_RANGE_RE = re.compile(
     r'(\d+(?:\.\d+)?)\s*%?\s*(?:-|to|\u2013)\s*(\d+(?:\.\d+)?)\s*%')
-_FRED_YEAR_END_RE = re.compile(
-    r'\b(?:ended|end\s+of|year[- ]end|close\s+of|closed\s+out)\s+(?:the\s+year|(20[0-3]\d))',
-    re.IGNORECASE)
 _FRED_PART_OF_YEAR_RE = re.compile(
     r'\b(?:that|same|this|the)\s+(?:same\s+)?(?:month|week|day|quarter)\b|'
     r'\b(?:briefly|intraday|daily|weekly|reached|hit|topped|touched|spiked|surged\s+to)\b',
     re.IGNORECASE)
+_FRED_MONTH_NAMES = (r'January|February|March|April|May|June|July|August|September|'
+                     r'October|November|December')
+# A month, with its year when the text gives one: "December 2021", "in December".
+_FRED_ANY_MONTH_RE = re.compile(
+    r'\b(' + _FRED_MONTH_NAMES + r')\b(?!\s+\d{1,2}\b)(?:\s+(20[0-3]\d))?')
+_FRED_YEAR_END_CUE_RE = re.compile(
+    r'\b(?:end(?:ed|ing|s)?(?:\s+of)?|close\s+of|closed\s+out|finish(?:ed|ing)?)\s+'
+    r'(?:the\s+year|(20[0-3]\d))|\byear[- ]end\b', re.IGNORECASE)
+_FRED_ANNUAL_CUE_RE = re.compile(
+    r'\baverag\w*|\bannual[- ]average|\bfor\s+the\s+(?:full\s+|whole\s+)?year\b|'
+    r'\bfull[- ]year\b|\bon\s+an\s+annual\b', re.IGNORECASE)
+_FRED_EXTREME_RE = re.compile(
+    r'\b(?:peak(?:ed|ing)?|topp(?:ed|ing)\s+out|top(?:s|ped)?\s+out|bottom(?:ed|ing)?|'
+    r'record\s+(?:low|high)|(?:low|high)\s+of|lows?|highs?)\b', re.IGNORECASE)
+
+
+_DOC_AVERAGES_RE = re.compile(
+    r'\b(?:annual|yearly|full[- ]year)\s+averages\b|\baverages\s+for\s+(?:the|each)\s+year\b',
+    re.IGNORECASE)
+
+
+def _fred_period_cue(sentence, at, raw):
+    """The period cue nearest a figure: ("month", name, year or None),
+    ("year_end", "December", year or None) or ("annual", None, None). A cue
+    after the figure is preferred at equal distance: "rose 7.0% in December"."""
+    if at < 0:
+        return None
+    end = at + len(raw)
+    found = []
+    for m in _FRED_ANY_MONTH_RE.finditer(sentence):
+        found.append((m, ("month", m.group(1), m.group(2))))
+    for m in _FRED_YEAR_END_CUE_RE.finditer(sentence):
+        found.append((m, ("year_end", "December", m.group(1))))
+    for m in _FRED_ANNUAL_CUE_RE.finditer(sentence):
+        found.append((m, ("annual", None, None)))
+    if not found:
+        return None
+
+    def distance(item):
+        m = item[0]
+        if m.start() >= end:
+            return m.start() - end
+        if m.end() <= at:
+            return at - m.end() + 5
+        return 0
+    return min(found, key=distance)[1]
+
+
+def _fred_december(params, year, scale):
+    """December of the year, for a rate whose text names no period."""
+    query = {k: v for k, v in params.items() if k != "aggregation_method"}
+    query.update(frequency="m", observation_start=f"{year}-12-01",
+                 observation_end=f"{year}-12-01")
+    data = _fetch_json(
+        "https://api.stlouisfed.org/fred/series/observations?"
+        + urllib.parse.urlencode(query)
+    )
+    rows = [
+        (o["date"], float(o["value"]) * scale)
+        for o in (data or {}).get("observations", [])
+        if o.get("value") not in (None, "", ".")
+    ]
+    return rows[0] if rows else None
+
+
 _MONTH_NUMBERS = {
     m: i for i, m in enumerate((
         "January", "February", "March", "April", "May", "June", "July",
@@ -3309,24 +3528,42 @@ def verify_fred(decomp):
         # 5.50%" split into two figures is still a range.
         span = next((m for m in _FRED_RANGE_RE.finditer(decomp.sentence)
                      if m.start() <= at < m.end()), None)
-    # The month nearest the figure: "5.33% through August 2024, then 4.48% by
-    # December 2024" puts 4.48 in December.
-    months = list(_FRED_MONTH_RE.finditer(decomp.sentence))
-    month = min(
-        months, key=lambda m: abs(m.start() - at) + (0 if m.start() >= at else 5),
-    ) if months else None
-    month = (month.group(1), month.group(2)) if month else None
-    # "Core CPI ended 2023 at 3.9%" is December's figure, not the year's
-    # average. The last day may differ from December's average, so it can
-    # confirm, not refute.
+    # The period cue nearest the figure decides: "5.33% through August 2024,
+    # then 4.48% by December 2024" puts 4.48 in December; "3.6% in December
+    # 2019 and averaged 3.7% for the year" makes 3.7 the year's average.
     full = decomp.full_sentence or decomp.sentence
-    year_end = None if month else (_FRED_YEAR_END_RE.search(decomp.sentence)
-                                   or _FRED_YEAR_END_RE.search(full))
-    if year_end and (year_end.group(1) or year_match):
-        month = ("December", year_end.group(1) or year_match.group())
+    cue = _fred_period_cue(decomp.sentence, at, raw_text.strip())
+    if not cue and full != decomp.sentence:
+        cue = _fred_period_cue(full, full.find(raw_text.strip()), raw_text.strip())
+    year = year_match.group() if year_match else None
+    month, year_end, annual = None, False, False
+    if not cue and decomp.doc_says_averages:
+        cue = ("annual", None, None)
+    if cue:
+        kind, name, cue_year = cue
+        if kind == "annual":
+            annual = True
+        elif cue_year or year:
+            # "up 7.0% in December" is December of the figure's own year.
+            month = (name, cue_year or year)
+            # "Core CPI ended 2023 at 3.9%" is December's figure, but the last
+            # day may differ from December's average: it can confirm, not refute.
+            year_end = kind == "year_end"
+            # "from 6.7% a year earlier" is the month a year before.
+            if cue_year and re.match(
+                    r'[^.;]{0,25}?\ba\s+year\s+(?:earlier|before|ago)\b',
+                    decomp.sentence[at + len(raw_text.strip()):] if at >= 0 else ""):
+                month = (name, str(int(cue_year) - 1))
     # A figure for part of the year ("reached 7.79% that same month") is not
     # refuted by the year's average.
-    part_of_year = bool(year_end) or bool(_FRED_PART_OF_YEAR_RE.search(full))
+    part_of_year = year_end or bool(_FRED_PART_OF_YEAR_RE.search(full))
+    # A peak or a record low is one week's or one day's figure: no average
+    # refutes it. "topping out at 4.94% in November".
+    extreme = at >= 0 and bool(_FRED_EXTREME_RE.search(
+        decomp.sentence[max(0, at - 45):at]))
+    # No cue: "the PCE price index rose 5.8%" may be December's rate or the
+    # year's average; either confirms it, and only missing both refutes it.
+    either = is_rate and not month and not annual and bool(year)
     params = {"series_id": series_id, "api_key": api_key, "file_type": "json", **extra}
     if month:
         first = f"{month[1]}-{_MONTH_NUMBERS[month[0]]:02d}-01"
@@ -3388,6 +3625,10 @@ def verify_fred(decomp):
 
     room = _rate_room(decomp.raw_value) if is_rate else max(0.02, _rounding_room(decomp.raw_value))
     diff = gap(own[1])
+    if either and diff > room:
+        december = _fred_december(params, year, scale)
+        if december and gap(december[1]) <= room:
+            own, diff, month = december, gap(december[1]), ("December", year)
     stale = [r[0][:4] for r in others if gap(r[1]) <= room]
     if diff <= room:
         match_type = "exact" if diff <= room / 2 else "close"
@@ -3395,6 +3636,8 @@ def verify_fred(decomp):
         # With no period named, another year may be the one meant.
         match_type = "no_data"
     elif part_of_year and (year_end or not month):
+        match_type = "no_data"
+    elif extreme:
         match_type = "no_data"
     elif (decomp.year_inherited and not _YEAR_REFERENCE_RE.search(decomp.sentence)
           and any(gap(r[1]) <= 2 * room for r in others)):
@@ -3459,11 +3702,40 @@ _WD_REFUTE_GAP = 0.15
 _DEPTH_RE = re.compile(r'\b(?:depth|deep)\b', re.IGNORECASE)
 
 
+# Wikidata's height of a tower runs to the tip; the roof, the top floor or the
+# deck is lower and has no value of its own there.
+_BELOW_TIP_RE = re.compile(
+    r'\b(?:roof|top\s+floor|occupied|observation|deck)\b', re.IGNORECASE,
+)
+# Which point a tower's height runs to. Wikidata's single height runs to the
+# roof for some towers (Willis, 442 m) and to the tip for others (Burj, 828 m),
+# so it confirms none of these.
+_HEIGHT_POINT_RE = re.compile(
+    r'\b(roof|tip|spire|antenna|pinnacle|architectural|top\s+floor|occupied|'
+    r'observation|deck)\b', re.IGNORECASE,
+)
+
+
+def _figure_clause(sentence, raw_value):
+    """The words leading up to a figure within its own clause: in "a span of
+    1,991 ft and a total length of 3,911 m", "a total length of" for 3,911."""
+    raw = str(raw_value or "").strip()
+    at = (sentence or "").find(raw) if raw else -1
+    if at < 0:
+        return sentence or ""
+    return re.split(r'[,;:]|\band\b', sentence[:at])[-1]
+
+
 def _wd_properties(decomp):
     sentence = decomp.sentence.lower()
     # "a maximum depth of 1,332 feet" is neither a length nor a height.
     if decomp.metric in ("length", "height") and _DEPTH_RE.search(sentence):
         return ()
+    # A bridge's "main span of 4,200 ft" is its longest span, not its length;
+    # "a central span of 1,991 ft and a total length of 3,911 m" has both.
+    if decomp.metric == "length" and re.search(
+            r'\bspan\b', _figure_clause(decomp.sentence, decomp.raw_value)):
+        return ("P2787",)
     # Wikidata's area is the total, water included; land area is another figure.
     if decomp.metric == "area" and re.search(r'\b(?:land|water)\s+area\b', sentence):
         return ()
@@ -3663,6 +3935,14 @@ def verify_wikidata(decomp):
         match_type = "contradicted"
     else:
         match_type = "no_data"
+    # A roof is below the tip Wikidata measures, and seldom below half of it:
+    # the tip cannot confirm a roof, only refute one far outside that range.
+    silent = False
+    if decomp.metric == "height" and _HEIGHT_POINT_RE.search(decomp.sentence):
+        # Roof and tip differ by up to half the height (the Burj's spire is
+        # 29% of it); only a gap past that range, like a unit slip, refutes.
+        if match_type in ("exact", "close") or 0.5 <= claim_base / best[0] <= 2.0:
+            match_type, silent = "no_data", True
 
     label = entity.get("labels", {}).get("en", {}).get("value", subject)
     if is_count:
@@ -3686,7 +3966,7 @@ def verify_wikidata(decomp):
         match_type=match_type,
         difference_pct=round(diff * 100, 1),
         confidence=0.85 if match_type == "exact" else 0.75,
-        disagrees=match_type == "no_data",
+        disagrees=match_type == "no_data" and not silent,
     )
 
 
@@ -4290,6 +4570,11 @@ def _is_a_ratio(sentence, raw_value):
     if not digits:
         return False
     d = re.escape(digits.group())
+    # "about 2.2 times the size of Korea's", "3x", "a 4-fold rise".
+    if (not str(raw_value).lstrip().startswith(tuple("$\u20ac\u00a3\u00a5\u20b9"))
+            and re.search(r'(?<![\d.,])' + d + r'\s*(?:times\b|x\b|-?fold\b)',
+                          sentence, re.IGNORECASE)):
+        return True
     return bool(re.search(
         r'(?<![\d.])' + d + r'\s*(?:-\s*for\s*-\s*|\s+for\s+|:)\s*\d+(?!\.\d)|'
         r'(?<![\d.])\d+\s*(?:-\s*for\s*-\s*|:)\s*' + d + r'(?![\d.])',

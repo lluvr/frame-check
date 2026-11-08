@@ -54,6 +54,24 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 - The claim reader no longer retries past its timeout, and has a hard
   deadline, so a slow or stalled model call falls back to the rule-based
   reading instead of using up the whole verification budget.
+- A US rate is read for the period nearest it in the text: a month named
+  without its year ("up 7.0% in December"), a year-end, or an annual average
+  beside a December figure. With no period named, December or the year's
+  average confirms it, and only missing both contradicts it. A peak or a
+  record low is never contradicted by an average, "a year earlier" is read a
+  year earlier, and a document that says its figures are annual averages is
+  read that way.
+- A year in an aside dating another event ("before the stock split in
+  2024") is not the figure's period. A bullet labelled with a business line,
+  or a figure listed after "including", is not compared with the company's
+  total.
+- A bridge's span is not its length, and a height to the roof or the tip is
+  not confirmed by a single height that may run to either.
+- A year is confirmed only by a passage naming the same event and kind of
+  place, and a census count only by its own year and digits.
+- A multiple ("2.2 times") is not an amount, a figure in yen is not compared
+  with World Bank dollars, and the World Bank no longer compares a count with
+  a rate or a city with its country.
 
 ## [1.2.2] - 2026-11-06
 

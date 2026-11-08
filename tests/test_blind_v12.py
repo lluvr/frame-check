@@ -26,6 +26,9 @@ def fred(monkeypatch):
         q = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(url).query))
         rows = []
         for key, value in sorted(data.get(q["series_id"], {}).items(), key=lambda kv: str(kv[0])):
+            # Like FRED: an annual query returns years, a monthly one months.
+            if q.get("frequency") and isinstance(key, tuple) != (q["frequency"] == "m"):
+                continue
             date = f"{key[0]}-{key[1]:02d}-01" if isinstance(key, tuple) else f"{key}-01-01"
             if q["observation_start"][:10] <= date <= q["observation_end"][:10]:
                 rows.append({"date": date, "value": str(value)})
