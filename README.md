@@ -7,15 +7,20 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Tests](https://github.com/lluvr/frame-check/actions/workflows/tests.yml/badge.svg)](https://github.com/lluvr/frame-check/actions/workflows/tests.yml)
 
-See what any document does not show you.
+See what you would be acting on.
 
-Frame Check is a deterministic structural framing analysis tool. It
-names which analytical perspectives a document takes, which it omits,
-and how it positions the reader, and it cross-checks the document's
-numeric claims against primary sources a language model can't reach
-(SEC EDGAR, FRED, World Bank, and others). It makes no LLM call of its
-own, so the same document always returns the same reading at no model
-cost.
+Paste a text. Each figure matches a source we can show, differs from
+that source with both numbers on the page, is a forecast, or was not
+checked. A match carries a span you can open.
+
+On fresh Claude answers, sealed set v3, scored 2026-11-10 and audited:
+the live checker calls about 1 in 50 true figures wrong (the limit is
+1 in 200) and shows about 1 in 30 false figures as a match (the limit
+is 1 in 50). When it says a figure is wrong it is right about 6 times
+in 7, and it catches a minority of false figures. Those rates are the
+product limit. The live check is at
+[frame.clarethium.com](https://frame.clarethium.com). This package is
+the MCP server, and it lags that site until the next release.
 
 ## Quickstart (MCP server)
 
