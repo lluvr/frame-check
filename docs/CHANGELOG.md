@@ -6,6 +6,27 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.2.4] - 2026-11-26
+
+### Fixed
+
+- **PyPI stopped at 1.2.2.** The 1.2.3 tag built a wheel and opened a
+  GitHub release, then waited on review because the public leak gate was
+  red. This release publishes that checker: FRED by the period the text
+  names, Wikidata units, and the US series fixes listed under 1.2.3.
+- Removed a test that imported a module this package does not ship.
+  That import failed the public leak gate, so the 1.2.3 tag was not
+  approved.
+- Wheel verification uses `--owner lluvr`. The 1.2.2 attestation is
+  signed by `lluvr/frame-check`. `--owner Clarethium` does not resolve.
+
+### Changed
+
+- The PyPI summary matches the check this server runs, and it says this
+  package lags the live site at frame.clarethium.com. The README source
+  list names Wikipedia, Wikidata, CoinGecko, and web search, which the
+  server already calls.
+
 ## [1.2.3] - 2026-11-07
 
 ### Added

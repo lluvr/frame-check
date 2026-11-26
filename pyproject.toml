@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "frame-check-mcp"
-version = "1.2.3"
-description = "Frame Check MCP server: deterministic structural framing analysis for AI-generated documents, with default-on frame-divergence block per FRAME_DIVERGENCE_CONTRACT_v1 c1.0. MCP surface delegates V4.2 judgment to the caller's agent model; zero Frame Check LLM cost per query."
+version = "1.2.4"
+description = "Frame Check MCP server. Each figure matches a source we can show, differs from it, is a forecast, or was not checked. This package lags the live check at frame.clarethium.com."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"

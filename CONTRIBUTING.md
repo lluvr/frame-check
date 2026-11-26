@@ -1,7 +1,7 @@
 # Contributing to Frame Check
 
-Frame Check is a personal project by Lovro Lucic. The repository is private
-and not currently taking outside contributions. This document records how
+Frame Check is a personal project by Lovro Lucic. The repository is public
+and is not taking outside contributions. This document records how
 the codebase is laid out, how its parts are extended, and the conventions
 and tests that keep it consistent, for anyone (including future me) working
 in it.

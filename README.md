@@ -55,7 +55,7 @@ PyPI) can do so with the `gh` CLI:
 
     pip download frame-check-mcp --no-deps -d /tmp/fc-verify
     gh attestation verify /tmp/fc-verify/frame_check_mcp-*.whl \
-      --owner Clarethium
+      --owner lluvr
 
 A passing verification proves the wheel artifact's hash matches
 the one signed by the publish workflow run for the corresponding
@@ -80,8 +80,9 @@ Pass a document and Frame Check returns:
   cues and worked examples. Matches are candidate-level signals, not
   verified labels.
 - Source-network verification: numeric claims checked against SEC
-  EDGAR, FRED, World Bank, Alpha Vantage, and Wolfram Alpha where those
-  providers have coverage.
+  filings, FRED, the World Bank, Wikipedia, Wikidata, CoinGecko,
+  Alpha Vantage, Wolfram Alpha, and web search, where those providers
+  have coverage.
 - An optional AI narrative interpreting framing at prose level.
   Labelled distinctly so readers do not conflate language-model
   interpretation with deterministic measurement.

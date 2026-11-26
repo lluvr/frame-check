@@ -215,11 +215,6 @@ def test_wikidata_routing():
     assert sn.verify_wikidata not in sn._classify_and_route(claim("Germany's population was 84 million in 2023.", "84 million"))
 
 
-def test_wikidata_is_a_known_source_name():
-    telemetry = pytest.importorskip("telemetry")  # web-app only
-    assert telemetry.SOURCE_NAME_CANONICAL["Wikidata"] in telemetry.SOURCE_NAMES
-
-
 def test_fred_only_answers_figures_that_name_the_us(fred):
     assert not sn._fred_applies(claim("GDP was $16.4 billion in 2025.", "$16.4 billion"))
     assert not sn._fred_applies(claim("Rwanda's GDP was $16.4 billion in 2025.", "$16.4 billion"))
