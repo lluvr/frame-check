@@ -6,6 +6,11 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+### Fixed
+
+- The MCP registry description stays within its 100 character limit.
+  The longer 1.2.4 text was rejected.
+
 ## [1.2.4] - 2026-11-26
 
 ### Fixed
