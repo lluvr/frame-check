@@ -43,11 +43,25 @@ def claim(sentence, raw, inherited=None, **fields):
 REVENUE = "RevenueFromContractWithCustomerExcludingAssessedTax"
 
 
-def test_an_inherited_year_refutes_when_no_nearby_year_fits(filings):
+def held(r):
+    """The lexical filing check kept the figure and did not call it wrong."""
+    assert r.match_type == "no_data"
+    assert r.withheld_refute
+    assert r.disagrees
+    assert r.confidence == 0.0
+    assert r.source_value
+    return r
+
+
+def test_an_inherited_year_keeps_the_filing_when_no_nearby_year_fits(filings):
     filings[REVENUE] = [row(2023, 3.9e9), row(2024, 4.1e9), row(2025, 4.3e9)]
     d = claim("Acme's revenue was $5.6 billion.", "$5.6 billion", "2025")
     assert d.year_inherited
-    assert sn.verify_sec_edgar(d).match_type == "contradicted"
+    r = held(sn.verify_sec_edgar(d))
+    verdict, _, detail = sn._consensus_for(d, [r])
+    assert verdict == "unverifiable"
+    assert "wrong" not in detail.lower()
+    assert detail.startswith("SEC Filing gives a different value:")
 
 
 def test_an_inherited_year_still_cannot_refute_when_a_nearby_year_fits(filings):
@@ -72,36 +86,32 @@ def test_a_rounded_figure_is_not_refuted_by_its_precision(filings):
     d = claim("Acme's revenue was about $4 billion in 2025.", "$4 billion")
     assert sn.verify_sec_edgar(d).match_type == "close"
     precise = claim("Acme's revenue was $4.0 billion in 2025.", "$4.0 billion")
-    assert sn.verify_sec_edgar(precise).match_type == "contradicted"
+    held(sn.verify_sec_edgar(precise))
 
 
 def test_names_a_figure_from_the_wrong_year(filings):
     filings[REVENUE] = [row(2024, 3.5e9), row(2025, 4.3e9)]
-    r = sn.verify_sec_edgar(claim("Acme's revenue was $3.5 billion in 2025.", "$3.5 billion"))
-    assert r.match_type == "contradicted"
+    r = held(sn.verify_sec_edgar(claim("Acme's revenue was $3.5 billion in 2025.", "$3.5 billion")))
     assert "FY2024 figure" in r.source_text
 
 
 def test_names_a_scale_slip(filings):
     filings["NetIncomeLoss"] = [row(2025, 4.2e9)]
-    r = sn.verify_sec_edgar(claim("Acme's net income was $4.2 million in 2025.", "$4.2 million"))
-    assert r.match_type == "contradicted"
+    r = held(sn.verify_sec_edgar(claim("Acme's net income was $4.2 million in 2025.", "$4.2 million")))
     assert "scale" in r.source_text
 
 
 def test_names_a_figure_under_the_wrong_metric(filings):
     filings["NetIncomeLoss"] = [row(2025, 500e6)]
     filings["GrossProfit"] = [row(2025, 900e6)]
-    r = sn.verify_sec_edgar(claim("Acme's net income was $900 million in 2025.", "$900 million"))
-    assert r.match_type == "contradicted"
+    r = held(sn.verify_sec_edgar(claim("Acme's net income was $900 million in 2025.", "$900 million")))
     assert "gross profit" in r.source_text
 
 
 def test_a_lone_year_makes_a_stale_figure_wrong(filings):
     filings[REVENUE] = [row(2024, 3.5e9), row(2025, 4.3e9)]
     d = claim("Acme's revenue was $3.5 billion.", "$3.5 billion", "2025", year_sole=True)
-    r = sn.verify_sec_edgar(d)
-    assert r.match_type == "contradicted"
+    r = held(sn.verify_sec_edgar(d))
     assert "FY2024 figure" in r.source_text
 
 
@@ -134,7 +144,11 @@ def test_world_bank_refutes_across_an_inherited_year(series):
     series.update({2023: 58e9, 2024: 60e9, 2025: 61.6e9})
     d = claim("Norway's GDP was $48 billion.", "$48 billion", "2025")
     assert d.year_inherited
-    assert sn.verify_world_bank(d).match_type == "contradicted"
+    r = sn.verify_world_bank(d)
+    # The World Bank earned refute on v32 (2026-11-28).
+    assert r.match_type == "contradicted"
+    assert not r.withheld_refute
+    assert r.source_value is not None
 
 
 def test_world_bank_holds_back_when_a_nearby_year_fits(series):
@@ -146,7 +160,9 @@ def test_world_bank_holds_back_when_a_nearby_year_fits(series):
 def test_world_bank_names_the_wrong_year(series):
     series.update({2024: 55e9, 2025: 61.6e9})
     r = sn.verify_world_bank(claim("Norway's GDP was $55 billion in 2025.", "$55 billion"))
+    # The World Bank earned refute on v32 (2026-11-28).
     assert r.match_type == "contradicted"
+    assert not r.withheld_refute
     assert "2024 figure" in r.source_text
 
 
@@ -210,7 +226,14 @@ def test_earnings_per_share_stay_positive(filings):
 def test_a_near_miss_on_a_precise_figure_is_not_close(series):
     series.update({2024: 3_524_788})
     d = claim("Norway had a population of roughly 3.39 million in 2024.", "3.39 million")
-    assert sn.verify_world_bank(d).match_type not in ("exact", "close")
+    # 4% off a precise figure is never a match. It is near (close), which every
+    # view shows as not equal, with the source's figure, and never refutes.
+    r = sn.verify_world_bank(d)
+    assert r.match_type == "close"
+    result = sn.SourceNetworkResult(
+        claim_numbers=["3.39 million"], claim_sentence=d.sentence, decomposition=d,
+        source_results=[r], verdict="close", confidence=0.75, detail="")
+    assert sn._settle_close([result])[0].verdict == "close"
 
 
 def test_a_mistagged_fiscal_year_does_not_stand_in_for_another(filings):
@@ -221,7 +244,7 @@ def test_a_mistagged_fiscal_year_does_not_stand_in_for_another(filings):
          "fp": "FY", "form": "10-K", "filed": "2026-02-27"},
     ]
     d = claim("Wolverine's net income in 2024 was $97.5 million.", "$97.5 million")
-    assert sn.verify_sec_edgar(d).match_type == "contradicted"
+    held(sn.verify_sec_edgar(d))
     d = claim("Wolverine's net income in 2025 was $95.8 million.", "$95.8 million")
     assert sn.verify_sec_edgar(d).match_type == "exact"
 
@@ -235,3 +258,126 @@ def test_a_loss_per_share_after_a_split_keeps_its_sign(filings):
     per_share = next(c for c in claims if "$1.14" in c["numbers"])
     d = sn.decompose_claim(per_share, doc_text=doc)
     assert sn.verify_sec_edgar(d).match_type == "exact"
+
+
+# v17 (2026-11-10): seven true figures were refuted against a measure the
+# sentence mentions but the figure's own words do not name.
+def test_a_figure_named_as_another_measure_is_not_refuted_as_revenue(filings):
+    filings["Revenues"] = [row(2024, 4.5e9)]
+    for sentence, raw in (
+        ("In 2024 Acme's free cash flow was around $1.5 billion, a lot of its revenue.", "$1.5 billion"),
+        ("In 2024 Acme's gross merchandise sales were around $13.2 billion.", "$13.2 billion"),
+        ("In 2024 Acme's Comirnaty (vaccine) sales were around $11.2 billion.", "$11.2 billion"),
+    ):
+        assert sn.verify_sec_edgar(claim(sentence, raw)).match_type != "contradicted", sentence
+
+
+def test_a_figure_its_words_name_as_revenue_keeps_the_filing(filings):
+    filings["Revenues"] = [row(2024, 4.5e9)]
+    d = claim("Acme's revenue in 2024 was $1.5 billion.", "$1.5 billion")
+    held(sn.verify_sec_edgar(d))
+
+
+def test_a_city_figure_is_not_refuted_by_the_country(series):
+    series.update({2023: 18_124_838})
+    d = claim("In 2023 the Oslo city metro population was roughly 3 million.", "3 million")
+    assert sn.verify_world_bank(d).match_type != "contradicted"
+
+
+def test_a_year_that_belongs_to_another_figure_does_not_refute(filings):
+    """Zoom, v17: fiscal 2022 is the last figure's year, not the first's."""
+    filings["Revenues"] = [row(2022, 4.10e9), row(2023, 4.39e9), row(2024, 4.53e9)]
+    d = claim("Revenue came in at about $4.53 billion, up roughly 3% from $4.39 billion the "
+              "year before, which itself was up only 7% from fiscal 2022's $4.10 billion.",
+              "$4.53 billion")
+    assert sn.verify_sec_edgar(d).match_type != "contradicted"
+
+
+def test_a_leading_year_keeps_the_filing(filings):
+    filings["Revenues"] = [row(2024, 4.5e9)]
+    d = claim("In 2024, Acme's revenue was $1.5 billion.", "$1.5 billion")
+    held(sn.verify_sec_edgar(d))
+
+
+def test_a_city_named_after_the_figure_is_not_the_country(series):
+    series.update({2020: 126_000_000})
+    d = claim("Founded in 794, Japan's old capital had a population of about 1.46 million "
+              "people in the city itself in 2020.", "1.46 million")
+    assert sn.verify_world_bank(d).match_type != "contradicted"
+
+
+def test_a_figure_named_as_another_indicator_is_not_refuted(monkeypatch):
+    """Belarus, v17: the median age is not life expectancy."""
+    monkeypatch.setattr(sn, "_wb_country_code", lambda name: "BY")
+    monkeypatch.setattr(sn, "_fetch_json", lambda url, *a, **k: [{"page": 1}, [{"date": "2023", "value": 74.18}]])
+    d = claim("In 2023 Belarus life expectancy is roughly 74 years, the median age is about 41.", "41")
+    assert sn.verify_world_bank(d).match_type != "contradicted"
+
+
+def test_a_median_age_equal_to_life_expectancy_is_not_a_tick(monkeypatch):
+    monkeypatch.setattr(sn, "_wb_country_code", lambda name: "BY")
+    monkeypatch.setattr(sn, "_fetch_json", lambda url, *a, **k: [{"page": 1}, [{"date": "2023", "value": 74.18}]])
+    d = claim("In 2023 the median age in Belarus is about 74.2 years.", "74.2")
+    d.metric = "lifespan"
+    r = sn.verify_world_bank(d)
+    assert r.match_type == "no_data"
+    assert not r.withheld_refute
+    assert not r.source_value
+
+
+def test_an_urban_share_still_matches(monkeypatch):
+    monkeypatch.setattr(sn, "_WB_COUNTRY_CODES", {})
+
+    def fetch(url, *a, **k):
+        if "/indicator/" in url:
+            assert "SP.URB.TOTL.IN.ZS" in url
+            return [{}, [{"value": 77.6, "date": "2023"}]]
+        return [{}, [{"iso2Code": "DE", "name": "Germany"}]]
+
+    monkeypatch.setattr(sn, "_fetch_json", fetch)
+    r = sn.verify_world_bank(claim(
+        "77.6 percent of people in Germany live in cities.", "77.6"))
+    assert r.match_type in ("exact", "close")
+
+
+# v18 (2026-11-10): FRED refuted three true US figures by asking the wrong period.
+def test_a_year_earlier_shifts_only_the_base_figure():
+    import re as _re
+    sent = "CPI up 2.1% in December 2016 from a year earlier."
+    assert not _re.search(r'\b(?:from|compared\s+(?:with|to)|versus|vs\.?)\s+(?:about\s+|around\s+|roughly\s+)?$',
+                          sent[max(0, sent.find("2.1%") - 30):sent.find("2.1%")])
+    base = "Inflation was 2.1% in December 2016, up from 0.7% a year earlier."
+    at = base.find("0.7%")
+    assert _re.search(r'\b(?:from|compared\s+(?:with|to)|versus|vs\.?)\s+(?:about\s+|around\s+|roughly\s+)?$',
+                      base[max(0, at - 30):at])
+
+
+def test_a_brief_move_is_not_the_months_average():
+    assert sn._FRED_EXTREME_RE.search("the 10-year Treasury yield briefly dropped to roughly 1.4% in July 2016")
+
+
+def test_us_only_measures_make_a_document_american():
+    assert sn._doc_is_us("Employers added roughly 2.3 million nonfarm jobs in 2016.")
+    assert sn._doc_is_us("Core PCE topped out near 5.6% in early 2022.")
+    assert not sn._doc_is_us("Spain's unemployment rate was 12% while nonfarm jobs grew.")
+
+
+def test_a_document_naming_no_country_lets_fred_confirm_but_not_refute():
+    assert sn._doc_no_country("The unemployment rate averaged about 4.9% in 2016.")
+    d = claim("The unemployment rate averaged about 9.9% in 2016.", "9.9%")
+    d.doc_no_country = True
+    assert sn._fred_applies(d) and not sn._fred_us_stated(d)
+
+
+def test_words_after_a_figure_naming_another_year_take_it_from_the_claim():
+    d = claim("The PCE rate peaked at roughly 7.0 percent in June 2022 and had come down to "
+              "around 2.5 percent by late 2024.", "2.5 percent")
+    d.time_period = "June 2022"
+    assert sn._trailing_year_differs(d)
+
+
+def test_a_year_stated_once_for_two_figures_covers_both():
+    d = claim("The 10-year Treasury yield averaged 4.6% for 2024, and the 30-year mortgage "
+              "rate averaged 4.21%, keeping buyers away.", "4.21%")
+    d.time_period = "2024"
+    assert not sn._trailing_year_differs(d)

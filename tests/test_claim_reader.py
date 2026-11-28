@@ -180,7 +180,7 @@ def test_a_diameter_does_not_confirm_a_radius():
 def test_the_reader_counts_against_the_verification_budget(monkeypatch):
     import time
     monkeypatch.setattr(sn, "SN_BUDGET_SECONDS", 0.2)
-    monkeypatch.setattr(sn, "read_figures", lambda doc: time.sleep(0.4) or [])
+    monkeypatch.setattr(sn, "read_figures", lambda doc, status=None: time.sleep(0.4) or [])
     called = []
     monkeypatch.setattr(sn, "_classify_and_route", lambda d: called.append(d) or [])
     sn.verify_claims_source_network(
@@ -275,3 +275,54 @@ def test_reader_failures_are_counted_for_health(monkeypatch):
     monkeypatch.setattr(cr, "_call_model", boom)
     assert cr.read_figures(DOC) == []
     assert sn_mod.provider_health.snapshot()["providers"]["claim_reader"]["total"] == 2
+
+
+def test_a_failing_model_is_reported_to_the_caller(monkeypatch):
+    """The rule-based reading stands, but the check must be able to say the
+    reader did not answer. Production ran on rules alone for a day with no
+    sign on the page."""
+    monkeypatch.setattr(cr, "enabled", lambda: True)
+    cr._cache.clear()
+
+    def denied(document):
+        raise PermissionError("403")
+
+    monkeypatch.setattr(cr, "_call_model", denied)
+    status = {}
+    assert cr.read_figures(DOC, status=status) == []
+    assert status == {"claim_reader": "failed"}
+
+
+def test_one_failed_reading_of_two_is_not_reported(monkeypatch):
+    monkeypatch.setattr(cr, "enabled", lambda: True)
+    cr._cache.clear()
+    calls = {"n": 0}
+
+    def flaky(document):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise TimeoutError("slow")
+        return reading(fig("$2.18 billion"))
+
+    monkeypatch.setattr(cr, "_call_model", flaky)
+    status = {}
+    assert cr.read_figures(DOC, status=status)
+    assert status == {}
+
+
+def test_a_reader_that_is_off_is_not_a_failure(monkeypatch):
+    monkeypatch.setattr(cr, "enabled", lambda: False)
+    status = {}
+    assert cr.read_figures(DOC, status=status) == []
+    assert status == {}
+
+
+def test_the_check_reports_a_down_reader_in_out_state(monkeypatch):
+    monkeypatch.setattr(cr, "enabled", lambda: True)
+    cr._cache.clear()
+    monkeypatch.setattr(cr, "_call_model", lambda document: (_ for _ in ()).throw(PermissionError()))
+    monkeypatch.setattr(sn, "SN_BUDGET_SECONDS", 0.01, raising=False)
+    claims = analyze_claims(DOC)["claims"]
+    state = {}
+    sn.verify_claims_source_network(claims, doc_text=DOC, out_state=state, max_claims=0)
+    assert state.get("readers_down") == ["claim_reader"]

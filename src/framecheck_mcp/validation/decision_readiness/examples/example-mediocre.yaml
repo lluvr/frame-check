@@ -1,0 +1,27 @@
+# Illustrative MEDIOCRE rating. NOT a real submission. Numeric
+# scores are present on every dimension but notes are generic
+# and untied to specific observations. Useful as part of a
+# per-dimension mean, near-useless for divergence interpretation.
+
+doc_id: "four-llms-bitcoin-claude"
+rater_id: "example-mediocre"
+rated_at: "2026-04-19"
+
+ratings:
+  coverage: 3
+  calibration: 4
+  evidence: 2
+  robustness: 3
+  counterfactual: 3
+
+notes:
+  coverage: "Decent coverage of risks. Could be better."
+  calibration: "Reasonably well-hedged."
+  evidence: "Lacks specific sources."
+  robustness: "Hard to say, didn't check the numbers."
+  counterfactual: "Mentions some alternatives."
+  overall: "Average AI response. Useful but not authoritative."
+
+time_spent_minutes: 8
+secondary_genres: []
+self_confidence: 4

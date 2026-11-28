@@ -27,9 +27,10 @@ specifically about a quarter. That is false authority; honest
 
 A typed TimeContext lets every verifier make the right call:
 
-  * A current-data-only source returns `no_data` for HISTORICAL
-    claims rather than matching current against the historical
-    value, so consensus doesn't invent disagreement.
+  * REST Countries (current-data-only) returns `contradicted`
+    for HISTORICAL claims rather than matching current against
+    the historical value, OR returns `no_data` gracefully so
+    the combined verdict doesn't invent disagreement.
   * SEC EDGAR filters 10-Q for QUARTERLY claims and returns
     no_data (not annual) when the quarterly data is absent.
   * World Bank queries a specific ANNUAL year rather than
@@ -49,7 +50,7 @@ A typed TimeContext lets every verifier make the right call:
   narrative ("currently", "last year" with no year anchor).
 
 * **Explainable.** Every TimeContext carries a stable reason
-  slug suitable for corpus telemetry and audit trails.
+  slug suitable for corpus monitoring and audit trails.
 
 * **Honest UNKNOWN.** A sentence with no extractable time
   anchor and no "currently" / "today" marker gets UNKNOWN, not

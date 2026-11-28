@@ -74,9 +74,7 @@ def enabled():
 
 
 def _call_model(document):
-    import llm_client
-    from llm_client import xai_openai_client
-    GROK_MODEL = getattr(llm_client, "GROK_MODEL", "grok-4.20-0309-non-reasoning")
+    from llm_client import GROK_MODEL, check_served, xai_openai_client
     client = xai_openai_client()
     if client is None:
         return ""
@@ -96,6 +94,7 @@ def _call_model(document):
         max_completion_tokens=4000,
         timeout=READER_TIMEOUT_SECONDS,
     )
+    check_served(response, "claim_reader")
     return (response.choices[0].message.content or "") if response.choices else ""
 
 
@@ -178,12 +177,16 @@ def _record_failure(kind):
         pass
 
 
-def read_figures(document):
+def read_figures(document, status=None):
     """The validated reading of a document, or [] when it cannot be had.
 
     Two readings run in parallel and only what both say is kept, so a verdict
     does not flip between runs on the same text. If one call fails, the other
     is used alone.
+
+    ``status``, when given, gets ``status["claim_reader"] = "failed"`` if the
+    reader was on and neither reading came back, so the page can say the
+    check ran on rules alone. An empty reading is not a failure.
     """
     if not document or not enabled():
         return []
@@ -207,6 +210,8 @@ def read_figures(document):
     pool.shutdown(wait=False)
     first, second = readings
     if first is None and second is None:
+        if status is not None:
+            status["claim_reader"] = "failed"
         return []
     if first is None or second is None:
         figures = first if first is not None else second

@@ -45,8 +45,8 @@ APPLE_FY2025_REVENUE = 416.16e9    # SEC EDGAR RevenueFromContractWithCustomer, 
 APPLE_FY2024_REVENUE = 391.04e9    # SEC EDGAR RevenueFromContractWithCustomer, FY2024 end=2024-09-28
 APPLE_FY2023_REVENUE = 383.29e9    # SEC EDGAR RevenueFromContractWithCustomer, FY2023 end=2023-09-30
 
-BHUTAN_POPULATION = 784_043        # recent total
-BHUTAN_AREA_KM2 = 38_394           # surface area
+BHUTAN_POPULATION = 784_043        # REST Countries (current)
+BHUTAN_AREA_KM2 = 38_394           # REST Countries (current)
 BHUTAN_GDP_2023 = 3.013e9          # World Bank NY.GDP.MKTP.CD (2023)
 
 # Confabulated values observed in the hard-topics corpus
@@ -128,10 +128,10 @@ class TestSECEdgarVerification:
             sentence=f"{company} reported {fy} revenue of ${raw} billion.",
         )
         r = verify_sec_edgar(d)
-        if r.match_type == "no_data":
+        if r.match_type == "no_data" and not r.withheld_refute:
             pytest.skip(f"{label}: SEC EDGAR returned no_data (API timeout or rate limit)")
-        assert r.match_type == "contradicted", (
-            f"{label}: expected contradicted, got {r.match_type}. "
+        assert r.withheld_refute and r.match_type == "no_data", (
+            f"{label}: expected the filed figure kept, got {r.match_type}. "
             f"source_value=${r.source_value/1e9:.2f}B, diff={r.difference_pct}%"
         )
 
@@ -165,6 +165,7 @@ class TestSECEdgarNonRevenueMetrics:
         # Whether exact/close/contradicted depends on the true value,
         # but it should NOT be compared against revenue.
         assert r.source_value is not None, "Expected a source value from SEC EDGAR"
+        # If it matched, the source text should NOT mention revenue concepts
         # Sanity: the matched value should be in the same order of
         # magnitude as the claim (tens of billions), not hundreds
         # of billions (which would indicate revenue was matched).
@@ -423,12 +424,13 @@ class TestSECEdgarNonRevenueMetrics:
             sentence="NVIDIA reported FY2026 revenue of $60.92 billion.",
         )
         r = verify_sec_edgar(d)
-        if r.match_type == "no_data":
+        if r.match_type == "no_data" and not r.withheld_refute:
             pytest.skip("SEC EDGAR returned no_data (API timeout or rate limit)")
         # The actual FY2026 revenue is ~$215.9B. The claim must NOT
-        # be falsely matched against the FY2024 comparative.
-        assert r.match_type == "contradicted", (
-            f"Expected contradicted (claim $60.9B vs actual FY2026 ~$215.9B), "
+        # be falsely matched against the FY2024 comparative. The filed
+        # figure stays, and this lexical check does not call it wrong.
+        assert r.withheld_refute and r.match_type == "no_data", (
+            f"Expected the filed figure kept (claim $60.9B vs actual FY2026 ~$215.9B), "
             f"got {r.match_type}. source_value=${r.source_value/1e9:.2f}B "
             f"({r.source_text})"
         )
@@ -649,16 +651,18 @@ class TestFullPipelineVerification:
         if not rev_results:
             pytest.skip("Pipeline did not match the $39.3B claim")
         r = rev_results[0]
-        # SEC EDGAR contradicts ($39.3B vs closest FY-matched filing).
-        # Wikipedia metric gate rejects the Arm acquisition false match.
-        # If SEC EDGAR is rate-limited, verdict may degrade to unverifiable.
-        if r.verdict == "unverifiable":
+        # The lexical filing check keeps the filed figure and does not
+        # call the claim wrong. If SEC EDGAR is rate-limited, nothing
+        # was withheld.
+        withheld = [s for s in r.source_results if getattr(s, "withheld_refute", False)]
+        if r.verdict == "unverifiable" and not withheld:
             pytest.skip("SEC EDGAR returned no_data (API timeout or rate limit)")
-        assert r.verdict == "contradicted", (
-            f"Confabulated NVIDIA $39.3B should be contradicted, "
+        assert r.verdict == "unverifiable", (
+            f"Confabulated NVIDIA $39.3B should keep the filed figure, "
             f"got {r.verdict} (best_source={r.best_source}, "
             f"confidence={r.confidence:.2f})"
         )
+        assert withheld and "gives a different value" in (r.detail or "")
 
     def test_apple_correct_revenue_full_pipeline(self):
         """Correct Apple FY2025 revenue through the full pipeline."""

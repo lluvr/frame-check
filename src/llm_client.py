@@ -27,11 +27,74 @@ model identifier (the actual API call target): the proxy may route
 to a different downstream model than the display name claims.
 """
 
-import os
 from typing import Any, Optional, Tuple
+import os
 
 
-LLM_PROVIDER_DISPLAY = "Grok"
+# Which upstream serves the GROK_MODEL call sites. LLM_PROVIDER=gemini
+# routes every one of them through Gemini's OpenAI-compatible endpoint
+# with GEMINI_API_KEY, so a provider switch is one env var rather than a
+# change at each call site. Default "xai" keeps the original behavior.
+# gemini-3.1-flash-lite is the Gemini model on the V4.2 cross-family
+# reliability panel, non-reasoning by default; GEMINI_LLM_MODEL
+# overrides it.
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "xai").strip().lower() or "xai"
+if LLM_PROVIDER not in ("xai", "gemini"):
+    raise ValueError(
+        f'LLM_PROVIDER="{LLM_PROVIDER}" is not supported (xai|gemini)'
+    )
+
+GEMINI_OPENAI_BASE_URL = (
+    "https://generativelanguage.googleapis.com/v1beta/openai"
+)
+GEMINI_LLM_MODEL = (
+    os.environ.get("GEMINI_LLM_MODEL", "").strip() or "gemini-3.1-flash-lite"
+)
+
+# Display name for the model behind GROK_MODEL (AI-narrative chips, the
+# second model in compare-framing) and the provider tag that monitoring
+# and llm_cost key on. Under gemini the display name says Flash-Lite so
+# compare-framing's two Gemini models stay distinguishable.
+LLM_PROVIDER_DISPLAY = "Gemini Flash-Lite" if LLM_PROVIDER == "gemini" else "Grok"
+LLM_PROVIDER_TAG = "gemini" if LLM_PROVIDER == "gemini" else "grok"
+# Vendor name for the privacy and terms pages.
+LLM_VENDOR_DISPLAY = "Google Gemini" if LLM_PROVIDER == "gemini" else "xAI/Grok"
+
+# Model identifier for every xAI/Grok call. Centralized here (per the
+# "never hardcode model ids" rule) so a provider/model swap touches one
+# line, not ~30 call sites across the engine.
+#
+# History: the app was built around grok-4-1-fast, a fast, cheap, non-
+# reasoning model. xAI retired that tier; sending "grok-4-1-fast" now
+# routes server-side to grok-4.3, a reasoning model that burns 100+
+# uncounted reasoning tokens per call and costs materially more
+# (verified against the live API 2026-07-02: model_served=grok-4.3).
+#
+# grok-4.20-0309-non-reasoning is the current fast, non-reasoning tier.
+# Verified callable on the direct xAI endpoint (served as itself,
+# reasoning_tokens=0, 2026-07-02), which is what production uses
+# (fabrication-profiler sets XAI_API_KEY only; no LLM_PROXY). It keeps
+# the original design intent (a fast, non-reasoning model behind the
+# regex-based Layer A) rather than the accidental grok-4.3 reasoning
+# upgrade the retired grok-4-1-fast alias now routes to.
+#
+# Path caveat: the local dev LiteLLM proxy currently serves only the
+# grok-4-1-fast* alias family, so a proxy-backed environment would 400
+# on this id and drop to no-LLM. Production is direct, so it is
+# unaffected; a proxy-backed dev must either add this model to the proxy
+# or point at the direct endpoint (XAI_API_KEY).
+#
+# To swap: change this one constant to an id valid on the target
+# endpoint (GET https://api.x.ai/v1/models, or the proxy's /models), add
+# its (provider, model) rate to MODEL_PRICING_PER_1K_TOKENS in
+# llm_cost.py, and register the version in models.yaml.
+#
+# Under LLM_PROVIDER=gemini the name stays GROK_MODEL (every call site
+# imports it) but the value is the Gemini model id.
+GROK_MODEL = (
+    GEMINI_LLM_MODEL if LLM_PROVIDER == "gemini"
+    else "grok-4.20-0309-non-reasoning"
+)
 
 
 def xai_endpoint() -> Tuple[Optional[str], Optional[str]]:
@@ -40,7 +103,15 @@ def xai_endpoint() -> Tuple[Optional[str], Optional[str]]:
     Proxy first, direct second. (None, None) when neither path is
     configured, which signals "do not call xAI" to every caller and
     keeps Layer A as the sole framing analysis.
+
+    Under LLM_PROVIDER=gemini the proxy and XAI_API_KEY are ignored:
+    the only path is Gemini's OpenAI-compatible endpoint.
     """
+    if LLM_PROVIDER == "gemini":
+        gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+        if gemini_key:
+            return GEMINI_OPENAI_BASE_URL, gemini_key
+        return None, None
     proxy_url = os.environ.get("LLM_PROXY_BASE_URL", "").strip()
     proxy_key = os.environ.get("LLM_PROXY_API_KEY", "").strip()
     if proxy_url and proxy_key:
@@ -69,11 +140,6 @@ def xai_openai_client() -> Any:
     the None return; constructing an OpenAI client with empty base_url
     or api_key would silently 401 on first request rather than fall
     cleanly into Layer A.
-
-    Return type is Any because openai.OpenAI is an optional runtime
-    dependency: pip-installed wheels carry it, but mypy --strict on the
-    seven-module wheel surface does not import it. Annotating Any here
-    keeps callers in the strict surface from needing a per-call cast.
     """
     base, key = xai_endpoint()
     if not (base and key):
@@ -103,3 +169,49 @@ PUNCTUATION_RULE = (
     "rewrite the sentence with a comma, colon, period, or "
     "parenthesis instead."
 )
+
+
+_SERVED_SEEN = set()
+
+
+def check_served(response, who):
+    """Log what xAI actually served a reader call, and count a substitution.
+
+    The model id is a request, not a guarantee: xAI once routed the retired
+    grok-4-1-fast to grok-4.3, a reasoning model whose reasoning tokens are billed
+    but reported outside completion_tokens. The readers are meant to run on the
+    non-reasoning tier, so a reply from another model, or one with reasoning
+    tokens, is logged as a warning and counted in provider health under `who`.
+    Never raises: a reading is not lost over its bookkeeping.
+    """
+    import logging
+    log = logging.getLogger(__name__)
+    try:
+        served = getattr(response, "model", "") or ""
+        usage = getattr(response, "usage", None)
+        details = getattr(usage, "completion_tokens_details", None)
+        reasoning = int(getattr(details, "reasoning_tokens", 0) or 0)
+        tokens_in = int(getattr(usage, "prompt_tokens", 0) or 0)
+        tokens_out = int(getattr(usage, "completion_tokens", 0) or 0)
+        log.info("%s served=%s in=%d out=%d reasoning=%d", who, served, tokens_in,
+                 tokens_out, reasoning)
+        if LLM_PROVIDER == "gemini":
+            return
+        kind = ("model_mismatch" if served and served != GROK_MODEL
+                else "reasoning_tokens" if reasoning else "")
+        # Production has no logging config, so INFO never reaches fly logs. The first
+        # reply per process and every substitution are printed, so the served model is
+        # visible after each deploy without paying for a probe.
+        if kind or who not in _SERVED_SEEN:
+            _SERVED_SEEN.add(who)
+            import sys
+            print(f"[served] {who} requested={GROK_MODEL} served={served} "
+                  f"reasoning_tokens={reasoning} out={tokens_out}"
+                  + (f" {kind.upper()}" if kind else ""), file=sys.stderr)
+        if kind:
+            log.warning("%s: %s (requested %s, served %s, reasoning tokens %d)",
+                        who, kind, GROK_MODEL, served, reasoning)
+            from source_network import provider_health
+            provider_health.record_error(who, kind)
+    except Exception:
+        pass

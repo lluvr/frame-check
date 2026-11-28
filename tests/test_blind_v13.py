@@ -1,4 +1,4 @@
-"""Faults from blind set v13 (heldout_docs_v13), scored before these fixes:
+"""Faults from blind set v13 (heldout_docs_v13), scored on frozen 697f3ed:
 14 of 187 true numbers contradicted, 11 of them US macro figures read for the
 wrong period. No network here.
 """
@@ -87,10 +87,13 @@ def test_a_rate_without_a_cue_is_confirmed_by_december_or_the_average(fred):
     assert verdict("The US PCE price index rose 4.0%.", "4.0%", inherited_year="2021") in ("exact", "close")
 
 
-def test_a_rate_without_a_cue_far_from_both_is_still_refuted(fred):
+def test_a_rate_without_a_cue_far_from_both_keeps_the_fred_figure(fred):
     data, _ = fred
     data["PCEPI"] = {2021: 4.04, (2021, 12): 5.8}
-    assert verdict("In 2021 the US PCE price index rose 9.5%.", "9.5%") == "contradicted"
+    r = sn.verify_fred(claim("In 2021 the US PCE price index rose 9.5%.", "9.5%"))
+    assert r.match_type == "no_data"
+    assert r.withheld_refute
+    assert r.source_value is not None
 
 
 # ------------------------------------------------ World Bank: a rate is not a count
@@ -169,7 +172,10 @@ def test_a_document_of_annual_averages_is_read_as_averages(fred):
            "| Series | 2022 |\n|---|---|\n| 30-year fixed mortgage | 6.34% |")
     d = sn.decompose_claim({"sentence": "30-year fixed mortgage in 2022 was 6.34%.",
                             "numbers": ["6.34%"]}, doc_text=doc)
-    assert sn.verify_fred(d).match_type == "contradicted"
+    r = sn.verify_fred(d)
+    assert r.match_type == "no_data"
+    assert r.withheld_refute
+    assert r.source_value is not None
 
 
 def test_one_annual_average_does_not_make_every_figure_an_average(fred):

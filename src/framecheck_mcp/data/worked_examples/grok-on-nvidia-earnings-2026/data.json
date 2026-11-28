@@ -746,15 +746,10 @@
       "verification": {
         "source_fidelity": {
           "total_numbers": 25,
-          "in_source": 23,
-          "not_in_source": 2,
-          "unsourced_rate": 0.08,
+          "in_source": 24,
+          "not_in_source": 1,
+          "unsourced_rate": 0.04,
           "unsourced_items": [
-            {
-              "value": "100000000",
-              "type": "integer",
-              "context": "s, and healthcare. He noted NVIDIA RTX now serves 100 million gamers and creators. NVIDIA declared a quarterly"
-            },
             {
               "value": "198",
               "type": "integer",
@@ -2358,6 +2353,6 @@
       }
     }
   },
-  "frame_check_payload_refreshed_at_utc": "2026-05-11T19:00:00Z",
-  "frame_check_payload_refresh_reason": "Refreshed at v1.0.12 cut: every frame-reference record across the payload (frame_library_matches[*], absent_frames[*], corpus_context.typical_co_*, decision_readiness.*.library_entries[*], frame_opportunities[*]) now carries the full canonical URI/URL quartet {citation_uri, library_resource_uri, library_url, public_url} where citation_uri ≡ library_resource_uri and library_url ≡ public_url. Closes the schema-coherence backlog opened by the same defect class that produced v1.0.10/v1.0.11."
+  "frame_check_payload_refreshed_at_utc": "2026-11-28T00:00:00Z",
+  "frame_check_payload_refresh_reason": "Refreshed at the 1.3.0 checker port: source_fidelity only. The summary's 100,000,000 now matches the source's '100 million gamers and creators' (scale-aware number matching), so in_source 23 -> 24 and the unsourced list drops it. Refreshed at v1.0.12 cut: every frame-reference record across the payload (frame_library_matches[*], absent_frames[*], corpus_context.typical_co_*, decision_readiness.*.library_entries[*], frame_opportunities[*]) now carries the full canonical URI/URL quartet {citation_uri, library_resource_uri, library_url, public_url} where citation_uri ≡ library_resource_uri and library_url ≡ public_url. Closes the schema-coherence backlog opened by the same defect class that produced v1.0.10/v1.0.11."
 }

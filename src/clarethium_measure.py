@@ -71,6 +71,8 @@ CLI:
   python clarethium_measure.py --doc file.md [--source ref.md] [--compare v2.md v3.md] [--topic "..."]
 """
 
+from collections.abc import Iterable
+from typing import Any
 __version__ = "1.5.0"
 
 import argparse
@@ -78,9 +80,6 @@ import json
 import re
 import statistics
 import time
-from collections.abc import Iterable
-from typing import Any
-import contextlib
 
 
 # ================================================================
@@ -145,7 +144,7 @@ versus via per etc vs often very quite rather too such like
 
 def extract_headings_simple(text: str) -> list[str]:
     """Extract ## and ### headings from markdown."""
-    headings: list[str] = []
+    headings = []
     for line in text.split("\n"):
         line = line.strip()
         if line.startswith("## ") or line.startswith("### "):
@@ -338,7 +337,7 @@ def extract_section_bodies(text: str) -> list[str]:
     """Extract section body text only (excludes headings)."""
     sections = []
     lines = text.split("\n")
-    current_heading: str | None = None
+    current_heading = None
     current_body: list[str] = []
     for line in lines:
         stripped = line.strip()
@@ -467,7 +466,7 @@ def split_sentences(text: str) -> list[tuple[str, str, int]]:
     _LIST_MARKER = re.compile(r'^[-*•]\s+|\d+\.\s+')
     _SENT_BOUNDARY = re.compile(r'(?<=[.!?])\s+(?=[A-Z])')
 
-    results: list[tuple[str, str, int]] = []
+    results = []
     current_heading = ""
     para_idx = 0
     pending: list[str] = []
@@ -522,6 +521,12 @@ def extract_numerical_claims(text: str) -> list[dict[str, Any]]:
                     val = float(m.group(1).replace(',', ''))
                 except (ValueError, IndexError):
                     val = None
+                if val is not None and num_type == "dollar" and m.lastindex and m.lastindex >= 2:
+                    suf = (m.group(2) or "").lower()
+                    if suf == "k":
+                        val *= 1_000
+                    elif suf in ("m", "mn"):
+                        val *= 1_000_000
                 numbers.append({'type': num_type, 'value': val, 'raw': raw})
         if numbers:
             claims.append({'sentence': sent, 'heading': heading,
@@ -578,8 +583,8 @@ def claim_density(text: str) -> dict[str, Any]:
 
 def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
     """Extract all numbers with type for temporal/source matching."""
-    numbers: list[dict[str, Any]] = []
-    seen: set[tuple[Any, str, int]] = set()
+    numbers = []
+    seen = set()
 
     # Scale-word multipliers. Keyed lowercase so the regex match
     # group can be looked up directly after `.lower()`. Kept local
@@ -600,10 +605,10 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
 
     patterns = [
         (r'(\d+(?:\.\d+)?)\s*%', "percentage"),
-        # The second group keeps a scale with the amount. Without it
+        # The third group keeps a spoken scale with the amount. Without it
         # "$12.5 million" reduced to "$12.5" and matched "$12.5 billion".
-        ((r'[$€£¥₹](\d+(?:\.\d+)?(?:,\d{3})*)'
-         r'((?:\s*(?i:thousand|million|billion|trillion|bn|mn)\b)|[kKmMbBtT](?![a-zA-Z\d&]))?'),
+        ((r'[$€£¥₹]\s*(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)\s*(?:([kKmM](?![a-zA-Z]))|'
+         r'((?i:thousand|million|billion|trillion|bn|mn)\b|[bBtT](?![a-zA-Z])))?'),
          "dollar"),
         (r'[$€£¥₹](\d+(?:\.\d+)?(?:,\d{3})*)\s*[-–]\s*[$€£¥₹]?(\d+(?:\.\d+)?(?:,\d{3})*)\s*([MBKmillion|billion|thousand]*)', "dollar_range"),
         (r'(\d+(?:\.\d+)?)[xX]\b', "multiplier"),
@@ -643,6 +648,19 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
             val = m.group(1) if m.lastindex else m.group(0)
             if num_type in ("dollar", "integer_comma", "dollar_range"):
                 val = val.replace(",", "")
+            if num_type == "dollar" and m.lastindex and m.lastindex >= 2:
+                suf = (m.group(2) or "").lower()
+                mul = 1_000 if suf == "k" else 1_000_000 if suf == "m" else 1
+                if mul > 1:
+                    try:
+                        scaled = float(val) * mul
+                        val = (
+                            str(int(scaled))
+                            if scaled == int(scaled)
+                            else str(scaled)
+                        )
+                    except (ValueError, TypeError):
+                        pass
             if num_type == "scaled_integer":
                 # Apply the scale multiplier so downstream
                 # source matching compares real magnitudes.
@@ -650,13 +668,15 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
                 # the original "6 million" text for display.
                 scale = m.group(2).lower() if m.lastindex and m.lastindex >= 2 else ""
                 multiplier = _SCALE_MULTIPLIERS.get(scale, 1)
-                with contextlib.suppress(ValueError, TypeError):
+                try:
                     scaled = float(val.replace(",", "")) * multiplier
                     # Render integers without a trailing .0 so the
                     # downstream claimed_values normalisation in
                     # analyze_claims treats "6000000.0" and "6000000"
                     # as the same key.
                     val = str(int(scaled)) if scaled == int(scaled) else str(scaled)
+                except (ValueError, TypeError):
+                    pass
             effective_type = num_type
             if num_type == "integer_comma":
                 effective_type = "integer"
@@ -679,10 +699,10 @@ def extract_numbers_for_matching(text: str) -> list[dict[str, Any]]:
                     "value": val, "raw": m.group(0),
                     "context": context, "type": effective_type,
                 }
-                if num_type == "dollar" and m.group(2):
+                if num_type == "dollar" and m.lastindex == 3:
                     # value stays unscaled so analyze_claims can still
                     # pair it with extract_numerical_claims' value.
-                    number["scale"] = m.group(2).strip().lower()
+                    number["scale"] = m.group(3).lower()
                 numbers.append(number)
     return numbers
 
@@ -796,24 +816,65 @@ def _add_commas(val: str) -> str | None:
         return None
 
 
-_SCALE_SPELLINGS: dict[str, tuple[float, tuple[str, ...]]] = {
+# Not followed by more of the number: "$12,500,000" is not in "$12,500,000,000".
+_AFTER_NUMBER = r'(?!(?:\d|[.,]\d))'
+_SOURCE_NEGATION_RE = re.compile(
+    r"(?i)(?:\bno\b|\bnot\b|\bnever\b|\bnothing\b|n['’]t|\bwithout\b)"
+)
+
+
+def _source_span_negated(source_text: str, start: int) -> bool:
+    sent_start = 0
+    for sep in (".", "!", "?", "\n"):
+        idx = source_text.rfind(sep, 0, start)
+        if idx > sent_start - 1:
+            sent_start = idx + 1
+    return _SOURCE_NEGATION_RE.search(source_text[sent_start:start]) is not None
+
+
+def _needle_in_source(needle: str, source_text: str) -> bool:
+    if not needle or not source_text:
+        return False
+    # A needle ending in a scale must end as a word: "$12.5 t" is not in
+    # "$12.5 thousand".
+    after = _AFTER_NUMBER + (r'(?![a-zA-Z])' if needle[-1].isalpha() else '')
+    pattern = re.compile(
+        r'(?<!\d)(?<!\d[,.])' + re.escape(needle) + after, re.IGNORECASE
+    )
+    for m in pattern.finditer(source_text):
+        if not _source_span_negated(source_text, m.start()):
+            return True
+    return False
+
+
+def _compact_dollar_needles(value_float: float) -> list[str]:
+    out = []
+    for div, suf in ((1_000_000_000, "b"), (1_000_000, "m"), (1_000, "k")):
+        scaled = value_float / div
+        if scaled < 0.05:
+            continue
+        rounded = round(scaled, 2)
+        if abs(scaled - rounded) > 0.0001:
+            continue
+        if rounded == int(rounded):
+            body = str(int(rounded))
+        else:
+            body = f"{rounded:.2f}".rstrip("0").rstrip(".")
+        out.append(f"${body}{suf}")
+        out.append(f"${body} {suf}")
+    return out
+
+
+_SCALE_SPELLINGS = {
     "thousand": (1e3, ("thousand", "k")),
-    "k": (1e3, ("thousand", "k")),
     "million": (1e6, ("million", "mn", "m")),
     "mn": (1e6, ("million", "mn", "m")),
-    "m": (1e6, ("million", "mn", "m")),
     "billion": (1e9, ("billion", "bn", "b")),
     "bn": (1e9, ("billion", "bn", "b")),
     "b": (1e9, ("billion", "bn", "b")),
     "trillion": (1e12, ("trillion", "tn", "t")),
     "t": (1e12, ("trillion", "tn", "t")),
 }
-# A needle ends where the number does: "$12.5 t" is not "$12.5 thousand"
-# and "$12,500,000" is not "$12,500,000,000".
-_AFTER_SCALED_NEEDLE = r'(?![a-zA-Z\d]|[.,]\d)'
-# Whole numbers only: "500" is not in "1,500" or "500.5".
-_BEFORE_NUMBER = r'(?<!\d)(?<!\d[,.])'
-_AFTER_NUMBER = r'(?!\d|[.,]\d)'
 
 
 def _scaled_dollar_needles(raw: str, val: str, scale: str) -> list[str]:
@@ -826,7 +887,7 @@ def _scaled_dollar_needles(raw: str, val: str, scale: str) -> list[str]:
         needles.append(f"{currency}{val}{word}")
         needles.append(f"{currency}{val} {word}")
     try:
-        whole = round(float(val) * multiplier, 3)
+        whole = float(val) * multiplier
     except (ValueError, TypeError):
         return needles
     if whole == int(whole):
@@ -835,49 +896,82 @@ def _scaled_dollar_needles(raw: str, val: str, scale: str) -> list[str]:
     return needles
 
 
+def _dollar_needles(num: dict[str, Any]) -> list[str]:
+    needles = []
+    raw = (num.get("raw") or "").strip()
+    val = str(num.get("value") or "").replace(",", "")
+    if num.get("scale") and val:
+        return _scaled_dollar_needles(raw, val, num["scale"])
+    if raw:
+        needles.append(raw)
+    if not val:
+        return needles
+    currency = raw[0] if raw and raw[0] in "$€£¥₹" else "$"
+    needles.append(currency + val)
+    comma_val = _add_commas(val)
+    if comma_val:
+        needles.append(currency + comma_val)
+    try:
+        v = float(val)
+    except (ValueError, TypeError):
+        return needles
+    for n in _compact_dollar_needles(v):
+        needles.append(n if currency == "$" else currency + n[1:])
+    return needles
+
+
 def _number_in_source(num: dict[str, Any], source_text: str) -> bool:
-    """Check if a number appears in source text."""
+    """Check if a number appears in source text.
+
+    Dollar matching covers typed form ($140k), scaled ($140,000),
+    and compact suffixes. Same-sentence negation (No $4M) is not
+    a match.
+    """
     val = num["value"]
     ntype = num["type"]
 
-    if ntype == "dollar" and num.get("scale"):
-        return any(
-            re.search(
-                re.escape(needle) + _AFTER_SCALED_NEEDLE,
-                source_text,
-                re.IGNORECASE,
-            )
-            for needle in _scaled_dollar_needles(
-                (num.get("raw") or "").strip(), val, num["scale"],
-            )
-        )
-
     if ntype == "percentage":
-        # Whole number only: 5% is not in 25% or 0.5%, and 12.5% is not 12%.
-        return bool(re.search(
-            r'(?<![\d.])' + re.escape(val) + r'\s*(?:%|percent)',
-            source_text,
-            re.IGNORECASE,
-        ))
+        # Whole number only: 5% is not in 25% or 0.5%. Rounding is the fuzzy
+        # stage's job, where it is reported as a fuzzy match.
+        patterns = [r'(?<![\d.])' + re.escape(str(val)) + r'\s*(?:%|percent)']
+        for pat in patterns:
+            for m in re.finditer(pat, source_text, re.IGNORECASE):
+                if not _source_span_negated(source_text, m.start()):
+                    return True
+        return False
     elif ntype == "dollar":
-        if re.search(r'\$' + re.escape(val) + _AFTER_NUMBER, source_text):
-            return True
-        # Try comma-formatted: $45000 -> $45,000
-        comma_val = _add_commas(val)
-        if comma_val and re.search(r'\$' + re.escape(comma_val) + _AFTER_NUMBER, source_text):
-            return True
+        seen = set()
+        for needle in _dollar_needles(num):
+            key = needle.lower()
+            if key in seen:
+                continue
+            seen.add(key)
+            if _needle_in_source(needle, source_text):
+                return True
         return False
     elif ntype == "multiplier":
-        return bool(re.search(r'(?<![\d.])' + re.escape(val) + r'[xX]', source_text))
+        mult = re.search(re.escape(str(val)) + r'[xX]', source_text)
+        return mult is not None and not _source_span_negated(source_text, mult.start())
     else:
-        # Try raw value first
-        if re.search(_BEFORE_NUMBER + re.escape(val) + _AFTER_NUMBER, source_text):
+        if _needle_in_source(str(val), source_text):
             return True
-        # Try comma-formatted: 2000 -> 2,000
-        comma_val = _add_commas(val)
-        if comma_val and re.search(_BEFORE_NUMBER + re.escape(comma_val) + _AFTER_NUMBER, source_text):
+        comma_val = _add_commas(str(val))
+        if comma_val and _needle_in_source(comma_val, source_text):
+            return True
+        raw = (num.get("raw") or "").strip()
+        if raw and raw != str(val) and _needle_in_source(raw, source_text):
             return True
         return False
+
+
+def number_token_in_source(token: str, source_text: str) -> bool:
+    """Whether a display token appears in source_text under Layer 4 rules."""
+    if not token or not source_text:
+        return False
+    extracted = extract_numbers_for_matching(token)
+    if extracted:
+        return _number_in_source(extracted[0], source_text)
+    return _needle_in_source(str(token).strip(), source_text)
 
 
 def source_matching(doc_text: str, source_text: str) -> dict[str, Any]:
@@ -976,15 +1070,9 @@ def extract_entities(text: str) -> list[dict[str, str]]:
             entities.append({"type": "ATTRIBUTED", "value": name,
                              "context": body[ctx_start:ctx_end].strip()})
 
-    # Parenthetical citations.
-    # Inner word repetition uses ``[a-zA-Z]+`` (not ``[A-Z]?[a-zA-Z]+``)
-    # so the pattern is unambiguous: there is exactly one way to split
-    # any matching string into its words. The optional uppercase prefix
-    # in the prior form created exponential backtracking on adversarial
-    # inputs of the form ``(A/ AA AA AA ...`` (CodeQL py/redos). Matched
-    # set is unchanged for real-world citation strings.
+    # Parenthetical citations
     for m in re.finditer(
-            r'\(([A-Z][a-zA-Z/]+(?:\s+[a-zA-Z]+)*)'
+            r'\(([A-Z][a-zA-Z/]+(?:\s+[A-Z]?[a-zA-Z]+)*)'
             r'[,\s]+(\d{4})\)', body):
         cite = f"{m.group(1)} {m.group(2)}"
         if "source" in cite.lower():
@@ -1720,8 +1808,10 @@ def grounding_decomposition(doc_text: str, source_text: str) -> dict[str, Any]:
     for nd in src_nums_filtered:
         val = nd.get("value") if isinstance(nd, dict) else None
         if val is not None:
-            with contextlib.suppress(ValueError, TypeError):
+            try:
                 source_floats.add(float(val))
+            except (ValueError, TypeError):
+                pass
 
     # Extract source years from FULL source text (not just data section).
     # Two passes: standalone years (\b2025\b) and prefixed years
@@ -1752,6 +1842,7 @@ def grounding_decomposition(doc_text: str, source_text: str) -> dict[str, Any]:
                 sourced.append(nd)
             else:
                 val = nd.get("value") if isinstance(nd, dict) else None
+                raw = nd.get("raw", "") if isinstance(nd, dict) else str(nd)
                 if val is not None:
                     try:
                         fval = float(val)
@@ -1979,12 +2070,11 @@ def measure(
             UserWarning, stacklevel=2
         )
 
-    layers_run: list[str] = []
-    profile = {
+    profile: dict[str, Any] = {
         "metadata": {
             "version": "1.4",
             "has_markdown_structure": _has_md,
-            "layers_run": layers_run,
+            "layers_run": [],
             "scope": (
                 "Primary: markdown analytical docs. Cross-domain tested (v1.2): "
                 "product specs, research summaries, code docs. "
@@ -2016,53 +2106,53 @@ def measure(
 
     # Layer 1: Structural Profile (always)
     profile["structural"] = structural_profile(doc_text, topic)
-    layers_run.append("structural")
+    profile["metadata"]["layers_run"].append("structural")
 
     # Layer 2: Claim Density (always)
     profile["claim_density"] = claim_density(doc_text)
-    layers_run.append("claim_density")
+    profile["metadata"]["layers_run"].append("claim_density")
 
     # Layer 3: Temporal Consistency (if comparisons provided)
     if comparisons:
         profile["temporal_instability"] = temporal_consistency(doc_text, comparisons)
-        layers_run.append("temporal_instability")
+        profile["metadata"]["layers_run"].append("temporal_instability")
 
     # Layer 4: Source Matching (if source provided)
     if source:
         profile["source_fidelity"] = source_matching(doc_text, source)
-        layers_run.append("source_fidelity")
+        profile["metadata"]["layers_run"].append("source_fidelity")
 
     # Layer 5: Entity Provenance (if source provided)
     if source:
         profile["entity_provenance"] = entity_provenance(doc_text, source)
-        layers_run.append("entity_provenance")
+        profile["metadata"]["layers_run"].append("entity_provenance")
 
     # Layer 6: Vocabulary Proximity (if source provided)
     if source:
         profile["vocabulary_proximity"] = vocabulary_proximity(doc_text, source)
-        layers_run.append("vocabulary_proximity")
+        profile["metadata"]["layers_run"].append("vocabulary_proximity")
 
     # Layer 7: Presentation Features (always)
     profile["presentation"] = presentation_features(doc_text)
-    layers_run.append("presentation")
+    profile["metadata"]["layers_run"].append("presentation")
 
     # Layer 8: Epistemic Calibration (if source provided)
     if source:
         profile["epistemic_calibration"] = epistemic_calibration(doc_text, source)
-        layers_run.append("epistemic_calibration")
+        profile["metadata"]["layers_run"].append("epistemic_calibration")
 
     # Layer 9: Information Novelty (always)
     profile["information_novelty"] = information_novelty(doc_text)
-    layers_run.append("information_novelty")
+    profile["metadata"]["layers_run"].append("information_novelty")
 
     # Layer 10: Quality Profile (always, computed from other layers)
     profile["quality_profile"] = quality_profile(profile)
-    layers_run.append("quality_profile")
+    profile["metadata"]["layers_run"].append("quality_profile")
 
     # Layer 11: Grounding Decomposition (if source provided)
     if source:
         profile["grounding_decomposition"] = grounding_decomposition(doc_text, source)
-        layers_run.append("grounding_decomposition")
+        profile["metadata"]["layers_run"].append("grounding_decomposition")
 
     return profile
 

@@ -8,14 +8,18 @@ Two main surfaces:
      TimeContext, quarterly claims either get 10-Q data or
      no_data; never annual-data-used-as-quarterly-contradiction.
 
-  2. Historical classification. A claim about a past year is typed
-     HISTORICAL so a verifier can decline to compare it with
-     current data.
+  2. REST Countries historical guard. A current-only data source
+     cannot verify a HISTORICAL claim; attempting to do so
+     produces coincidental matches (e.g. Japan 2010 population
+     happens to be near Japan 2026 population) that look like
+     verifications but aren't. With TimeContext, HISTORICAL
+     subjects return no_data from REST Countries.
 
 The time_context classifier itself is exhaustively tested in
 test_time_context.py. These tests are specifically about the
 routing / verifier integration; they lock in the behaviour that
-Bug B.1 is fixed by construction.
+Bug B.1 is fixed by construction and that the analogous
+correctness guard for REST Countries holds.
 
 These tests do not hit the network (the verifier functions return
 no_data early when the guards fire) and do not require API keys.
@@ -143,10 +147,10 @@ class TestSecQuarterlyGuard:
 
 
 # ================================================================
-# Historical classification
+# REST Countries historical guard
 # ================================================================
 
-class TestHistoricalClassification:
+class TestRestCountriesHistoricalGuard:
 
     def test_current_claim_still_flows_normally(self):
         # A CURRENT or UNKNOWN claim proceeds to the network path
@@ -163,7 +167,8 @@ class TestHistoricalClassification:
         assert d.time_period_type != "historical"
 
     def test_annual_recent_year_is_not_historical(self):
-        # Recent annual claims stay annual (not historical).
+        # Recent annual claims stay annual (not historical) so the
+        # REST Countries guard does NOT fire.
         d = _decomp(
             subject="Germany",
             sentence="Germany's population was 83 million in 2023.",
@@ -186,7 +191,8 @@ class TestCrossClassifierInteraction:
     """Both classifiers fire on every claim. A claim that is
     COUNTRY + QUARTERLY must gate SEC (entity) AND correctly handle
     quarterly filing logic (time). A claim that is COMPANY +
-    HISTORICAL must still route to SEC. These tests verify the
+    HISTORICAL must still route to SEC but should return no_data
+    from REST Countries if applicable. These tests verify the
     interaction path that neither classifier's dedicated test
     file exercises alone."""
 
@@ -206,7 +212,7 @@ class TestCrossClassifierInteraction:
         sources = [s.__name__ for s in _classify_and_route(d)]
         assert "verify_sec_edgar" not in sources
 
-    def test_company_historical_is_typed_historical(self):
+    def test_company_historical_routes_sec_but_rc_gates(self):
         d = _decomp(
             subject="Apple",
             sentence="Apple reported revenue of $200 billion in 2010.",

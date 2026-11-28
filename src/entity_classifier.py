@@ -9,7 +9,7 @@ mode this produces: the claim "US national debt exceeded $34 trillion"
 was routed to SEC EDGAR because the subject "United States" matched
 the `\\b[A-Z][A-Za-z]+\\b` capitalization gate and the sentence
 contained a financial keyword. SEC returned a tiny $243M from an
-unrelated filing, the consensus went to `disputed`, and the user
+unrelated filing, the the combined verdict went to `disputed`, and the user
 saw what looked like a real contradiction. See
 `calibration/results/2026-04-16-first-run/FINDINGS.md` category B.3.
 
@@ -45,13 +45,6 @@ against a regex.
 from enum import Enum
 from typing import NamedTuple, Optional
 
-from entity_data import (
-    _CRYPTO_NAMES,
-    _COUNTRY_CANONICAL,
-    _COUNTRY_NAMES_RE,
-    _COUNTRY_ABBREV_RE,
-)
-
 
 class EntityType(str, Enum):
     """What kind of subject a claim is about.
@@ -78,7 +71,7 @@ class Classification(NamedTuple):
         used by CoinGecko, for UNKNOWN it is the original subject
         string unchanged.
     reason: the rule that matched. Values are stable short slugs
-        suitable for telemetry tagging:
+        suitable for monitoring tagging:
         'crypto_name_match', 'country_alias_match',
         'sec_cik_resolved', 'empty_subject', 'no_rule_matched'.
     """
@@ -168,6 +161,8 @@ def _match_crypto(raw: str) -> Optional[str]:
     Trailing punctuation from sloppy sentence extraction ("BTC,")
     is stripped before lookup.
     """
+    from source_network import _CRYPTO_NAMES
+
     key = raw.lower().rstrip(".,;:!?\"')")
     return _CRYPTO_NAMES.get(key)
 
@@ -195,6 +190,12 @@ def _match_country(raw: str) -> Optional[str]:
     title-cased form of the matched text so lowercase inputs
     like "france" normalize to "France".
     """
+    from source_network import (
+        _COUNTRY_CANONICAL,
+        _COUNTRY_NAMES_RE,
+        _COUNTRY_ABBREV_RE,
+    )
+
     key = raw.rstrip(".,;:!?\"')")
     if not key:
         return None

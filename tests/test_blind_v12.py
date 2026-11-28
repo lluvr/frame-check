@@ -324,3 +324,17 @@ def test_a_hung_reader_gives_up_at_its_deadline(monkeypatch):
     start = time.monotonic()
     assert claim_reader.read_figures("Acme made $5 billion in 2024 (hung).") == []
     assert time.monotonic() - start < 1.5
+
+
+def test_growth_rates_are_not_bases_for_another_growth_rate():
+    """Turkey: "grew 11.4% in 2021, then 5.5% in 2022 and 5.1% in 2023". The two
+    later rates are percentages, not levels: 5.5 against 5.1 is not a change of
+    the economy, and once refuted the 11.4% as "+7.8%"."""
+    def rate(sentence, value, verdict, claim_type="direct"):
+        r = _result(sentence, value, "gdp growth", verdict, claim_type)
+        r.decomposition.unit = "percent"
+        return r
+    growth = rate("Real GDP grew 11.4% in 2021.", 11.4, "unverifiable", "derived")
+    results = [rate("then 5.5% in 2022", 5.5, "verified"), rate("and 5.1% in 2023", 5.1, "verified"), growth]
+    sn.check_derivations(results)
+    assert growth.verdict != "contradicted"

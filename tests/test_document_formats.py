@@ -221,7 +221,10 @@ def test_population_refutes_across_an_inherited_year(monkeypatch):
     parsed = parse("We use 2024 data here.\n\nBotswana has a population of 3.4 million people.")
     result = _world_bank_result(monkeypatch, parsed["3.4 million"], 2_480_000)
     assert parsed["3.4 million"].year_inherited
+    # The World Bank earned refute on v32 (2026-11-28).
     assert result.match_type == "contradicted"
+    assert not result.withheld_refute
+    assert result.source_value == 2_480_000
 
 
 def test_a_population_a_nearby_year_fits_does_not_refute_across_an_inherited_year(monkeypatch):

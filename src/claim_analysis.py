@@ -11,10 +11,9 @@ by tagging each claim as hedged or unhedged, then computing
 confidence uniformity across the document.
 """
 
+from typing import Any
 import re
 from prose import plain_prose
-from typing import Any
-
 from clarethium_measure import (
     extract_numerical_claims,
     extract_numbers_for_matching,
@@ -50,13 +49,102 @@ PREDICTION_RE = re.compile(
     r'\b('
     r'projected|forecast|expected|anticipated|estimated|predicted|'
     r'projects|forecasts|expects|anticipates|estimates|predicts|'
-    r'will\s+(?:reach|grow|decline|increase|exceed)|'
+    r'will\s+(?:reach|grow|decline|increase|exceed|hit)|'
     r'(?:is|are)\s+(?:projected|expected|forecast|anticipated)\s+to|'
     r'management\s+(?:projects|expects|forecasts|anticipates|guides)|'
+    # "Analysts expect growth of 6.5%": a plural forecaster with the plain verb.
+    r'(?:analysts|economists|forecasters|investors|markets|officials|we|they)\s+'
+    r'(?:now\s+)?(?:expect|project|forecast|anticipate|predict)|'
     r'guidance\s+(?:of|for|is|at)|'
+    r'\bguided\b|'
     r'by\s+20[2-9]\d'
     r')\b', re.IGNORECASE
 )
+
+
+# "in early May" names a month; "went up to $65" names the level reached.
+_MONTH_MAY_RE = re.compile(
+    r'(?:\b(?:early|late|mid|in|of|since|until|through|from|by|last|next)\s+-?May\b)|'
+    r'(?:\bMay\s+\d)',
+)
+_REACHED_UP_TO_RE = re.compile(
+    # Only verbs that take "up" as their own particle: "increased up to 40%"
+    # is still a ceiling.
+    r'\b(?:went|goes|go|going|gone|moved|bumped|ticked|crept|edged|picked|picks|'
+    r'picking)\s+up\s+to\b',
+    re.IGNORECASE,
+)
+# "capital projects" is a noun; "few predicted a decade ago" and "better
+# than expected" set a figure against a past expectation, they forecast nothing.
+_PROJECTS_NOUN_RE = re.compile(
+    r'\b(?:capital|construction|infrastructure|research|investment|development|'
+    r'energy|housing|building|new|major|several|many|other|these|those|its|their|'
+    r'our|his|her|the|into|of|\d+)\s+projects\b',
+    re.IGNORECASE,
+)
+_PAST_EXPECTATION_RE = re.compile(
+    r'\b(?:than|few|nobody|no\s+one|anyone)\s+(?:\w+\s+){0,2}?'
+    r'(?:projected|forecast|expected|anticipated|estimated|predicted)\b|'
+    r'\b(?:projected|forecast|expected|anticipated|estimated|predicted)\b(?!\s+to\b)'
+    r'[^.;]{0,30}\bago\b',
+    re.IGNORECASE,
+)
+
+
+# "the 2025 estimate", "census estimates": a measurement of a year already
+# reached, not a forecast. A future year's estimate stays a forecast.
+_DATED_ESTIMATE_RE = re.compile(
+    r'\b(?:(?P<year>(?:19|20)\d\d)|census|population|official|latest|mid-?year)\s+'
+    r'(?:population\s+)?estimates?\b',
+    re.IGNORECASE,
+)
+
+
+def without_measured_estimates(sentence):
+    """The sentence with its estimates of past or current years blanked,
+    keeping every other character where it was."""
+    import datetime
+    this_year = datetime.date.today().year
+
+    def blank(m):
+        year = m.group("year")
+        if year and int(year) > this_year:
+            return m.group()
+        return " " * len(m.group())
+    return _DATED_ESTIMATE_RE.sub(blank, sentence or "")
+
+
+def _real_hedges(sentence):
+    found = HEDGE_RE.findall(sentence)
+    out = []
+    for word in found:
+        low = word.lower()
+        if low == "may" and _MONTH_MAY_RE.search(sentence) and not re.search(
+                r'\bmay\b', sentence):
+            continue
+        if re.fullmatch(r'up\s+to', low) and _REACHED_UP_TO_RE.search(sentence) and len(
+                re.findall(r'\bup\s+to\b', sentence, re.IGNORECASE)) == 1:
+            continue
+        out.append(word)
+    return out
+
+
+# "had climbed to $3.9 billion by 2023": a past "by" year is a deadline already
+# reached, not a forecast. It made the whole claim a projection, so the past
+# figure beside it ("$2.6 billion in 2015") was never checked (2026-11-27, 19
+# true figures on v26-v27). A "by" year still ahead stays a forecast.
+_PAST_BY_YEAR_RE = re.compile(r'\bby\s+(20[2-9]\d)\b')
+
+
+def _past_by_year(match):
+    import datetime
+    return " " if int(match.group(1)) < datetime.date.today().year else match.group(0)
+
+
+def _real_predictions(sentence):
+    masked = _PAST_EXPECTATION_RE.sub(" ", _PROJECTS_NOUN_RE.sub(" ", sentence))
+    masked = _PAST_BY_YEAR_RE.sub(_past_by_year, masked)
+    return PREDICTION_RE.findall(masked)
 
 
 # Candidate-hedge patterns: softer or more academic qualifying language
@@ -132,6 +220,57 @@ def _is_part_of_a_name(doc_text: str, raw_value: Any) -> bool:
     return bool(re.search(r'\d', others))
 
 
+def _is_hyphenated_name(context, raw_value):
+    """True for the 19 in "Covid-19", the 20 in "G-20", the 35 in "F-35".
+
+    A number joined by a hyphen to a capitalized word is part of a name. On
+    an official World Bank page, "just before the Covid-19 pandemic" was
+    read as a figure and refuted against the 2019 poverty rate. A lowercase
+    word ("top-10"), a range ("4.4-4.8%"), and a percent stay figures.
+    """
+    raw = str(raw_value).strip()
+    if not raw.isdigit():
+        return False
+    text = context or ""
+    # Every whole-token occurrence in the window must be in a name, so "During
+    # Covid-19, 19 hospitals closed" keeps its 19.
+    tokens = list(re.finditer(r'(?<![\d.,])' + re.escape(raw) + r'(?![\d]|[.,]\d)', text))
+    if not tokens:
+        return False
+    named = re.compile(r'\b[A-Z][A-Za-z]*-$')
+    for m in tokens:
+        after = text[m.end():m.end() + 9]
+        if not named.search(text[:m.start()]) or re.match(r'\s*(?:%|percent\b)', after):
+            return False
+    return True
+
+
+def _is_threshold(context, raw_value):
+    """True for the 500,000 in "Large counties (population > 500,000)".
+
+    A number right after a comparison sign defines a group; it states nothing
+    about the world. On a BEA county release it was refuted against the US
+    population. Prose ("more than 500,000 people moved") is still a figure.
+    """
+    raw = str(raw_value).strip()
+    return bool(raw) and bool(re.search(
+        r'[<>\u2264\u2265]=?\s*' + re.escape(raw) + r'(?![\d])', context or ""))
+
+
+_GROUP_BOUND_RE = re.compile(
+    r"\((?:[A-Za-z][A-Za-z ]*\s)?(?:[<>\u2264\u2265]=?\s*[\d,.]+|[\d,.]+\s*(?:to|-|\u2013)\s*[\d,.]+)\s*\)")
+
+
+def _is_group_bound(sentence, raw_value):
+    """True for a bound inside a group label's parentheses: "(population >
+    500,000)", "(population 100,000 to 500,000)". v19 (a BEA county release):
+    the label was refuted against the US population."""
+    raw = str(raw_value).strip()
+    if not raw:
+        return False
+    return any(raw in m.group(0) for m in _GROUP_BOUND_RE.finditer(sentence or ""))
+
+
 def _own_sentence(doc_text: str, raw_value: str, max_chars: int = 240) -> str:
     """The sentence or line holding raw_value, or "" if it cannot be found.
 
@@ -179,6 +318,13 @@ def analyze_claims(doc_text: str) -> dict[str, Any]:
             for n in c.get("numbers", [])
         )
     ]
+    # A group's bounds in a label ("Large counties (population > 500,000)",
+    # "Medium counties (population 100,000 to 500,000)") state nothing.
+    for c in raw_claims:
+        sentence = c.get("sentence", "")
+        c["numbers"] = [n for n in c.get("numbers", [])
+                        if not _is_group_bound(sentence, n.get("raw", ""))]
+    raw_claims = [c for c in raw_claims if c.get("numbers")]
 
     # Also extract individual numbers to catch bullets and short lines
     # that extract_numerical_claims misses (its 30-char sentence filter
@@ -216,7 +362,9 @@ def analyze_claims(doc_text: str) -> dict[str, Any]:
                 r'\d+(?:\.\d+)?\s*[-\u2013]\s*' + re.escape(raw),
                 ctx
             ))
-            if is_range_bound or _is_part_of_a_name(doc_text, raw):
+            if (is_range_bound or _is_part_of_a_name(doc_text, raw)
+                    or _is_hyphenated_name(ctx, raw) or _is_threshold(ctx, raw)
+                    or _is_group_bound(ctx, raw)):
                 continue
             uncovered_numbers.append(n)
             claimed_values.add(v_norm)  # Prevent duplicates within uncovered
@@ -289,9 +437,9 @@ def analyze_claims(doc_text: str) -> dict[str, Any]:
             assert_matches = []
             prediction_matches = []
         else:
-            hedge_matches = HEDGE_RE.findall(sent)
+            hedge_matches = _real_hedges(sent)
             assert_matches = ASSERT_RE.findall(sent)
-            prediction_matches = PREDICTION_RE.findall(sent)
+            prediction_matches = _real_predictions(sent)
 
         is_hedged = len(hedge_matches) > 0
         is_prediction = len(prediction_matches) > 0
@@ -367,6 +515,8 @@ def analyze_claims(doc_text: str) -> dict[str, Any]:
             "is_prediction": is_prediction,
             "has_high_precision": has_high_precision,
         }
+        if is_bullet:
+            claim_entry["from_bullet"] = True
         if candidate_hedge is not None:
             # Surface the candidate-hedge marker on the claim. Primary
             # framing is unchanged; candidate_hedge_marker is a reader-

@@ -84,7 +84,9 @@ def test_a_roof_height_far_below_the_tip_is_still_refuted(wikidata):
     d = claim("Dubai's Burj Khalifa reaches 828 feet to its roof.", "828")
     d.subject, d.metric = "Burj Khalifa", "height"
     r = sn.verify_wikidata(d)
-    assert r.match_type == "contradicted"
+    assert r.match_type == "no_data"
+    assert r.withheld_refute
+    assert r.disagrees
     assert "metres" in r.source_text
 
 
@@ -121,6 +123,7 @@ def test_a_year_is_confirmed_by_its_own_event():
     d = claim(sentence, "1875")
     value, _, _ = sn._match_in_text(PAGE, 1875, sentence, decomp=d)
     assert value == 1875
+
 
 
 def test_a_year_as_a_city_is_not_the_year_as_a_town():
