@@ -22,6 +22,19 @@ product limit. The live check is at
 [frame.clarethium.com](https://frame.clarethium.com). This package is
 the MCP server, and it lags that site until the next release.
 
+Those rates predate two later changes, and no fresh sealed set has been
+scored since. Most sources now show their own figure beside a
+disagreeing one instead of calling the figure wrong; a company's filing
+and the document's own arithmetic still can. From 1.3.0 the World Bank
+can again, but only where the answer settles which country a figure
+belongs to: the figure's own clause names that country and no other, its
+section is headed with it, or the answer is about that country alone.
+Seven fresh test sets were written to break that rule; six found errors,
+each fixed in general form, and the seventh found none (0 of 2,224 true
+figures called wrong, 169 of 2,133 false ones caught). Read that as a
+floor on how the rule holds against text written to defeat it, not as a
+rate on ordinary answers.
+
 ## Quickstart (MCP server)
 
 The PyPI package `frame-check-mcp` is the Model Context Protocol

@@ -6,10 +6,43 @@ This changelog covers the public release line beginning with `0.8.0` (2026-04-27
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-28
+
+### Changed
+
+- **The World Bank can call a figure wrong again, where its country is
+  settled.** A disagreement becomes a contradiction only when the
+  figure's own clause names that country and no other, its section is
+  headed with it, or the answer names that country alone. A country
+  named in an aside, a comparison, or another clause does not count, and
+  a place the checker cannot read ("in the territories", "Scotland")
+  leaves the figure unchecked. Seven fresh test sets were written to
+  break the rule; the seventh found no true figure called wrong (0 of
+  2,224) and caught 169 of 2,133 false ones.
+- One country under two spellings is one place ("Türkiye" and "Turkey"),
+  matched by World Bank code.
+- Most other sources show their own figure beside a disagreeing one
+  instead of calling the figure wrong. A company's filing and the
+  document's own arithmetic still can.
+
+### Added
+
+- A company figure is checked against the filing for the period the
+  text names, with the document's own arithmetic as a further check.
+- Binding reads more of how answers are written: section labels and
+  headings with an article ("## The Gambia"), demonyms, "for Bosnia and
+  Herzegovina" after a figure, currency phrases that are not places
+  ("GDP in current US dollars"), and growth carried across a short chain
+  of figures.
+
 ### Fixed
 
 - The MCP registry description stays within its 100 character limit.
   The longer 1.2.4 text was rejected.
+- A figure written to its unit of rounding is compared at that precision
+  ("roughly 230 billion" for 233.6 billion is a match).
+- Line endings from Windows clients no longer change how paragraphs are
+  read.
 
 ## [1.2.4] - 2026-11-26
 
